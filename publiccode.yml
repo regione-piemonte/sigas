@@ -1,0 +1,112 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+applicationSuite: SIGAS
+categories:
+  - business-process-management
+  - document-management
+developmentStatus: stable
+landingURL: 'https://github.com/regione-piemonte/sigas'
+name: SIGAS
+platforms:
+  - web
+  - linux
+  - windows
+  - mac
+releaseDate: '2020-06-10'
+softwareType: standalone/web
+softwareVersion: 1.0.3
+url: 'https://github.com/regione-piemonte/sigas.git'
+dependsOn:
+  open:
+    - name: PostgreSQL
+      optional: true
+      version: 9.6.11
+      versionMin: '9'
+    - name: APACHE 2
+      versionMin: '2'
+      version: 2.2.31
+      optional: true
+    - name: JBOSS
+      versionMin: EAP 6
+      optional: true
+      version: EAP 6.4.5.GA
+maintenance:
+  contacts:
+    - email: riccardo.leccese@csi.it
+      name: RICCARDO LECCESE
+  type: internal
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: Regione Piemonte
+  repoOwner: Regione Piemonte
+localisation:
+  availableLanguages:
+    - it
+  localisationReady: false
+it:
+  conforme:
+    gdpr: true
+    lineeGuidaDesign: true
+    misureMinimeSicurezza: true
+    modelloInteroperabilita: true
+  countryExtensionVersion: '0.2'
+  piattaforme:
+    anpr: false
+    cie: false
+    pagopa: false
+    spid: false
+  riuso:
+    codiceIPA: r_piemon
+description:
+  it:
+    features:
+      - >-
+        -Possibilita' di intervento manuale da parte del Personale del Settore
+        Politiche Fiscali
+    genericName: SIGAS
+    localisedName: SIGAS
+    longDescription: >
+      L'applicativo consente da un lato la determinazione, il mantenimento e
+      l'interrogazione dei dati (volumi ed importi) connessi con la
+      dichiarazione UTF e dall'altro il mantenimento e l'interrogazione di tutta
+      la documentazione a corredo (sia in ingresso che in uscita).
+
+
+      Il processo TO-BE prevedera', di massima, i seguenti steps:
+
+
+      -Manutenzione, ove necessario, delle necessarie tabelle di tipo anagrafico
+      (aliquote vigenti, tassi di interesse vigenti, variazioni anagrafiche
+      societarie es.: dati societari, IBAN)
+
+
+      -Alimentazione della base dati (popolando tabelle speculari ai singoli
+      quadri di interesse della Dichiarazione UTF) a partire dai dati
+      provenienti dal Sito dell'Agenzia delle Dogane
+
+
+      -Determinazione degli importi e popolamento della base dati utili alle
+      attivita' di verifica, controllo ed accertamento
+
+
+      -Possibilita' di intervento manuale da parte del Personale del Settore
+      Politiche Fiscali
+
+
+      -Evidenza di warning in funzione di particolari eventi scatenanti (v.
+      oltre)
+
+
+      -Caricamento (mediante upload manuale) della documentazione cartacea,
+      preventivamente scansita, e popolamento dei dataset relativi ai Metadati
+      di qualifica e ricerca
+
+
+      -Produzione di documenti (Determine)
+
+
+      -Interrogazione a sistema dei dati e dei documenti
+    shortDescription: Sistema Informativo Gas Naturale

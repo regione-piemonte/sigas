@@ -1,0 +1,79 @@
+﻿NAME;VERSION;LICENSE
+activation;1.0.2;CDDL-1.0
+aspectjrt;1.7.2;Eclipse Public License - v 1.0
+aspectjweaver;1.7.2;Eclipse Public License - v 1.0
+axis-1.4.csi;1.0.0;Libreria personalizzata CSI basata su Apache 2.0
+axis-jaxrpc;1.4;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+barcode4j;2.1.0;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+castor-xml;1.3.3;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+cglib;2.2.2;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-beanutils;1.9.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-codec;1.6;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-collections;3.2.2;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-digester;2.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-discovery;0.2;Apache-1.1
+commons-httpclient;3.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-lang3;3.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+commons-logging;1.1.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+csi-apachesoap;1.2.2;Apache-2.0 e BSD-3-Clause
+csi-core;1.2.2;Apache-2.0 e BSD-3-Clause
+csi-ejb;1.2.2;Apache-2.0 e BSD-3-Clause
+csi-rmi;1.2.2;Apache-2.0 e BSD-3-Clause
+csi-stadapter;1.2.2;Apache-2.0 e BSD-3-Clause
+ecmengine-ws-client;8.0.0;Apache-2.0 e BSD-3-Clause
+guava;18.0;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+hibernate-commons-annotations;4.0.1.Final-redhat-1;GNU LESSER GENERAL PUBLIC LICENSE: http://www.gnu.org/licenses/lgpl-2.1.html
+hibernate-validator;4.2.0.Final-redhat-1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+httpclient;4.3.4;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+iridev2-pep-intf;2.0.0;Apache-2.0 e BSD-3-Clause
+itext;2.1.7;Mozilla Public License: http://www.mozilla.org/MPL/MPL-1.1.html
+j2ee;1.3;MPL-1.1
+jackson-core-asl;1.9.2-redhat-1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+jackson-mapper-asl;1.9.2-redhat-1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+jasperreports;6.2.1;LGPL-3.0
+jasperreports-fonts;6.2.1;LGPL-3.0
+jasperreports-functions;6.2.1;GNU Lesser General Public License: http://jasperreports.sourceforge.net/license.html
+jaxp;1.1;Libreria Java di Base
+jcert;1.0.3;Libreria Java di Base
+jcommon-1.0.23.jar;1.0.23;GNU Lesser General Public Licence: http://www.gnu.org/licenses/lgpl.txt
+jettison;1.3.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+jfreechart;1.0.19;GNU Lesser General Public Licence: http://www.gnu.org/licenses/lgpl.txt
+jms;1.0.2b;Libreria Java di Base
+jndi;1.2.1;Libreria Java di Base
+jnet;1.0.3;Libreria Java di Base
+joda-time;1.6;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+jsr311-api;1.1.1;CDDL License : http://www.opensource.org/licenses/cddl1.php
+jsse;1.0.3;Libreria Java di Base
+lucene-analyzers-common;4.5.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+lucene-core;4.5.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+lucene-queryparser;4.5.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+mail;1.2;Libreria Java di Base
+org.apache.commons.io.jar;N.A.;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+org.springframework.web.servlet;3.1.2.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+persistence-api;1.0;Common Development and Distribution License (CDDL) v1.0: http://www.sun.com/cddl/cddl.html
+poi;3.10.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+poi-ooxml;3.10.1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+resteasy-jaxrs;2.3.10.Final-redhat-1;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+resteasy-multipart-provider;2.3.5.Final;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+saaj;1.2;CDDL-1.0
+soap;2.3.1;Libreria Java di Base
+spring-aop;3.1.1.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-data-commons-core;1.3.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-data-jpa;1.1.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-jdbc;3.1.1.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-orm;3.1.1.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-security-acl;3.1.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-security-config;3.1.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-security-core;3.1.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-security-taglibs;3.1.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-security-web;3.1.0.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+spring-tx;3.1.1.RELEASE;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+token-retry;2.1.0;Apache-2.0 e BSD-3-Clause
+token-retry-plugin-axis1.4;2.1.0;Apache-2.0 e BSD-3-Clause
+util-perf;1.0.0;Apache-2.0 e BSD-3-Clause
+validation-api;1.0.0.GA-redhat-3;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+wsdl4j;1.5.1;CPL-1.0
+xercesImpl;2.11.0;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+xml-apis;1.4.01;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+zxing-core;2.3.0;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
+zxing-javase;2.3.0;The Apache Software License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt
