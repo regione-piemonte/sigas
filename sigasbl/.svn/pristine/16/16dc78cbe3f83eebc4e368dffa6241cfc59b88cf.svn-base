@@ -1,2 +1,0 @@
-@javax.xml.bind.annotation.XmlSchema(namespace = "common.acaris.acta.doqui.it")
-package it.csi.sigas.sigasbl.doqui.acta.acaris.common;

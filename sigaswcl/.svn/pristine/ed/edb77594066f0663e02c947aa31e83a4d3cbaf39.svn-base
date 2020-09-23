@@ -1,8 +1,0 @@
-<div class="panel panel panel-success center-search">
-    <div class="panel-body">
-        <img src="assets/success.png">
-    </div>
-    <div>
-        <h3>{{message}}</h3>
-    </div>
-</div>

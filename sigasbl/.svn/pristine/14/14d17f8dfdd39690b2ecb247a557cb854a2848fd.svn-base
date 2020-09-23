@@ -1,6 +1,0 @@
-package it.csi.sigas.sigasbl.common;
-
-public class AuthorizationRoles {
-
-	public static final String HOME = "hasRole('UCSIGAS1')";
-}

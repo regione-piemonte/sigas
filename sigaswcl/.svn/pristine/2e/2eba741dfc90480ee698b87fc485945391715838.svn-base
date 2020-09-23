@@ -1,5 +1,0 @@
-<div class="alert alert-container" [ngClass] = "class" >
-    <i [ngClass]="classIcon" ></i>
-  <strong id="text-message">{{esito}}</strong> {{message}}
-  <strong>{{boldMessage}}</strong>
-</div>

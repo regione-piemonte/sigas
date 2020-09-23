@@ -1,7 +1,0 @@
-#center {
-    text-align:center;
-}
-section{
-    margin-top:5%;
-    margin-bottom: 5%;
-}

@@ -1,4 +1,0 @@
-<app-header *ngIf="headerEnable"></app-header>
-<app-breadcrumbs [breadcrumbsEnabled] = "breadcrumbsEnable && headerEnable"></app-breadcrumbs>
-<router-outlet></router-outlet>
-<app-footer *ngIf="headerEnable"></app-footer>

@@ -1,6 +1,0 @@
-package it.csi.sigas.sigasbl.common.rest;
-
-import java.io.Serializable;
-
-public interface VO extends Serializable {
-}

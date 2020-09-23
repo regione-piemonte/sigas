@@ -1,9 +1,0 @@
-{
-    "beServer": "/sigas",
-    "shibbolethSSOLogoutURL": "https://tst-portale.ruparpiemonte.it/rpp_liv1_IRUP/Shibboleth.sso/Logout",
-    "onAppExitURL": "http://tst-www.sistemapiemonte.it",
-    "otherParam": "production_param_value",
-    "publicPath": "/sigas/",
-    "timeout": 600,
-    "debugMode": false
-}
