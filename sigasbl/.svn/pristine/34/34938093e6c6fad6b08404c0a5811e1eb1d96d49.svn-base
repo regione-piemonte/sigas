@@ -1,0 +1,9 @@
+package it.csi.sigas.sigasbl.model.mapper.entity;
+
+import it.csi.sigas.sigasbl.model.entity.SigasDichConsumi;
+import it.csi.sigas.sigasbl.model.mapper.EntityMapper;
+import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
+
+public interface DichConsumiEntityMapper extends EntityMapper<SigasDichConsumi, ConsumiPrVO> {
+
+}

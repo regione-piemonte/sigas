@@ -1,0 +1,1 @@
+alter table sigas_rimborso add column data_versamento timestamptz null;

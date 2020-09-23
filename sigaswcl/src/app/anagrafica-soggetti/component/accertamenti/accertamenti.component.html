@@ -1,0 +1,105 @@
+<div *ngIf="!showAccertamentiDaCalcolare"> 
+  <sigas-alert [message]="'Selezionare dall\'elenco gli importi per cui calcolare l\'Accertamento'" [type]="'INFO'" *ngIf="checkCalcolo"></sigas-alert>
+  <sigas-alert [message]="'Selezionare almeno un accertamento O selezionare accertamenti non registrati'" [type]="'DANGER'" *ngIf="!checkCalcolo" >
+   </sigas-alert>
+  <div class="card-body container" >
+    <!--testata-->
+    <div class="form-group col-lg-12 text-center">
+      <h3 class="title">Gestione Accertamenti</h3>
+    </div>
+    <div class="form-group row padding-search">
+        <!--anno-->
+        <div class="form-group col-lg-10">
+            <div class="row">
+                <label for="anno" class="col-lg-3 col-form-label">Annualità dichiarazione:</label>
+                <sigas-spinner-form [diameter]="30" *ngIf="loaderYear;  else elseAnnoCaricato"></sigas-spinner-form>
+                <ng-template #elseAnnoCaricato>
+                    <div class="col-lg-3" >
+                        <select class="form-control" id="anno" [(ngModel)]="annoSelezionato" name="anno" (change)="reInit()" required    >
+                            <option value="all" selected>Tutte</option> 
+                            <option *ngFor="let anno of anniAccertamenti" [value]="anno">{{anno}}</option>
+                        </select>
+                    </div>
+                </ng-template>
+                <label for="stato" class="col-lg-2 col-form-label offset-lg-1">Provincia:</label>
+                <div class="col-lg-3" >
+                    <select class="form-control" id="validazione" [(ngModel)]="provinciaSelezionata" name="validazione" (change)="reInit()" required >
+                        <option value="all" selected>Tutte</option> 
+                        <option *ngFor="let provincia of province " [value]="provincia.sigla">{{provincia.denominazione}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-lg-12">
+            <div class="form-group col-lg-12">
+                <div class="form-group col-lg-12">
+                    <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+                    <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-accertamenti"  class="row-border hover" 
+                        datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Annualità</th>
+                                <th>Mensilità</th>
+                                <th>Provincia</th>
+                                <th>Data scadenza</th>
+                                <th>importo</th>
+                                <th>Data accertamento</th>
+                                <th>importo Complessivo</th>
+                                <th>Allarmi</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class ="pointer" *ngFor="let el of elencoAccertamenti; let i = index "  >
+                                <td><input type="checkbox"(change)="onSelectAccertamento($event)" value={{i}}></td>
+                                <td>{{ el.annualita }}</td>
+                                <td>{{ el.mese }}</td>
+                                <td>{{el.provincia}}</td>
+                                <td>{{el.dataVersamento | date:'dd/MM/yyyy'}}</td>
+                                <td>{{el.importo | currency:'EUR':'symbol'}}</td>
+                                <td>{{el.dataAccertamento | date:'dd/MM/yyyy'}}</td>
+                                <td *ngIf ="el.importoComplessivo > 0">{{el.importoComplessivo | currency:'EUR':'symbol'}}</td>
+                                <td *ngIf ="el.importoComplessivo === 0">-----</td>
+                                <td>
+                                  <label class="switch-small">
+                                   <input type="checkbox" [(ngModel)]="el.allarme.status" [disabled]="ReadOnlyStyleAllarm">
+                                    <span class="slider-small round">
+                                      <span *ngIf="el.allarme.status === 1" class="switch-on-small">ON</span>
+                                      <span *ngIf="el.allarme.status === 0" class="switch-off-small">OFF</span>
+                                     </span>
+                                  </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row" style="margin-top:3%">
+                        <span class="col-lg-4"></span>
+                            <label class="col-lg-2 col-form-label">Totale d'accertare</label>
+                            <div class="col-lg-3">
+                                <input class="form-control" type="number" required disabled class="form-control" placeholder="{{sommaDaAccertare | currency:'EUR':'symbol'}}" /> 
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--tabella-->
+    <!--pulsanti-->
+    <div class="bs-example" data-example-id="single-button-dropdown">
+        <div class="form-group row col-lg-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary margin-icon" (click)="showCalcolaAccertamenti()">
+                        <i class="fas fa-check"></i> calcola accertamento </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--pulsanti-->
+  </div>
+</div>
+<app-calcolo-accertamento [accertamenti] = "accertamentiDaCalcolare" *ngIf="showAccertamentiDaCalcolare" (back)='backToChoiche($event)'(accerVuoto)="svuotaElencoDaAccertare($event)"></app-calcolo-accertamento>

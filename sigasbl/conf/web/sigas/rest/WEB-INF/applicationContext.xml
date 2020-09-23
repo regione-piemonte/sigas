@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   * SPDX-License-Identifier: EUPL-1.2
+   * Copyright Regione Piemonte - 2020
+-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	   http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd"
+>
+
+    <bean class="it.csi.sigas.sigasbl.rest.SpringApplicationContextHelper"></bean>
+
+    <!-- Registra i file di property -->
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <!-- scans packages to find and register beans within the application context -->
+    <context:component-scan base-package="it.csi.sigas.sigasbl"/>
+    
+    <!-- config facade -->
+    <context:component-scan base-package="it.csi.sigas.sigasbl.common.config"/>
+
+    <context:component-scan base-package="it.csi.sigas.sigasbl.model.mapper"/>
+
+    <context:component-scan base-package="it.csi.sigas.sigasbl.facade"/>
+
+    <context:component-scan base-package="it.csi.sigas.sigasbl.service.impl"/>
+
+    <context:component-scan base-package="it.csi.sigas.sigasbl.dispatcher.impl"/>
+
+    <context:component-scan base-package="it.csi.sigas.sigasbl.filter"/> 
+
+    <!-- AOP support -->
+    <bean id='loggingAspect' class='it.csi.sigas.sigasbl.aspect.LoggingAspect'/>
+
+    <aop:aspectj-autoproxy/>
+    <import resource="daoContext.xml"/>
+    <import resource="security-context.xml"/>
+
+</beans>

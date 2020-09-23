@@ -1,0 +1,99 @@
+{
+    "esito": "S",
+    "object": [
+        {   
+            "id": 1,
+            "dichiarante": {
+                "denominazione": "ALEGAS S.R.L."
+            },
+            "nProvince": 6,
+            "totVersato": 376949.68,
+            "totCalcolato": 362801.68,
+            "validazione": true,
+            "allarmi": {
+                "ravv": true,
+                "scarti": true,
+                "rett": true,
+                "acc": true,
+                "note": false,
+                "rimb": false,
+                "doc": false
+            }
+        },
+        {
+            "id": 2,
+            "dichiarante": {
+                "denominazione": "A.B. ENERGIE SPA"
+            },
+            "nProvince": 6,
+            "totVersato": 156912.38,
+            "totCalcolato": 156912.38,
+            "validazione": false,
+            "allarmi": {
+                "ravv": false,
+                "scarti": false,
+                "rett": false,
+                "acc": false,
+                "note": true,
+                "rimb": true,
+                "doc": false
+            }
+        },
+        {
+            "id": 3,
+            "dichiarante": {
+                "denominazione": "A2A ENERGIA S.P.A."
+            },
+            "nProvince": 6,
+            "totVersato": 113762.77,
+            "totCalcolato": 113762.77,
+            "validazione": true,
+            "allarmi": {
+                "ravv": false,
+                "scarti": false,
+                "rett": false,
+                "acc": false,
+                "note": true,
+                "rimb": false,
+                "doc": true
+            }
+        },
+        {
+            "id": 4,
+            "dichiarante": {
+                "denominazione": "ACEA PINEROLESE INDUSTRIALE SPA"
+            },
+            "nProvince": 6,
+            "totVersato": 69949.68,
+            "totCalcolato": 69949.68,
+            "validazione": false,
+            "allarmi": {
+                "ravv": false,
+                "scarti": false,
+                "rett": false,
+                "acc": false,
+                "note": true,
+                "rimb": false,
+                "doc": false
+            }
+        },
+        {
+            "id": 5,
+            "dichiarante": {
+                "denominazione": "ACEA PINEROLESE ENERGIA  SRL"
+            },
+            "nProvince": 6,
+            "totVersato": 76949.68,
+            "totCalcolato": 76949.68,
+            "validazione": true,
+            "allarmi": {
+                "ravv": false,
+                "scarti": false,
+                "rett": false,
+                "acc": false,
+                "note": false,
+                "doc": false
+            }
+        }
+    ]
+}

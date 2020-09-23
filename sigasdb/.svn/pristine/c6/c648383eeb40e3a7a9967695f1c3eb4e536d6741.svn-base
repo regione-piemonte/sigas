@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX ak_validazione_01 ON sigas_validazione (codice_azienda, anno  ASC);

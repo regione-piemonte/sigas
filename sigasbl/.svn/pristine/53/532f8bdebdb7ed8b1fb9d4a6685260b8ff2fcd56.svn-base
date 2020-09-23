@@ -1,0 +1,9 @@
+package it.csi.sigas.sigasbl.model.mapper.entity;
+
+import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
+import it.csi.sigas.sigasbl.model.mapper.EntityMapper;
+import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+
+public interface AnagraficaSoggettiEntityMapper extends EntityMapper<SigasAnagraficaSoggetti, AnagraficaSoggettoVO> {
+
+}

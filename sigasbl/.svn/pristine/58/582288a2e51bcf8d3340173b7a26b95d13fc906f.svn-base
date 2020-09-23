@@ -1,0 +1,87 @@
+#-------------------------------------------------------------------------------
+# SPDX-License-Identifier: EUPL-1.2
+# Copyright Regione Piemonte - 2020
+#-------------------------------------------------------------------------------
+
+
+app.devmode=false
+xsrffilter.disabled=false
+
+#HIBERNATE
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+hibernate.temp.use_jdbc_metadata_defaults=false
+showSql=false
+generateDdl=false
+database=POSTGRESQL
+
+#iride
+iride_service_endpoint_url=http://tst-wfexp-vip01.csi.it/pep_wsfad_policy/services/PolicyEnforcerBase?wsdl
+
+##spring security
+shibbTestMode=disabled 
+
+# GINEVRA                
+#csi_oauth_api_url=http://tst-api-ent.ecosis.csi.it/api/token
+#csi_oauth_consumer_key=SID59evyU2DLPLNhmUcboLfhvkga
+#csi_oauth_consumer_secret=6nxdoL69H0nNZUKFGV5k5P9SSsYa
+#
+#svista_lanci_via_url=http://tst-api-ent.ecosis.csi.it:80/api/territorio_ginevra_lanci_via_COLL/2.0
+#svista_limamm_ente_url=http://tst-api-ent.ecosis.csi.it:80/api/territorio_svista_limamm_ente_COLL/2.0
+#ginevra.time=10000
+#
+##stadoc-stasend
+#stadoc_service_endpoint_url=http://coll-applogic.reteunitaria.piemonte.it/stadocApplStadocWsfad/services/stadocStadoc
+#stasend_service_endpoint_url=http://coll-applogic.reteunitaria.piemonte.it/stasendApplStasendWsfad/services/stasendStasend
+#
+##mdp
+#mdpcore_service_endpoint_url=http://coll-applogic.reteunitaria.piemonte.it/mdpcoreservices/MdpCoreCxf/MdpCoreCxf
+#mdpiuv_service_endpoint_url=http://coll-applogic.reteunitaria.piemonte.it/mdpiuv/MdpiuvsrvServiceWS
+#
+##osscar
+#osscar_service_endpoint_url=http://coll-applogic.regione.piemonte.it/carbwscarburantewsfad/services/AP6IntraRegWSPort?wsdl
+
+ #UPLOAD FILE
+#INDEX
+baseUrl=http://coll-applogic.reteunitaria.piemonte.it/ecmenginews-rp02/
+urlWs1=/services/EcmEngineManagement
+fruitore=sigas
+repository=primary
+username=admin@sigas
+password=sigas
+uidPadre=7952b369-3c29-11ea-82f6-a35028f59564
+typePrefixedName=sigas:documento
+modelPrefixedName=sigas:model
+parentAssocTypePrefixedName=cm:contains
+contentPropertyPrefixedName=cm:content
+prefixedName=sigas:tipoDocumentoArchiviato
+dataType=d:text
+prefixedName2=sigas:annualita
+dataType2=d:int
+anno=2019
+
+#ACTA
+endpoint=http://coll-intranet.regione.piemonte.it/actasrv-rp03/
+repoName=RPGIUNTATEST Ente Test Regione Piemonte
+idUtente=SGSFTR80A01L219U
+idAOO=6
+idStruttura=13
+idNodo=23
+targetObject=ClassificazioniProtocollateView
+appKey=24/65/61/-67/-101/-61/-28/36/11/121/-3/-116/-108/-39/-112/-73
+repoWS=repositoryWS?wsdl
+backWS=backofficeWS?wsdl
+namespaceURI=objectservice.acaris.acta.doqui.it
+localPart=ObjectService
+endpointAddress=objectWS?wsdl
+naviWsdlLocation=navigationWS?wsdl
+relaWsdlLocation=relationshipsWS?wsdl
+codice=codice
+anno=anno
+idAooProtocollante=idAooProtocollante
+
+
+##app configuration
+year.to.show=4
+
+build_local_frontend_path=/home/giuseppe/eclipse-workspace/CSI/sigaswcl
+path_npm_linux=/usr/bin/npm

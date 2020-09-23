@@ -1,0 +1,9 @@
+{
+    "beServer": "/sigas",
+    "shibbolethSSOLogoutURL": "https://dev-portale.ruparpiemonte.it/rpp_liv1_IRUP/Shibboleth.sso/Logout",
+    "onAppExitURL": "http://dev-secure.sistemapiemonte.it",
+    "otherParam": "development_param_value",
+    "publicPath": "/sigas/",
+    "timeout": 600,
+    "debugMode": false
+  }

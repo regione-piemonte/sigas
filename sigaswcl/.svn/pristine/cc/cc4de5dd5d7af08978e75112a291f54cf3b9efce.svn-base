@@ -1,0 +1,43 @@
+{
+    "esito": "S",
+    "object": [
+        {
+            "id": 2,
+            "dichiarante": {
+                "denominazione": "A.B. ENERGIE SPA"
+            },
+            "nProvince": 6,
+            "totVersato": 156912.38,
+            "totCalcolato": 156912.38,
+            "validazione": false,
+            "allarmi": {
+                "ravv": false,
+                "scarti": false,
+                "rett": false,
+                "acc": false,
+                "note": true,
+                "rimb": true,
+                "doc": false
+            }
+        },
+        {
+            "id": 4,
+            "dichiarante": {
+                "denominazione": "ACEA PINEROLESE INDUSTRIALE SPA"
+            },
+            "nProvince": 6,
+            "totVersato": 69949.68,
+            "totCalcolato": 69949.68,
+            "validazione": false,
+            "allarmi": {
+                "ravv": false,
+                "scarti": false,
+                "rett": false,
+                "acc": false,
+                "note": true,
+                "rimb": false,
+                "doc": false
+            }
+        }
+    ]
+}

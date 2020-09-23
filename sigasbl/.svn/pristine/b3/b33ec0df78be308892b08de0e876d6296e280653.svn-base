@@ -1,0 +1,10 @@
+package it.csi.generic;
+
+
+public class CsiGenericTest {
+
+    //@Test
+    public void genericTest() {
+
+    }
+}

@@ -1,0 +1,13 @@
+{   
+    "esito":"S",
+    "object":[
+        {
+            "id":1,
+            "descrizione":"BOZZA"
+        },
+        {
+            "id":2,
+            "descrizione":"INVIATA"
+        }
+    ]
+}

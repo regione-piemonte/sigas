@@ -1,0 +1,563 @@
+<div *ngIf="!updateSoggetto && !fusioneSoggetto && !associateSoggetto">
+<div class="principal-div">
+    <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
+    <div *ngIf="!loaderPage">
+        <div class="contains">
+            <div class="col-lg-12 hight">
+                <div class="form-group row">
+                    <div class="form-group col-lg-12 text-center">
+                        <h2 class="title">Dettaglio Soggetto</h2>
+                    </div>
+                </div>
+            </div>
+        <div class="row">
+            <div class="col-lg-5 hight">
+                 <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Denominazione:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.denominazione}}
+                        </div>
+                    </div>
+                </div>
+                <!--Codice Azienda-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Codice Azienda:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.codiceAzienda}}
+                        </div>
+                    </div>
+                </div>
+                <!--Codice Azienda-->
+                <!--Indirizzo-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Indirizzo:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.indirizzo}}
+                        </div>
+                    </div>
+                </div>
+                <!--Indirizzo-->
+                <!--Comune-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Comune:</label>
+                    <div class="col-lg-6 col-value">
+                        <div *ngFor="let com of comuniModel" >
+                         <div *ngIf="com.id==soggetto.idComune"> {{com.denominazione}}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!--Comune-->
+                <!--Provincia-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Provincia:</label>
+                    <div class="col-lg-6 col-value">
+                        <div *ngFor="let prov of provinceModel" >
+                         <div *ngIf="prov.id==soggetto.idProvincia"> {{prov.sigla}}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!--Provincia-->
+                
+                <!--IBAN-->
+                <div class="form-group border-botton row ">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">IBAN:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.iban}}
+                        </div>
+                    </div>
+                </div>
+                <!--IBAN-->
+                <!--Telefono-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Telefono:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.telefono}}
+                        </div>
+                    </div>
+                </div>
+                <!--Telefono-->
+                <!--PEC-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">PEC:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.pec}}
+                        </div>
+                    </div>
+                </div>
+                <!--PEC-->
+                <!--PEC-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Email:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggetto.email}}
+                        </div>
+                    </div>
+                </div>
+                <!--PEC-->
+            </div>
+            <div class="col-lg-5 offset-lg-1 hight">
+                <!--Bottoni Province-->
+                <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                    <label *ngFor="let el of consumiPr" class="btn btn-secondary pointer margin-icon margin-bottom-toggle" (click)="cambiaProvincia(el.provincia_erogazione)">
+                        <input type="radio" name="province">{{el.provincia_erogazione}}
+                    </label>
+                    <label class="btn btn-secondary pointer margin-icon margin-bottom-toggle active" (click)="cambiaProvincia('TOTALE')">
+                        <input type="radio" name="province"> TOTALE
+                    </label>
+                </div>
+                <!--Bottoni Province-->
+                <!--Totale Dichiarazione-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-6 offset-lg-1 col-form-label">Totale Dichiarazione:</label>
+                    <div class="col-lg-5 col-value">
+                        <div>
+                            {{selTotDich | currency:'EUR':'symbol' }}
+                        </div>
+                    </div>
+                </div>
+                <!--Comune-->
+                <!--Provincia-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-6 offset-lg-1 col-form-label">Addizionale liquidata:</label>
+                    <div class="col-lg-5 col-value">
+                        <div>
+                            {{selAddLiq | currency:'EUR':'symbol' }}
+                        </div>
+                    </div>
+                </div>
+                <!--Provincia-->
+                
+                <!--IBAN-->
+                <div class="form-group border-botton row ">
+                    <label class="col-lg-6 offset-lg-1 col-form-label">Totale versato:</label>
+                    <div class="col-lg-5 col-value">
+                        <div>
+                            {{selTotVers | currency:'EUR':'symbol' }}
+                        </div>
+                    </div>
+                </div>
+                <!--IBAN-->
+                <!--Tipo-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-6 offset-lg-1 col-form-label">Copertura fideussione:</label>
+                    <div class="col-lg-5 col-value">
+                        <div>
+                            {{copFid}} ({{ impFid | currency:'EUR':'symbol'}})
+                        </div>
+                    </div>
+                </div>
+                <!--Tipo-->
+                <!--Status-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-3 offset-lg-1 col-form-label">Note:</label>
+                    <div class="col-lg-8 col-value">
+                        <textarea class="note-textarea" rows="4" [(ngModel)]="soggetto.note" readonly>
+                        </textarea>
+                    </div>
+                </div>
+                <!--Status-->
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<div class="bs-example" data-example-id="single-button-dropdown">
+    <div class="form-group row col-lg-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+            <div class="btn-group">
+                <a class="btn btn-default margin-icon btn-standard" (click)="goBackSoggetti()" role="button">
+                    <i class="fa fa-angle-left"></i> indietro</a>
+            </div>
+            <div class="btn-group" *ngIf="!soggetto.codiceAzienda.startsWith('NEW');">
+                <button type="button" class="btn btn-primary margin-icon" (click)="fusioneSocietaria()" >
+                    <i class="fas fa-check"></i> Fusione Societaria</button>
+            </div>
+            <div class="btn-group">
+                  <button type="button" class="btn btn-primary margin-icon btn-standard" (click)="modificaSoggetto()" >
+                   <i class="fas fa-edit"></i> Modifica</button>
+            </div>
+            <div class="btn-group" *ngIf="soggetto.codiceAzienda.startsWith('NEW');">
+                  <button type="button" class="btn btn-primary margin-icon" (click)="associaSoggetto()">
+                   <i class="fas fa-check"></i> Associa soggetto</button>
+            </div>
+            <div class="btn-group">
+                <button type="button" *ngIf="!loaderExcel" class="btn btn-success pointer excel margin-icon" (click)="goExcelSoggetto()">
+                    <i class="far fa-file-excel"></i> Scarica in Excel
+                </button>
+                <button type="button" *ngIf="loaderExcel" class="btn btn-success pointer excel margin-icon">
+                    <sigas-spinner-form [diameter]="20"></sigas-spinner-form>    
+                </button>
+            </div> 
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div *ngIf="associateSoggetto">
+    <sigas-alert [message]="'Selezionare l\'anagrafica da associare al soggetto ' + soggetto.denominazione" [type]="'INFO'" *ngIf="!showMessageError" ></sigas-alert>
+
+    <div class="principal-div">
+        <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
+        <div *ngIf="!loaderPage">
+            <form #assSoggetto="ngForm" (ngSubmit)="associaSoggSubmit()">
+                <div class="col-lg-10 offset-lg-1">
+                    <div class="col-lg-12 hight">
+
+                        <div class=" form-group col-lg-12">
+                            <div class="form-group col-lg-12">
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+                                <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-soggetti"
+                                    class="row-border hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th class="dichiarante">Dichiarante</th>
+                                            <th>Cod.Az.</th>
+                                            <th>Tot. Versato</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="pointer" *ngFor="let el of elencoSoggetti">
+                                            <td>
+                                                <input type="radio" name="selection" (change)="checkRow(el.idAnag, el.denominazione)">
+                                            </td>
+                                            <td class="dichiarante">{{ el.denominazione }}</td>
+                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td>{{ el.totVersato | currency:'EUR':'symbol' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="bs-example" data-example-id="single-button-dropdown">
+                            <div class="form-group row col-lg-12">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center ">
+                                    <div class="btn-group">
+                                        <a class="btn btn-default pointer margin-icon" (click)="goBack()" role="button">
+                                            <i class="fa fa-angle-left"></i>
+                                            Indietro</a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button type="submit" [disabled]="!assSoggetto.form.valid || !soggettoSelezionato" class="btn btn-primary margin-icon">
+                                            <i class="fas fa-check"></i> Associa Soggetti selezionati</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="updateSoggetto">
+   <div class="principal-div">
+    <sigas-spinner *ngIf="loaderModPage"></sigas-spinner>
+    <div *ngIf="!loaderModPage">
+        <form #modSoggetto="ngForm" (ngSubmit)="onSubmitModifica()">
+        <div class="contains">
+            <div class="col-lg-12 hight">
+                <div class="form-group row">
+                    <div class="form-group col-lg-12 text-center">
+                        <h2 class="title">Modifica Dettaglio Soggetto</h2>
+                    </div>
+                </div>
+          <div class="row">
+            <div class="col-lg-5 hight">
+               <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Denominazione:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                           <input type="text" class="form-control col-lg-12 col-form-label" id="denominazione"
+                            placeholder="Denominazione" [(ngModel)]="soggettoToSave.denominazione" name="denominazione"
+                            #denominazione="ngModel" required>   
+                             <div *ngIf="denominazione.invalid && (denominazione.dirty || denominazione.touched)" class="alert alert-danger">
+                                <div *ngIf="denominazione.errors.required ">
+                                    La denominazione è richiesta.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--Codice Azienda-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Codice Azienda:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                            {{soggettoToSave.codiceAzienda}}
+                        </div>
+                    </div>
+                </div>
+                <!--Codice Azienda-->
+                <!--Indirizzo-->
+                <div class="form-group border-botton row">
+                    <label for="indirizzo" class="col-lg-5 offset-lg-1 col-form-label">Indirizzo:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                        <input type="text" class="form-control col-lg-12 col-form-label" id="indirizzo"
+                            placeholder="Indirizzo" [(ngModel)]="soggettoToSave.indirizzo" name="indirizzo"
+                            #indirizzo="ngModel">             
+                        </div>
+                    </div>
+                </div>
+                <!--Indirizzo-->
+                <!--Provincia-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Provincia:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                         <sigas-spinner-form [diameter]="30" *ngIf="!loaderProvince;  else elseProvinceCaricate"></sigas-spinner-form>
+                            <ng-template #elseProvinceCaricate>
+                                <select class="form-control" id="provincia" [(ngModel)]="soggettoToSave.idProvincia" name="provincia" 
+                                    (change)="loadComuni(soggettoToSave.idProvincia)">
+                                    <option *ngFor="let prov of provinceModel" [value]="prov.id">{{prov.denominazione}}</option>
+                                </select>
+                            </ng-template>       
+                        </div>
+                    </div>
+                </div>
+                <!--Provincia-->
+                <!--Comune-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-5 offset-lg-1 col-form-label">Comune:</label>
+                     <div class="col-lg-6 col-value">
+                      <sigas-spinner-form [diameter]="30" *ngIf="!loaderComuni;  else elseComuniCaricati"></sigas-spinner-form>
+                      <ng-template #elseComuniCaricati>
+                            <select class="form-control" id="comune" [(ngModel)]="soggettoToSave.idComune"
+                                name="comune" >
+                                <option *ngFor="let com of comuniModel" [value]="com.id">{{com.denominazione}}</option>
+                            </select>
+                      </ng-template>
+                    </div>
+                </div>
+                <!--Comune-->
+                <!--IBAN-->
+                <div class="form-group border-botton row ">
+                    <label for="iban" class="col-lg-5 offset-lg-1 col-form-label">IBAN:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                        <input type="text" class="form-control col-lg-12 col-form-label" id="iban"
+                            placeholder="IBAN" [(ngModel)]="soggettoToSave.iban" name="iban"
+                            #iban="ngModel">             
+                        </div>
+                    </div>
+                </div>
+                <!--IBAN-->
+                <!--Telefono-->
+                <div class="form-group border-botton row">
+                    <label for="telefono" class="col-lg-5 offset-lg-1 col-form-label">Telefono:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                        <input type="text" id="telefono" placeholder="Telefono" maxlength="25" [(ngModel)]="soggettoToSave.telefono" name="telefono"
+                                class="form-control" #telefono="ngModel" maxlength="25" pattern="^[0-9\-\+\s\(\)]*$">
+                            <div *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)" class="alert alert-danger">
+                                <div *ngIf="telefono.errors.required ">
+                                    Il Telefono è richiesto.
+                                </div>
+                                <div *ngIf="telefono.errors.pattern ">
+                                    Formato telefono non corretto.
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                <!--Telefono-->
+                <!--PEC-->
+                <div class="form-group border-botton row">
+                    <label for="pec" class="col-lg-5 offset-lg-1 col-form-label">PEC:</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                         <input type="text" id="pec" placeholder="PEC" maxlength="150" [(ngModel)]="soggettoToSave.pec" name="pec" class="form-control minuscolo"
+                                pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" #pec="ngModel">
+                            <div *ngIf="pec.invalid && pec.touched" class="alert alert-danger">
+                                <div *ngIf="pec.errors.required ">
+                                    La PEC è richiesta.
+                                </div>
+                                <div *ngIf="pec.errors.pattern">
+                                    formato pec: exemple@exemple.it
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--PEC-->
+                <!--Email-->
+                <div class="form-group border-botton row">
+                        <label for="email" class="col-lg-5 offset-lg-1 col-form-label">Email:</label>
+                        <div class="col-lg-6 col-value">
+                            <input type="text" id="email" placeholder="Email" maxlength="150" [(ngModel)]="soggettoToSave.email" name="email" class="form-control minuscolo"
+                                pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" #email="ngModel">
+                            <div *ngIf="email.invalid && email.touched" class="alert alert-danger">
+                                <div *ngIf="email.errors.required ">
+                                    La Email è richiesta.
+                                </div>
+                                <div *ngIf="email.errors.pattern">
+                                    formato email: exemple@exemple.it
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <!--Email-->
+            </div>
+            <div class="col-lg-5 offset-lg-1 hight">
+            <div class="form-group border-botton row">
+                    <label for="note" class="col-lg-3 offset-lg-1 col-form-label">Note:</label>
+                    <div class="col-lg-8 col-value">
+                        <textarea class="note-textarea" rows="4" [(ngModel)]="soggettoToSave.note" id="note" 
+                         [ngModelOptions]="{standalone: true}">
+                        </textarea>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--pulsanti-->
+        <div class="bs-example" data-example-id="single-button-dropdown">
+            <div class="form-group row col-lg-12">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                    <div class="btn-group">
+                        <a class="btn btn-default margin-icon btn-standard" (click)="goBack()" role="button">
+                            <i class="fa fa-angle-left"></i>
+                            indietro</a>
+                    </div>
+                     <div class="btn-group">
+                          <button type="submit" [disabled]="!modSoggetto.form.valid"  class="btn btn-primary margin-icon btn-standard">
+                          <i class="fas fa-angle-down"></i> Salva</button>
+                    </div>
+                </div>
+            </div>
+         </div>
+          <!--pulsanti-->
+      </div>
+      </div>
+    </form>
+  </div>
+</div>
+<sigas-dialog [titolo]="'Attenzione'" [testo]="messageDialog" [buttonConfirmText]="buttonConfirmText" [buttonAnnullaText]="buttonAnnullaText"></sigas-dialog>
+</div>
+
+<div *ngIf="fusioneSoggetto">
+    <sigas-alert [message]="'Selezionare il Soggetto che converge in un Soggetto unico a seguito di una Fusione Societaria ed inserire la data di Fusione'" [type]="'INFO'" *ngIf="!showMessageError" ></sigas-alert>
+    <sigas-alert [message]="'Si è verirficato un errore nell\'operzione di fusione'" *ngIf="showMessageError" [type]="'DANGER'"></sigas-alert>
+    <div class="principal-div">
+        <sigas-spinner *ngIf="loaderFusionePage"></sigas-spinner>
+        <div *ngIf="!loaderFusionePage">
+            <form #fusione="ngForm" (ngSubmit)="onSubmitFusione()">
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <div class="form-group col-lg-10 offset-1">
+                            <div class="form-group col-lg-12">
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+                                <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-soggetti-fusione"  class="row-border hover" 
+                                    datatable [dtOptions]="dtOptionsFusione" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <<th></th> 
+                                            <th>Dichiarante</th>
+                                            <th>Codice Azienda</th>
+                                            <th>Tot. Versato</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let el of soggettiFusione">
+                                            <td>
+                                                <input type="radio"  name="selection" (change)="fusioneReq.idAnagDerivante = (el.idAnag);">
+                                            </td>
+                                            <td>{{ el.denominazione }}</td>
+                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td>{{ el.totVersato | currency:'EUR':'symbol' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-12 form-group">
+                    <div class="row">
+                        <div class="col-2 offset-3 formfield">
+                            <label class="col-form-label note">Data fusione:</label>
+                        </div>
+                        <div class="col-2 formfield">
+                            <!-- <input type="date" [(ngModel)]='fusioneReq.dataFusione'  [ngModelOptions]="{standalone: true}"/> -->
+                            <!-- <div class="col-lg-6 col-value"> -->
+                            <div class="input-group">
+                                                    
+                                                            
+                                                          <input #dataFus="ngbDatepicker"
+				                                               (click)="dataFus.toggle()"
+				                                               [(ngModel)]="dataFusione"
+				                                               [footerTemplate]="footerTemplateDataFus"
+				                                               class="form-control col-mg-8 col-lg-6 "
+				                                               class="form-control"
+				                                               name="dataFus"
+				                                               id="dataFus"
+				                                               ngbDatepicker
+				                                               placeholder="gg/mm/aaaa"
+				                                               readonly>
+				                                        <ng-template #footerTemplateDataFus>
+				                                            <hr class="my-0">
+				                                            <button (click)="dataFusione = null; dataFus.close();"
+				                                                    class="btn btn-primary btn-sm m-2 float-left">Pulisci
+				                                            </button>
+				                                            <button (click)="dataFus.close();"
+				                                                    class="btn btn-secondary btn-sm m-2 float-right">Chiudi
+				                                            </button>
+				                                        </ng-template>
+				                                        <div class="input-group-append">
+				                                            <button (click)="dataFus.toggle()" class="btn btn-outline-secondary calendar"
+				                                                    type="button">
+				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+				                                                <!--<i class="far fa-calendar-alt"></i>-->
+				                                            </button>
+				                                        </div>  
+                                                    </div>
+                                                    </div>
+                     <!-- </div> -->   
+                     
+                    </div>
+                    <div class="row">
+                        <div class="col-2 offset-3 formfield">
+                            <label class="col-form-label note">Note:</label>
+                        </div>
+                        <div class="col-4 formfield">
+                            <textarea class="note-textarea" [(ngModel)]='fusioneReq.note' rows="4" [ngModelOptions]="{standalone: true}"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="bs-example" data-example-id="single-button-dropdown">
+                    <div class="form-group row col-lg-12">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <div class="btn-group">
+                                <a class="btn btn-default margin-icon btn-standard" (click)="goBackFusione()" role="button">
+                                    <i class="fa fa-angle-left"></i>
+                                    indietro</a>
+                            </div>
+                                <div class="btn-group">
+                                    <button type="submit"  class="btn btn-primary margin-icon btn-standard"  [disabled]="fusioneReq.idAnagDerivante == 0 || dataFusione == null">
+                                    <i class="fas fa-check"></i> Associa Soggetto selezionato</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,64 @@
+<footer class="footer" role="contentinfo">
+    <div class="container-fluid">
+        <div class="row footerCsi">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                <img alt="Sito Ufficiale della Regione Piemonte" src="assets/logocsi.png">
+            </div>
+            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                Regione Piemonte - Partita Iva 02843860012 - Codice fiscale 80087670016 -
+                <a title="Accessibilità" href="http://www.sistemapiemonte.it/cms/privati/accessibilita">Accessibilità</a>&nbsp;|&nbsp;
+                <a title="Privacy" href="http://www.sistemapiemonte.it/cms/privati/privacy">Privacy</a>&nbsp;|&nbsp;
+                <a title="Cookies policy" href="http://www.sistemapiemonte.it/cms/privati/cookies-policy">Cookie policy</a>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+<!-- <footer class="footer" role="contentinfo">
+  <div class="container-fluid">
+      <div class="row-fluid footerCsi">
+        <div class="col col-sm-3 col-md footer-left bold">
+          Sistemapiemonte
+        </div>
+        <div class="col-sm-6 col-md-6 footer-center">
+          <a title="Note di utilizzo" href="">Note di utilizzo</a>&nbsp;-&nbsp;
+          <a title="Provacy e cookie" href="">Provacy e cookie</a>&nbsp;-&nbsp;
+          <a title="Contatti" href="">Contatti</a>
+        </div>
+        <div class="col col-sm-3 col-md footer-right">
+          <img class="logo-footer" src="assets/logocsi.png" alt="CSI Piemonte">
+        </div>
+      </div>
+    </div>
+</footer> -->
+
+<!-- <footer class="footer">
+  <div class="first">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm">
+              <img class="logo-footer" src="assets/logo_RP_footer.png" alt="Regione Piemonte">
+          </div>
+        </div>
+      </div>
+  </div> -->
+      
+  <!-- <div class="second">
+    <div class="container">
+        <div class="row">
+          <div class="col col-sm-12 col-md footer-left bold">
+            Sistemapiemonte
+          </div>
+          <div class="col-sm-12 col-md-6 footer-center">
+            <a title="Note di utilizzo" href="">Note di utilizzo</a>&nbsp;-&nbsp;
+            <a title="Provacy e cookie" href="">Provacy e cookie</a>&nbsp;-&nbsp;
+            <a title="Contatti" href="">Contatti</a>
+          </div>
+          <div class="col col-sm-12 col-md footer-right">
+            <img class="logo-footer" src="assets/logocsi.png" alt="Regione Piemonte">
+          </div>
+        </div>
+      </div>
+  </div>
+</footer> -->

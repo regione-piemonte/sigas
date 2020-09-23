@@ -1,0 +1,9 @@
+package it.csi.sigas.sigasbl.model.mapper.entity;
+
+import it.csi.sigas.sigasbl.model.entity.SigasAnaComunicazioni;
+import it.csi.sigas.sigasbl.model.mapper.EntityMapper;
+import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
+
+public interface AnaComunicazioniEntityMapper extends EntityMapper<SigasAnaComunicazioni, AnaComunicazioniVO> {
+
+}

@@ -1,0 +1,11 @@
+package it.csi.sigas.sigasbl.model.mapper;
+
+import java.util.List;
+
+public interface EntityMapper<EntityType, VOType> {
+
+	VOType mapEntityToVO(EntityType dto);
+	EntityType mapVOtoEntity(VOType vo);
+	
+	List<VOType> mapListEntityToListVO(List<EntityType> en);
+}

@@ -1,0 +1,7 @@
+package it.csi.sigas.sigasbl.common;
+
+public class ErrorMessages {
+	
+	public static final String MSG_GENERIC_EXCEPTION = "Si e' verificata un eccezione bloccante";
+
+}
