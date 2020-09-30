@@ -28,16 +28,17 @@ description:
   it:
     features:
       - >-
-        -Gestione delle attività di competenza regionale sull'addizionale
-        all'accisa sul gas naturale
+        Gestione delle differenti attività di competenza regionale, inerenti l'addizionale all'accisa sul gas naturale.
+        L'applicativo offre differenti un' efficace soluzione di gestione dei flussi documentali e monetari.
+        
     genericName: SIGAS
     localisedName: SIGAS
     longDescription: >
       SIGAS consente di acquisire le Dichiarazioni UTF scaricate
-      dall’applicativo dall’Agenzia delle Dogane.
+      dall’applicativo dell’Agenzia delle Dogane.
 
 
-      Per ogni società vengono gestite l'anagrafica, i versamenti, la
+      Per ogni società vengono gestite: anagrafica, versamenti e
       documentazione inviata al Settore politiche fiscali.
 
 
@@ -47,8 +48,8 @@ description:
       - **Gestione consumi**: a partire dai dati presenti in dichiarazione si
       possono apportare delle modifiche utili al calcolo del conguaglio
 
-      - **Gestione versamenti**: permette di caricare i versamenti per gestire,
-      di conseguenza: rimborsi e accertamenti
+      - **Gestione versamenti**: permette di caricare i versamenti gestendo
+      di conseguenza rimborsi e accertamenti
 
       - **Gestione rimborsi**: gestisce l'iter di richiesta di rimborso,
       dall'acquisizione dell'istanza di rimborso alla generazione del
@@ -87,8 +88,8 @@ localisation:
   localisationReady: false
 maintenance:
   contacts:
-    - email: riccardo.leccese@csi.it
-      name: RICCARDO LECCESE
+    - email: giovanna.bertinetti@csi.it
+      name: GIOVANNA BERTINETTI
   type: internal
 name: SIGAS
 platforms:
