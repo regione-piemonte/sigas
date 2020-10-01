@@ -32,6 +32,11 @@ description:
         l'addizionale sul gas naturale
     genericName: SIGAS
     localisedName: SIGAS
+      screenshots:
+       - img/Home.jpg
+       - img/AnagraficaSoggetti.jpg
+       - img/Consumi.jpg
+       - img/Documenti.jpg
     longDescription: >
       SIGAS consente di acquisire le Dichiarazioni UTF scaricate
       dall’applicativo dell’Agenzia delle Dogane. Per ogni società vengono
