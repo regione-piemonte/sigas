@@ -28,39 +28,25 @@ description:
   it:
     features:
       - >-
-        Gestione delle differenti attività di competenza regionale, inerenti l'addizionale all'accisa sul gas naturale.
-        L'applicativo offre un' efficace soluzione di gestione dei flussi documentali e monetari.
-        
+        Gestione delle differenti attività di competenza regionale inerenti
+        l'addizionale sul gas naturale
     genericName: SIGAS
     localisedName: SIGAS
     longDescription: >
       SIGAS consente di acquisire le Dichiarazioni UTF scaricate
-      dall’applicativo dell’Agenzia delle Dogane.
-
-
-      Per ogni società vengono gestite: anagrafica, versamenti e
-      documentazione inviata al Settore politiche fiscali.
-
-
-      Le principali funzionalità sono:
-
-
-      - **Gestione consumi**: a partire dai dati presenti in dichiarazione si
-      possono apportare delle modifiche utili al calcolo del conguaglio
-
-      - **Gestione versamenti**: permette di caricare i versamenti gestendo
-      di conseguenza rimborsi e accertamenti
-
-      - **Gestione rimborsi**: gestisce l'iter di richiesta di rimborso,
-      dall'acquisizione dell'istanza di rimborso alla generazione del
-      prestampato di determina
-
-      - **Gestione accertamenti**: calcola l’importo comprensivo d’interessi da
-      accertare e permette all’operatore di produrre un report da allegare alla
-      determina creata extra applicativo.
-
-      - **Gestione documenti**: permette di archiviare tutta la documentazione
-      pervenuta relativa ad una società
+      dall’applicativo dell’Agenzia delle Dogane. Per ogni società vengono
+      gestite: anagrafica, versamenti e documentazione inviata al Settore
+      politiche fiscali. Le principali funzionalità sono: - **Gestione
+      consumi**: a partire dai dati presenti in dichiarazione si possono
+      apportare delle modifiche utili al calcolo del conguaglio - **Gestione
+      versamenti**: permette di caricare i versamenti gestendo di conseguenza
+      rimborsi e accertamenti - **Gestione rimborsi**: gestisce l'iter di
+      richiesta di rimborso, dall'acquisizione dell'istanza di rimborso alla
+      generazione del prestampato di determina - **Gestione accertamenti**:
+      calcola l’importo comprensivo d’interessi da accertare e permette
+      all’operatore di produrre un report da allegare alla determina creata
+      extra applicativo. - **Gestione documenti**: permette di archiviare tutta
+      la documentazione pervenuta relativa ad una società
     shortDescription: Sistema Informativo Gas Naturale
 developmentStatus: stable
 it:
