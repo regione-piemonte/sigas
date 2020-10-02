@@ -30,10 +30,6 @@ description:
       - >-
         Gestione delle differenti attività di competenza regionale inerenti
         l'addizionale sul gas naturale
-    screenshots:
-      - img/Home.jpg
-      - img/AnagraficaSoggetti.jpg
-      - img/Documenti.jpg
     genericName: SIGAS
     localisedName: SIGAS
     longDescription: >
