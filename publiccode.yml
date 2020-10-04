@@ -28,8 +28,10 @@ description:
   it:
     features:
       - >-
-        Gestione delle differenti attività di competenza regionale inerenti
-        l'addizionale sul gas naturale
+       Gestione delle attività di competenza regionale sull'addizionale all'accisa sul gas naturale.
+      - >-
+        L'applicativo offre un' efficace soluzione di gestione dei flussi documentali e monetari.
+        
     genericName: SIGAS
     localisedName: SIGAS
     longDescription: >
