@@ -8,9 +8,9 @@ Per ogni soggetto giuridico è possibile acquisire la documentazione, imputare i
 
 # Getting Started
 Il prodotto SIGAS è composto dalle seguenti componenti:
-[SIGASBL](https://github.com/regione-piemonte/sigasbl) (business logic, data access e fruizione servizi)
-[SIGASDB](https://github.com/regione-piemonte/sigasdb) (script per creazione e mantenimento DB proprietario)
-[SIGASWCL](https://github.com/regione-piemonte/sigaswcl) (componente di presentation Angular2)
+[SIGASBL](https://github.com/regione-piemonte/sigas/tree/master/sigasbl) (business logic, data access e fruizione servizi)
+[SIGASDB](https://github.com/regione-piemonte/sigas/tree/master/sigasdb) (script per creazione e mantenimento DB proprietario)
+[SIGASWCL](https://github.com/regione-piemonte/sigas/tree/master/sigaswcl) (componente di presentation Angular2)
 
 # Versioning
 Per la gestione del codice sorgente viene utilizzata Git. Per la gestione del versioning si fa riferimento alla metodologia [Semantic Versioning](https://semver.org/) 
