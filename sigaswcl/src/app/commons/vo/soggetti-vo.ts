@@ -20,6 +20,7 @@ export class AnagraficaSoggettoVO {
         public email: string,
         public pec: string,
         public idComune: number,
-        public version: number
+        public version: number,
+        public cfPiva: string,
     ) { }
 }

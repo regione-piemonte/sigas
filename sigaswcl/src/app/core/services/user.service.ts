@@ -46,12 +46,16 @@ export class UserService {
       //REGIONE PIEMONTE
       useCase.push(
           Roles.HOME
-      );
+      ); 
 
       let flagPrimoAccesso: boolean = false;
       let impostazioneUTF: boolean = true;
       let aliquote: boolean = true;
       let tassiInteresse: boolean = true;
+      let  abilitaPrivato: boolean = true;
+      let  abilitaUtenteRegione:boolean = true;
+      let  privatoNonAccareditato:boolean = true;
+      let  showMessage:boolean = true;
 
       let codiceFiscaleUtente: string = "BVORCR93E08A182G";
       let profilatura: ProfilaturaVO = new ProfilaturaVO(
@@ -62,7 +66,10 @@ export class UserService {
           flagPrimoAccesso,
           impostazioneUTF,
           aliquote,
-          tassiInteresse);
+          tassiInteresse,
+          abilitaPrivato,
+          abilitaUtenteRegione,
+          privatoNonAccareditato,'test','test',showMessage,'test');
       this.profilatura.next(profilatura);
   }
 }

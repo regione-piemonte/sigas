@@ -1,7 +1,7 @@
 <nav class="navbar navbar-default navbar-dark navbar-expand-lg">
     <!-- Brand -->
     <a class="navbar-brand" href="#">
-            <img src="assets/logo_sp.jpg" height="50px" alt="Sistemapiemonte">
+        <img _ngcontent-c1="" alt="ServiziOnline" src="assets/logo_sp.jpg" height="50px">
         SIGAS
     </a>
 
@@ -18,21 +18,112 @@
             <li class="nav-item">
                 <a class="nav-link" routerLink="/home">Home</a>
             </li>
-            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ANAGRAFICA')">
-                <a class="nav-link" routerLink="/home/soggetti">Anagrafica soggetti</a>
-			</li>
-            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('IMPOSTAZIONI')">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Impostazioni
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('DOCUMENTAZIONE')">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">Documentazione
                     <span class="caret"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                    <div [class.disabled]="disableSubMenu('IMPORTAZIONE_UTF')" >
+                    <div>
+                        <a class="dropdown-item" [routerLink]="" (click)="navigate('INOLTRA_DOCUMENTAZIONE')">Invia</a>
+                    </div>
+
+                    <div>
+                        <a class="dropdown-item" [routerLink]=""
+                           (click)="navigate('CONSULTA_DOCUMENTAZIONE')">Consulta</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ACCREDITAMENTO')">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">Accreditamento
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <div>
+                        <a class="dropdown-item" [routerLink]="" (click)="navigate('INSERIMENTO_OPERATORE_SERVIZI')">Effettua</a>
+                    </div>
+
+                    <div>
+                        <a class="dropdown-item" [routerLink]="" (click)="navigate('MODIFICA_ACCREDITAMENTO')">Modifica/Annulla</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item" *ngIf="abilitatoBaseMenu('STATO_RICHIESTA')">
+                <a class="nav-link" routerLink="" (click)="navigate('RICERCA_PRATICHE')">Stato Richiesta
+                    accreditamento</a>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ELENCO_RICHIESTE')">
+                <a class="nav-link" routerLink="/accreditamento/elencoRichieste">Ricerca Richieste accreditamento</a>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('DOCUMENTAZIONE_IN_ARRIVO')">
+                <a class="nav-link" routerLink="" (click)="navigate('DOCUMENTI_IN_ARRIVO')">Documenti in arrivo</a>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('PAGAMENTO_FO')">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">Pagamenti
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <div>
+                        <a class="dropdown-item" routerLink="/home/selezione-soggetto-pagamento">
+                            Paga
+                        </a>
+                    </div>
+                    <div>
+                        <a class="dropdown-item" routerLink="/home/seleziona-ricevuta">
+                            Scarica ricevuta
+                        </a>
+                    </div>
+                    <div>
+                        <a class="dropdown-item" routerLink="/home/ricerca-pagamento">
+                            Consulta
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ANAGRAFICA')">
+                <a class="nav-link" routerLink="/home/soggetti">Anagrafica soggetti</a>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ANAGRAFICA')">
+                <a class="nav-link" routerLink="home/ordinativiIncasso/associaSoggetto">Ordinativi di incasso</a>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ANAGRAFICA')">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">Versamenti
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <div>
+                        <a class="dropdown-item" routerLink="/home/ricerca-pagamento-bo">
+                            Consulta
+                        </a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('IMPOSTAZIONI')">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                   aria-expanded="false">Impostazioni
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <div [class.disabled]="disableSubMenu('IMPORTAZIONE_UTF')">
                         <a class="dropdown-item" [routerLink]="" (click)="navigate('IMPORTAZIONE_UTF')">
                             Importazione UTF
                         </a>
                     </div>
                     <div [class.disabled]="disableSubMenu('ALIQUOTE')">
-                        <a class="dropdown-item" [routerLink]="" (click)="navigate('ALIQUOTE')" >
+                        <a class="dropdown-item" [routerLink]="" (click)="navigate('ALIQUOTE')">
                             Aliquote
                         </a>
                     </div>
@@ -43,16 +134,20 @@
                     </div>
                 </div>
             </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="#">
-                    <span><i class="fas fa-user"></i>&nbsp;</span> Utente : {{profilaturaVO.nome}} {{profilaturaVO.cognome}}</a>
+                    <span><i class="fas fa-user"></i>&nbsp;</span> Utente
+                    : {{profilaturaVO.nome}} {{profilaturaVO.cognome}}</a>
             </li>
-            <li  class="nav-item">
-                <a  class="nav-link" [routerLink]="" (click)="logOut()">
+
+            <li class="nav-item">
+                <a class="nav-link" [routerLink]="" (click)="logOut()">
                     Esci
                     <i class="fas fa-sign-out-alt log-out-icon"></i>
                 </a>
             </li>
         </ul>
-    </div> 
+    </div>
 </nav>
+<sigas-alert *ngIf="showMessage" [message]="message" [type]="levelMessage"></sigas-alert>

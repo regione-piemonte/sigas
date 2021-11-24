@@ -1,0 +1,95 @@
+INSERT INTO sigas_tassi
+(
+  id_tasso,
+  id_tipo_tasso,
+  tasso,
+  validita_start,
+  validita_end,
+  version
+)
+VALUES
+(
+  1,
+  2,
+  0.10000000,
+  TIMESTAMP '2017-01-01 00:00:00.000',
+  TIMESTAMP '2017-12-31 00:00:00.000',
+  1
+);
+
+INSERT INTO sigas_tassi
+(
+  id_tasso,
+  id_tipo_tasso,
+  tasso,
+  validita_start,
+  validita_end,
+  version
+)
+VALUES
+(
+  2,
+  2,
+  0.30000000,
+  TIMESTAMP '2018-01-01 00:00:00.000',
+  TIMESTAMP '2018-12-31 00:00:00.000',
+  1
+);
+
+INSERT INTO sigas_tassi
+(
+  id_tasso,
+  id_tipo_tasso,
+  tasso,
+  validita_start,
+  validita_end,
+  version
+)
+VALUES
+(
+  3,
+  2,
+  0.80000000,
+  TIMESTAMP '2019-01-01 00:00:00.000',
+  TIMESTAMP '2019-12-31 00:00:00.000',
+  1
+);
+
+INSERT INTO sigas_tassi
+(
+  id_tasso,
+  id_tipo_tasso,
+  tasso,
+  validita_start,
+  validita_end,
+  version
+)
+VALUES
+(
+  4,
+  1,
+  0.21300000,
+  TIMESTAMP '2017-07-13 00:00:00.000',
+  TIMESTAMP '2023-01-12 00:00:00.000',
+  3
+);
+
+INSERT INTO sigas_tassi
+(
+  id_tasso,
+  id_tipo_tasso,
+  tasso,
+  validita_start,
+  validita_end,
+  version
+)
+VALUES
+(
+  5,
+  2,
+  0.05000000,
+  TIMESTAMP '2020-01-01 00:00:00.000',
+  TIMESTAMP '2020-12-31 00:00:00.000',
+  0
+);
+

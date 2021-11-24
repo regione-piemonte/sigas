@@ -37,6 +37,7 @@ export class AliquoteComponent implements OnInit {
   private dtTrigger: Subject<any> = new Subject();
   private dtOptions: any;
   private elencoAliquote: Array<AliquotaVO>;
+  private elencoAnnualita: Array<String>;
   private aliquotaToSave: AliquotaVO;
   private aliquota: AliquotaVO;
   private tipiAliquotaModel: Array<TipoAliquotaVO>;
@@ -106,7 +107,7 @@ export class AliquoteComponent implements OnInit {
     this.nuovaAliquota = false;
     this.updateAliquota = false;
     this.loaderModPage = false;
-    this.showSuccess = true;
+    this.showSuccess = false;
     this.showMessageError = false;
     this.errorShow = false;
     this.reInitAliquota();
@@ -118,13 +119,13 @@ export class AliquoteComponent implements OnInit {
     this.nuovaAliquota = true;
     this.loaderModPage = false;
     this.errorShow = false;
-    this.showSuccess = true;
+    this.showSuccess = false;
     this.showMessageError = false;
                  
   }
 
   clearAll() {
-    this.aliquotaToSave = new AliquotaVO(null, 0, '', new TipoAliquotaVO(0, '', '', false, '', new TipoConsumoVO(0,'','')), null, null, 0);
+    this.aliquotaToSave = new AliquotaVO(null, 0, '', new TipoAliquotaVO(0, '', '', false, '', new TipoConsumoVO(0,'','')), null, null, 0, true);
     this.dataValiditaDal = null;
     this.dataValiditaAl = null;
     this.tipiAliquotaModel = null;
@@ -198,6 +199,7 @@ export class AliquoteComponent implements OnInit {
               this.updateAliquota = false;
               this.loaderModPage = false;
               this.errorShow = false;
+              this.showSuccess = false;
               this.reInitAliquota();
           }, err => {
             this.logger.error('errore salvataggio aliquota');
@@ -216,6 +218,17 @@ export class AliquoteComponent implements OnInit {
 //    });
 
 //    this.annullaPopUp();
+  }
+  
+  limiteNumber(value: number){
+      if(value > 9999){
+          var daconvertire = new String(value);
+          if (daconvertire.length > 4) {
+              this.aliquotaToSave.aliquota = Number(daconvertire.slice(0, 4));
+          }
+      }
+      
+      
   }
 
   onClickModifica() {
@@ -247,6 +260,7 @@ export class AliquoteComponent implements OnInit {
               this.updateAliquota = false;
               this.loaderModPage = false;
               this.errorShow = false;
+              this.showSuccess = false;
               this.reInitAliquota();              
           }, err => {
             this.logger.error('errore salvataggio aliquota');
@@ -271,14 +285,37 @@ export class AliquoteComponent implements OnInit {
   reInitAliquota() {
     this.subscribers.ricercaAliquota = this.aliquoteService.ricercaAliquote()
       .subscribe(res => {
-        this.elencoAliquote = res;
-        this.loaderPage = false;
+          this.elencoAliquote = res;
+          this.loaderPage = false;
+          this.aliquoteService.ricercaPerAnno().subscribe(resp=>{
+              this.elencoAnnualita = resp;
+              for (var _i = 0; _i < this.elencoAliquote.length; _i++) {
+                  this.elencoAliquote[_i].modificabile = true;
+              }
+              for (let anno of this.elencoAnnualita) {
+                      for (var _i = 0; _i < this.elencoAliquote.length; _i++) {                          
+                          if(new Date(this.elencoAliquote[_i].validitaStart).getFullYear().toString()<=anno && 
+                                  new Date(this.elencoAliquote[_i].validitaEnd).getFullYear().toString()>=anno){
+                              this.elencoAliquote[_i].modificabile = false;
+                          }
+                  }
+                  
+              }
+              
+              
+          }, err => {
+              this.logger.error('errore ');
+              this.loaderPage = false;
+            });
+        
       }, err => {
         this.logger.error('errore ');
         this.loaderPage = false;
       });
 
-    this.aliquotaToSave =  new AliquotaVO(null, 0, '', new TipoAliquotaVO(0, '', '', false, '', new TipoConsumoVO(0 , '','')), null, null, 0);
+    this.aliquotaToSave =  new AliquotaVO(null, 0, '', new TipoAliquotaVO(0, '', '', false, '', new TipoConsumoVO(0 , '','')), null, null, 0, true);
+    this.errorShow = false;
+    this.showSuccess = false;
   }
   
 //deleteRow(aliquota: AliquotaVO) {
@@ -312,12 +349,34 @@ export class AliquoteComponent implements OnInit {
   }
     
   confermaEliminaAliquota(){
+      this.loaderModPage = true;
       this.subscribers.elimina = this.aliquoteService.eliminaAliquota(this.aliquotaToDel.id).subscribe(
               data => {
               this.aliquoteService.ricercaAliquote()
                .subscribe(resp => {
                  this.elencoAliquote = resp;
-                 this.rerender();
+                 this.aliquoteService.ricercaPerAnno().subscribe(resp=>{
+                     this.elencoAnnualita = resp;
+                     for (var _i = 0; _i < this.elencoAliquote.length; _i++) {
+                         this.elencoAliquote[_i].modificabile = true;
+                     }
+                     for (let anno of this.elencoAnnualita) {
+                             for (var _i = 0; _i < this.elencoAliquote.length; _i++) {                          
+                                 if(new Date(this.elencoAliquote[_i].validitaStart).getFullYear().toString()<=anno && 
+                                         new Date(this.elencoAliquote[_i].validitaEnd).getFullYear().toString()>=anno){
+                                     this.elencoAliquote[_i].modificabile = false;
+                                 }
+                         }
+                         
+                     }
+                     this.loaderModPage = false;
+                     this.rerender();
+                 }, err => {
+                     this.logger.error('errore ');
+                     this.loaderPage = false;
+                     this.loaderModPage = false;
+                   });
+                 
                  this.messageSuccess = 'Aliquota cancellata con successo.';
                  this.showSuccess = true;
                  this.showMessageError = false;

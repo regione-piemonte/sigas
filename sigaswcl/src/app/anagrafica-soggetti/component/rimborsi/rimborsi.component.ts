@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { Router } from "@angular/router";
 import { Routing } from "../../../commons/routing";
@@ -14,6 +14,7 @@ import { TassiVO } from '../../../commons/vo/tassi-vo';
 import * as moment from 'moment';
 import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import {NgbDateCustomParserFormatter} from '../../../commons/class/dateformat';
+import {DataTableDirective} from 'angular-datatables';
 
 @Component({
   selector: 'app-rimborsi',
@@ -27,6 +28,8 @@ import {NgbDateCustomParserFormatter} from '../../../commons/class/dateformat';
 @DestroySubscribers()
 export class RimborsiComponent implements OnInit {
 
+    @ViewChild(DataTableDirective)
+    dtElement: DataTableDirective;
   private dtOptions: any;
   private loaderDT: boolean;
   private loaderTassi: boolean;
@@ -110,6 +113,10 @@ export class RimborsiComponent implements OnInit {
       this.loaderTassi = false;
       this.disableCalcolo = false;
       this.disableDetermina = true;
+      if(rimborso.statoPratica === 'CALCOLATA' ){
+          this.totaleInteressi = null;
+          this.totaleRimborso = null;
+      }
       if (rimborso.statoPratica === 'DETERMINA') {
         this.disableCalcolo = true;
         this.disableDetermina = false;
@@ -144,15 +151,15 @@ export class RimborsiComponent implements OnInit {
 //              month: Number(_dataVersamento.format('MM')),
 //              day: Number(_dataVersamento.format('DD'))
 //          };
-      if ( dataIstanza.getTime() > dataRimborso.getTime()) {
-        this.disableDetermina = true;
-        this.errorMsg = true;
-        this.eMsg = "La \'Data Istanza Rimborso\' non può essere superiore alla \'Data Pagamento Rimborso\'";
-        return;
-      } else {
-        this.disableDetermina = false;
-        this.errorMsg = false;
-      }
+//      if ( dataIstanza.getTime() > dataRimborso.getTime()) {
+//        this.disableDetermina = true;
+//        this.errorMsg = true;
+//        this.eMsg = "La \'Data Istanza Rimborso\' non può essere superiore alla \'Data Pagamento Rimborso\'";
+//        return;
+//      } else {
+//        this.disableDetermina = false;
+//        this.errorMsg = false;
+//      }
       this.totaleInteressi = 0;
       this.totaleRimborso = 0;
       this.elencoTassi.map(tasso => {
@@ -217,21 +224,35 @@ export class RimborsiComponent implements OnInit {
           this.eMsg = "Non è possibile inserire una 'Data Versamento' successiva alla 'Data Istanza Rimborso'";
       } else if(this.diffDate(this.rimborso.dataVersamento, this.rimborso.dataIstanza)<= 731 ){
           
-          this.loadRimborso();
-          this.rimborso.statoPratica = 'CALCOLATA';
-          this.rimborso.importoRimborsato =  this.totaleRimborso;
+          if ( this.rimborso.dataIstanza.getTime() > this.rimborso.dataRimborso.getTime()) {
+              this.disableDetermina = true;
+              this.errorMsg = true;
+              this.eMsg = "La \'Data Istanza Rimborso\' non può essere superiore alla \'Data Pagamento Rimborso\'";
+              return;
+            } else {
+              this.disableDetermina = false;
+              this.errorMsg = false;
+              
+              this.loadRimborso();
+              this.rimborso.statoPratica = 'CALCOLATA';
+              this.rimborso.importoRimborsato =  this.totaleRimborso;
+              
+              console.log(this.diffDate(this.rimborso.dataIstanza, this.rimborso.dataVersamento));
+              
+              this.subscribers.salvaRimborso = this.anagraficaSoggettiService.salvaRimborso(this.rimborso)
+                      .subscribe(res => {
+                        this.disableDetermina = false;  
+                        this.rimborso.version = res.version;
+                      }, err => {
+                        this.logger.error("errore ");
+                    });
+              
+              }
+          
         
           
           
-          console.log(this.diffDate(this.rimborso.dataIstanza, this.rimborso.dataVersamento));
-      
-          this.subscribers.salvaRimborso = this.anagraficaSoggettiService.salvaRimborso(this.rimborso)
-          .subscribe(res => {
-            this.disableDetermina = false;  
-            this.rimborso.version = res.version;
-          }, err => {
-            this.logger.error("errore ");
-        });
+          
       }else{
           this.errorMsg = true;
           this.eMsg = "Non è possibile richiedere il rimborso qualora la data 'Data Istanza Rimborso' superi di oltre due anni la 'Data Versamento'";
@@ -262,18 +283,33 @@ export class RimborsiComponent implements OnInit {
             }
           })
           this.loaderDT = false;
-          setTimeout(() => {
-            if(this.dtTrigger!= null){
-              this.dtTrigger.next(); 
-              this.dtTrigger = null;  
-            } 
-          });
+//          setTimeout(() => {
+//            if(this.dtTrigger!= null){
+//              this.dtTrigger.next(); 
+//              this.dtTrigger = null;  
+//            } 
+//          });
+          
+          this.rerender();
         }, err => {
           this.logger.error("errore ");
       });
     }
   }
 
+  rerender(): void {
+      if (this.dtElement!=null && this.dtElement.dtInstance != null) {
+        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+          dtInstance.destroy();
+          this.dtTrigger.next();
+        });
+      } else {
+        setTimeout(() => {
+            this.dtTrigger.next();
+        });
+      }
+    }
+  
   salvaDetermina() {
     if (this.rimborso.importo > 30) {
       this.rimborso.statoPratica = 'DETERMINA';
@@ -297,7 +333,7 @@ export class RimborsiComponent implements OnInit {
       });
     } else {
       this.errorMsg = true;
-      this.eMsg = "L'inporto è inferiore a 30.00€";
+      this.eMsg = "L'importo è inferiore a 30.00€";
     }
   }
 

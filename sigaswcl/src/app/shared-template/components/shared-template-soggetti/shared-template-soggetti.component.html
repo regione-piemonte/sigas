@@ -1,0 +1,45 @@
+<!-- DENOMINAZIONE-->
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <span *ngIf="isAnteprima || isStampa" class="form-control-view">{{datiCompilati.intestazione}}</span>
+    <input *ngIf="!isAnteprima && !isStampa"
+		   [(ngModel)]="datiCompilati.intestazione"
+		   class="form-control" id="denominazione" maxlength="50"
+           name="denominazione"
+		   required
+		   style="display: inline-block; width: 40%"
+		   type="text">
+</div>
+
+<div>
+	<!-- INDIRIZZO -->
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-15">
+        <span *ngIf="isAnteprima || isStampa" class="form-control-view">{{datiCompilati.indirizzo}}</span>
+        <input *ngIf="!isAnteprima && !isStampa"
+			   [(ngModel)]="datiCompilati.indirizzo"
+			   class="form-control"
+			   id="indirizzo"
+			   maxlength="50"
+               name="indirizzo"
+			   required
+			   style="display: inline-block; width: 40%"
+			   type="text">
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-15">
+        <div>
+
+            <sigas-spinner-form *ngIf="loadCmnProv" [diameter]="30"></sigas-spinner-form>
+            <div *ngIf="!loadCmnProv">
+                <span *ngIf="isAnteprima || isStampa"
+                      class="form-control-view">{{datiCompilati.capComuneProvinvcia}}</span>
+                <input *ngIf="!isAnteprima && !isStampa"
+                       [(ngModel)]="datiCompilati.capComuneProvinvcia"
+                       class="form-control"
+                       id="capComuneProvinvcia"
+                       maxlength="50"
+                       name="capComuneProvinvcia" required
+                       style="display: inline-block; width: 40%" type="text">
+            </div>
+        </div>
+    </div>
+</div> 

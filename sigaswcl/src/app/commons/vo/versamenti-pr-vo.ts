@@ -8,6 +8,7 @@ export class VersamentiPrVO {
     public interessi: number;
     public allarme: AllarmiSoggettoVO;
     public importo_prec: number;
+    public differenza: number;
 
     constructor(
         public idVersamento: number,

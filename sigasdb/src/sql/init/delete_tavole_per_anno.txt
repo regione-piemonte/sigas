@@ -1,0 +1,41 @@
+/*cancellazione quadri*/
+delete from sigas.sigas_quadro_n_utf sqnu where sqnu.id_import = (select siu.id_import from sigas.sigas_import_utf  siu where siu.annualita = '2017') ;
+delete from sigas.sigas_quadro_m_utf sqnu where sqnu.id_import = (select siu.id_import from sigas_import_utf siu where siu.annualita = '2017') ;
+delete from sigas.sigas_quadro_i_utf sqnu where sqnu.id_import = (select siu.id_import from sigas_import_utf siu where siu.annualita = '2017') ;
+delete from sigas.sigas_quadro_h_utf sqnu where sqnu.id_import = (select siu.id_import from sigas_import_utf siu where siu.annualita = '2017') ;
+delete from sigas.sigas_quadro_g_utf sqnu where sqnu.id_import = (select siu.id_import from sigas_import_utf siu where siu.annualita = '2017') ;
+delete from sigas.sigas_quadro_f_utf sqnu where sqnu.id_import = (select siu.id_import from sigas_import_utf siu where siu.annualita = '2017') ;
+delete from sigas.sigas_frontespizio_utf sqnu where sqnu.id_import = (select siu.id_import from sigas_import_utf siu where siu.annualita = '2017') ;
+
+/*cancellazione scarti*/
+delete from sigas.sigas_dich_scarti sqnu where sqnu.id_consumi in 
+				(select sdc.id_consumi from sigas.sigas_dich_consumi sdc where sdc.id_import = 
+					(select siu.id_import from sigas.sigas_import_utf siu where siu.annualita = '2017'));
+
+/*cancellazione VERSAMENTI*/
+delete from sigas.sigas_dich_versamenti sqnu where sqnu.id_consumi in 
+				(select sdc.id_consumi from sigas.sigas_dich_consumi sdc where sdc.id_import = 
+					(select siu.id_import from sigas.sigas_import_utf siu where siu.annualita = '2017'));	
+
+/*cancellazione VALIDAZIONE*/
+delete from sigas.sigas_validazione sqnu where  sqnu.anno = '2017';
+				
+
+/*cancellazione RIMBORSI*/
+delete from sigas.sigas_rimborso sqnu where  sqnu.annualita = '2017';
+
+/*cancellazione ALLARMI*/
+delete from sigas.sigas_allarmi sqnu where  sqnu.annualita = '2017';
+
+/*cancellazione COMUNICAZIONI*/
+delete from sigas.sigas_ana_comunicazioni sqnu where  sqnu.annualita = '2017';
+
+
+/*cancellazione consumi*/
+delete from sigas.sigas_dich_consumi sqnu where sqnu.id_import = (select siu.id_import from sigas.sigas_import_utf siu where siu.annualita = '2017');
+
+
+/*cancellazione import*/
+delete from sigas.sigas_import_utf siu where siu.annualita = '2017';
+
+

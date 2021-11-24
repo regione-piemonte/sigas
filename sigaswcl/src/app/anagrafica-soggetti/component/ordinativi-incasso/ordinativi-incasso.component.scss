@@ -1,0 +1,71 @@
+@import '../../../color.scss';
+
+.badge {
+    min-width: 45px;
+    padding-top: 5px;
+    display: inline-block;
+    margin-right: 4px;
+    margin-top: 2px;
+    font-size: 10px;
+}
+
+.alert-badge {
+    display: inline-block;
+    margin-right: 4px;
+    margin-top: 0px;
+}
+
+.col-form-label {
+    min-width: 75px;
+}
+
+.scroll_table {
+    overflow-x: auto;
+}
+
+
+.view {
+  margin: auto;
+  width: 100%;
+}
+
+.wrapper {
+  position: relative;
+  overflow: auto;
+  border: 0px solid black;
+  white-space: nowrap;
+}
+
+
+.sticky-col {
+  position: -webkit-sticky;
+  position: sticky;
+  background-color: white;
+}
+
+.first-col {
+  width: 25px;
+  min-width: 25px;
+  max-width: 25px;
+  left: 0px;
+}
+
+.second-col {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  left: 26px;
+}
+.third-col {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  left: 65px;
+}
+
+.four-col {
+  width: 15px;
+  min-width: 15px;
+  max-width: 15px;
+  left: 215px;
+}

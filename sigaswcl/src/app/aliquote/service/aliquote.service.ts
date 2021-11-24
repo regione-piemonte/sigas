@@ -51,6 +51,11 @@ export class AliquoteService {
     var url: string = this.config.getBEServer() + '/rest/impostazioni/aliquote';
     return this.http.get<Array<AliquotaVO>>(url);
   }
+  
+  public ricercaPerAnno() {
+      var url: string = this.config.getBEServer() + '/rest/home/ricercaAnnualita';
+      return this.http.get<Array<string>>(url);
+    }
 
   public ricercaTipiAliquoteByTipo() {
     var url: string = this.config.getBEServer() + '/rest/impostazioni/tipiAliquoteByTipo';

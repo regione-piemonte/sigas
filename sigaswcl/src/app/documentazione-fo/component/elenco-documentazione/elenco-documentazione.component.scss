@@ -1,0 +1,47 @@
+@import '../../../color.scss';
+
+
+.accordion-toggle:after 						{font-family:'Glyphicons Halflings'; content:"▼"; float:right; color:grey;}
+.accordion-toggle.collapsed:after 			{content:"▲";}
+
+
+/* Styling of the collapsible row */
+td.collapse-row {
+    border-style: none;
+    padding: 0;
+}
+
+
+.dettagli-subTable-td {
+    width: 30% !important
+}
+
+
+td.trunk20 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+td.trunk30 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.badge {
+    min-width: 45px;
+    padding-top: 5px;
+    display: inline-block;
+    margin-right: 4px;
+    margin-top: 2px;
+    font-size: 10px;
+}
+
+.alert-badge {
+    display: inline-block;
+    margin-right: 4px;
+    margin-top: 0px;
+}

@@ -17,7 +17,8 @@
                         <tbody>
                             <tr *ngFor="let el of consumiPr; let last = last;" [ngClass]="{'pointer' : !last}"
                             (click)="!last && modificaDichConsumi(el)">
-                                <td class="dt-left" [ngClass]="{'last-row ' : last}">
+                                <td *ngIf ="el.provincia_erogazione != null" 
+                                	class="dt-left" [ngClass]="{'last-row ' : last}">
                                     {{ getProvincia(el.provincia_erogazione) }}</td>
                             </tr>
                         </tbody>
@@ -35,9 +36,9 @@
                         <tbody>
                             <tr *ngFor="let el of consumiPr; let last = last; let idx = index" [ngClass]="{'pointer' : !last}"
                             (click)="!last && modificaDichConsumi(el)">
-                                <td class="dt-right" [ngClass]="{'boldRed':  el.totaleCalcolato < 0, 'last-row' : last}">
+                                <td *ngIf ="el.provincia_erogazione != null" class="dt-right" [ngClass]="{'boldRed':  el.totaleCalcolato < 0, 'last-row' : last}">
                                     {{ el.totaleCalcolato | currency:'EUR':'symbol' }}</td>
-                                <td [ngClass]="{'last-row ' : last}">
+                                <td *ngIf ="el.provincia_erogazione != null" [ngClass]="{'last-row ' : last}">
                                     <div class="btn-group" *ngIf="!last">
                                         <div *ngIf="isModificato[idx]" style="width:23px;height:20px;padding: 2px 0px 0px 4px;" 
                                             class="card bg-success text-white margin-icon">
@@ -90,46 +91,46 @@
                             <tbody>
                                 <tr *ngFor="let el of consumiPr; let last = last;" [ngClass]="{'pointer' : !last}"
                                     (click)="!last && modificaDichConsumi(el)">
-                                    <td class="dt-center" [ngClass]="{'last-row ' : last}">{{ el.data_presentazione }}
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-center" [ngClass]="{'last-row ' : last}">{{ el.data_presentazione }}
                                     </td>
                                     <!-- <td class="dt-center" [ngClass]="{'last-row ' : last}">{{ el.stato_dich }}</td> -->
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_industriali_1200 < 0 , 'last-row ' : last}">
                                         {{ el.usi_industriali_1200 }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_industriali_up < 0, 'last-row ' : last}">
                                         {{ el.usi_industriali_up }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.tot_industriali < 0, 'last-row ' : last}">
                                         {{ el.tot_industriali | currency:'EUR':'symbol' }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_120 < 0, 'last-row ' : last}">
                                         {{ el.usi_civili_120 }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_480 < 0, 'last-row ' : last}">
                                         {{ el.usi_civili_480 }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_1560 < 0, 'last-row ' : last}">
                                         {{ el.usi_civili_1560 }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_up < 0, 'last-row ' : last}">
                                         {{ el.usi_civili_up }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.tot_civili < 0, 'last-row ' : last}">
                                         {{ el.tot_civili | currency:'EUR':'symbol' }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.tot_nuovi_allacciamenti < 0, 'last-row ' : last}">
                                         {{ el.tot_nuovi_allacciamenti | currency:'EUR':'symbol' }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.conguaglio_dich < 0, 'last-row ' : last}">
                                         {{ el.conguaglio_dich | currency:'EUR':'symbol' }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.conguaglio_calc < 0, 'last-row ' : last}">
                                         {{ el.conguaglio_calc | currency:'EUR':'symbol' }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.rettifiche < 0, 'last-row ' : last}">
                                         {{ el.rettifiche | currency:'EUR':'symbol' }}</td>
-                                    <td class="dt-right"
+                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.arrotondamenti < 0, 'last-row ' : last}">
                                         {{ el.arrotondamenti | currency:'EUR':'symbol' }}</td>
                                 </tr>
@@ -196,6 +197,13 @@
                     </div>
                 </div>
             </div>
+            <!-- 
+            <div *ngFor="let ms of listaMessaggiCtrlImporti">
+                <sigas-alert [message]="ms.valoreMessaggio" [type]="ms.livelloMessaggio">
+                 <button type="button" class="btn btn-default" >Si</button>
+                  <button type="button" class="btn btn-default" >No</button>
+                </sigas-alert> 
+            </div>  -->
             <div id="provTopDiv" class="col-lg-12 rowModConsumi">
                 <div>
                     <div id="provDiv" class="form-width border-top row">
@@ -360,7 +368,7 @@
                             </td>
                         </tr>
                         <tr class="border-top border-tr" *ngFor="let el of listaScarti; let idx = index">
-                            <td class="td-group first-td">Scarto</td>
+                            <td class="td-group first-td">Scarto <b>({{el.descUsoScarto}})</b></td>
                             <td class="right-td">
                                 <input type="number" class="valid input-form form-control col-lg-12"
                                     id="scartoCons" placeholder="consumi" [(ngModel)]="el.consumi"

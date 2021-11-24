@@ -1,6 +1,7 @@
 {
     "beServer": "/sigas",
-    "shibbolethSSOLogoutURL": "https://dev-portale.ruparpiemonte.it/rpp_liv1_IRUP/Shibboleth.sso/Logout",
+      "shibbolethSSOLogoutURLRupar": "https://dev-portale.ruparpiemonte.it/rpp_liv1_IRUP/Shibboleth.sso/Logout",
+    "shibbolethSSOLogoutURLSisPiemonte": "https://dev-secure.sistemapiemonte.it/ssp_liv3_sisp_liv2_spid_GASP_REGIONE/logout.do",
     "onAppExitURL": "http://dev-secure.sistemapiemonte.it",
     "otherParam": "development_param_value",
     "publicPath": "/sigas/",

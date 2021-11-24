@@ -1,0 +1,81 @@
+
+INSERT INTO sigas.sigas_tipo_consumo (id_tipo_consumo,campo_dich_consumo,descrizione) VALUES 
+(1,'usi_industriali_up','Usi industriali sopra i 1.200.000 mc/anno')
+,(2,'usi_industriali_1200','Usi industriali fino a 1.200.000 mc/anno')
+,(3,'usi_civili_120','Usi Civili fino a 120 mc/anno')
+,(4,'usi_civili_480','Usi Civili da 120 a 480 mc/anno')
+,(5,'usi_civili_1560','Usi Civili da 480 a 1560 mc/anno')
+,(6,'usi_civili_up','Usi Civili oltre i 1560 mc/anno')
+,(7,'tot_nuovi_allacciamenti','Nuovo Allacciamento');
+
+-	sigas_tipo_aliquote (tipologia delle aliquote)
+La tabella è configurata conformemente alle tipologie di aliquota attualmente in uso. 
+
+INSERT INTO sigas.sigas_tipo_aliquote (id_tipo_aliquota,nome_aliquota,descrizione,nuovo_allacciamento,id_tipo_consumo,tipo) VALUES 
+(1,'CIV120','Civili fino a 120',false,3,'civile')
+,(2,'CIV480','Civili da 120 a 480',false,4,'civile')
+,(3,'CIV1500','Civili da 480 a 1560',false,5,'civile')
+,(4,'CIVUP','Civili superiore a 1560',false,6,'civile')
+,(5,'IND1200','Industriali fino a 1200',false,2,'industriale')
+,(6,'INDUP','Industrali superiori a 1200',false,1,'industriale')
+,(7,'NI!CIV120','Frazione 1Â°anno civili fino a 120',true,7,'nuovi allacciamenti')
+,(8,'NI1CIV480','Frazione 1Â°anno civile da 120 a 480',true,7,'nuovi allacciamenti')
+,(9,'NI1CIV1500','Frazione 1Â°anno civile da 480 a 1500',true,7,'nuovi allacciamenti')
+,(10,'NI1CIVUP','Frazione 1Â°anno civile superiore a 1500',true,7,'nuovi allacciamenti')
+,(11,'NI2CIV120','Frazione 2Â°anno civili fino a 120',true,7,'nuovi allacciamenti')
+,(12,'NI2CIV480','Frazione 2Â°anno civile da 120 a 480',true,7,'nuovi allacciamenti')
+,(13,'NI2CIV1500','Frazione 2Â°anno civile da 480 a 1500',true,7,'nuovi allacciamenti')
+,(14,'NI2CIVUP','Frazione 2Â°anno civile superiore a 1500',true,7,'nuovi allacciamenti')
+,(15,'NI3CIV120','Frazione 3Â°anno civili fino a 120',true,7,'nuovi allacciamenti')
+,(16,'NI3CIV480','Frazione 3Â°anno civile da 120 a 480',true,7,'nuovi allacciamenti')
+,(17,'NI3CIV1500','Frazione 3Â°anno civile da 480 a 1500',true,7,'nuovi allacciamenti')
+,(18,'NI3CIVUP','Frazione 3Â°anno civile superiore a 1500',true,7,'nuovi allacciamenti')
+,(19,'NI4CIV120','Frazione 4Â°anno civili fino a 120',true,7,'nuovi allacciamenti')
+,(20,'NI4CIV480','Frazione 4Â°anno civile da 120 a 480',true,7,'nuovi allacciamenti')
+, (21,'NI4CIV1500','Frazione 4Â°anno civile da 480 a 1500',true,7,'nuovi allacciamenti')
+,(22,'NI4CIVUP','Frazione 4Â°anno civile superiore a 1500',true,7,'nuovi allacciamenti');
+
+-	sigas_tipo_allarmi (tipologia degli allarmi)
+INSERT INTO sigas.sigas_tipo_allarmi (id_tipo_allarme,denominazione,descrizione) VALUES 
+(1,'SCARTI','Scarto')
+,(2,'COERENZA','Coerenza')
+,(3,'COMUNICAZIONI','Comunicazioni')
+,(4,'RETTIFICA','Rettifica')
+,(5,'ACCERTAMENTO','Accertamento')
+,(6,'NOTE','Note')
+,(7,'RIMBORSO','Rimborso')
+,(8,'RAVVEDIMENTO','Ravvedimento')
+,(9,'COMPENSAZIONE','Compensazione')
+,(10,'VERSAMENTO','Versamento');
+
+-	sigas_tipo_comunicazioni (tipologia dei documenti inseribili a sitema)
+INSERT INTO sigas.sigas_tipo_comunicazioni (id_tipo_comunicazione,denominazione,descrizione) VALUES 
+(1,'dichiarazione utf','dichiarazione utf')
+,(2,'Verbale di Accertamento','Verbale di Accertamento')
+,(3,'Determina Rimborso','Determina Rimborso')
+,(4,'Determina di impegno deposito cauzionale o polizza fidejussoria','Determina di impegno deposito cauzionale o polizza fidejussoria')
+,(5,'Determina restituzione deposito cauzionale o polizza fidejussoria','Determina restituzione deposito cauzionale o polizza fidejussoria')
+,(6,'Comunicazione Ravvedimento Operoso','Comunicazione Ravvedimento Operoso')
+,(7,'Comunicazione deposito cauzionale o polizza fidejussoria','Comunicazione deposito cauzionale o polizza fidejussoria')
+,(8,'Comunicazione Cessazione AttivitÃ ','Comunicazione Cessazione AttivitÃ ')
+,(9,'Comunicazione  acquisizione di societÃ ','Comunicazione  acquisizione di societÃ ')
+,(10,'Comunicazione  Cessione di societÃ ','Comunicazione  Cessione di societÃ ')
+,(11,'Comunicazione inizio attivitÃ  in nuove province','Comunicazione inizio attivitÃ  in nuove province')
+,(12,'Istanza di Rimborso','Istanza di Rimborso')
+,(13,'Processo Verbale di Constatazione','Processo Verbale di Constatazione')
+,(14,'Report Versamenti','Report Versamenti')
+,(15,'Comunicazioni varie','Comunicazioni varie');
+
+-	sigas_tipo_versamenti (tipologia dei versamenti inseribili a sitema)
+INSERT INTO sigas.sigas_tipo_versamento (id_tipo_versamento,denominazione,descrizione) VALUES 
+(1,'Rateo','Rateo mensile versato dal Soggetto ')
+,(2,'Conguaglio','Il conguaglio annuale riportato in dichiarazione che può essere pagato nelle tre mensilità  iniziali dell''anno. Può essere a credito (segno -) o a debito')
+,(3,'Rateo / Conguaglio','Rateo e conguaglio nello stesso versamento')
+,(4,'Accertamento','E’ l’importo che l’utente ha eventualmente calcolato su una mensilità  o annualità  come importo in accertamento')
+,(5,'Ravvedimento',' ');
+
+-	sigas_tipo_tassi (tipologia dei tassi inseribili a sistema)
+INSERT INTO sigas.sigas_tipo_tassi (id_tipo_tasso,nome_tasso,descrizione) VALUES 
+(1,'ACCERTAMENTI',NULL)
+,(2,'RIMBORSI',NULL);
+

@@ -1,0 +1,43 @@
+CREATE TABLE sigas_pagamenti (
+	id_pagamento serial NOT NULL,
+	dichiarante varchar(150) NOT NULL,
+    anno_ord_inc  varchar(10), 
+    num_ord_inc int4, 
+    desc_ord_inc varchar(2000), 
+    desc_stato_ord_inc varchar(150), 
+    data_emissione timestamp null,
+    desc_distinta varchar(150),
+    soggetto_id int4, 
+    cod_soggetto int4, 
+    desc_soggetto varchar(2000), 
+    cf_soggetto varchar(150), 
+    p_iva_soggetto varchar(150), 
+    desc_tipo_atto_amministrativo varchar(150), 
+    anno_atto_amministrativo varchar(10),
+    num_atto_amministrativo int4, 
+    oggetto_atto_amministrativo varchar(150), 
+    note_atto_amministrativo varchar(2000), 
+    desc_pdc_finanziario_iv varchar(150), 
+    desc_pdc_finanziario_v varchar(150), 
+    cod_capitolo int4, 
+    desc_capitolo varchar(150), 
+    importo_iniziale numeric(30,10) null, 
+    importo_attuale numeric(30,10) null, 
+    data_firma timestamp null, 
+    firma varchar(150), 
+    data_elaborazione timestamp null, 
+    conciliato bool NULL DEFAULT false
+);
+
+create table sigas_pagamenti_versamenti(
+			id_pagamento_versamento serial not null,
+			fk_pagamento serial NOT NULL,
+			fk_anag int4 NULL,
+			fk_versamento int4 NULL,
+			data_versamento timestamp NULL,
+			id_tipo_versamento int4 NULL,
+			anno varchar(10) NOT NULL,
+			mese varchar(50) NULL,
+			fk_provincia numeric(7) NOT NULL,
+			importo numeric(30,10) null);
+			

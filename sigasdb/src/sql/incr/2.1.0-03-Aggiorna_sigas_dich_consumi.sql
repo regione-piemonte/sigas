@@ -1,0 +1,1 @@
+alter table sigas_dich_consumi add column 	totale_dich_origine numeric(30,10) null;

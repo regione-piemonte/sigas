@@ -4,6 +4,8 @@
       <div class="form-group col-lg-12 text-center">
         <h3 class="title">Gestione Versamenti</h3>
       </div>
+            <sigas-alert [message]="messageSuccessModRateo" *ngIf="showSuccessModRateo" [type]="'SUCCESS'"></sigas-alert>
+      <sigas-alert [message]="messageErrorModRateo" *ngIf="showMessageErrorModRateo" [type]="'DANGER'"></sigas-alert>
       <div class="form-group row padding-search">
           <div class="form-group col-lg-12">
               <div class="row">
@@ -80,10 +82,16 @@
                   </div>      
                   <div class="form-group border-botton row">
                       <label class="col-lg-2 offset-lg-1 col-form-label">Rateo calcolato:</label>
+                      <!-- 
                       <div class="col-lg-2 col-value">
                           <div>
                               {{ (consumi?.totaleDich/12 === 0 ? '' : consumi?.totaleDich/12)| currency:'EUR':'symbol'}}
                           </div>
+                      </div> -->
+                      <div class="col-lg-2 col-value" >
+                          <input type="number"  id="importoRateoCalc"  [disabled] = "!consumi"
+                       		(change)="onChangeRateoCalc(rateo_calc)" [(ngModel)]="rateo_calc"
+                              name="importoRateoCalc" #importoRateoCalc="ngModel" min="0" required>
                       </div>
                       <label class="col-lg-3 offset-lg-1 col-form-label">Conguaglio calcolato:</label>
                       <div class="col-lg-2 col-value">
@@ -124,7 +132,7 @@
                                   <td>{{ el.tipo.denominazione }}</td>
                                   <td>{{ el.importo | currency:'EUR':'symbol' }}</td>
                                   <td  *ngIf="el.tipo.denominazione != 'Accertamento'">{{ el.importo_prec | currency:'EUR':'symbol' }}</td>
-                                  <td *ngIf="el.tipo.denominazione != 'Accertamento'" >{{ el.importo_prec - el.importo  | currency:'EUR':'symbol' }}</td>
+                                  <td *ngIf="el.tipo.denominazione != 'Accertamento'" >{{ el.differenza | currency:'EUR':'symbol' }}</td>
                                   <td *ngIf="el.tipo.denominazione == 'Accertamento'"></td>
                                   <td *ngIf="el.tipo.denominazione == 'Accertamento'"></td>
                                   <td> <textarea  class="note-textareaview" rows="2" [(ngModel)]="el.note" readonly>
@@ -132,9 +140,17 @@
                               </tr>
                           </tbody>
                       </table>
+                      
+						<div class="row" >
+	                       <label for="anno" class="col-lg-3 col-form-label"><b>Totale importo versato</b></label>
+	                       <div class="col-lg-3" style="text-align:right">
+	                       <b>{{versato | currency:'EUR':'symbol' }} </b>
+                       </div>
+                     </div>
                   </div>
               </div>
           </div>
+          
       </div>
       <!--tabella-->
       <!--pulsanti-->
@@ -145,6 +161,11 @@
                   <div class="btn-group">
                       <button type="button" class="btn btn-primary margin-icon" (click)="goInserimentoVersamento()">
                           <i class="fas fa-check"></i> Nuovo Versamento</button>
+                  </div>
+                  <div class="btn-group">
+                      <button type="button" class="btn btn-primary margin-icon" (click)="salvaModificaRateo()"
+                      [disabled] = "!consumi">
+                          <i class="fas fa-check"></i> Salva</button>
                   </div>
                   <div class="btn-group">
                      <button type="button" *ngIf="!loaderExcel" class="btn btn-success margin-icon pointer" (click)="goExcel()"
@@ -352,7 +373,7 @@
                                                   indietro</a>
                                           </div>
                                           <div class="btn-group">
-                                              <button *ngIf="nuovoVersamento" type="submit" [disabled]="!insNuovoVersamento.form.valid"
+                                              <button *ngIf="nuovoVersamento" type="submit" [disabled]="!insNuovoVersamento.form.valid || isSaveDisabled"
                                                   class="btn btn-primary margin-icon btn-standard">
                                                   <i class="fas fa-angle-down"></i> Salva versamento</button>
                                               <button *ngIf="updateVersamento" type="button" [disabled]="!insNuovoVersamento.form.valid"
@@ -367,4 +388,3 @@
                   </form>
           </div>
     </div>
-  

@@ -16,6 +16,7 @@ export enum Esito {
 
 export class Roles {
     public static HOME: string = "UCSIGAS1";
+    public static HOME_FO: string = "ROLE_FO_FRONTEND";
 }
 
 export class SubMenu {
@@ -31,4 +32,9 @@ export class BaseMenu {
         name: string, 
         enable: boolean
     ) { }
+}
+
+
+export class GinevraPiemonte {
+    public static id: number = 1;
 }

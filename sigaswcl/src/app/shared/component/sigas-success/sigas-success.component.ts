@@ -10,6 +10,9 @@ export class SigasSuccessComponent implements OnInit {
     @Input() message;
 
     ngOnInit(): void {
-
+        console.log("sono in init");
+        if (!this.message) {
+            this.message = "Operazione avvenuta con successo";
+        }
     }
 }

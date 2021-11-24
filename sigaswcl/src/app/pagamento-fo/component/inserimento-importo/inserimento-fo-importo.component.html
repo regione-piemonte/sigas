@@ -1,0 +1,128 @@
+<div class="principal-div">
+	<sigas-spinner *ngIf="pageLoadingInProgress"></sigas-spinner>
+	<div  *ngIf="!pageLoadingInProgress" class="card card-primary center-default">
+		<div class="card-header text-white">
+			<strong>Inserisci pagamento - {{foPayService.cartReq.area}}</strong>
+		</div>
+		<div>
+			<sigas-alert [message]="'Inserire l\'importo da pagare e premere \'Conferma\''" [type]="'INFO'"></sigas-alert>
+			<sigas-alert *ngIf="showErrorMessage" [message]="showErrorMessage" [type]="'DANGER'"></sigas-alert>
+
+			<div class="card-body container">
+			<sigas-alert [message]="message" *ngIf="showMsg" [type]="levelMessage"></sigas-alert>
+				<div class="form-group row">
+					<div class="col-lg-12">
+						<div class="form-group col-lg-12">
+								<form #insAmount="ngForm">
+									<div class="panel-body">
+										<sigas-spinner-form [diameter]="30" *ngIf="loadingCrtVersamentoEsistente"></sigas-spinner-form>
+										<div class="form-group col-lg-12" *ngIf="!loadingCrtVersamentoEsistente">
+											<div class="row">
+												<label for="anno" class="col-lg-2 col-form-label">Importo:</label>
+												<div class="col-lg-2" style="margin-left: -50px ">
+													<input type="text" id="importo" class="form-control"
+														[placeholder]="userAmountForPrevYear?userAmountForPrevYear:'Importo'" [(ngModel)]="foPayService.cartReq.amount" name="importo"
+														#amount="ngModel" maxlength="30" pattern="^[0-9]+([,.]{1}[0-9]+){0,1}$" size="80" required>
+													<div *ngIf="amount.invalid && (amount.dirty || amount.touched)" class="alert alert-danger">
+														<div *ngIf="amount.errors.required ">L'importo è richiesto.</div>
+														<div *ngIf="amount.errors.pattern ">Inserire un importo valido.</div>
+													</div>
+												</div>
+
+												<label for="mese" class="col-lg-1 col-form-label">Mese:</label>
+												<div class="col-lg-3">
+													<select class="form-control" id="month" [(ngModel)]="foPayService.cartReq.month" name="month" required (change)="changeMounth($event)" >
+														<!--<option *ngFor="let month of foPayService.cartReq.months | keyvalue" [ngValue]="month.key">
+															{{month.value}}
+														</option>-->
+														<option [ngValue]="1">Gennaio</option>
+														<option [ngValue]="2">Febbraio</option>
+														<option [ngValue]="3">Marzo</option>
+														<option [ngValue]="4">Aprile</option>
+														<option [ngValue]="5">Maggio</option>
+														<option [ngValue]="6">Giugno</option>
+														<option [ngValue]="7">Luglio</option>
+														<option [ngValue]="8">Agosto</option>
+														<option [ngValue]="9">Settembre</option>
+														<option [ngValue]="10">Ottobre</option>
+														<option [ngValue]="11">Novembre</option>
+														<option [ngValue]="12">Dicembre</option>
+													</select>
+												</div>
+
+												<label for="tipo" class="col-lg-1 col-form-label">Tipo:</label>
+												<div class="col-lg-3">
+													<select class="form-control" id="type" [(ngModel)]="foPayService.cartReq.type" name="type" required (change)="changeTipoVersamento($event)">
+														<option *ngFor="let type of paymentTypes" [ngValue]="type.idTipoVersamento">
+															{{type.denominazione}}
+														</option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<br><br>
+
+										<!--pulsanti-->
+                                        <div class="bs-example" data-example-id="single-button-dropdown">
+                                          <div class="form-group row col-lg-12">
+                                              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+												<div class="btn-group">
+													<a class="btn btn-default margin-icon btn-standard" (click)="goBack()" role="button">
+														<i class="fa fa-angle-left"></i> indietro</a>
+												</div>
+												&nbsp;
+												<div class="btn-group">
+													<button type="submit" class="btn btn-primary margin-icon" (click)="goHome()">
+														<i class="fas fa-times"></i> Cancella</button>
+												</div>
+												&nbsp;
+												<div class="btn-group">
+													<button type="submit" [disabled]="!insAmount.form.valid" class="btn btn-primary margin-icon" (click)="controlloVersamentoEsistente()" >
+														<i class="fas fa-check"></i> Conferma</button>
+												</div>
+                                              </div>
+                                          </div>
+                                      </div>
+
+									  <!--<div class="form-group row col-lg-12">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
+										  <div class="btn-group">
+											  <button type="submit" class="btn btn-primary margin-icon" (click)="goConsumi()">CONSUMI</button>
+										  </div>
+										</div>
+									</div>
+									-->
+								
+									</div>
+								</form>
+								
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="dialogBox" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+				<h4 class="modal-title">Carrello</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <span>Si desidera inserire un ulteriore pagamento?</span>
+                </p>
+            </div>
+            <div class="modal-footer">
+               <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="goToStep('carrello-fo')">No</button>
+               <button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('selezione-soggetto-pagamento')">S&igrave;</button>
+               <!--<button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('pagamento-fo-importo')">S&igrave;</button>-->
+            </div>
+        </div>
+    </div>
+</div>

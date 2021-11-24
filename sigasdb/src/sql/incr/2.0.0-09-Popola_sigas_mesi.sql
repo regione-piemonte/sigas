@@ -1,0 +1,12 @@
+INSERT INTO sigas_mesi (id, mese) VALUES(1, 'Gennaio');
+INSERT INTO sigas_mesi (id, mese) VALUES(2, 'Febbraio');
+INSERT INTO sigas_mesi (id, mese) VALUES(3, 'Marzo');
+INSERT INTO sigas_mesi (id, mese) VALUES(4, 'Aprile');
+INSERT INTO sigas_mesi (id, mese) VALUES(5, 'Maggio');
+INSERT INTO sigas_mesi (id, mese) VALUES(6, 'Giugno');
+INSERT INTO sigas_mesi (id, mese) VALUES(7, 'Luglio');
+INSERT INTO sigas_mesi (id, mese) VALUES(8, 'Agosto');
+INSERT INTO sigas_mesi (id, mese) VALUES(9, 'Settembre');
+INSERT INTO sigas_mesi (id, mese) VALUES(10, 'Ottobre');
+INSERT INTO sigas_mesi (id, mese) VALUES(11, 'Novembre');
+INSERT INTO sigas_mesi (id, mese) VALUES(12, 'Dicembre');

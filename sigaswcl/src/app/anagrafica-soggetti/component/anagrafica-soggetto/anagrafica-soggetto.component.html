@@ -106,19 +106,22 @@
             </div>
             <div class="col-lg-5 offset-lg-1 hight">
                 <!--Bottoni Province-->
+                
                 <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
-                    <label *ngFor="let el of consumiPr" class="btn btn-secondary pointer margin-icon margin-bottom-toggle" (click)="cambiaProvincia(el.provincia_erogazione)">
-                        <input type="radio" name="province">{{el.provincia_erogazione}}
+                	<sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                    <label *ngFor="let el of consumiPr" [hidden]="el.provincia_erogazione == null" class="btn btn-secondary pointer margin-icon margin-bottom-toggle" >
+                        <input type="radio" name="province" (click)="cambiaProvincia(el.provincia_erogazione)">{{el.provincia_erogazione}}
                     </label>
-                    <label class="btn btn-secondary pointer margin-icon margin-bottom-toggle active" (click)="cambiaProvincia('TOTALE')">
-                        <input type="radio" name="province"> TOTALE
+                    <label *ngIf="!loaderProvinceDettAna" class="btn btn-secondary pointer margin-icon margin-bottom-toggle active">
+                        <input type="radio" name="province"  (click)="cambiaProvincia('TOTALE')"> TOTALE
                     </label>
                 </div>
                 <!--Bottoni Province-->
                 <!--Totale Dichiarazione-->
                 <div class="form-group border-botton row">
                     <label class="col-lg-6 offset-lg-1 col-form-label">Totale Dichiarazione:</label>
-                    <div class="col-lg-5 col-value">
+                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                    <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
                         <div>
                             {{selTotDich | currency:'EUR':'symbol' }}
                         </div>
@@ -128,7 +131,8 @@
                 <!--Provincia-->
                 <div class="form-group border-botton row">
                     <label class="col-lg-6 offset-lg-1 col-form-label">Addizionale liquidata:</label>
-                    <div class="col-lg-5 col-value">
+                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                    <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
                         <div>
                             {{selAddLiq | currency:'EUR':'symbol' }}
                         </div>
@@ -138,8 +142,10 @@
                 
                 <!--IBAN-->
                 <div class="form-group border-botton row ">
+                
                     <label class="col-lg-6 offset-lg-1 col-form-label">Totale versato:</label>
-                    <div class="col-lg-5 col-value">
+                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                    <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
                         <div>
                             {{selTotVers | currency:'EUR':'symbol' }}
                         </div>
@@ -148,7 +154,7 @@
                 <!--IBAN-->
                 <!--Tipo-->
                 <div class="form-group border-botton row">
-                    <label class="col-lg-6 offset-lg-1 col-form-label">Copertura fideussione:</label>
+                    <label class="col-lg-6 offset-lg-1 col-form-label">Copertura fidejussoria:</label>
                     <div class="col-lg-5 col-value">
                         <div>
                             {{copFid}} ({{ impFid | currency:'EUR':'symbol'}})
@@ -177,7 +183,7 @@
                 <a class="btn btn-default margin-icon btn-standard" (click)="goBackSoggetti()" role="button">
                     <i class="fa fa-angle-left"></i> indietro</a>
             </div>
-            <div class="btn-group" *ngIf="!soggetto.codiceAzienda.startsWith('NEW');">
+            <div class="btn-group" *ngIf="!soggetto.codiceAzienda.startsWith('NEW') && !viewAssociaSoggetto">
                 <button type="button" class="btn btn-primary margin-icon" (click)="fusioneSocietaria()" >
                     <i class="fas fa-check"></i> Fusione Societaria</button>
             </div>
@@ -185,7 +191,7 @@
                   <button type="button" class="btn btn-primary margin-icon btn-standard" (click)="modificaSoggetto()" >
                    <i class="fas fa-edit"></i> Modifica</button>
             </div>
-            <div class="btn-group" *ngIf="soggetto.codiceAzienda.startsWith('NEW');">
+            <div class="btn-group" *ngIf="soggetto.codiceAzienda.startsWith('NEW') || viewAssociaSoggetto">
                   <button type="button" class="btn btn-primary margin-icon" (click)="associaSoggetto()">
                    <i class="fas fa-check"></i> Associa soggetto</button>
             </div>
@@ -413,6 +419,30 @@
                 <!--Email-->
             </div>
             <div class="col-lg-5 offset-lg-1 hight">
+            
+            <div class="form-group border-botton row ">
+                    <label for="fideussione" class="col-lg-5 offset-lg-1 col-form-label">Fidejussione:</label>
+                  <label class="switch-small margin-icon">
+                    <input type="checkbox" [(ngModel)]="soggettoToSave.fideussione" name="fideussione" (click)="modButtonFideussione()">
+                    <span class="slider-small round">
+                      <span *ngIf="soggettoToSave.fideussione" class="switch-on-small">OK</span>
+                      <span *ngIf="!soggettoToSave.fideussione" class="switch-off-small">KO</span>
+                    </span>
+                  </label>
+                </div>
+                
+                
+                <div class="form-group border-botton row ">
+                    <label for="iban" class="col-lg-5 offset-lg-1 col-form-label">Importo Fidejussione</label>
+                    <div class="col-lg-6 col-value">
+                        <div>
+                        <input type="number" class="form-control col-lg-12 col-form-label" id="importoFideussione"
+                            placeholder="importoFideussione" [(ngModel)]="soggettoToSave.importoFideussione" name="importoFideussione"
+                            #iban="ngModel">             
+                        </div>
+                    </div>
+                </div>
+            
             <div class="form-group border-botton row">
                     <label for="note" class="col-lg-3 offset-lg-1 col-form-label">Note:</label>
                     <div class="col-lg-8 col-value">

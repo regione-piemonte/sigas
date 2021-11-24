@@ -30,6 +30,7 @@ export class ConsumiPrVO {
         public addizionale_liquidata: number,
         public totaleCalcolato: number,
         public totaleDich: number,
+        public totaleDichOrigine: number,
         public note: string,        
         public nuoviAllacciamenti: Array<NuovoAllacciamentoVO>,
         public compensazione: number

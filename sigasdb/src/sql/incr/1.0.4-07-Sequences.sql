@@ -1,0 +1,2 @@
+CREATE SEQUENCE seq_pagamenti OWNED BY sigas_pagamenti.id_pagamento;
+CREATE SEQUENCE seq_pagamenti_versamenti OWNED BY sigas_pagamenti_versamenti.id_pagamento_versamento;

@@ -1,0 +1,1 @@
+alter table sigas_dich_scarti add column desc_uso_scarto varchar(2000) null;

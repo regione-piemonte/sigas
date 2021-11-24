@@ -1,0 +1,21 @@
+<div style="margin: 80px">
+    <!-- <sigas-spinner *ngIf="showSpinner"></sigas-spinner> -->
+    <sigas-alert *ngIf="showErrorMessage" [message]="showErrorMessage" [type]="'DANGER'"></sigas-alert>
+
+    <div *ngIf="paymentSuccess" class="panel panel panel-success center-all">
+        <div class="panel-body">
+            <img src="assets/success.png">
+        </div>
+        <div>
+            <h3>Il pagamento è stato completato con successo. Verificare la mail {{mail}} per visualizzare i dettagli della transazione.</h3>
+        </div>
+    </div>
+    <div *ngIf="!paymentSuccess" class="panel panel panel-success center-all">
+        <div class="panel-body">
+            <img src="assets/error.png">
+        </div>
+        <div>
+            <h3>Il pagamento non è stato completato con successo.</h3>
+        </div>
+    </div>
+</div>

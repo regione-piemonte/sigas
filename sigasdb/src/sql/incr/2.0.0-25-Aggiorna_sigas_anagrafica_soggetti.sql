@@ -1,0 +1,1 @@
+alter table sigas_anagrafica_soggetti add column cf_piva varchar(16) null;

@@ -17,10 +17,21 @@ export class ConfigService {
   /**
    * Url di logout da SSO
    */
-  getSSOLogoutURL(): string {
-      return ENV_PROPERTIES.shibbolethSSOLogoutURL;
+//  getSSOLogoutURL(): string {
+//      return ENV_PROPERTIES.shibbolethSSOLogoutURL;
+//      /*return process.env.ENV_PARAMS.shibbolethSSOLogoutURL;*/
+//  }
+  
+  getSSOLogoutURL(hostname: string): string {
+      if (hostname.includes('ruparpiemonte')  ) {
+          return ENV_PROPERTIES.shibbolethSSOLogoutURLRupar;
+      }
+      else{
+          return ENV_PROPERTIES.shibbolethSSOLogoutURLSisPiemonte;
+      }
       /*return process.env.ENV_PARAMS.shibbolethSSOLogoutURL;*/
   }
+
 
 
   getTimeout(): number {

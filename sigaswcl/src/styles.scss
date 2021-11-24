@@ -102,7 +102,7 @@ body{  font-family: open_sansregular, Fallback, sans-serif; font-size: 14px;}
 
 .center-default{
     margin: auto;
-    width: 80%;
+    width: 95%;
 }
 
 .center-all{
@@ -134,4 +134,62 @@ body{  font-family: open_sansregular, Fallback, sans-serif; font-size: 14px;}
 .col-form-label {
     padding-top: 6px;
     font-weight: bold;
+}
+
+
+//panel
+.panel-sigas {
+  margin-bottom: 5px;
+  background-color: #fff;
+  border: 1px solid #bebebe;
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+.panel-grey-sigas>.panel-heading-sigas {
+  color: #000000;
+  background-color: #d8d8d8;
+  border-color: #8e8e8d;
+}
+
+.panel-heading-sigas {
+  padding: 10px 15px;
+  border-bottom: 1px solid transparent;
+  border-top-left-radius: 1px;
+  border-top-right-radius: 1px;
+}
+
+.panel-primary-sigas>.panel-heading-sigas {
+  color: #fff;
+  background-color: #0153a9;
+  border-color: #0153a9;
+}
+
+//template
+.small-font {
+  font-size: 10px;
+}
+
+
+.panel-body-background{
+  background-color: #f9f9f9;
+}
+
+
+//gestiscono la centratura
+.height-75{
+  min-height:85vh;
+}
+
+.vcenter{
+  display:table-cell;
+  vertical-align: middle;
+}
+
+.table{
+display: table;
+}
+
+.padding-checkbox{
+  padding: 20px 20px;
 }

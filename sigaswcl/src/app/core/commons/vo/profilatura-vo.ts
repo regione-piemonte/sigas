@@ -10,7 +10,14 @@ export class ProfilaturaVO {
         public flagPrimoAccesso: boolean,
         public importazioneUTF: boolean,
         public aliquote: boolean,
-        public tassiInteresse: boolean
+        public tassiInteresse: boolean,
+        public abilitaPrivato: boolean,
+        public abilitaUtenteRegione:boolean,
+        public privatoNonAccareditato:boolean,
+        public ruoli: string,
+        public messaggioWarning: string,
+        public showMessage: boolean,
+        public levelMessage: string
        
     ) {
 

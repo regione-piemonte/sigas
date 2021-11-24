@@ -1,0 +1,107 @@
+<div class="principal-div">
+	<!--<sigas-spinner *ngIf="!loaderInserimentoSoggettoPage"></sigas-spinner>-->
+	<div  *ngIf="!loaderInserimentoSoggettoPage" class="card card-primary center-default">
+		<div class="card-header text-white">
+			<strong>Inserisci pagamento</strong>
+		</div>
+		<div>
+			<sigas-alert *ngIf="!this.loadingPageFlag && !this.yearDisabled" [message]="'Selezionare Soggetto e Provincia per il quale si vuole procedere con il pagamento e premere \'Conferma\''" [type]="'INFO'"></sigas-alert>
+			<sigas-alert *ngIf="!this.loadingPageFlag && this.yearDisabled" [message]="'Inserire altre voci al carrello'" [type]="'INFO'"></sigas-alert>
+			
+			<div class="card-body container">
+			
+			<sigas-alert [message]="messageWarning" *ngIf="showMsgWarning" [type]="levelMessage"></sigas-alert>
+			<sigas-alert *ngIf="showErrorMessage" [message]="showErrorMessage" [type]="'DANGER'"></sigas-alert>
+				<div class="form-group row">
+					<div class="col-lg-12">
+
+						<div class="form-group col-lg-12">
+								<form #insPayment="ngForm">
+									<div class="panel-body">
+
+										<div class="form-group col-lg-12">
+											<div class="row row-spaced-top">
+												<label for="anno" class="col-lg-3 col-form-label">Anno di riferimento di dichiarazione:</label>
+												<sigas-spinner-form [diameter]="30" *ngIf="loadingPageFlag;  else yearListLoaded"></sigas-spinner-form>
+												<ng-template #yearListLoaded>
+													<div class="col-lg-3">
+														<select class="form-control" id="year" [(ngModel)]="foPayService.cartReq.year" name="year" required (change)="changeYear($event)" [disabled]="yearDisabled">
+															<option *ngFor="let year of yearsList" [value]="year">{{year}}</option>
+														</select>
+													</div>
+												</ng-template>
+											</div>
+			
+											<div class="row row-spaced-top">
+													<label for="anno" class="col-lg-3 col-form-label">Denominazione azienda:</label>
+													<sigas-spinner-form [diameter]="30" *ngIf="!loaderAzienda;  else elseAziendaCaricata"></sigas-spinner-form>
+                            							<ng-template #elseAziendaCaricata>
+															<div class="col-lg-3">
+																<select class="form-control" id="subject" [(ngModel)]="foPayService.cartReq.subjectName" name="subject" required (change)="changeSubject($event)" [disabled]="subjectDisabled">
+																	<option *ngFor="let subject of subjects | keyvalue" [ngValue]="subject.key">{{subject.key}}</option>
+																</select>
+															</div>
+														</ng-template>
+												 <div *ngIf="cartOption==1 || cartOption==null " class="col-lg-6">
+												 <div class="row">
+													<label for="codiceFiscalePIva" class="col-lg-4 col-form-label">Codice Fiscale/P.Iva:</label>
+							                        <div class="col-lg-5">
+							                            <input type="text" id="codiceFiscalePIva" placeholder="Codice Fiscale/P.Iva" [(ngModel)]="foPayService.cartReq.codiceFiscalePIva" name="codiceFiscalePIva"
+							                                class="form-control maiuscolo" #codiceFiscalePIva="ngModel"  (change)="changeCodFisPiva()" required>						                            
+							                        </div>
+						                        </div>
+						                        </div>
+											</div>
+
+											
+
+											<div class="row row-spaced-top">
+												<div class="col-lg-12">
+													<div class="col-lg-3"></div>
+													<label class="radio-inline">
+														<input type="radio" name="optradio1" value="1" required [(ngModel)]="cartOption" [disabled]="!foPayService.cartReq.subjectName" (change)="changeCartOption($event)">
+														<strong>Impostazione pagamento</strong>
+													</label>
+													<label class="radio-inline">
+														<input type="radio" name="optradio2" value="2" required [(ngModel)]="cartOption" [disabled]="!cartViewEnabled()" (change)="changeCartOption($event)">
+														<strong>Carrello pagamenti</strong>
+													</label>
+												</div>
+											</div>
+											
+											<div class="row row-spaced-top" *ngIf="cartOption==1">
+												<label for="tipo" class="col-lg-3 col-form-label">Provincia:</label>
+												<div class="col-lg-3">
+													<select class="form-control" id="area" [(ngModel)]="foPayService.cartReq.area" name="area" (change)="changeArea($event)" [required]="cartOption==1">
+														<option *ngFor="let area of countiesList" [ngValue]="area">{{area}}</option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<!--pulsanti-->
+                                        <div class="bs-example" data-example-id="single-button-dropdown">
+					 						<div class="form-group row col-lg-12">
+												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+													<div class="btn-group">
+														<a class="btn btn-default margin-icon btn-standard" (click)="goBack()" role="button">
+															<i class="fas fa-times"></i> Cancella</a>
+													</div>
+													<div class="btn-group">
+														<button type="submit" [disabled]="!insPayment.form.valid" class="btn btn-primary margin-icon" (click)="onSubmit()">
+															<i class="fas fa-check"></i> Conferma</button>
+													</div>
+												</div>
+											</div>
+										</div>
+  
+				
+									</div>
+								</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

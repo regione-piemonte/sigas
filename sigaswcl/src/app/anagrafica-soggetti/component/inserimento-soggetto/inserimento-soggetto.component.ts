@@ -37,7 +37,7 @@ export class InserimentoSoggettoComponent implements OnInit {
   
   ngOnInit() {
      console.log("INIZIO");
-     this.soggettoToSave = new AnagraficaSoggettoVO(0,0,"","","","","","",0,"","","",0,false,0,"","",0,0);
+     this.soggettoToSave = new AnagraficaSoggettoVO(0,0,"","","","","","",0,"","","",0,false,0,"","",0,0,null);
      this.subscribers.number = this.anagraficaSoggettiService.numberOfSoggetti().subscribe(
      resp =>{
          this.numberOfSoggetti = this.nextVal+resp;

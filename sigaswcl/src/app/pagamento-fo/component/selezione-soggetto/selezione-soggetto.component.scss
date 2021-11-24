@@ -1,0 +1,16 @@
+@import '../../../color.scss';
+
+.row-spaced-top {
+    margin-top: 20px;
+}
+
+.radio-inline {
+    margin-left: 20px;
+    margin-right: 40px;
+}
+
+.radio-inline input[type=radio] {
+    position: absolute;
+    margin-top: 4px;
+    margin-left: -20px;
+}

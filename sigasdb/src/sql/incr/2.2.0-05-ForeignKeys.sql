@@ -1,0 +1,6 @@
+ALTER TABLE sigas_documenti ADD CONSTRAINT fk_sigas_documenti_sigas_anagrafica_soggetti FOREIGN KEY (id_anag) REFERENCES sigas_anagrafica_soggetti(id_anag) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sigas_documenti ADD CONSTRAINT fk_sigas_documenti_sigas_stato_documento FOREIGN KEY (id_stato) REFERENCES sigas_stato_documento(id_stato_documento) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sigas_documenti ADD CONSTRAINT fk_sigas_documenti_sigas_tipo_documenti FOREIGN KEY (id_tipo_documento) REFERENCES sigas_tipo_documento(id_tipo_documento) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sigas_documenti ADD CONSTRAINT fk_sigas_documenti_sigas_stato_archiviazione FOREIGN KEY (id_stato_archiviazione) REFERENCES sigas_stato_archiviazione(id_stato_archiviazione) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sigas_allegato ADD CONSTRAINT fk_sigas_allegato_sigas_documenti FOREIGN KEY (id_allegato_documento) REFERENCES sigas_documenti(id_documento) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE sigas_allegato ADD CONSTRAINT fk_sigas_allegato_sigas_stato_archiviazione FOREIGN KEY (id_stato_archiviazione) REFERENCES sigas_stato_archiviazione(id_stato_archiviazione) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;

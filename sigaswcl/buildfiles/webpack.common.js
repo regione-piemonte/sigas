@@ -391,17 +391,6 @@ module.exports = {
   },
   "plugins": [
     new NoEmitOnErrorsPlugin(),
-    // new GlobCopyWebpackPlugin({
-    //   "patterns": [
-    //     "assets",
-    //     "favicon.ico"
-    //   ],
-    //   "globOptions": {
-    //     "cwd": path.join(process.cwd(), "src"),
-    //     "dot": true,
-    //     "ignore": "**/.gitkeep"
-    //   }
-    // }),
     new CopyPlugin([
       { from: process.cwd() + '/src/assets/', to: process.cwd() + "/dist/assets", ignore: ['*.gitkeep'] },
       { from: process.cwd() + '/src/favicon.ico', to: process.cwd() + "/dist" }

@@ -7,6 +7,7 @@ export class ScartoVO {
         public consumi: number,
         public aliquota: number,
         public imposta: number,
-        public conciliato: boolean
+        public conciliato: boolean,
+        public descUsoScarto: string
     ) { }
 }

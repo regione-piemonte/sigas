@@ -9,6 +9,7 @@ export class AliquotaVO {
         public tipoAliquote: TipoAliquotaVO,
         public validitaEnd: Date,
         public validitaStart: Date,
-        public version: number
+        public version: number,
+        public modificabile: boolean
     ) { }
 }

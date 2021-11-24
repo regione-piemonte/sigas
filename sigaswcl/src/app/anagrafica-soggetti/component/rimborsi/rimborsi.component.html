@@ -1,4 +1,5 @@
-<div *ngIf="!calcolaRimborsoView">
+<!-- <div *ngIf="!calcolaRimborsoView"> -->
+ <div [ngStyle]="{'display': !calcolaRimborsoView ? 'block' : 'none'}" class="contains">
   <sigas-alert *ngIf = "!errorMsg" [message]="'Selezionare dall\'elenco l\'istanza di Rimborso per la quale si vuole calcolare il rimborso'" [type]="'INFO'"></sigas-alert>
     <div class="card-body container">
     <!--testata-->
@@ -25,7 +26,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class ="pointer" *ngFor="let el of elencoRimborso; let i = index " (click) = "goCalcola(el)" >
+                            <tr class ="pointer" *ngFor="let el of elencoRimborso" (click) = "goCalcola(el)" >
                                 
                                 <td>{{ el.dataIstanza | date : 'dd/MM/yyyy' }}</td>
                                 <td>{{ el.dataRimborso | date : 'dd/MM/yyyy' }}</td>

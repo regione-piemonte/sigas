@@ -15,6 +15,7 @@ import { AliquotaVO } from '../../../commons/vo/aliquota-vo';
 import { StoricoConsumiVO } from '../../../commons/vo/storico-consumi-vo';
 import { NuovoAllacciamentoVO } from '../../../commons/vo/nuovo-allacciamento-vo';
 import { DataTableDirective } from 'angular-datatables';
+import { MessaggiVO } from '../../../commons/vo/messaggi-vo';
 
 @Component({
   selector: 'app-consumi-pr',
@@ -31,6 +32,7 @@ export class ConsumiPrComponent implements OnInit {
   private aliquota: number;
   private sommaScarti: number;
   private listaScarti: Array<ScartoVO>;
+    private listaMessaggiCtrlImporti: Array<MessaggiVO>;
   private scarto: ScartoVO;
   private consumi: ConsumiPrVO;
   private loaderPage: boolean;
@@ -128,6 +130,7 @@ export class ConsumiPrComponent implements OnInit {
              let congCalc = 0;
              let totCalc = 0;
              let totaleDich = 0;
+             let totaleDichOrigine = 0;
              let conguaglioDichPrec = 0;
              let rateoDichPrec = 0;
              res.map((elem, idx) => {
@@ -147,7 +150,8 @@ export class ConsumiPrComponent implements OnInit {
                congDich += elem.conguaglio_dich;
                congCalc += elem.conguaglio_calc;
                totCalc += elem.totaleCalcolato;
-               totaleDich += elem.totaleDich;            
+               totaleDich += elem.totaleDich;    
+               totaleDichOrigine += elem.totaleDichOrigine;    
                this.anagraficaSoggettiService.storicoConsumi( elem.id_consumi)
                .subscribe( ret => {
                  
@@ -226,6 +230,7 @@ export class ConsumiPrComponent implements OnInit {
                addizionale_liquidata: 0,
                totaleCalcolato: totCalc,
                totaleDich: totaleDich,
+               totaleDichOrigine: totaleDichOrigine,
                nuoviAllacciamenti: null,
                concilia: false,
                scarti: false,
@@ -284,6 +289,7 @@ export class ConsumiPrComponent implements OnInit {
           let congCalc = 0;
           let totCalc = 0;
           let totaleDich = 0;
+          let totaleDichOrigine = 0;
           let conguaglioDichPrec = 0;
           let rateoDichPrec = 0;
           res.map((elem, idx) => {
@@ -303,7 +309,8 @@ export class ConsumiPrComponent implements OnInit {
             congDich += elem.conguaglio_dich;
             congCalc += elem.conguaglio_calc;
             totCalc += elem.totaleCalcolato;
-            totaleDich += elem.totaleDich;            
+            totaleDich += elem.totaleDich;      
+            totaleDichOrigine += elem.totaleDichOrigine;      
             this.anagraficaSoggettiService.storicoConsumi( elem.id_consumi)
             .subscribe( ret => {
               
@@ -382,6 +389,7 @@ export class ConsumiPrComponent implements OnInit {
             addizionale_liquidata: 0,
             totaleCalcolato: totCalc,
             totaleDich: totaleDich,
+            totaleDichOrigine: totaleDichOrigine,
             nuoviAllacciamenti: null,
             concilia: false,
             scarti: false,
@@ -442,6 +450,16 @@ export class ConsumiPrComponent implements OnInit {
     }, err => {
       this.logger.error(err);
     });
+    
+    
+//    this.anagraficaSoggettiService.controlloImportiConsumi()
+//    .subscribe(resp => {
+//      this.listaMessaggiCtrlImporti= resp;
+//    }, err => {
+//      this.logger.error(err);
+//    });
+    
+    
 
   }
 

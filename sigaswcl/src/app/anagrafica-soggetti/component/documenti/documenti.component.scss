@@ -237,3 +237,19 @@
     top: 4px;
     left: 30px;
   }
+  
+.accordion-toggle:after 						{font-family:'Glyphicons Halflings'; content:"▼"; float:right; color:grey;}
+.accordion-toggle.collapsed:after 			{content:"▲";}
+
+
+/* Styling of the collapsible row */
+td.collapse-row {
+    border-style: none;
+    padding: 0;
+}
+
+
+.dettagli-subTable-td {
+    width: 30% !important
+}
+

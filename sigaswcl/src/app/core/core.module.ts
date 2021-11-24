@@ -8,12 +8,17 @@ import { LoggerService } from './services/logger.service';
 import { HeaderComponent } from './component/header/header.component';
 import { FooterComponent } from './component/footer/footer.component';
 import { BreadcrumbsComponent } from './component/breadcrumbs/breadcrumbs.component';
-import { ErrorComponent } from './component/error/error.component';
+import { ErrorComponent } from './component/error/error.component'; 
+import { SigasAlertComponent } from '../shared/component/sigas-alert/sigas-alert.component';
+import { SharedModule } from '../shared/shared.module';
+import { TemplateModule } from '../template/template.module';
 
 @NgModule({
   imports: [
+SharedModule,
     CommonModule,
     RouterModule,
+    TemplateModule,
     HttpClientModule
   ],
   exports: [

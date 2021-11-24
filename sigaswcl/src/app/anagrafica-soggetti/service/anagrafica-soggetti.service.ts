@@ -37,6 +37,7 @@ import { ConfermaAnaComunicazioniRequest } from '../../commons/request/conferma-
 import { RimborsoVO } from '../../commons/vo/rimborso-vo';
 import { RicercaAnaComunicazioniRequest } from '../../commons/request/ricerca-anaComunicazioni-request';
 import { AllarmeDocumentoRequest } from '../../commons/request/allarme-documento-request';
+import { MessaggiVO } from '../../commons/vo/messaggi-vo';
 
 @Injectable({
   providedIn: 'root'
@@ -253,6 +254,13 @@ export class AnagraficaSoggettiService {
     return this.http.get<Array<ConsumiPrVO>>(url, { params: params });
   }
   
+  public ricercaConsumiForProvinceAnnoPrec() {
+      var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvince';
+      let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())
+      .set('anno', (+this.anno-1).toLocaleString().replace(".", ""));
+      return this.http.get<Array<ConsumiPrVO>>(url, { params: params });
+    }
+  
   public ricercaConsumiForProvinceMock() {
    var url: string = 'assets/mock/consumi-pr.json';
     return this.http.get<Array<ConsumiPrVO>>(url);
@@ -262,6 +270,14 @@ export class AnagraficaSoggettiService {
       var url: string = this.config.getBEServer() + '/rest/home/ricercaVersamentiPerProvince';
       let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())
       .set('anno', this.anno);
+      return this.http.get<Array<VersamentiPrVO>>(url, { params: params });
+  }
+  
+  
+  public ricercaVersamentiForProvinceAnnoPrec() {
+      var url: string = this.config.getBEServer() + '/rest/home/ricercaVersamentiPerProvince';    
+      let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())     
+      .set('anno',(+this.anno -1).toLocaleString());
       return this.http.get<Array<VersamentiPrVO>>(url, { params: params });
   }
   
@@ -363,10 +379,18 @@ export class AnagraficaSoggettiService {
     let params = new HttpParams().set('id', this.idConsumi.toString());
     return this.http.get<Array<ScartoVO>>(url, { params: params });
   }
+  
+//  public controlloImportiConsumi() {
+//      var url: string = this.config.getBEServer() + '/rest/home/controlloImportiConsumi';
+//      let params = new HttpParams().set('id', this.idConsumi.toString());
+//      return this.http.get<Array<MessaggiVO>>(url, { params: params });
+//    }
 
   public getAllAliquote() {
     var url: string = this.config.getBEServer() + '/rest/home/getAllAliquote';
-    return this.http.get<Array<AliquotaVO>>(url);
+  console.log(this.anno);
+  let params = new HttpParams().set('annoDichiarazione', this.anno=='' ? '9999':this.anno.toString());
+    return this.http.get<Array<AliquotaVO>>(url, { params: params});
   }
 
   public confermaModificaConsumi(consumiUpdate: ConsumiPrVO, scartiUpdate: Array<ScartoVO>) {
@@ -375,7 +399,15 @@ export class AnagraficaSoggettiService {
     const body = new ConfermaConsumiRequest(consumiUpdate, scartiUpdate);
     return this.http.post<ConsumiPrVO>(url, body);
   }
+  
+  public updateTotaleDichConsumi(consumiUpdate: ConsumiPrVO) {
+      var url: string = this.config.getBEServer() + '/rest/home/updateTotaleDichConsumi';
 
+      const body = new ConfermaConsumiRequest(consumiUpdate, null);
+      return this.http.post<ConsumiPrVO>(url, body);
+    }
+  
+  
   public updateCompensazioneConsumi(consumiUpdate: ConsumiPrVO) {
     var url: string = this.config.getBEServer() + '/rest/home/updateCompensazioneConsumi'; 
 
@@ -518,6 +550,25 @@ export class AnagraficaSoggettiService {
   public getUrlScaricaDocumento(): String {
     return this.config.getBEServer() + '/rest/home/stampaDocumento/';
   }
+  
+  public getUrlScaricaDocumentoAllegato(descComunicazione: string, fileName: string): String {
+      return this.config.getBEServer() + '/rest/home/stampaDocumentoAllegato/'+descComunicazione+'/'+fileName;
+    }
+  
+  
+  public getUrlScaricaPacchetto(descComunicazione: string) {
+      console.log('call ricercaAccertamenti');
+      var url: string = this.config.getBEServer() + '/rest/home/scaricaPacchetto';
+      let params = new HttpParams().set('descComunicazione', descComunicazione);
+      
+      return this.http.get(url,{params : params})
+    }
+  
+  public getUrlScaricaDocumentoMaster(): String {
+      return this.config.getBEServer() + '/rest/home/stampaDocumentoMaster/';
+    }
+  
+  
 
   fileChange(file: File): Observable<AnaComunicazioniVO> {
     var url: string = this.config.getBEServer() + '/rest/home/salvaAllegatoVerbale';
@@ -603,6 +654,11 @@ export class AnagraficaSoggettiService {
     var url: string = this.config.getBEServer() + '/rest/versamenti/ricercaVersamenti';
     return this.http.post<Array<VersamentiPrVO>>(url, this.ricercaVersamentiRequest);
   }
+  
+  public ricercaVersamentiCalcoli(ricercaVersamentiRequest: RicercaVersamentiRequest) {
+      var url: string = this.config.getBEServer() + '/rest/versamenti/ricercaVersamenti';
+      return this.http.post<Array<VersamentiPrVO>>(url, ricercaVersamentiRequest);
+    }
 
   public allarmeSoggetto( allarme: boolean, id_consumi: number ) {
       var url: string = this.config.getBEServer() + '/rest/versamenti/allarmeSoggetto';
@@ -666,5 +722,15 @@ export class AnagraficaSoggettiService {
       console.log('Update url', url);
       console.log('Body',this.listaAccertamentiRequest);
       return this.http.post<VersamentiPrVO>(url, this.listaAccertamentiRequest);
+    }
+    
+    /**
+     * Consente di eliminare un documento.
+     *
+     * @param idDocumento
+     */
+    public eliminaDocumento(idDocumento: number) {
+        const url = this.config.getBEServer() + '/rest/home/delete/' + idDocumento;
+        return this.http.delete(url, {});
     }
 }

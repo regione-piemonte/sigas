@@ -1,5 +1,6 @@
 import { AnagraficaSoggettoVO } from './soggetti-vo';
 import { TipoComunicazioniVO } from './tipo-comunicazioni-vo';
+import { AllegatoVO } from './allegato-vo';
 
 export class AnaComunicazioniVO {
 
@@ -14,6 +15,9 @@ export class AnaComunicazioniVO {
         public datiRiassuntivi: string,
         public nprotocollo: string,
         public rifArchivio: string,
-        public allarmeOn: boolean
+        public allarmeOn: boolean,
+        public allegati: Array<AllegatoVO>,
+        private delDate: Date,
+        private delUser: string
         ) { }
 }
