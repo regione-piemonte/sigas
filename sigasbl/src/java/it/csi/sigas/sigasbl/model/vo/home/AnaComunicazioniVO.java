@@ -5,6 +5,7 @@
 package it.csi.sigas.sigasbl.model.vo.home;
 
 import java.util.Date;
+import java.util.List;
 
 import it.csi.sigas.sigasbl.common.rest.VO;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
@@ -30,6 +31,9 @@ public class AnaComunicazioniVO implements VO {
 	private Date insDate;
 	private Date modDate;
 	private String modUser;
+	private List<AllegatoVO> allegati;
+	private Date delDate;
+	private String delUser;
 
 	public long getIdComunicazione() {
 		return idComunicazione;
@@ -122,6 +126,25 @@ public class AnaComunicazioniVO implements VO {
 	public void setModUser(String modUser) {
 		this.modUser = modUser;
 	}
+	public List<AllegatoVO> getAllegati() {
+		return allegati;
+	}
+	public void setAllegati(List<AllegatoVO> allegati) {
+		this.allegati = allegati;
+	}
+	public Date getDelDate() {
+		return delDate;
+	}
+	public void setDelDate(Date delDate) {
+		this.delDate = delDate;
+	}
+	public String getDelUser() {
+		return delUser;
+	}
+	public void setDelUser(String delUser) {
+		this.delUser = delUser;
+	}
+	
 	
 	
 }

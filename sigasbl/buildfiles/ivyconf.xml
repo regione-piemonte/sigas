@@ -3,6 +3,7 @@
   * Copyright Regione Piemonte - 2020
 -->
 
+
 <ivysettings>
 	<settings defaultCache="${basedir}/build/cache" defaultResolver="myUrlResolver"/>
 	<resolvers>

@@ -47,6 +47,7 @@ public class DichConsumiEntityMapperImpl implements DichConsumiEntityMapper {
 	    consumiPrVO.setArrotondamenti(dto.getArrotondamenti()); 
 	    consumiPrVO.setTotaleCalcolato(dto.getTotaleCalcolato());
 	    consumiPrVO.setTotaleDich(dto.getTotaleDich());
+	    consumiPrVO.setTotaleDichOrigine(dto.getTotaleDichOrigine());
 	    consumiPrVO.setNote(dto.getNote());
 	    consumiPrVO.setCompensazione(dto.getCompensazione());
 	    AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
@@ -108,6 +109,7 @@ public class DichConsumiEntityMapperImpl implements DichConsumiEntityMapper {
 		dto.setArrotondamenti(vo.getArrotondamenti()); 
 		dto.setTotaleCalcolato(vo.getTotaleCalcolato());
 		dto.setTotaleDich(vo.getTotaleDich());
+		dto.setTotaleDichOrigine(vo.getTotaleDichOrigine());
 		dto.setNote(vo.getNote());
 		dto.setCompensazione(vo.getCompensazione());
 		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = new SigasAnagraficaSoggetti();

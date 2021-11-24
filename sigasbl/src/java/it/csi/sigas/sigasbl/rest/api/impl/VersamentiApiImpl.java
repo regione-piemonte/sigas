@@ -21,10 +21,12 @@ import it.csi.sigas.sigasbl.dispatcher.IExportDispatcher;
 import it.csi.sigas.sigasbl.dispatcher.IVersamentiDispatcher;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
 import it.csi.sigas.sigasbl.model.vo.luoghi.ProvinciaVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoContabiliaRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.DownloadVersamentiReport;
 import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
@@ -147,6 +149,18 @@ public class VersamentiApiImpl extends SpringSupportedResource implements IVersa
         return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
 	}
 
+	@Override
+	public Response insertVersamentoContabilia(ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest) { 
+		logger.info("START: insertVersamentoContabilia");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+		List<PagamentiVersamentiVO> pagamentiVersamentiVO = this.versamentiDispatcher.insertVersamentoContabilia(confermaVersamentoContabiliaRequest, utente.getUsername(), utente.getIdentita().getCodFiscale());
+		logger.info("END: insertVersamentoContabilia");
+        return Response.ok(new ResponseVO<List<PagamentiVersamentiVO>>(Esito.SUCCESS, pagamentiVersamentiVO)).build();
+	}
+	
+	
 	@Override
 	public Response updateVersamento(ConfermaVersamentoRequest confermaVersamentoRequest) {
 		logger.info("START: updateVersamento");

@@ -5,6 +5,7 @@
 package it.csi.sigas.sigasbl.model.entity;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -76,6 +77,12 @@ public class SigasAnaComunicazioni implements Serializable {
 	 
 	@Column(name="mod_user", nullable=false)
 	private String modUser;
+	
+	@Column(name="del_date")
+	private Date delDate;
+
+	@Column(name="del_user")
+	private String delUser;
 
 	public SigasAnaComunicazioni() {
 	}
@@ -203,5 +210,23 @@ public class SigasAnaComunicazioni implements Serializable {
 	public SigasTipoComunicazioni getSigasTipoComunicazioni() {
 		return sigasTipoComunicazioni;
 	}
+
+	public Date getDelDate() {
+		return delDate;
+	}
+
+	public void setDelDate(Date delDate) {
+		this.delDate = delDate;
+	}
+
+	public String getDelUser() {
+		return delUser;
+	}
+
+	public void setDelUser(String delUser) {
+		this.delUser = delUser;
+	}
+	
+	
 
 }

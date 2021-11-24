@@ -54,6 +54,7 @@ public class ConsumiPrVO implements VO {
 	private boolean concilia;
 	private boolean scarti;
 	private double compensazione;
+	private double totaleDichOrigine;
 
 	public long getId_consumi() {
 		return id_consumi;
@@ -310,4 +311,14 @@ public class ConsumiPrVO implements VO {
 	public void setCompensazione(double compensazione) {
 		this.compensazione = compensazione;
 	}
+
+	public double getTotaleDichOrigine() {
+		return totaleDichOrigine;
+	}
+
+	public void setTotaleDichOrigine(double totaleDichOrigine) {
+		this.totaleDichOrigine = totaleDichOrigine;
+	}
+	
+	
 }

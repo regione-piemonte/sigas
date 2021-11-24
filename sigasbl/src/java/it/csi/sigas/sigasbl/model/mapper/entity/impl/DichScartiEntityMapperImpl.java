@@ -28,6 +28,7 @@ public class DichScartiEntityMapperImpl implements DichScartiEntityMapper {
 		vo.setAliquota(dto.getAliquota());
 		vo.setImposta(dto.getImposta());
 		vo.setConciliato(dto.isConciliato());
+		vo.setDescUsoScarto(dto.getDescUsoScarto());
 
 		return vo;
 	}
@@ -43,7 +44,8 @@ public class DichScartiEntityMapperImpl implements DichScartiEntityMapper {
 		dto.setAliquota(vo.getAliquota());;
 		dto.setImposta(vo.getImposta());
 		dto.setConciliato(vo.isConciliato());
-
+		dto.setDescUsoScarto(dto.getDescUsoScarto());
+		
 		return dto;
 	}
 

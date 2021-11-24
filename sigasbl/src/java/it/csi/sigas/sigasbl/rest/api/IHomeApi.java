@@ -11,6 +11,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,6 +27,7 @@ import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeDocumentoRequest;
 import it.csi.sigas.sigasbl.request.home.AssociaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaPagamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
@@ -35,6 +37,7 @@ import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
 import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.ValidazioneRequest;
 
@@ -47,9 +50,23 @@ public interface IHomeApi {
     @Path("/ricercaAnnualita")
     Response ricercaAnnualita();
 
+    @GET
+    @Path("/ricercaAnnualitaPagamenti")
+    Response ricercaAnnualitaPagamenti();
+
     @POST
     @Path("/ricercaConsumi")
     Response ricercaConsumi(RicercaConsumiRequest ricercaConsumiRequest);
+    
+    
+    @POST
+    @Path("/ricercaOrdinativi")
+    Response ricercaOrdinativi(RicercaOrdinativiRequest ricercaOrdinativiRequest);
+    
+    @POST
+    @Path("/conciliaPagamento")
+    Response conciliaPagamento(ConfermaPagamentoRequest confermaPagamentoRequest);
+
 
     @POST
     @Path("/ricercaListaSoggetti")
@@ -104,14 +121,22 @@ public interface IHomeApi {
     @GET
     @Path("/ricercaScartiByIdConsumi")
     Response ricercaScartiByIdConsumi(@Valid @QueryParam("id") @NotNull(message = "id non deve essere null") Long idConsumi);
+    
+    @GET
+    @Path("/controlloImportiConsumi")
+    Response controlloImportiConsumi(@Valid @QueryParam("id") @NotNull(message = "id non deve essere null") Long idConsumi);
 
     @GET
     @Path("/getAllAliquote")
-    Response getAllAliquote();
+    Response getAllAliquote(@Valid @QueryParam("annoDichiarazione") @NotNull(message = "annoDichiarazione non deve essere null") Integer annoDichiarazione);
 
     @POST
     @Path("/updateConsumi")
     Response updateConsumi(@Valid @NotNull(message = "ConfermaConsumi non deve essere vuota") ConfermaConsumiRequest confermaConsumiRequest);
+    
+    @POST
+    @Path("/updateTotaleDichConsumi")
+    Response updateTotaleDichConsumi(@Valid @NotNull(message = "ConfermaConsumi non deve essere vuota") ConfermaConsumiRequest confermaConsumiRequest);
 
     @POST
     @Path("/updateCompensazioneConsumi")
@@ -183,6 +208,13 @@ public interface IHomeApi {
 	@Path("/stampaDocumento/{descComunicazione}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public Response stampaDocumento(@Valid @PathParam("descComunicazione") @NotNull(message = "descComunicazione non deve essere null") String descComunicazione) throws FileNotFoundException, IOException;
+    
+    @GET
+	@Path("/stampaDocumentoAllegato/{descComunicazione}/{descAllegato}")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response stampaDocumentoAllegato(@Valid @PathParam("descComunicazione") @NotNull(message = "descComunicazione non deve essere null") String descComunicazione,
+			@Valid @PathParam("descAllegato") @NotNull(message = "descAllegato non deve essere null") String descAllegato) throws FileNotFoundException, IOException;
+
 
     @GET
     @Path("/getAllTipoComunicazioni")
@@ -218,5 +250,19 @@ public interface IHomeApi {
     @POST
     @Path("/salvaElencoAccertamenti")
     Response salvaElencoAccertamenti(DownloadAccertamentiReport downloadAccertamentiReport);
+    
+    @POST
+    @Path("/eliminaConciliazione")
+    Response eliminaConciliazione(ConfermaPagamentoRequest confermaPagamentoRequest);
+    
+    @GET
+	@Path("/stampaDocumentoMaster/{descComunicazione}")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response stampaDocumentoMaster(@Valid @PathParam("descComunicazione") @NotNull(message = "descComunicazione non deve essere null") String descComunicazione) throws FileNotFoundException, IOException;
+    
+    @DELETE
+    @Path("/delete/{idDocumento}")
+    Response deleteDocumento(@Valid @PathParam("idDocumento") @NotNull(message = "idDocumento non deve essere null") Long idDocumento);
+   
     
 }

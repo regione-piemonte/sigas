@@ -49,6 +49,9 @@ public class SigasDichScarti implements Serializable {
 	@Column(name="conciliato")
 	private boolean conciliato;
 	
+	@Column(name="desc_uso_scarto")
+	private String descUsoScarto;
+	
 	public SigasDichScarti() {
 	}
 
@@ -107,5 +110,15 @@ public class SigasDichScarti implements Serializable {
 	public void setConciliato(boolean conciliato) {
 		this.conciliato = conciliato;
 	}
+
+	public String getDescUsoScarto() {
+		return descUsoScarto;
+	}
+
+	public void setDescUsoScarto(String descUsoScarto) {
+		this.descUsoScarto = descUsoScarto;
+	}
+
+	
 
 }

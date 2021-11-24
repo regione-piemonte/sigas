@@ -157,11 +157,11 @@ public class ExportServiceImpl implements IExportService {
 		jasperParam.put("anno", downloadVersamentiReport.getAnno());
 		jasperParam.put("id_anag", downloadVersamentiReport.getId_anag());
 		jasperParam.put("id_provincia", downloadVersamentiReport.getId_provincia());
-		jasperParam.put("id_tipo_versamento", downloadVersamentiReport.getId_tipo_versamento());
+		jasperParam.put("id_tipo_carrello", downloadVersamentiReport.getId_tipo_carrello());
 		jasperParam.put("mese", downloadVersamentiReport.getMese());
 		
-		if(downloadVersamentiReport.getId_tipo_versamento()!=null && downloadVersamentiReport.getId_tipo_versamento().intValue()!=0) {
-			String descrizioneTipoVersamento = sigasTipoVersamentoRepository.findOne(downloadVersamentiReport.getId_tipo_versamento()).getDenominazione();
+		if(downloadVersamentiReport.getId_tipo_carrello()!=null && downloadVersamentiReport.getId_tipo_carrello().intValue()!=0) {
+			String descrizioneTipoVersamento = sigasTipoVersamentoRepository.findOne(downloadVersamentiReport.getId_tipo_carrello()).getDenominazione();
 			jasperParam.put("tipologiaFiltro", descrizioneTipoVersamento);
 		}else {
 			jasperParam.put("tipologiaFiltro", null);

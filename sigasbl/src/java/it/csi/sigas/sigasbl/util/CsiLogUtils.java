@@ -29,8 +29,11 @@ public class CsiLogUtils {
 	private static final String CODICE_UNITA_INSTALLAZIONE = "codiceUnitaInstallazione";
 	
 	
-	
 	public static CsiLogAudit getCsiLogAudit(SigasCParametroRepository sigasCParametroRepository, String operazione, String oggOper, String keyOper) {
+		return getCsiLogAudit(sigasCParametroRepository, operazione, oggOper, keyOper, false);
+	}
+	
+	public static CsiLogAudit getCsiLogAudit(SigasCParametroRepository sigasCParametroRepository, String operazione, String oggOper, String keyOper, boolean isAsyncCall) {
 		
 //		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 		
@@ -57,15 +60,21 @@ public class CsiLogUtils {
 		String ip = request.getRemoteAddr();
 		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		Object principal = auth.getPrincipal();
-		UserDetails utente = (UserDetails) principal;
 		
 		CsiLogAudit csiLogAudit = new CsiLogAudit();
 		CsiLogAuditPK csiLogAuditPK = new CsiLogAuditPK();
 		csiLogAuditPK.setDataOra(new Date());
 //		csiLogAuditPK.setKeyOper(request.getRequestedSessionId());
 		csiLogAuditPK.setKeyOper(keyOper);
-		csiLogAuditPK.setUtente(utente.getIdentita().getCodFiscale());
+
+		if(!isAsyncCall) {
+			Object principal = auth.getPrincipal();
+			UserDetails utente = (UserDetails) principal;
+			csiLogAuditPK.setUtente(utente.getIdentita().getCodFiscale());
+		}
+		else {
+			csiLogAuditPK.setUtente("PPAY_ASYNC");
+		}
 		
 		csiLogAudit.setId(csiLogAuditPK);
 		csiLogAudit.setIdAddress(ip);

@@ -13,7 +13,7 @@ public class DownloadVersamentiReport implements Serializable{
 	private Long id_anag;
     private String anno;
     private Long id_provincia;
-    private Long id_tipo_versamento;
+    private Long id_tipo_carrello;
     private String mese;
     
 	public Long getId_anag() {
@@ -34,11 +34,11 @@ public class DownloadVersamentiReport implements Serializable{
 	public void setId_provincia(Long id_provincia) {
 		this.id_provincia = id_provincia;
 	}
-	public Long getId_tipo_versamento() {
-		return id_tipo_versamento;
+	public Long getId_tipo_carrello() {
+		return id_tipo_carrello;
 	}
-	public void setId_tipo_versamento(Long id_tipo_versamento) {
-		this.id_tipo_versamento = id_tipo_versamento;
+	public void setId_tipo_carrello(Long id_tipo_carrello) {
+		this.id_tipo_carrello = id_tipo_carrello;
 	}
 	public String getMese() {
 		return mese;

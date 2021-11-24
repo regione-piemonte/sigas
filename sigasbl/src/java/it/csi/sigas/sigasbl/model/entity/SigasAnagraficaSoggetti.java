@@ -106,6 +106,10 @@ public class SigasAnagraficaSoggetti implements Serializable {
 	@Version
 	@Column(name="version", nullable=false)
 	private long version;
+	
+	
+	@Column(name="cf_piva", nullable=false)
+	private String cfPiva;
 
 	public SigasAnagraficaSoggetti() {
 	}
@@ -293,5 +297,15 @@ public class SigasAnagraficaSoggetti implements Serializable {
 	public void setVersion(long version) {
 		this.version = version;
 	}
+
+	public String getCfPiva() {
+		return cfPiva;
+	}
+
+	public void setCfPiva(String cfPiva) {
+		this.cfPiva = cfPiva;
+	}
+	
+	
 	
 }

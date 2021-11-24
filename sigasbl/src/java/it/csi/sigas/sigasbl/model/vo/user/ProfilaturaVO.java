@@ -19,6 +19,16 @@ public class ProfilaturaVO implements VO {
 	private String codiceFiscaleUtente;
 	private String nome;
 	private String cognome;
+	
+	private Boolean privatoNonAccareditato;
+	private Boolean abilitaPrivato;
+	private Boolean abilitaUtenteRegione;
+	
+	private String ruoli;
+	
+	private String messaggioWarning;
+	private Boolean showMessage;
+	private String levelMessage;
 
 	// DOGANIERE
 	private Boolean abilitaConsultaDoganiere;
@@ -70,10 +80,74 @@ public class ProfilaturaVO implements VO {
 	public void setAbilitaConsultaDoganiere(Boolean abilitaConsultaDoganiere) {
 		this.abilitaConsultaDoganiere = abilitaConsultaDoganiere;
 	}
+	
+	
+
+	public Boolean getAbilitaPrivato() {
+		return abilitaPrivato;
+	}
+
+	public void setAbilitaPrivato(Boolean abilitaPrivato) {
+		this.abilitaPrivato = abilitaPrivato;
+	}
+
+	public Boolean getAbilitaUtenteRegione() {
+		return abilitaUtenteRegione;
+	}
+
+	public void setAbilitaUtenteRegione(Boolean abilitaUtenteRegione) {
+		this.abilitaUtenteRegione = abilitaUtenteRegione;
+	}
+	
+	
+	
+
+	public Boolean getPrivatoNonAccareditato() {
+		return privatoNonAccareditato;
+	}
+
+	public void setPrivatoNonAccareditato(Boolean privatoNonAccareditato) {
+		this.privatoNonAccareditato = privatoNonAccareditato;
+	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+
+	public String getRuoli() {
+		return ruoli;
+	}
+
+	public void setRuoli(String ruoli) {
+		this.ruoli = ruoli;
+	}
+
+	public String getMessaggioWarning() {
+		return messaggioWarning;
+	}
+
+	public void setMessaggioWarning(String messaggioWarning) {
+		this.messaggioWarning = messaggioWarning;
+	}
+
+	public Boolean getShowMessage() {
+		return showMessage;
+	}
+
+	public void setShowMessage(Boolean showMessage) {
+		this.showMessage = showMessage;
+	}
+
+	public String getLevelMessage() {
+		return levelMessage;
+	}
+
+	public void setLevelMessage(String levelMessage) {
+		this.levelMessage = levelMessage;
+	}
+	
+	
+	
 
 }

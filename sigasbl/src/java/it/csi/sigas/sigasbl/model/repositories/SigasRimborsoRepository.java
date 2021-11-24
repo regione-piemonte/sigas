@@ -17,4 +17,5 @@ public interface SigasRimborsoRepository extends CrudRepository<SigasRimborso, L
 	
 	List<SigasRimborso> findBySigasAnagraficaSoggettiIdAnag(long idAnag);
 
+	SigasRimborso findBySigasAnagraficaSoggettiIdAnagAndSigasAnaComunicazioniIdComunicazione(long idAnag, long idComunicazione);
 }

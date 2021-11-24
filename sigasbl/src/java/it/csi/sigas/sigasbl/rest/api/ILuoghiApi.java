@@ -30,4 +30,15 @@ public interface ILuoghiApi {
 	@Path("/provinciaBySigla")
 	public Response provinciaBySigla(@QueryParam("siglaProvincia") String siglaProvincia) ;
 	
+
+	@GET
+	@Path("/comuni")
+	public Response getAllComuni();
+
+
+	@GET
+	@Path("/ricercaIndirizzo")
+	public Response ricercaIndirizzo(@QueryParam("indirizzo") String indirizzo, @QueryParam("id") Long id);
+	
+	
 }

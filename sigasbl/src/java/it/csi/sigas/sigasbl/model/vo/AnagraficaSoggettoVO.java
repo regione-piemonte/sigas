@@ -36,6 +36,7 @@ public class AnagraficaSoggettoVO implements VO {
 	private Date insDate;
 	private Date modDate;
 	private String modUser;
+	private String cfPiva;
 
 	public Long getIdAnag() {
 
@@ -228,6 +229,14 @@ public class AnagraficaSoggettoVO implements VO {
 
 	public void setModUser(String modUser) {
 		this.modUser = modUser;
+	}
+
+	public String getCfPiva() {
+		return cfPiva;
+	}
+
+	public void setCfPiva(String cfPiva) {
+		this.cfPiva = cfPiva;
 	}
 	
 	

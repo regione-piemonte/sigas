@@ -7,6 +7,7 @@ package it.csi.sigas.sigasbl.common.utils;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateRange implements Serializable {
 
@@ -53,6 +54,18 @@ public class DateRange implements Serializable {
 			}
 		}
 		return cond;
+	}
+	
+	public static boolean intersectYear(Date rng1, Date rng2) {
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+		cal.setTime(rng1);
+		int yearStart = cal.get(Calendar.YEAR);
+		cal.setTime(rng2);
+		int yearEnd = cal.get(Calendar.YEAR);
+		if(yearStart==yearEnd)
+			return true;
+		else
+			return false;
 	}
 
 	private static boolean isInRange(DateContainer curentTasso, Date ub12) {

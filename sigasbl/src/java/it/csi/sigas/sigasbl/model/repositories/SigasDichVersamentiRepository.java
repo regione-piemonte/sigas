@@ -62,6 +62,9 @@ public interface SigasDichVersamentiRepository extends CrudRepository<SigasDichV
 	
 	SigasDichVersamenti findBySigasAnagraficaSoggettiIdAnagAndMeseAndSigasTipoVersamentoIdTipoVersamentoAndAnnualitaAndSigasProvinciaIdProvincia(
 			Long id, String mese, Long idTipoVersamento, String annualita, long idProvincia);
+	
+	List<SigasDichVersamenti> findBySigasAnagraficaSoggettiIdAnagAndSigasTipoVersamentoIdTipoVersamentoAndAnnualitaAndSigasProvinciaIdProvincia(
+			Long id, Long idTipoVersamento, String annualita, long idProvincia);
 
 	SigasDichVersamenti findByIdVersamentoNotAndMeseAndSigasTipoVersamentoIdTipoVersamentoAndAnnualitaAndSigasProvinciaIdProvinciaAndSigasAnagraficaSoggettiIdAnag(
 			long idVersamento, String mese, Long idTipoVersamento, String valueOf, long idProvincia, long idAnag);
@@ -82,5 +85,8 @@ public interface SigasDichVersamentiRepository extends CrudRepository<SigasDichV
 			Long idAnag, String anno);
 	
 	List<SigasDichVersamenti> findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(Long idConsumi, Long provincia);
+	
+	@Query("SELECT a FROM SigasDichVersamenti a where a.idVersamento = :id")
+	SigasDichVersamenti findById(@Param("id")Long id);
 
 }

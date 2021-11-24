@@ -15,7 +15,7 @@ import it.csi.sigas.sigasbl.model.entity.SigasAnaComunicazioni;
 @Repository
 public interface SigasAnaComunicazioniRepository extends CrudRepository<SigasAnaComunicazioni, Long> {
 
-	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagOrderByDataDocumentoAsc(Long idAnag);
+	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(Long idAnag);
 
 	SigasAnaComunicazioni findByDescrizioneAndAnnualitaOrderByDataDocumentoAsc(String filename, String anno);
 
@@ -27,11 +27,11 @@ public interface SigasAnaComunicazioniRepository extends CrudRepository<SigasAna
 
 	List<SigasAnaComunicazioni> findByAnnualitaOrderByDataDocumentoAsc(String anno);
 
-	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndAnnualitaOrderByDataDocumentoAsc(Long idAnag, String anno);
+	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(Long idAnag, String anno);
 
-	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndSigasTipoComunicazioniIdTipoComunicazioneOrderByDataDocumentoAsc(Long idAnag, Long idTipoComunicazione);
+	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndSigasTipoComunicazioniIdTipoComunicazioneAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(Long idAnag, Long idTipoComunicazione);
 
-	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasTipoComunicazioniIdTipoComunicazioneOrderByDataDocumentoAsc(Long idAnag, String anno, Long idTipoComunicazione);
+	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasTipoComunicazioniIdTipoComunicazioneAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(Long idAnag, String anno, Long idTipoComunicazione);
 	
 	List<SigasAnaComunicazioni> findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasTipoComunicazioniDenominazioneOrderByDataDocumentoAsc(Long idAnag, String anno, String tipoComunicazione);
 }

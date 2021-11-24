@@ -10,10 +10,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import it.csi.sigas.sigasbl.common.AuthorizationRoles;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
 import it.csi.sigas.sigasbl.model.vo.luoghi.ProvinciaVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoContabiliaRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
 
@@ -26,13 +28,13 @@ public interface IVersamentiDispatcher {
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<ProvinciaVO> ricercaProvinceVersamenti(Long idAnag);
 
-	@PreAuthorize(value = AuthorizationRoles.HOME)
+	@PreAuthorize(value = AuthorizationRoles.HOME +" OR "+ AuthorizationRoles.UTENTE)
 	List<TipoVersamentoVO> ricercaTipoVersamenti();
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<String> ricercaMeseVersamenti(Long id, String annualita);
 
-	@PreAuthorize(value = AuthorizationRoles.HOME)
+	@PreAuthorize(value = AuthorizationRoles.HOME +" OR "+ AuthorizationRoles.UTENTE)
 	List<VersamentiPrVO> ricercaVersamenti(RicercaVersamentiRequest ricercaVersamentiRequest);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
@@ -50,7 +52,8 @@ public interface IVersamentiDispatcher {
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	void insertVersamento(ConfermaVersamentoRequest confermaVersamentoRequest, String username, String codFiscale);
 
-
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	List<PagamentiVersamentiVO> insertVersamentoContabilia(ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest, String username, String codFiscale);
 	
 
 }

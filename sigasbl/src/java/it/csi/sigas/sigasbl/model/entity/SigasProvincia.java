@@ -13,12 +13,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
 
 
 /**
@@ -61,6 +64,8 @@ public class SigasProvincia implements Serializable {
 	//bi-directional many-to-one association to sigasSigasAnagraficaSoggetti
 	@OneToMany(mappedBy="sigasProvincia")
 	private List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettis;
+
+	
 
 
 	public SigasProvincia() {
@@ -143,5 +148,8 @@ public class SigasProvincia implements Serializable {
 	public void setSigasSigasAnagraficaSoggettis(List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettis) {
 		this.sigasAnagraficaSoggettis = sigasAnagraficaSoggettis;
 	}
+
+	
+	
 
 }

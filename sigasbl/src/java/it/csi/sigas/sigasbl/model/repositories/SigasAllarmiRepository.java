@@ -44,5 +44,8 @@ public interface SigasAllarmiRepository extends CrudRepository<SigasAllarmi, Int
 	
 	@Query(value="select id_allarme from sigas_allarmi sa where id_versamento =?1 and id_tipo_allarme =?2 ", nativeQuery=true)
 	Integer findByIdVersamentoAndIdTipoAllarme(long idVersamento, int idTipoAllarme);
+	
+	
+	List<SigasAllarmi> findBySigasAnaComunicazioniIdComunicazione(Long idComunicazione);
 
 }

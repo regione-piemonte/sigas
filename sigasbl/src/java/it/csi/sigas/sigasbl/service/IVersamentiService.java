@@ -7,10 +7,12 @@ package it.csi.sigas.sigasbl.service;
 import java.util.List;
 
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
 import it.csi.sigas.sigasbl.model.vo.luoghi.ProvinciaVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoContabiliaRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
 
@@ -36,6 +38,6 @@ public interface IVersamentiService {
 
 	void updateVersamento(ConfermaVersamentoRequest confermaVersamentoRequest, String user, String codFiscale);
 
-
+	List<PagamentiVersamentiVO> insertVersamentoContabilia(ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest, String user, String codFiscale);
 
 }

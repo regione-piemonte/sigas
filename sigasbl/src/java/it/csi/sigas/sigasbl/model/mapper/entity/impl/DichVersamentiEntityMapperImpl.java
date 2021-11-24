@@ -80,6 +80,7 @@ public class DichVersamentiEntityMapperImpl implements DichVersamentiEntityMappe
 		versamentiPrVO.setInsUser(dto.getInsUser());
 		versamentiPrVO.setModDate(dto.getModDate());
 		versamentiPrVO.setModUser(dto.getModUser());
+//		versamentiPrVO.setEliminato(dto.isEliminato());
 		
 		return versamentiPrVO;
 	}
@@ -135,6 +136,7 @@ public class DichVersamentiEntityMapperImpl implements DichVersamentiEntityMappe
 		dto.setModUser(vo.getModUser());
 		dto.setInsDate(vo.getInsDate());
 		dto.setInsUser(vo.getInsUser());
+//		dto.setEliminato(vo.isEliminato());
 		return dto;
 	}
 

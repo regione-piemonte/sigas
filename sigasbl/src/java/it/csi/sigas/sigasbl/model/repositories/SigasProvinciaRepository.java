@@ -20,6 +20,13 @@ public interface SigasProvinciaRepository extends CrudRepository<SigasProvincia,
 
 //	@Query("select u from SigasProvincia u where u.fineValidita is null and u.siglaProvincia = ?1")
 	public SigasProvincia findBySiglaProvinciaAndFineValiditaIsNull(String siglaProvincia);
+	
+	
+
+
+
+	public SigasProvincia findByDenomProvinciaAndFineValiditaIsNull(String descrizioneProvincia);
+
 
 
 }

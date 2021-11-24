@@ -15,4 +15,9 @@ public abstract class Constants {
 	// MESSAGE REST
 	public static final String MESSAGE_SUCCESS = "SUCCESS";
 
+	
+	public static final String irideAppId = "irideAppId";
+	public static final String operatoreFO = "operatoreFO";
+	public static final String operatoreBO = "operatoreBO";
+	
 }

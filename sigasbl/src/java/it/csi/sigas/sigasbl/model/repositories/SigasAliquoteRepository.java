@@ -19,6 +19,9 @@ public interface SigasAliquoteRepository extends CrudRepository<SigasAliquote, L
 	
 	@Query("select u from SigasAliquote u where u.aliquota = :aliquota and u.progRigo = :progRigo and EXTRACT(YEAR FROM u.validitaStart ) <= :anno and EXTRACT(YEAR FROM u.validitaEnd ) >= :anno ")
 	public SigasAliquote findByAliquotaAndProgRigo(@Param("aliquota") double Aliquota, @Param("progRigo") String progRigo, @Param("anno") Integer anno);
+	
+	@Query("select u from SigasAliquote u where u.progRigo = :progRigo and EXTRACT(YEAR FROM u.validitaStart ) <= :anno and EXTRACT(YEAR FROM u.validitaEnd ) >= :anno ")
+	public List<SigasAliquote> findByProgRigoAndAnno( @Param("progRigo") String progRigo, @Param("anno") Integer anno);
 
 	public SigasAliquote findByProgRigo(String progRigo);
 	
@@ -30,5 +33,8 @@ public interface SigasAliquoteRepository extends CrudRepository<SigasAliquote, L
 	public List<SigasAliquote> findAllOrderByIdAliquota();
 
 	public List<SigasAliquote> findByProgRigoAndSigasTipoAliquoteIdTipoAliquota(String progRigo, Long idTipoAliquota);
+	
+	@Query("select sa from SigasAliquote sa  where :annoDichiarazione between extract(year from sa.validitaStart  ) and extract(year from sa.validitaEnd  )")
+	public List<SigasAliquote> findAliquotaByValiditaStartValiditaEnd(@Param("annoDichiarazione") Integer annoDichiarazione );
 	
 }

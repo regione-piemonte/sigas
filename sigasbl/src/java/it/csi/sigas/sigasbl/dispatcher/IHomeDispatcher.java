@@ -16,6 +16,8 @@ import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
+import it.csi.sigas.sigasbl.model.vo.home.MessaggiVO;
+import it.csi.sigas.sigasbl.model.vo.home.OrdinativiIncassoVO;
 import it.csi.sigas.sigasbl.model.vo.home.RimborsoVO;
 import it.csi.sigas.sigasbl.model.vo.home.ScartoVO;
 import it.csi.sigas.sigasbl.model.vo.home.SoggettiVO;
@@ -26,11 +28,13 @@ import it.csi.sigas.sigasbl.model.vo.impostazioni.AliquoteVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeDocumentoRequest;
 import it.csi.sigas.sigasbl.request.home.AssociaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaPagamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 
 
@@ -40,8 +44,14 @@ public interface IHomeDispatcher {
 	List<String> ricercaAnnualita();
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
+	List<String> ricercaAnnualitaPagamenti();
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<SoggettiVO> ricercaConsumi(RicercaConsumiRequest ricercaConsumiRequest);
 
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	List<OrdinativiIncassoVO> ricercaOrdinativi(RicercaOrdinativiRequest ricercaOrdinativiRequest);
+	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	AnagraficaSoggettoVO ricercaSoggettoByID(Long id);
 	
@@ -71,12 +81,18 @@ public interface IHomeDispatcher {
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<ScartoVO> ricercaScartiByIdConsumi(Long idConsumi);
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	List<MessaggiVO> controlloImportiConsumi(Long idConsumi);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
-	List<AliquoteVO> getAllAliquote();
+	List<AliquoteVO> getAllAliquote(Integer annoDichiarazione);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	ConsumiPrVO updateConsumi(ConfermaConsumiRequest confermaConsumiRequest, String user);
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	ConsumiPrVO updateTotaleDichConsumi(ConfermaConsumiRequest confermaConsumiRequest, String user);
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	ConsumiPrVO updateCompensazioneConsumi(ConfermaConsumiRequest confermaConsumiRequest, String user);
@@ -128,6 +144,9 @@ public interface IHomeDispatcher {
 	public byte[] getDocumento(String descComunicazione) throws FileNotFoundException, IOException;
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
+	public byte[] getStampaAllegato(String descComunicazione, String descAllegato) throws FileNotFoundException, IOException;
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
 	public List<TipoComunicazioniVO> getAllTipoComunicazioni();
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
@@ -145,5 +164,16 @@ public interface IHomeDispatcher {
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<VersamentiPrVO> listaAccertamentiAnagrafica(Long idAnag, String anno, String provincia);
 
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	OrdinativiIncassoVO conciliaPagamento(ConfermaPagamentoRequest confermaPagamentoRequest, String user);
+
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	OrdinativiIncassoVO eliminaConciliazione(ConfermaPagamentoRequest confermaPagamentoRequest);
+
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	public byte[] getDocumentoMaster(String descComunicazione) throws FileNotFoundException, IOException;
+	
+    @PreAuthorize(value = AuthorizationRoles.HOME)
+    boolean deleteDocumento(Long idDocumento);
 
 }

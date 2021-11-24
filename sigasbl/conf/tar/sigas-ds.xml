@@ -5,7 +5,7 @@
 -->
 <datasources>
 
-	<datasource jta="true"
+	<datasource
 		jndi-name="java:jboss/jdbc/sigasDS" pool-name="sigasDS"
 		enabled="true" use-java-context="true" use-ccm="true">
 		<connection-url>@@CONNECTION_URL@@</connection-url>

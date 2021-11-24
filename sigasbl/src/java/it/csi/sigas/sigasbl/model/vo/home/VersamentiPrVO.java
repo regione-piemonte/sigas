@@ -33,6 +33,7 @@ public class VersamentiPrVO implements VO {
 	private Date insDate;
 	private Date modDate;
 	private String modUser;
+	private double differenza;
 
 
 	public long getIdVersamento() {
@@ -167,6 +168,13 @@ public class VersamentiPrVO implements VO {
 	public void setModUser(String modUser) {
 		this.modUser = modUser;
 	}
+	public double getDifferenza() {
+		return differenza;
+	}
+	public void setDifferenza(double differenza) {
+		this.differenza = differenza;
+	}
+	
 
 	
 	

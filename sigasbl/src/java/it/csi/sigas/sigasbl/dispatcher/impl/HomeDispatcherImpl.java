@@ -17,6 +17,8 @@ import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
+import it.csi.sigas.sigasbl.model.vo.home.MessaggiVO;
+import it.csi.sigas.sigasbl.model.vo.home.OrdinativiIncassoVO;
 import it.csi.sigas.sigasbl.model.vo.home.RimborsoVO;
 import it.csi.sigas.sigasbl.model.vo.home.ScartoVO;
 import it.csi.sigas.sigasbl.model.vo.home.SoggettiVO;
@@ -27,11 +29,13 @@ import it.csi.sigas.sigasbl.model.vo.impostazioni.AliquoteVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeDocumentoRequest;
 import it.csi.sigas.sigasbl.request.home.AssociaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaPagamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.service.IHomeService;
 
@@ -47,8 +51,18 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	}
 	
 	@Override
+	public List<String> ricercaAnnualitaPagamenti() {
+		return HomeService.ricercaAnnualitaPagamenti();
+	}
+	
+	@Override
 	public List<SoggettiVO> ricercaConsumi(RicercaConsumiRequest ricercaConsumiRequest) {
 		return HomeService.ricercaConsumi(ricercaConsumiRequest);
+	}
+	
+	@Override
+	public List<OrdinativiIncassoVO> ricercaOrdinativi(RicercaOrdinativiRequest ricercaOrdinativiRequest) {
+		return HomeService.ricercaOrdinativi(ricercaOrdinativiRequest);
 	}
 		
 	@Override
@@ -102,8 +116,8 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	}
 	
 	@Override
-	public List<AliquoteVO> getAllAliquote() {
-		return HomeService.getAllAliquote();
+	public List<AliquoteVO> getAllAliquote(Integer annoDichiarazione) {
+		return HomeService.getAllAliquote(annoDichiarazione);
 	}
 	
 	@Override
@@ -182,6 +196,11 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	}
 	
 	@Override
+	public byte[] getStampaAllegato(String descComunicazione,  String descAllegato) throws FileNotFoundException, IOException {
+		return HomeService.getStampaAllegato(descComunicazione, descAllegato);
+	}
+	
+	@Override
 	public List<TipoComunicazioniVO> getAllTipoComunicazioni() {
 		return HomeService.getAllTipoComunicazioni();
 	}
@@ -226,6 +245,38 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	public void updateAccertamento(List<ConfermaVersamentoRequest> listaAccertamentiDaSalvare, String utente) {
 		HomeService.updateAccertamento(listaAccertamentiDaSalvare,utente);
 	}
+	
+	
+	@Override 
+	public OrdinativiIncassoVO conciliaPagamento(ConfermaPagamentoRequest confermaPagamentoRequest, String user) {
+		return HomeService.conciliaPagameto(confermaPagamentoRequest, user);
+	}
+
+	@Override
+	public OrdinativiIncassoVO eliminaConciliazione(ConfermaPagamentoRequest confermaPagamentoRequest) {
+		return HomeService.eliminaConciliazione(confermaPagamentoRequest);
+	}
+
+	@Override
+	public List<MessaggiVO> controlloImportiConsumi(Long idConsumi) {
+		return HomeService.controlloImportiConsumi(idConsumi);
+	}
+
+	@Override 
+	public ConsumiPrVO updateTotaleDichConsumi(ConfermaConsumiRequest confermaConsumiRequest, String user) {
+		return HomeService.updateTotaleDichConsumi(confermaConsumiRequest, user);
+	} 
 
 
+	@Override
+	public byte[] getDocumentoMaster(String descComunicazione) throws FileNotFoundException, IOException {
+		return HomeService.getDocumentoMaster(descComunicazione);
+	}
+
+	@Override
+	public boolean deleteDocumento(Long idDocumento) {
+		return HomeService.deleteDocumento(idDocumento);
+	}
+	
+	
 }

@@ -6,14 +6,16 @@ package it.csi.sigas.sigasbl.model.repositories;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
 
 @Repository
-public interface SigasAnagraficaSoggettiRepository extends CrudRepository<SigasAnagraficaSoggetti, Long> {
+public interface SigasAnagraficaSoggettiRepository extends CrudRepository<SigasAnagraficaSoggetti, Long> , JpaSpecificationExecutor<SigasAnagraficaSoggetti> {
 	
 	SigasAnagraficaSoggetti findByCodiceAzienda(String codiceAzienda);
 	
@@ -38,5 +40,30 @@ public interface SigasAnagraficaSoggettiRepository extends CrudRepository<SigasA
 	List<SigasAnagraficaSoggetti> findByCodiceAziendaStartingWith(String match);
 	
 	SigasAnagraficaSoggetti findByIdAnag(Long id);
+	
+	@Query(value="select sas.* from sigas_anagrafica_soggetti sas where sas.id_anag not in (select sdc.id_anag from sigas_dich_consumi sdc)", nativeQuery = true)
+	List<SigasAnagraficaSoggetti> findAnagraficaSoggettiNotInConsumi();
+	
+	
+	@Query(value=
+			"select" + 
+			"	s.*" + 
+			" from sigas_utenti u" + 
+			"	inner join sigas_utente_provvisorio up on (u.id_utente_provv = up.id_utente_provv AND up.stato='ACCETTATA')" +
+			"	inner join sigas_anagrafica_utente us on u.id_utente_provv = us.id_utente_provv" + 
+			"	inner join sigas_anagrafica_soggetti s on (s.id_anag = us.id_anag)" + 
+			" where" + 
+			"	(:cf='' OR u.codice_fiscale = :cf)",nativeQuery = true)
+	List<SigasAnagraficaSoggetti> findAziendeAccreditato(@Param("cf") String cf);
+	
+	
+	@Query(value=
+			"select" + 
+			"	distinct(s.*) " + 
+			" from sigas_documenti sd" + 
+			"	inner join sigas_anagrafica_soggetti s on (s.id_anag = sd.id_anag) ",nativeQuery = true)
+	List<SigasAnagraficaSoggetti> findAziendeDocumentiInoltrati();
+	
+	
 	
 }

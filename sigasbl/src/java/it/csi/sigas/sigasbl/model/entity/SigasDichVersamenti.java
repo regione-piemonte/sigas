@@ -94,6 +94,7 @@ public class SigasDichVersamenti implements Serializable {
 	@Column(name="importo_complessivo",nullable = true)
 	private double importoComplessivo;
 	
+	
 	public SigasDichVersamenti() {
 	}
 	
@@ -239,5 +240,28 @@ public class SigasDichVersamenti implements Serializable {
 
 	public void setImportoComplessivo(double importoComplessivo) {
 		this.importoComplessivo = importoComplessivo;
-	}	
+	}
+
+
+	public String printAll() {
+		return 	"idVersamento: " + idVersamento + ", " +
+				"sigasAnagraficaSoggetti: " + sigasAnagraficaSoggetti + ", " +
+				"sigasTipoVersamento: " + sigasTipoVersamento + ", " +
+				"sigasDichConsumi: " + sigasDichConsumi + ", " +
+				"sigasProvincia: " + sigasProvincia + ", " +
+				"dataVersamento: " + dataVersamento + ", " +
+				"annualita: " + annualita + ", " +
+				"importo: " + importo + ", " +
+				"ibanVers: " + ibanVers + ", " +
+				"insUser: " + insUser + ", " +
+				"insDate: " + insDate + ", " +
+				"modUser: " + modUser + ", " +
+				"modDate: " + modDate + ", " +
+				"mese: " + mese + ", " +
+				"tipologia: " + tipologia + ", " +
+				"note: " + note + ", " +
+				"dataAccertamento: " + dataAccertamento + ", " +
+				"importoComplessivo: " + importoComplessivo;
+
+	}
 }

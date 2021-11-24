@@ -6,8 +6,11 @@ package it.csi.sigas.sigasbl.model.vo.impostazioni;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import it.csi.sigas.sigasbl.common.rest.VO;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AliquoteVO implements VO {
 
 	private static final long serialVersionUID = -1L;

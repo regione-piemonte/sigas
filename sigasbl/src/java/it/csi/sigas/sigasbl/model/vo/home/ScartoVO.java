@@ -18,6 +18,7 @@ public class ScartoVO implements VO {
 	private double aliquota;
 	private double imposta;
 	private boolean conciliato;
+	private String descUsoScarto;
 	
 	public long getIdScarti() {
 		return idScarti;
@@ -60,6 +61,12 @@ public class ScartoVO implements VO {
 	}
 	public void setConciliato(boolean conciliato) {
 		this.conciliato = conciliato;
+	}
+	public String getDescUsoScarto() {
+		return descUsoScarto;
+	}
+	public void setDescUsoScarto(String descUsoScarto) {
+		this.descUsoScarto = descUsoScarto;
 	}
 	
 }

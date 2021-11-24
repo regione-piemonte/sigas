@@ -18,7 +18,9 @@ import it.csi.sigas.sigasbl.common.Esito;
 import it.csi.sigas.sigasbl.dispatcher.LuoghiDispatcher;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
 import it.csi.sigas.sigasbl.model.vo.luoghi.ComuneVO;
+import it.csi.sigas.sigasbl.model.vo.luoghi.NazioneVO;
 import it.csi.sigas.sigasbl.model.vo.luoghi.ProvinciaVO;
+import it.csi.sigas.sigasbl.model.vo.luoghi.RegioneVO;
 import it.csi.sigas.sigasbl.rest.api.ILuoghiApi;
 import it.csi.sigas.sigasbl.util.SpringSupportedResource;
 
@@ -54,5 +56,27 @@ public class LuoghiApiImpl extends SpringSupportedResource implements ILuoghiApi
 		logger.info("END: provinciaBySigla");
 		return Response.ok().entity(new ResponseVO<ProvinciaVO>(Esito.SUCCESS, lista)).build();
 	}
+	
+	
+
+
+
+	
+
+	@Override
+	public Response getAllComuni() {
+		List<ComuneVO> lista = luoghiDispatcher.getAllComuni();
+		return Response.ok().entity(new ResponseVO<List<ComuneVO>>(Esito.SUCCESS, lista)).build();
+	}
+
+
+	
+
+	@Override
+	public Response ricercaIndirizzo(@QueryParam("indirizzo") String indirizzo, @QueryParam("id") Long id) {
+		List<String> listaVie = luoghiDispatcher.ricercaIndirizzo(indirizzo, id);
+		return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, listaVie)).build();
+	}
+
 
 }

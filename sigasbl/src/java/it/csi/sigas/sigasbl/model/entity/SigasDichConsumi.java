@@ -120,7 +120,10 @@ public class SigasDichConsumi implements Serializable {
 	
 	@Column(name = "compensazione", nullable = false)
 	private double compensazione;
-
+	
+	@Column(name = "totale_dich_origine", nullable = false)
+	private double totaleDichOrigine;
+	
 	public SigasDichConsumi() {
 	}
 
@@ -355,5 +358,15 @@ public class SigasDichConsumi implements Serializable {
 	public void setNote(String note) {
 		this.note = note;
 	}
+
+	public double getTotaleDichOrigine() {
+		return totaleDichOrigine;
+	}
+
+	public void setTotaleDichOrigine(double totaleDichOrigine) {
+		this.totaleDichOrigine = totaleDichOrigine;
+	}
+	
+	
 
 }

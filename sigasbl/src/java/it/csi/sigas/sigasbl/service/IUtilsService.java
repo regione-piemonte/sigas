@@ -17,4 +17,7 @@ public interface IUtilsService {
 	public byte[] printReportExcel(String codReport, Map<String, Object> jasperParam) throws PrintException, IOException, SQLException, JRException;
 
 	public byte[] printReportWord(String reportName, Map<String, Object> jasperParam) throws PrintException, IOException, SQLException, JRException;
+
+	byte[] printReportPDF(String codReport, Map<String, Object> jasperParam, Map<String, String> mapSubReport)
+			throws PrintException, IOException, SQLException, JRException;
 }

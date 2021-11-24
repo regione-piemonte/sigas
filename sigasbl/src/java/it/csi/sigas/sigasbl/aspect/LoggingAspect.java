@@ -17,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -110,13 +111,26 @@ public class LoggingAspect {
 	private Object logInputOutput(String sourceType, ProceedingJoinPoint joinPoint, boolean logInput, boolean logOutput, boolean measureTiming) throws Throwable {
 
 		final String IDENTATION_PARAM = "aspectLogIdentationLevel";
-		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		Integer identationLevel = (Integer) request.getAttribute(IDENTATION_PARAM);
-		if (identationLevel == null)
-			identationLevel = 0;
+//		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+		HttpServletRequest request = null;
+		if (requestAttributes != null)
+			request = ((ServletRequestAttributes) requestAttributes).getRequest();
+		
+//		Integer identationLevel = (Integer) request.getAttribute(IDENTATION_PARAM);
+//		if (identationLevel == null)
+//			identationLevel = 0;
+//		String ray = getRequestRay(request);
+//
+//		request.setAttribute(IDENTATION_PARAM, identationLevel + 1);
+		
+		Integer identationLevel = 0;
+		if (request != null && request.getAttribute(IDENTATION_PARAM) != null)
+			identationLevel = (Integer) request.getAttribute(IDENTATION_PARAM);
 		String ray = getRequestRay(request);
 
-		request.setAttribute(IDENTATION_PARAM, identationLevel + 1);
+		if (request != null)
+			request.setAttribute(IDENTATION_PARAM, identationLevel + 1);
 
 		String rayPrefix = "[RAY" + ray + "] ";
 
@@ -204,7 +218,8 @@ public class LoggingAspect {
 			}
 		}
 
-		request.setAttribute(IDENTATION_PARAM, identationLevel);
+		if (requestAttributes != null)
+			request.setAttribute(IDENTATION_PARAM, identationLevel);
 		
 		logger.info(logPrefixHeader + closingTag);
 		
@@ -251,14 +266,21 @@ public class LoggingAspect {
 	}
 
 	private String getRequestRay(HttpServletRequest request) {
-		String ray = (String) request.getAttribute("aspectLogRequestRay");
+		String ray = null;
+		if(request!=null) {
+			ray = (String) request.getAttribute("aspectLogRequestRay");
+		}		
+		
 		if (ray == null) {
 			ray = String.valueOf(Double.valueOf(Math.floor(100000 + random.nextDouble() * 800000)).intValue());
-			request.setAttribute("aspectLogRequestRay", ray);
+			if(request!=null) {
+				request.setAttribute("aspectLogRequestRay", ray);
+			}
 		}
 
 		return ray;
 	}
+
 
 	private String serializeParameter(Object raw) {
 		if (raw == null)

@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import it.csi.sigas.sigasbl.request.home.AllarmeRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoContabiliaRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.DownloadVersamentiReport;
 import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
@@ -68,7 +69,11 @@ public interface IVersamentiApi {
     @POST
     @Path("/insertVersamento")
     Response insertVersamento(@Valid @NotNull(message = "ConfermaVersamentoRequest non deve essere vuota") ConfermaVersamentoRequest confermaVersamentoRequest);
-
+    
+    @POST
+    @Path("/insertVersamentoContabilia")
+    Response insertVersamentoContabilia(@Valid @NotNull(message = "ConfermaVersamentoContabiliaRequest non deve essere vuota") ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest);
+    
     @POST
     @Path("/updateVersamento")
     Response updateVersamento(@Valid @NotNull(message = "ConfermaVersamentoRequest non deve essere vuota") ConfermaVersamentoRequest confermaVersamentoRequest);

@@ -223,21 +223,30 @@ public class ImpostazioniServiceImpl implements IImpostazioniService {
 		
 		SigasAliquote sigasAliquotaToInsert = aliquoteEntityMapper.mapVOtoEntity(confermaAliquotaRequest.getAliquota());
 		
-	  	List<SigasAliquote> listaAliqote = sigasAliquoteRepository.findByProgRigoAndSigasTipoAliquoteIdTipoAliquota(confermaAliquotaRequest.getAliquota().getProgRigo(),confermaAliquotaRequest.getAliquota().getTipoAliquote().getIdTipoAliquota());
+//	  	List<SigasAliquote> listaAliqote = sigasAliquoteRepository.findByProgRigoAndSigasTipoAliquoteIdTipoAliquota(confermaAliquotaRequest.getAliquota().getProgRigo(),confermaAliquotaRequest.getAliquota().getTipoAliquote().getIdTipoAliquota());
+	  	List<SigasAliquote> listaAliqote = sigasAliquoteRepository.findAll();
+
 
 		if (listaAliqote != null) {
 			Iterator<SigasAliquote> it = listaAliqote.iterator();
 			while (it.hasNext()) {
 				SigasAliquote curentAliquota = (SigasAliquote) it.next();
-				if (DateRange.intersect(
+				if ((DateRange.intersect(
 						new DateContainer(curentAliquota.getValiditaStart(), curentAliquota.getValiditaEnd()),
 						new DateContainer(sigasAliquotaToInsert.getValiditaStart(),
-								sigasAliquotaToInsert.getValiditaEnd())))
+								sigasAliquotaToInsert.getValiditaEnd())) || 
+						DateRange.intersectYear(curentAliquota.getValiditaStart(), sigasAliquotaToInsert.getValiditaStart()) ||
+						DateRange.intersectYear(curentAliquota.getValiditaEnd(), sigasAliquotaToInsert.getValiditaEnd())) &&
+						curentAliquota.getSigasTipoAliquote().getIdTipoAliquota()==sigasAliquotaToInsert.getSigasTipoAliquote().getIdTipoAliquota())
 
-					throw new BusinessException("Esiste gia' un'aliquota con ProgRigo "
-							+ confermaAliquotaRequest.getAliquota().getProgRigo() + " di tipo:  "
-							+ confermaAliquotaRequest.getAliquota().getTipoAliquote().getDescrizione()
-							+ ", per le date indicate", ErrorCodes.BUSSINESS_EXCEPTION);
+//					throw new BusinessException("Esiste gia' un'aliquota con ProgRigo "
+//							+ confermaAliquotaRequest.getAliquota().getProgRigo() + " di tipo:  "
+//							+ confermaAliquotaRequest.getAliquota().getTipoAliquote().getDescrizione()
+//							+ ", per le date indicate", ErrorCodes.BUSSINESS_EXCEPTION);
+				
+				throw new BusinessException("Esiste gia' un'aliquota di tipo:  "
+						+ confermaAliquotaRequest.getAliquota().getTipoAliquote().getDescrizione()
+						+ ", per le date indicate", ErrorCodes.BUSSINESS_EXCEPTION);
 			}
 		}
 		
@@ -272,22 +281,32 @@ public class ImpostazioniServiceImpl implements IImpostazioniService {
 
 		SigasAliquote sigasAliquotaToUpdate = aliquoteEntityMapper.mapVOtoEntity(confermaAliquotaRequest.getAliquota());
 
-		List<SigasAliquote> listaAliqote = sigasAliquoteRepository.findByProgRigoAndSigasTipoAliquoteIdTipoAliquota(
-				confermaAliquotaRequest.getAliquota().getProgRigo(),
-				confermaAliquotaRequest.getAliquota().getTipoAliquote().getIdTipoAliquota());
+//		List<SigasAliquote> listaAliqote = sigasAliquoteRepository.findByProgRigoAndSigasTipoAliquoteIdTipoAliquota(
+//				confermaAliquotaRequest.getAliquota().getProgRigo(),
+//				confermaAliquotaRequest.getAliquota().getTipoAliquote().getIdTipoAliquota());
+		
+		List<SigasAliquote> listaAliqote = sigasAliquoteRepository.findAll();
 
 		if (listaAliqote != null) {
 			Iterator<SigasAliquote> it = listaAliqote.iterator();
 			while (it.hasNext()) {
 				SigasAliquote curentAliquota = (SigasAliquote) it.next();
 				if (!(sigasAliquotaToUpdate.getIdAliquota() == curentAliquota.getIdAliquota())) {
-					if (DateRange.intersect(
+					if ((DateRange.intersect(
 							new DateContainer(curentAliquota.getValiditaStart(), curentAliquota.getValiditaEnd()),
 							new DateContainer(sigasAliquotaToUpdate.getValiditaStart(),
-									sigasAliquotaToUpdate.getValiditaEnd())))
+									sigasAliquotaToUpdate.getValiditaEnd())) || 
+							DateRange.intersectYear(curentAliquota.getValiditaStart(), sigasAliquotaToUpdate.getValiditaStart()) ||
+							DateRange.intersectYear(curentAliquota.getValiditaEnd(), sigasAliquotaToUpdate.getValiditaEnd())) &&
+							curentAliquota.getSigasTipoAliquote().getIdTipoAliquota()==sigasAliquotaToUpdate.getSigasTipoAliquote().getIdTipoAliquota())
+						
 
-						throw new BusinessException("Esiste gia' un'aliquota con ProgRigo "
-								+ confermaAliquotaRequest.getAliquota().getProgRigo() + " di tipo:  "
+//						throw new BusinessException("Esiste gia' un'aliquota con ProgRigo "
+//								+ confermaAliquotaRequest.getAliquota().getProgRigo() + " di tipo:  "
+//								+ confermaAliquotaRequest.getAliquota().getTipoAliquote().getDescrizione()
+//								+ ", per le date indicate", ErrorCodes.BUSSINESS_EXCEPTION);
+						
+						throw new BusinessException("Esiste gia' un'aliquota di tipo:  "
 								+ confermaAliquotaRequest.getAliquota().getTipoAliquote().getDescrizione()
 								+ ", per le date indicate", ErrorCodes.BUSSINESS_EXCEPTION);
 				}

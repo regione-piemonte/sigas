@@ -36,4 +36,8 @@ public class SecurityUtils {
         
         return true;
     }
+	
+	public static UserDetails getUser() {
+		return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
 }

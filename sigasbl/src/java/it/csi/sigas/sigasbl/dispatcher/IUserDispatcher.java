@@ -13,7 +13,7 @@ import it.csi.sigas.sigasbl.security.UserDetails;
 
 public interface IUserDispatcher {
 
-	@PreAuthorize(value = AuthorizationRoles.HOME)
+	@PreAuthorize(value = AuthorizationRoles.UTENTE)
 	public ProfilaturaVO getProfilatura(UserDetails userDetails);
 
 }

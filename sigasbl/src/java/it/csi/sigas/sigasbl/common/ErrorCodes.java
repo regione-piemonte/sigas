@@ -31,5 +31,12 @@ public class ErrorCodes {
 
 	// RESTEASY EXCEPTION
 	public static String RESTEASY_INVALID_PARAM_EXCEPTION = "RESTEASY INVALID PARAM EXCEPTION";
+	
+	public static final String LEGALE_RAPPRESENTANTE_CENSITO = "LRC";
 
+	//DOCUMENT EXCEPTION
+	public static final String DOC_GEN_EXCEPTION= "docGenericException"; //Si è verificato un errore durante il caricamento della documentazione
+	public static final String DOC_SIGN_EXCEPTION= "docSignException"; //Errore nel processo di verifica delle firme
+	
+	
 }

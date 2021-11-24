@@ -622,25 +622,36 @@ public class UTFServiceImpl implements IUTFService {
 			    				sigasDichScarti.setImposta(sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota());
 			    				sigasDichScarti.setProvincia(sigasQuadroM.getProvincia());
 			    				sigasDichScarti.setSigasDichConsumi(sigasDichConsumi);
+			    				
+			    				
+		    					List<SigasAliquote> listAliquote = sigasAliquoteRepository.findByProgRigoAndAnno(sigasQuadroM.getProgRigo(), Integer.parseInt(sigasFrontespizio.getAnno()) );
+		    					
+		    					List<String> descUso = new ArrayList<>();
+		    					for (SigasAliquote aliquota : listAliquote) {
+		    						if(!descUso.contains(aliquota.getSigasTipoAliquote().getSigasTipoConsumo().getDescrizione()))
+		    							descUso.add(aliquota.getSigasTipoAliquote().getSigasTipoConsumo().getDescrizione());
+								}
+		    					sigasDichScarti.setDescUsoScarto(StringUtils.join(descUso," - "));
+			    				
 		
 			    				sigasDichScartiList.add(sigasDichScarti);
 			    				
 			    			}
 		    			}
-		    			if("2018".equalsIgnoreCase(sigasFrontespizio.getAnno())) {
+		    			if(2018<=Integer.parseInt(sigasFrontespizio.getAnno())) {
 		    				if (sigasQuadroM.getProgRigo().equals(String.valueOf(progRigoInizioTotali_2018+2)) )
 			    				totaleDich = sigasQuadroM.getImposta();
 			    			else if (sigasQuadroM.getProgRigo().equals(String.valueOf(progRigoInizioTotali_2018+1)) )
 			    				arrotondamenti = sigasQuadroM.getImposta();
 			    			else if (sigasQuadroM.getProgRigo().equals(String.valueOf(progRigoInizioTotali_2018)) )
-			    				rettifiche = sigasQuadroM.getImposta();
+			    				rettifiche += sigasQuadroM.getImposta();
 		    			}else {
 		    				if (sigasQuadroM.getProgRigo().equals(String.valueOf(progRigoInizioTotali_2017+2)) )
 			    				totaleDich = sigasQuadroM.getImposta();
 			    			else if (sigasQuadroM.getProgRigo().equals(String.valueOf(progRigoInizioTotali_2017+1)) )
 			    				arrotondamenti = sigasQuadroM.getImposta();
 			    			else if (sigasQuadroM.getProgRigo().equals(String.valueOf(progRigoInizioTotali_2017)) )
-			    				rettifiche = sigasQuadroM.getImposta();
+			    				rettifiche += sigasQuadroM.getImposta();
 		    			}
 		    			
 		    		}
@@ -707,6 +718,7 @@ public class UTFServiceImpl implements IUTFService {
 //			    		sigasDichConsumi.setConguaglioCalcolato(totaleDich - versamenti);
 			    		sigasDichConsumi.setConguaglioCalcolato(totIIndustriali+totCivili120 + totNuoviAllacciamenti +totCivili480 + totCivili1560 + totCiviliUp + rettifiche + arrotondamenti - versamenti);
 			    		sigasDichConsumi.setTotaleDich(totaleDich);
+			    		sigasDichConsumi.setTotaleDichOrigine(totaleDich);
 			    		sigasDichConsumi.setTotaleCalcolato(totIIndustriali+totCivili120 + totNuoviAllacciamenti +totCivili480 + totCivili1560 + totCiviliUp + rettifiche + arrotondamenti);
 			    		sigasDichConsumi.setRettifiche(rettifiche);
 			    		sigasDichConsumi.setArrotondamenti(arrotondamenti);
@@ -819,10 +831,10 @@ public class UTFServiceImpl implements IUTFService {
     	long consumi_m_1 = 0, consumi_m_2 = 0, consumi_m_3 = 0, consumi_m_4 = 0, consumi_m_5 = 0, consumi_m_6 = 0;
     	long consumi_i_5 = 0, consumi_i_6 = 0, consumi_i_7 = 0, consumi_i_8 = 0, consumi_i_9 = 0, consumi_i_10 = 0;
 
-    	boolean is2018 = "2018".equalsIgnoreCase(annualita);
+    	boolean is2018OrMajor = 2018<=Integer.parseInt(annualita);
     	int limiteControllo;
     	
-    	if(is2018) {
+    	if(is2018OrMajor) {
 			limiteControllo = 6;
 		}else {
 			limiteControllo = 5;
@@ -923,7 +935,7 @@ public class UTFServiceImpl implements IUTFService {
 			logger.warn("ERRORE DI COERENZA Rigo 5 tra i quadri F e M per il soggetto '" + codiceDitta + "' nella provincia '" + provincia + "' relativa all'importazione '"+ sigasImportUTF.getIdImport());
 			note += "Quadro F e M Rigo 5; ";
 			isAlarm = true;
-		} else if (utenza_mc_f_6 != consumi_m_6 && is2018) {
+		} else if (utenza_mc_f_6 != consumi_m_6 && is2018OrMajor) {
 			logger.warn("ERRORE DI COERENZA Rigo 6 tra i quadri F e M per il soggetto '" + codiceDitta + "' nella provincia '" + provincia + "' relativa all'importazione '"+ sigasImportUTF.getIdImport());
 			note += "Quadro F e M Rigo 6; ";
 			isAlarm = true;
@@ -951,7 +963,7 @@ public class UTFServiceImpl implements IUTFService {
 			logger.warn("ERRORE DI COERENZA Rigo 5 tra i quadri G e M per il soggetto '" + codiceDitta + "' nella provincia '" + provincia + "' relativa all'importazione '"+ sigasImportUTF.getIdImport());
 			note += "Quadro G e M Rigo 5; ";
 			isAlarm = true;
-		} else if (utenza_mc_g_6 != consumi_m_6 && is2018) {
+		} else if (utenza_mc_g_6 != consumi_m_6 && is2018OrMajor) {
 			logger.warn("ERRORE DI COERENZA Rigo 6 tra i quadri G e M per il soggetto '" + codiceDitta + "' nella provincia '" + provincia + "' relativa all'importazione '"+ sigasImportUTF.getIdImport());
 			note += "Quadro G e M Rigo 6; ";
 			isAlarm = true;
@@ -978,7 +990,7 @@ public class UTFServiceImpl implements IUTFService {
 			logger.warn("ERRORE DI COERENZA Rigo 5 quadro M e Rigo 9 quadro I per il soggetto '" + codiceDitta + "' nella provincia '" + provincia + "' relativa all'importazione '"+ sigasImportUTF.getIdImport());
 			note += "Rigo 5 Quadro M e Rigo 9 Quadro I; ";
 			isAlarm = true;
-		} else if (consumi_i_10 != consumi_m_6 && is2018) {
+		} else if (consumi_i_10 != consumi_m_6 && is2018OrMajor) {
 			logger.warn("ERRORE DI COERENZA Rigo 6 quadro M e Rigo 10 quadro I per il soggetto '" + codiceDitta + "' nella provincia '" + provincia + "' relativa all'importazione '"+ sigasImportUTF.getIdImport());
 			note += "Rigo 6 Quadro M e Rigo 10 Quadro I; ";
 			isAlarm = true;

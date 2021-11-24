@@ -12,7 +12,7 @@
     					http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
 
-    <jee:jndi-lookup id="sigasDS" jndi-name="java:jboss/jdbc/sigasDS"/>
+    <jee:jndi-lookup id="sigasDS" jndi-name="java:/sigas/jdbc/sigasDS"/>
 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
@@ -50,4 +50,4 @@
     <jpa:repositories base-package="it.csi.sigas.sigasbl.model.repositories"/>
 
 </beans>
-	
+

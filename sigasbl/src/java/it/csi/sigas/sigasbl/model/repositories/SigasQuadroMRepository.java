@@ -31,4 +31,6 @@ public interface SigasQuadroMRepository extends CrudRepository<SigasQuadroM, Lon
 	List<SigasQuadroM> findByAnnoAndCodiceDittaAndProvincia(String anno, String codiceDitta, String provincia);
 	
 	List<SigasQuadroM> findByAliquotaAndProgRigo(double aliquota, String progRigo);
+	
+	List<SigasQuadroM> findBySigasImportIdImportAndCodiceDittaAndAnnoAndProvinciaAndProgRigoAndAliquota(long idImport, String codiceDitta, String anno, String provincia, double aliquota, String progRigo);
 }

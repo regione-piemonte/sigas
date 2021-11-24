@@ -11,6 +11,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
@@ -30,11 +36,14 @@ import it.csi.sigas.sigasbl.common.Esito;
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.dispatcher.IExportDispatcher;
 import it.csi.sigas.sigasbl.dispatcher.IHomeDispatcher;
+import it.csi.sigas.sigasbl.integration.doqui.DoquiServiceFactory;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
+import it.csi.sigas.sigasbl.model.vo.home.MessaggiVO;
+import it.csi.sigas.sigasbl.model.vo.home.OrdinativiIncassoVO;
 import it.csi.sigas.sigasbl.model.vo.home.RimborsoVO;
 import it.csi.sigas.sigasbl.model.vo.home.ScartoVO;
 import it.csi.sigas.sigasbl.model.vo.home.SoggettiVO;
@@ -45,6 +54,7 @@ import it.csi.sigas.sigasbl.model.vo.impostazioni.AliquoteVO;
 import it.csi.sigas.sigasbl.request.home.AllarmeDocumentoRequest;
 import it.csi.sigas.sigasbl.request.home.AssociaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.ConfermaPagamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
@@ -54,6 +64,7 @@ import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
 import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.ValidazioneRequest;
 import it.csi.sigas.sigasbl.rest.api.IHomeApi;
@@ -70,6 +81,9 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
     
     @Autowired
 	private IExportDispatcher exportDispatcher;
+    
+	@Autowired
+	private DoquiServiceFactory acarisServiceFactory;
 
     public HomeApiImpl() {
     }
@@ -87,6 +101,17 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
         return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, ricercaAnnualitaList)).build();
     }
     
+	@Override
+    public Response ricercaAnnualitaPagamenti() {
+    	
+    	logger.info("START: ricercaAnnualitaPagamenti");
+   	
+    	List<String> ricercaAnnualitaList = this.homeDispatcher.ricercaAnnualitaPagamenti();
+		
+    	logger.info("END: ricercaAnnualitaPagamenti");
+        return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, ricercaAnnualitaList)).build();
+    }
+    
     @Override
     public Response ricercaConsumi(RicercaConsumiRequest ricercaConsumiRequest) {
     	
@@ -97,6 +122,32 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
     	logger.info("END: ricercaConsumi");
         return Response.ok(new ResponseVO<List<SoggettiVO>>(Esito.SUCCESS, ricercaConsumiList)).build();
     }
+    
+    
+    @Override
+    public Response ricercaOrdinativi(RicercaOrdinativiRequest ricercaOrdinativiRequest) {
+    	
+    	logger.info("START: ricercaOrdinativi");
+   	
+    	List<OrdinativiIncassoVO> ricercaOrdinativiList = this.homeDispatcher.ricercaOrdinativi(ricercaOrdinativiRequest );
+		
+    	logger.info("END: ricercaOrdinativi");
+        return Response.ok(new ResponseVO<List<OrdinativiIncassoVO>>(Esito.SUCCESS, ricercaOrdinativiList)).build();
+    }
+    
+    
+    @Override
+	public Response conciliaPagamento(ConfermaPagamentoRequest confermaPagamentoRequest) {
+		logger.info("START: conciliaPagamento");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+	   	
+		OrdinativiIncassoVO ordinativiIncassi = this.homeDispatcher.conciliaPagamento(confermaPagamentoRequest, utente.getIdentita().getCodFiscale());
+		
+    	logger.info("END: conciliaPagamento");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
     
     
     @Override
@@ -252,11 +303,22 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 		return Response.ok(new ResponseVO<List<ScartoVO>>(Esito.SUCCESS, listaScarti)).build();
 	}
 	
+	
 	@Override
-	public Response getAllAliquote() {
+	public Response controlloImportiConsumi(Long idConsumi) {
+		logger.info("START: ricercaScartiByIdConsumi : "+ idConsumi);
+
+		List<MessaggiVO> listaMesControllo = this.homeDispatcher.controlloImportiConsumi(idConsumi);
+
+		logger.info("END: controlloImportiConsumi");
+		return Response.ok(new ResponseVO<List<MessaggiVO>>(Esito.SUCCESS, listaMesControllo)).build();
+	}
+	
+	@Override
+	public Response getAllAliquote(Integer annoDichiarazione) {
 		logger.info("START: getAllAliquote");
 
-		List<AliquoteVO> aliquote = this.homeDispatcher.getAllAliquote();
+		List<AliquoteVO> aliquote = this.homeDispatcher.getAllAliquote(annoDichiarazione);
 
 		logger.info("END: getAllAliquote");
 		return Response.ok(new ResponseVO<List<AliquoteVO>>(Esito.SUCCESS, aliquote)).build();
@@ -379,7 +441,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 		
 		if(null == dataFileName) {
 			if(StringUtils.isNotEmpty(nprotocollo)) {	 		// 1° caso
-				ActaUtils actaUtils = new ActaUtils();
+				ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
 				String esito = actaUtils.saveData(annualita, nprotocollo);
 				if(null != esito) {
 					UID=actaUtils.getUuid();
@@ -392,7 +454,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 			}
 		} else {								// 2° e 3° caso,	la differenza verrà gestita nel serviceImpl
 			if(StringUtils.isNotEmpty(nprotocollo)) {	 
-				ActaUtils actaUtils = new ActaUtils();
+				ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
 				actaUtils.checkProtocollo(annualita, nprotocollo);
 			}
 			// Recupero dal multipart i file caricati
@@ -442,7 +504,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 		
 		if(null == dataFileName) {
 			if(StringUtils.isNotEmpty(nprotocollo)) {	 		// 1° caso
-				ActaUtils actaUtils = new ActaUtils();
+				ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
 				String esito = actaUtils.saveData(annualita, nprotocollo);
 				if(null != esito) {
 					UID=actaUtils.getUuid();
@@ -505,6 +567,12 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 	@Override
 	public Response stampaDocumento(String descComunicazione) throws FileNotFoundException, IOException {
 		byte[] file = this.homeDispatcher.getDocumento(descComunicazione);
+		return Response.ok().entity(file).build();
+	}
+	
+	@Override
+	public Response stampaDocumentoAllegato(String descComunicazione, String descAllegato) throws FileNotFoundException, IOException {
+		byte[] file = this.homeDispatcher.getStampaAllegato(descComunicazione, descAllegato);
 		return Response.ok().entity(file).build();
 	}
 
@@ -636,4 +704,40 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 	        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
 		
 	}
+	
+	
+	@Override
+    public Response eliminaConciliazione(ConfermaPagamentoRequest confermaPagamentoRequest) {
+		logger.info("START: eliminaConciliazione : ");
+
+		OrdinativiIncassoVO ordinativoIncassoVO = this.homeDispatcher.eliminaConciliazione(confermaPagamentoRequest);
+    	logger.info("END: eliminaConciliazione");
+		return Response.ok(new ResponseVO<OrdinativiIncassoVO>(Esito.SUCCESS, ordinativoIncassoVO)).build();
+	}
+
+	@Override
+	public Response updateTotaleDichConsumi(ConfermaConsumiRequest confermaConsumiRequest) {
+		logger.info("START: updateConsumi");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+	   	
+		ConsumiPrVO consumi = this.homeDispatcher.updateTotaleDichConsumi(confermaConsumiRequest, utente.getIdentita().getCodFiscale());
+		
+    	logger.info("END: updateConsumi");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
+	
+	
+	@Override
+	public Response stampaDocumentoMaster(String descComunicazione) throws FileNotFoundException, IOException {
+		byte[] file = this.homeDispatcher.getDocumentoMaster(descComunicazione);
+		return Response.ok().entity(file).build();
+	}
+	
+	 @Override
+	    public Response deleteDocumento(Long idDocumento) {
+	        logger.info("START: deleteDocumento");
+	        return Response.ok().entity(this.homeDispatcher.deleteDocumento(idDocumento)).build();
+	    }
 }
