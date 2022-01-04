@@ -27,29 +27,101 @@ dependsOn:
 description:
   it:
     features:
-      - >-
-       Gestione delle attività di competenza regionale sull'addizionale all'accisa sul gas naturale.
-      - >-
-        L'applicativo offre un' efficace soluzione di gestione dei flussi documentali e monetari.
-        
+      - |-
+        Gestione delle attività di competenza regionale sull'addizionale
+        all'accisa sul gas naturale.
+      - |-
+        L'applicativo offre un' efficace soluzione di gestione dei flussi
+        documentali e monetari.
     genericName: SIGAS
     localisedName: SIGAS
-    longDescription: >
-      SIGAS consente di acquisire le Dichiarazioni UTF scaricate
-      dall’applicativo dell’Agenzia delle Dogane. Per ogni società vengono gestite: anagrafica, versamenti e documentazione inviata al Settore
-      politiche fiscali. 
-      Le principali funzionalità sono: 
-      - **Gestione consumi**: a partire dai dati presenti in dichiarazione si possono
-      apportare delle modifiche utili al calcolo del conguaglio 
-      - **Gestione versamenti**: permette di caricare i versamenti gestendo di conseguenza
-      rimborsi e accertamenti 
-      - **Gestione rimborsi**: gestisce l'iter di richiesta di rimborso, dall'acquisizione dell'istanza di rimborso alla
-      generazione del prestampato di determina 
-      - **Gestione accertamenti**: calcola l’importo comprensivo d’interessi da accertare e permette
-      all’operatore di produrre un report da allegare alla determina creata
-      extra applicativo. 
-      - **Gestione documenti**: permette di archiviare tutta la documentazione pervenuta relativa ad una società
-      
+    longDescription: |
+      Il Sistema Informativo Gas Naturale, di seguito citato come SIGAS è
+      composto da: 
+
+
+      - SIGAS-FO rivolto agli operatori delle Società del settore petrolifero 
+
+      - SIGAS-BO rivolto agli utenti delle Pubblica Amministrazione
+
+
+      L'applicativo **SIGAS-FO (Front-Office)** è rivolto alle società del
+      settore del gas naturale per la gestione degli adempimenti previsti in
+      materia di addizionale regionale all'accisa sul gas naturale.
+
+
+      - **Il servizio di accreditamento** consente di presentare la richiesta di
+      accesso al sistema. 
+
+      - **Il servizio di pagamento** permette di versare l'addizionale regionale
+      all'accisa sul gas naturale direttamente da SIGAS. L'applicativo registra
+      i pagamenti effettuati e consente all'operatore di poterli consultare in
+      qualunque momento. 
+
+      - **Il servizio gestione documentazione** permette di inviare i documenti
+      al Pubblica Amministrazione. L’operatore invia i documenti che vengono
+      protocollati. L’applicativo consente di consultare i documenti inviati e
+      le eventuali risposte fornite dalla Pubblica Amministrazione.
+
+
+      L'applicativo **SIGAS-BO (Back-Office)** è rivolto ai competenti utenti
+      della Pubblica Amministrazione e comprende le seguenti funzionalità:
+
+
+      - **importazione dichiarazioni UTF** (consente di importare le
+      dichiarazioni UTF di una determinata annualità a partire dal file
+      scaricato dal portale dell'agenzia delle dogane); 
+
+      - **gestione anagrafiche tassi d'interesse e aliquote** (permette
+      all'operatore SIGAS di aggiornare i valori delle aliquote vigenti e di
+      aggiornare i tassi d'interesse per il calcolo degli importi da rimborsare
+      o accertare.); 
+
+      - **gestione anagrafica soggetti debitori** (rende possibile l'inserimento
+      di nuove anagrafiche e l'aggiornamento dei dati anagrafici importati dalle
+      dichiarazioni UTF); 
+
+      - **gestione consumi** (permette la consultazione a partire dai dati delle
+      dichiarazioni e l'aggiornamento dei consumi, la gestione dei nuovi
+      allacciamenti e la compensazione crediti); 
+
+      - **gestione ordinativi d'incasso** (consente l'inserimento manuale dei
+      versamenti pervenuti su sistema di gestione del bilancio); 
+
+      - **gestione rimborsi** (permette la gestione del rimborso a partire da un
+      documento di tipo ' Istanza di rimborso ', il calcolo dell'importo da
+      rimborsare comprensivo di interessi e la generazione di un prestampato
+      utile alla creazione della determina di rimborso); 
+
+      - **gestione accertamenti** (rende possibile la gestione degli
+      accertamenti a partire da uno o più importi da accertare, il calcolo di
+      interessi, mora e sanzioni, e la creazione di un elenco con gli importi da
+      allegare alla determina di accertamento); 
+
+      - **gestione documenti** (consente la gestione della documentazione a
+      corredo delle dichiarazioni UTF presentate dalle società. Dalla sezione di
+      gestione documentazione è possibile creare un documento e allegare un file
+      che verrà archiviato sul sistema documentale e collegarlo ad un numero di
+      protocollo al quale è già collegato un documento elettronico oppure creare
+      un documento e collegarlo ad un numero di protocollo e aggiungere un
+      allegato che verrà archiviato sul sistema documentale); 
+
+      - **acquisizione versamenti dal sistema di gestione del bilancio**
+      (permette di acquisire giornalmente gli ordinativi d'incasso dal sistema
+      di gestione del bilancio. Tali informazioni sono utili al censimento dei
+      versamenti); 
+
+      - **gestione accreditamento** (permette la consultazione e lavorazione
+      delle domande di accreditamento presentate dalle aziende per poter
+      usufruire delle funzionalità rivolte alle imprese); 
+
+      - **gestione versamenti** (consente la consultazione dei pagamenti
+      effettuati a partire dalla componente applicativa ad uso delle aziende). 
+
+      - **documenti in arrivo** (consente l’esame della documentazione inviata a
+      partire dalla componente applicativa ad uso delle aziende. L’utente della
+      Pubblica Amministrazione può inviare una risposta per ogni documento
+      ricevuto e consultare tutta la documentazione scambiata con un’azienda).
     shortDescription: Sistema Informativo Gas Naturale
 developmentStatus: stable
 it:
@@ -86,7 +158,7 @@ platforms:
   - linux
   - windows
   - mac
-releaseDate: '2020-06-10'
+releaseDate: '2022-01-04'
 softwareType: standalone/web
-softwareVersion: 1.0.3
+softwareVersion: 2.2.0
 url: 'https://github.com/regione-piemonte/sigas.git'
