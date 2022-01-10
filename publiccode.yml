@@ -150,6 +150,8 @@ localisation:
   availableLanguages:
     - it
   localisationReady: false
+logo: |-
+  img/SIGAS.png
 maintenance:
   contacts:
     - email: giovanna.bertinetti@csi.it
