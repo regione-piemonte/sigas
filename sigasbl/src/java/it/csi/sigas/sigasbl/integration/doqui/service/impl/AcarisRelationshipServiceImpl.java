@@ -30,8 +30,6 @@ import it.doqui.acta.actasrv.dto.acaris.type.common.QueryNameType;
 public class AcarisRelationshipServiceImpl extends CommonManagementServiceImpl implements AcarisRelationshipService
 {
 	
-//	public static final String LOGGER_PREFIX = DoquiConstants.LOGGER_PREFIX + ".integration";	    
-//	private static Logger log = Logger.getLogger(LOGGER_PREFIX);	
 	private static Logger log = Logger.getLogger(AcarisRelationshipServiceImpl.class);	
 
 	private RelationshipsServicePort relationshipService;
@@ -39,7 +37,7 @@ public class AcarisRelationshipServiceImpl extends CommonManagementServiceImpl i
 	@Autowired
 	private DoquiServiceFactory acarisServiceFactory;
 	
-	private String pdFile;
+	//private String pdFile;
 
 	private RelationshipsServicePort getRelationshipService(boolean forceLoading) throws Exception{
 		String method = "getRelationshipService";
@@ -59,7 +57,7 @@ public class AcarisRelationshipServiceImpl extends CommonManagementServiceImpl i
 		return getRelationshipService(false);
 	}
 	
-	
+	/*
 	public String getPdFile() 
 	{
 		return pdFile;
@@ -69,7 +67,7 @@ public class AcarisRelationshipServiceImpl extends CommonManagementServiceImpl i
 	{
 		this.pdFile = pdFile;
 	}
-	
+	*/
 	
 	public void init(){
 		String method = "init";
@@ -125,15 +123,9 @@ public class AcarisRelationshipServiceImpl extends CommonManagementServiceImpl i
 				}
 			}		
 		} 
-		catch (AcarisException acEx) 
-		{
-			log.error(method + ". acEx.getMessage() = " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+		catch (AcarisException acEx)
+		{			
+			this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) 

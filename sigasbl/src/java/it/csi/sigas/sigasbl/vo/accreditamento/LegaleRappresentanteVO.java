@@ -12,19 +12,20 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import it.csi.sigas.sigasbl.web.serializer.CustomDateDeserializer;
 import it.csi.sigas.sigasbl.web.serializer.CustomDateSerializer;
 
-public class LegaleRappresentanteVO  {
+public class LegaleRappresentanteVO extends AnagraficaBaseVO  {
 
 	/**
 	 *
 	 */
 
 	private static final long serialVersionUID = 9085503244961215152L;
-
+	/*
 	private String cognome;
 	private String nome;
 	private String codiceFiscale;
 	private String telefono;
 	private String email;
+	*/
 	@JsonSerialize(using = CustomDateSerializer.class)
 	@JsonDeserialize(using = CustomDateDeserializer.class)
 	private Date dataDiNascita;
@@ -32,7 +33,8 @@ public class LegaleRappresentanteVO  {
 	private Long idStatoEstero;
 	private Long idComune;
 	private String cittaEstera;
-
+	
+	/*
 	public String getCognome() {
 		return cognome;
 	}
@@ -72,7 +74,7 @@ public class LegaleRappresentanteVO  {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+	*/
 	public Date getDataDiNascita() {
 		return dataDiNascita;
 	}

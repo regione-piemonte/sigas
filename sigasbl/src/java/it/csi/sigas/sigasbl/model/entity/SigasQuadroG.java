@@ -17,14 +17,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
+/******************************************************************************
+ * 
+ * @author mabuonai
+ * 
+ * Classe per la gestione dei consumi inseriti nella tabella Quadro G.
+ * Utilizzo classe base EntityQuadroBase
+ *
+ *****************************************************************************/
 @Entity
 @Table(name="sigas_quadro_g_utf")
 @NamedQuery(name="SigasQudroG.findAll", query="SELECT i FROM SigasQuadroG i")
-public class SigasQuadroG implements Serializable {
+public class SigasQuadroG extends EntityQuadroBase implements Serializable {
 	
+	/***************************************************
+	 * Variabili
+	 **************************************************/
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -35,33 +44,11 @@ public class SigasQuadroG implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name="id_import", nullable=false)
-	private SigasImportUTF sigasImport;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="data_estrazione", nullable=false)
-	private Date dataEstrazione;
+	private SigasImportUTF sigasImport;	
 	
-	@Column(name="codice_ditta", nullable=false)
-	private String codiceDitta;
-	
-	@Column(name="anno", nullable=false)
-	private String anno;
-	
-	@Column(name="provincia", nullable=false)
-	private String provincia;
-	
-	@Column(name="quadro", nullable=false)
-	private String quadro;
-	
-	@Column(name="prog_rigo", nullable=false)
-	private String progRigo;
-	
-	@Column(name="utenze", nullable=false)
-	private String utenze;
-	
-	@Column(name="utenze_mc", nullable=false)
-	private int utenzeMc;
-	
+	/***************************************************
+	 * Costruttori
+	 **************************************************/
 	public SigasQuadroG() {
 	}
 	
@@ -85,7 +72,10 @@ public class SigasQuadroG implements Serializable {
 		this.utenze = utenze;
 		this.utenzeMc = utenzeMc;
 	}
-
+	
+	/***************************************************
+	 * Metodi publici
+	 **************************************************/
 	public SigasImportUTF getSigasImport() {
 		return sigasImport;
 	}
@@ -93,59 +83,13 @@ public class SigasQuadroG implements Serializable {
 	public void setSigasImport(SigasImportUTF sigasImport) {
 		this.sigasImport = sigasImport;
 	}
-
-	public Date getDataEstrazione() {
-		return dataEstrazione;
-	}
-
-	public void setDataEstrazione(Date dataEstrazione) {
-		this.dataEstrazione = dataEstrazione;
-	}
-
-	public String getCodiceDitta() {
-		return codiceDitta;
-	}
-
-	public void setCodiceDitta(String codiceDitta) {
-		this.codiceDitta = codiceDitta;
-	}
-
-	public String getAnno() {
-		return anno;
-	}
-
-	public void setAnno(String anno) {
-		this.anno = anno;
-	}
-
-	public String getProvincia() {
-		return provincia;
-	}
-
-	public long getIdQuadroG() {
-		return idQuadroG;
-	}
-
-	public void setIdQuadroG(long idQuadroG) {
-		this.idQuadroG = idQuadroG;
-	}
-
-	public String getQuadro() {
-		return quadro;
-	}
-
-	public void setQuadro(String quadro) {
-		this.quadro = quadro;
-	}
-
-	public String getProgRigo() {
-		return progRigo;
-	}
-
-	public void setProgRigo(String progRigo) {
-		this.progRigo = progRigo;
-	}
-
+	
+	@Column(name="utenze", nullable=false)
+	private String utenze;
+	
+	@Column(name="utenze_mc", nullable=false)
+	private int utenzeMc;
+	
 	public String getUtenze() {
 		return utenze;
 	}
@@ -160,10 +104,6 @@ public class SigasQuadroG implements Serializable {
 
 	public void setUtenzeMc(int utenzeMc) {
 		this.utenzeMc = utenzeMc;
-	}
-
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
 	}
 
 }

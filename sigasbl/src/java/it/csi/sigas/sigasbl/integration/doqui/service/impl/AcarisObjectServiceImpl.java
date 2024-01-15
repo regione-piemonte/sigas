@@ -29,7 +29,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
     private static final Logger log = Logger.getLogger(AcarisObjectServiceImpl.class);
     private ObjectServicePort objectService;
-    private String pdFile;
+    //private String pdFile;
 
     @Autowired
     private DoquiServiceFactory acarisServiceFactory;
@@ -54,6 +54,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         return getObjectService(false);
     }
 
+    /*
     public String getPdFile() {
         return pdFile;
     }
@@ -61,6 +62,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
     public void setPdFile(String pdFile) {
         this.pdFile = pdFile;
     }
+    */
 
     public void init() {
         String method = "init";
@@ -68,7 +70,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         try {
             super.init();
             if (log.isDebugEnabled()) {
-                log.debug(method + ". pdFile= " + pdFile);
+                log.debug(method + ". pdFile= " + getPdFile());
             }
 
             getObjectService(true);
@@ -93,14 +95,11 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         ObjectIdType identificatore = null;
         PagingResponseType response = null;
 
-
         PropertyFilterType filter = new PropertyFilterType();
         filter.setFilterType(EnumPropertyFilter.NONE);
         QueryConditionType condition = new QueryConditionType();
-        condition.setOperator(EnumQueryOperator.EQUALS);
-        //condition.setOperator(EnumQueryOperator.LIKE);
-        condition.setPropertyName("paroleChiave");
-        //condition.setValue("*"+parolaChiave+"*");
+        condition.setOperator(EnumQueryOperator.EQUALS);        
+        condition.setPropertyName("paroleChiave");        
         condition.setValue(parolaChiave);
         QueryConditionType[] conditions = {condition};
 
@@ -111,34 +110,16 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             navigationLimits.setLimitToChildren(true);
         }
         try {
-//			response = objectService.query(repositoryId,principalId, target, filter, conditions, navigationLimits, null, null);
-            response = acarisServiceFactory.getAcarisService().getObjectServicePort().query(repositoryId, principalId, target, filter, conditions, navigationLimits, null, null);
-
-			
-			/*
-			if(response == null){
-				throw new IntegrationException("Impossibile recuperare identificatore tramite parola chiave: response is null");
-			}
-			 */
+            response = acarisServiceFactory.getAcarisService().getObjectServicePort().query(repositoryId, principalId, target, filter, conditions, navigationLimits, null, null);			
             if (response != null && response.getObjectsLength() > 0) {
                 identificatore = response.getObjects()[0].getObjectId();
             } else {
                 log.warn(method + ". parola chiave " + parolaChiave + " non presente");
-            }
-			/*
-			if(identificatore == null){
-				throw new IntegrationException("Impossibile recuperare identificatore tramite parola chiave: identificatore is null");
-			}
-			 */
+            }			
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero identificatore tramite parola chiave " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare identificatore per parola chiave: " + acEx.getMessage(), acEx);
         } catch (Exception e) {
@@ -163,14 +144,11 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         ObjectIdType identificatore = null;
         PagingResponseType response = null;
 
-
         PropertyFilterType filter = new PropertyFilterType();
         filter.setFilterType(EnumPropertyFilter.NONE);
         QueryConditionType condition = new QueryConditionType();
-        condition.setOperator(EnumQueryOperator.EQUALS);
-        //condition.setOperator(EnumQueryOperator.LIKE);
-        condition.setPropertyName("codice");
-        //condition.setValue("*"+parolaChiave+"*");
+        condition.setOperator(EnumQueryOperator.EQUALS);        
+        condition.setPropertyName("codice");        
         condition.setValue(codice);
         QueryConditionType[] conditions = {condition};
 
@@ -181,34 +159,16 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             navigationLimits.setLimitToChildren(true);
         }
         try {
-//			response = objectService.query(repositoryId,principalId, target, filter, conditions, navigationLimits, null, null);
-            response = acarisServiceFactory.getAcarisService().getObjectServicePort().query(repositoryId, principalId, target, filter, conditions, navigationLimits, null, null);
-
-			
-			/*
-			if(response == null){
-				throw new IntegrationException("Impossibile recuperare identificatore tramite parola chiave: response is null");
-			}
-			 */
+            response = acarisServiceFactory.getAcarisService().getObjectServicePort().query(repositoryId, principalId, target, filter, conditions, navigationLimits, null, null);			
             if (response != null && response.getObjectsLength() > 0) {
                 identificatore = response.getObjects()[0].getObjectId();
             } else {
                 log.warn(method + ". parola chiave " + codice + " non presente");
-            }
-			/*
-			if(identificatore == null){
-				throw new IntegrationException("Impossibile recuperare identificatore tramite parola chiave: identificatore is null");
-			}
-			 */
+            }			
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero identificatore tramite parola chiave " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare identificatore per parola chiave: " + acEx.getMessage(), acEx);
         } catch (Exception e) {
@@ -269,13 +229,9 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero UUID Documento " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) 
+            {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare UUID documento: " + acEx.getMessage(), acEx);
         } catch (Exception e) {
@@ -292,8 +248,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         ObjectIdType fascicoloId = null;
         EnumFolderObjectType typeId = EnumFolderObjectType.FASCICOLO_REALE_ANNUALE_PROPERTIES_TYPE;
         FascicoloRealeAnnualePropertiesType fascicoloRealeAnnuale = new FascicoloRealeAnnualePropertiesType();
-        //fascicoloRealeAnnuale.setNumero("1");
-        //fascicoloRealeAnnuale.setNumeroInterno(2);
+        
         fascicoloRealeAnnuale.setSoggetto(documentoActa.getFruitore());
         fascicoloRealeAnnuale.setOggetto(documentoActa.getFolder());
         fascicoloRealeAnnuale.setParoleChiave(documentoActa.getFolder());
@@ -305,25 +260,20 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         fascicoloRealeAnnuale.setDatiRiservati(false);
         fascicoloRealeAnnuale.setDatiSensibili(false);
 
-
         switch (documentoActa.getTipologiaDati()) {
             case DocumentoActa.TIPOLOGIA_DATI_PERSONALI:
                 fascicoloRealeAnnuale.setDatiPersonali(true);
                 break;
             case DocumentoActa.TIPOLOGIA_DATI_RISERVATI:
-
                 fascicoloRealeAnnuale.setDatiRiservati(true);
-
                 break;
             case DocumentoActa.TIPOLOGIA_DATI_SENSIBILI:
-
                 fascicoloRealeAnnuale.setDatiSensibili(true);
                 break;
             default:
                 fascicoloRealeAnnuale.setDatiPersonali(true);
                 break;
         }
-
 
         fascicoloRealeAnnuale.setIdVitalRecordCode(vitalRecordCodeType.getIdVitalRecordCode());
 
@@ -340,33 +290,24 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
         try {
             // Chiamate tramite WSDL
-//			fascicoloId = objectService.createFolder(repositoryId, typeId, principalId, fascicoloRealeAnnuale, parentId);
             fascicoloId = acarisServiceFactory.getAcarisService().getObjectServicePort().createFolder(repositoryId, typeId, principalId, fascicoloRealeAnnuale, parentId);
-
             if (fascicoloId == null) {
                 throw new IntegrationException("Non e' possibile creare fascicolo annuale: fascicoloId is null");
             }
-
             if (log.isDebugEnabled()) {
                 log.debug(method + ". creato fascicoloId\n " + XmlSerializer.objectToXml(fascicoloId));
             }
 
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di creazione fascicolo annuale " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile creare fascicolo annuale ", acEx);
         } catch (Exception e) {
             log.error(method + ". Exception = " + e.getMessage());
             throw new IntegrationException("Impossibile creare fascicolo annuale ", e);
         }
-
         return fascicoloId;
     }
 
@@ -418,24 +359,17 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         try {
             // Chiamate tramite WSDL
             dossierId = acarisServiceFactory.getAcarisService().getObjectServicePort().createFolder(repositoryId, typeId, principalId, dossier, parentId);
-
             if (dossierId == null) {
                 throw new IntegrationException("Non e' possibile creare dossier : dossierId is null");
             }
-
             if (log.isDebugEnabled()) {
                 log.debug(method + ". creato fascicoloId\n " + XmlSerializer.objectToXml(dossierId));
             }
 
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di creazione fascicolo annuale " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile creare fascicolo annuale ", acEx);
         } catch (Exception e) {
@@ -450,18 +384,14 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         final String method = "creaVolume";
 
         ObjectIdType volumeId = null;
-
         EnumFolderObjectType typeId = EnumFolderObjectType.VOLUME_SERIE_TIPOLOGICA_DOCUMENTI_PROPERTIES_TYPE;
-
         VolumeSerieTipologicaDocumentiPropertiesType volumeSerieProperties = new VolumeSerieTipologicaDocumentiPropertiesType();
 
-        volumeSerieProperties.setCollocazioneCartaceo("Collocazione cartacea fittizia"); // da valorizzare?
+        volumeSerieProperties.setCollocazioneCartaceo("Collocazione cartacea fittizia"); 
         volumeSerieProperties.setParoleChiave(documentoActa.getFolder());
         volumeSerieProperties.setDescrizione(documentoActa.getFolder());
-
         volumeSerieProperties.setConservazioneCorrente(5);
         volumeSerieProperties.setConservazioneGenerale(documentoActa.getConservazioneGenerale());
-
         volumeSerieProperties.setDatiPersonali(false);
         volumeSerieProperties.setDatiRiservati(false);
         volumeSerieProperties.setDatiSensibili(false);
@@ -471,20 +401,16 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
                 volumeSerieProperties.setDatiPersonali(true);
                 break;
             case DocumentoActa.TIPOLOGIA_DATI_RISERVATI:
-
                 volumeSerieProperties.setDatiRiservati(true);
-
                 break;
             case DocumentoActa.TIPOLOGIA_DATI_SENSIBILI:
-
                 volumeSerieProperties.setDatiSensibili(true);
                 break;
             default:
                 volumeSerieProperties.setDatiPersonali(true);
                 break;
         }
-
-
+        
         IdAOOType idAoo = new IdAOOType();
         idAoo.setValue(utenteActa.getIdAoo().intValue());
         IdStrutturaType idStruttura = new IdStrutturaType();
@@ -497,25 +423,17 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         volumeSerieProperties.setIdNodoRespMat(idNodo);
 
         try {
-//			volumeId = objectService.createFolder(repositoryId, typeId, principalId, volumeSerieProperties, parentId);
             volumeId = acarisServiceFactory.getAcarisService().getObjectServicePort().createFolder(repositoryId, typeId, principalId, volumeSerieProperties, parentId);
             if (volumeId == null) {
                 throw new IntegrationException("Non e' possibile creare il volume: volumeId is null");
             }
-
             if (log.isDebugEnabled()) {
                 log.debug(method + ". creato volumeId\n " + XmlSerializer.objectToXml(volumeId));
             }
-
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di creazione volume " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile creare volume ", acEx);
         } catch (Exception e) {
@@ -523,7 +441,6 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             log.error(method + ". Exception = " + e.getMessage());
             throw new IntegrationException("Impossibile creare volume ", e);
         }
-
         return volumeId;
     }
 
@@ -539,13 +456,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero del content stream " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare il content stream ", acEx);
         } catch (Exception e) {
@@ -576,7 +488,6 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             if (result == null) {
                 throw new IntegrationException("Impossibile recuperare lo stato di efficacia: result is null ");
             }
-
             if (result != null && result.getObjectsLength() > 0) {
 
                 log.debug(method + ". result.getObjectsLength() = " + result.getObjectsLength());
@@ -616,13 +527,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero dello stato di efficacia " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare lo stato di efficacia ", acEx);
         } catch (Exception e) {
@@ -721,13 +627,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero della forma documentaria " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare la forma documentaria ", acEx);
         } catch (Exception e) {
@@ -767,13 +668,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             acarisServiceFactory.getAcarisService().getObjectServicePort().updateProperties(repositoryId, objectId, principalId, changeToken, properties);
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero della forma documentaria " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile aggiornare le properties del documento ", acEx);
         } catch (Exception e) {
@@ -823,13 +719,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             log.debug(method + ". ob.getProperties() documento appena modificato\n " + XmlSerializer.objectToXml(ob.getProperties()));
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero della forma documentaria " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile aggiornare le properties del documento ", acEx);
         } catch (Exception e) {
@@ -880,13 +771,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero dell'indice di classificazione " + acEx.getMessage(), acEx);
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare l'indice di classificazione ", acEx);
         } catch (Exception e) {
@@ -895,8 +781,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         }
         return resultIndiceClassificazione;
     }
-
-    // 20200618_LC
+    
     public ObjectIdType moveActaDocument(ObjectIdType repositoryId, PrincipalIdType principalId, ObjectIdType associativeObjectId, ObjectIdType sourceFolderId, ObjectIdType destinationFolderId, boolean isRichiestaOffline) throws IntegrationException {
         String method = "spostaDocumento";
         // id nuova classificazione
@@ -919,13 +804,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di spostamento del documento " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile spostare il documento ", acEx);
         } catch (Exception e) {
@@ -988,13 +868,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero documenti tramite protocollo " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare documenti per protocollo: " + acEx.getMessage(), acEx);
         } catch (Exception e) {
@@ -1028,9 +903,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         criteria[0] = qctIndiceClassificazione;
 
         String resultIndiceClassificazioneEstesa = null;
-
         try {
-
             NavigationConditionInfoType navigationLimits = null;
             PagingResponseType result = null;
 
@@ -1054,13 +927,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             }
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero dell'indice di classificazione estesa " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare la classificazione estesa: " + acEx.getMessage(), acEx);
         } catch (Exception e) {
@@ -1111,13 +979,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero della forma documentaria " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile aggiornare le properties del documento ", acEx);
         } catch (Exception e) {
@@ -1167,13 +1030,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero della forma documentaria " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile aggiornare le properties del documento ", acEx);
         } catch (Exception e) {
@@ -1220,13 +1078,8 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero della forma documentaria " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare la parola chiave del documento ", acEx);
         } catch (Exception e) {
@@ -1266,9 +1119,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
 
         try {
             // Chiamate tramite WSDL
-//			response = objectService.query(repositoryId,principalId, target, filter, conditions, null, null, null);
             response = acarisServiceFactory.getAcarisService().getObjectServicePort().query(repositoryId, principalId, target, filter, conditions, null, null, null);
-
             if (response == null)
                 throw new IntegrationException("Impossibile recuperare UUID documento: response is null");
 
@@ -1285,16 +1136,10 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
                 throw new IntegrationException("Impossibile recuperare UUID documento: UUIDDocumento is null");
             }
             log.debug(method + ". UUIDDocumento == " + UUIDDocumento);
-
         } catch (AcarisException acEx) {
             log.error(method + ". Si e' verificato un errore in fase di recupero UUID Documento " + acEx.getMessage());
-            if (acEx.getFaultInfo() != null) {
-                log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-                log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-                log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-                log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-                log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-                log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());
+            if (acEx.getFaultInfo() != null) {                
+                this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
             }
             throw new IntegrationException("Impossibile recuperare UUID documento: " + acEx.getMessage(), acEx);
         } catch (Exception e) {
@@ -1302,6 +1147,5 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             throw new IntegrationException("Impossibile recuperare UUID documento: " + e.getMessage(), e);
         }
         return UUIDDocumento;
-
     }
 }

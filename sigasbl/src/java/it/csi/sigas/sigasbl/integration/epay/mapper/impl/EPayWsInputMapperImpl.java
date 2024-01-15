@@ -3,6 +3,7 @@ package it.csi.sigas.sigasbl.integration.epay.mapper.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,36 +57,33 @@ public class EPayWsInputMapperImpl implements EPayWsInputMapper {
 
 		List<PosizioneDaInserireType> posInserireTypeList = new ArrayList<>();
 		
-		Double totalAmount = 0d;
+		BigDecimal totalAmount = BigDecimal.ZERO;		
+		//2023-IM009345 - WO1
+		totalAmount.setScale(2, RoundingMode.HALF_UP);		
+		//-----
+		
 		String notePerIlPagatore = rateInfo.getCodiceAzienda(); 
 		for(SigasPaymentCart sigasRSoggRata : cart) {
-			notePerIlPagatore += " - " + sigasRSoggRata.getSiglaProvincia() + ", " + sigasRSoggRata.getMese() + "/" + rateInfo.getAnno() + ": " + (new BigDecimal(sigasRSoggRata.getImporto())).setScale(2, RoundingMode.HALF_UP);
-			totalAmount += sigasRSoggRata.getImporto();
+			notePerIlPagatore += " - " + sigasRSoggRata.getSiglaProvincia() + ", " + 
+								 sigasRSoggRata.getMese() + "/" + rateInfo.getAnno() + ": " + 
+								 sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP);
+			totalAmount = totalAmount.add(sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP));
 		}
+		
 		
 		PosizioneDaInserireType posizioneDaInserireType = new PosizioneDaInserireType();
 		posizioneDaInserireType.setDescrizioneCausaleVersamento(descrizioneCausaleVersamento);
 		posizioneDaInserireType.setIdPosizioneDebitoria(rateInfo.getCodicePagamento());
-		posizioneDaInserireType.setImportoTotale((new BigDecimal(totalAmount)).setScale(2, RoundingMode.HALF_UP));
+		posizioneDaInserireType.setImportoTotale(totalAmount);
 
-		SoggettoType soggettoPagatore = new SoggettoType();
-		
-//		if(rateInfo.getCfPiva()!=null && rateInfo.getCfPiva().length()>11) {
-//			PersonaFisicaType personaFisica = new PersonaFisicaType();
-//			soggettoPagatore.setPersonaFisica(personaFisica);
-//	 		//soggettoPagatore.setIdentificativoUnivocoFiscale(cf);
-//	 		soggettoPagatore.setIdentificativoUnivocoFiscale(rateInfo.getCfPiva());
-//			soggettoPagatore.setEMail(rateInfo.getEmail());
-//		}else {
-			PersonaGiuridicaType personaGiuridica = new PersonaGiuridicaType();
-			personaGiuridica.setRagioneSociale(StringUtils.abbreviate(rateInfo.getDenominazioneVersante(), 70));
-			soggettoPagatore.setPersonaGiuridica(personaGiuridica);
-	 		//soggettoPagatore.setIdentificativoUnivocoFiscale(cf);
-			SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(rateInfo.getFkAnagSoggetto().longValue());
-	 		soggettoPagatore.setIdentificativoUnivocoFiscale(sigasAnagraficaSoggetti.getCfPiva());
-			soggettoPagatore.setEMail(rateInfo.getEmail());
-//		}
-		
+		SoggettoType soggettoPagatore = new SoggettoType();	
+
+		PersonaGiuridicaType personaGiuridica = new PersonaGiuridicaType();
+		personaGiuridica.setRagioneSociale(StringUtils.abbreviate(rateInfo.getDenominazioneVersante(), 70));
+		soggettoPagatore.setPersonaGiuridica(personaGiuridica); 		
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(rateInfo.getFkAnagSoggetto().longValue());
+ 		soggettoPagatore.setIdentificativoUnivocoFiscale(sigasAnagraficaSoggetti.getCfPiva());
+		soggettoPagatore.setEMail(rateInfo.getEmail());	
 		
 		posizioneDaInserireType.setSoggettoPagatore(soggettoPagatore);
 		
@@ -94,9 +92,8 @@ public class EPayWsInputMapperImpl implements EPayWsInputMapper {
 
 		// testataListaDicarico
 		testataListaCarico.setCFEnteCreditore(cfEnte);
-//		testataListaCarico.setCodiceVersamento(config.getEpay_service_codice_versamento());
 		testataListaCarico.setCodiceVersamento(sigasCParametroRepository.findByDescParametro("epay_service_codice_versamento").getValoreString());
-		testataListaCarico.setImportoTotaleListaDiCarico((new BigDecimal(totalAmount)).setScale(2, RoundingMode.HALF_UP));
+		testataListaCarico.setImportoTotaleListaDiCarico(totalAmount);
 		testataListaCarico.setNumeroPosizioniDebitorie(BigInteger.valueOf(1));
 		
 		testataListaCarico.setIdMessaggio(rateInfo.getCodicePagamento() + "-" +(new SimpleDateFormat("hhMMssS").format(new Date())));

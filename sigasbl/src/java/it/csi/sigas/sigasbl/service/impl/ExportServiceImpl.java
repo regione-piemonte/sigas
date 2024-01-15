@@ -4,6 +4,8 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,12 @@ import it.csi.sigas.sigasbl.model.repositories.SigasTipoVersamentoRepository;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiVO;
 import it.csi.sigas.sigasbl.model.vo.home.SoggettiVO;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
+import it.csi.sigas.sigasbl.request.home.DownloadDettaglioSoggettoReport;
 import it.csi.sigas.sigasbl.request.home.DownloadDocumentazioneReport;
 import it.csi.sigas.sigasbl.request.home.DownloadReport;
 import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
 import it.csi.sigas.sigasbl.request.home.DownloadVersamentiReport;
+import it.csi.sigas.sigasbl.request.home.ItemVersamentiReport;
 import it.csi.sigas.sigasbl.service.IExportService;
 import it.csi.sigas.sigasbl.service.IUtilsService;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -51,6 +55,39 @@ public class ExportServiceImpl implements IExportService {
 		jasperParam.put("id_anag", downloadReport.getId());
 
 		try {
+			export = iUtilsService.printReportExcel(reportName, jasperParam);
+		} catch (Exception e) {
+			logger.error("Eccezione durante la generazione del report excel", e);
+			throw new BusinessException(e.getMessage(),  ErrorCodes.BUSSINESS_EXCEPTION);
+		}
+		return export;
+	}
+	
+	@Override
+	public byte[] getExcel(DownloadDettaglioSoggettoReport downloadDettaglioSoggettoReport, String reportName) {
+		Map<String, Object> jasperParam = null;
+		byte[] export = null;
+
+		jasperParam = new HashMap<String, Object>();		
+				
+		JRBeanCollectionDataSource tableDettaglioSoggetto = new JRBeanCollectionDataSource(downloadDettaglioSoggettoReport.getItemSoggettoReportList(), false);
+		jasperParam.put("dettaglioSoggetto", tableDettaglioSoggetto);
+		
+		jasperParam.put("denominazione", (downloadDettaglioSoggettoReport.getDenominazione() == null) ? "" : downloadDettaglioSoggettoReport.getDenominazione());
+		jasperParam.put("codiceAzienda", (downloadDettaglioSoggettoReport.getCodiceAzienda() == null) ? "" : downloadDettaglioSoggettoReport.getCodiceAzienda());
+		jasperParam.put("indirizzo", (downloadDettaglioSoggettoReport.getIndirizzo() == null) ? "" : downloadDettaglioSoggettoReport.getIndirizzo());		
+		jasperParam.put("iban", (downloadDettaglioSoggettoReport.getIban() == null) ? "" : downloadDettaglioSoggettoReport.getIban());
+		jasperParam.put("telefono", (downloadDettaglioSoggettoReport.getTelefono() == null) ? "" : downloadDettaglioSoggettoReport.getTelefono());
+		jasperParam.put("pec", (downloadDettaglioSoggettoReport.getPec() == null) ? "" : downloadDettaglioSoggettoReport.getPec());
+		jasperParam.put("email", (downloadDettaglioSoggettoReport.getEmail() == null) ? "" : downloadDettaglioSoggettoReport.getEmail());
+		jasperParam.put("note", (downloadDettaglioSoggettoReport.getNote() == null) ? "" : downloadDettaglioSoggettoReport.getNote());
+		jasperParam.put("fideussione", (downloadDettaglioSoggettoReport.getFideussione() == null) ? "" : downloadDettaglioSoggettoReport.getFideussione());		
+		jasperParam.put("importoFideussione", (downloadDettaglioSoggettoReport.getImportoFideussione() == null) ? "" : downloadDettaglioSoggettoReport.getImportoFideussione());
+		jasperParam.put("comune", (downloadDettaglioSoggettoReport.getComune() == null) ? "" : downloadDettaglioSoggettoReport.getComune());
+		jasperParam.put("provincia", (downloadDettaglioSoggettoReport.getProvincia() == null) ? "" : downloadDettaglioSoggettoReport.getProvincia());		
+		
+		try {
+			
 			export = iUtilsService.printReportExcel(reportName, jasperParam);
 		} catch (Exception e) {
 			logger.error("Eccezione durante la generazione del report excel", e);
@@ -153,30 +190,17 @@ public class ExportServiceImpl implements IExportService {
 		Map<String, Object> jasperParam = null;
 		byte[] export = null;
 
-		jasperParam = new HashMap<String, Object>();
+		jasperParam = new HashMap<String, Object>();		
+				
+		JRBeanCollectionDataSource tableVersamenti = new JRBeanCollectionDataSource(downloadVersamentiReport.getItemVersamentiReportList(), false);
+		jasperParam.put("dichiarazioneVersamenti", tableVersamenti);
+		
 		jasperParam.put("anno", downloadVersamentiReport.getAnno());
-		jasperParam.put("id_anag", downloadVersamentiReport.getId_anag());
-		jasperParam.put("id_provincia", downloadVersamentiReport.getId_provincia());
-		jasperParam.put("id_tipo_carrello", downloadVersamentiReport.getId_tipo_carrello());
 		jasperParam.put("mese", downloadVersamentiReport.getMese());
-		
-		if(downloadVersamentiReport.getId_tipo_carrello()!=null && downloadVersamentiReport.getId_tipo_carrello().intValue()!=0) {
-			String descrizioneTipoVersamento = sigasTipoVersamentoRepository.findOne(downloadVersamentiReport.getId_tipo_carrello()).getDenominazione();
-			jasperParam.put("tipologiaFiltro", descrizioneTipoVersamento);
-		}else {
-			jasperParam.put("tipologiaFiltro", null);
-		}
-		
-		
-		if(downloadVersamentiReport.getId_provincia()!=null && downloadVersamentiReport.getId_provincia().intValue()!=0) {
-			String siglaProvincia = sigasProvinciaRepository.findOne(downloadVersamentiReport.getId_provincia()).getSiglaProvincia();
-			jasperParam.put("provinciaFiltro", siglaProvincia);
-		}else {
-			jasperParam.put("provinciaFiltro", null);
-		}
-		
+		jasperParam.put("denominazioneAnag", downloadVersamentiReport.getDenominazioneAnag());		
 		
 		try {
+			
 			export = iUtilsService.printReportExcel(reportName, jasperParam);
 		} catch (Exception e) {
 			logger.error("Eccezione durante la generazione del report excel", e);

@@ -17,18 +17,14 @@ import it.doqui.acta.actasrv.dto.acaris.type.common.ObjectIdType;
 
 @Service
 public class AcarisRepositoryServiceImpl extends CommonManagementServiceImpl implements AcarisRepositoryService
-{
-	
-//	public static final String LOGGER_PREFIX = DoquiConstants.LOGGER_PREFIX + ".integration";	    
-//	private static Logger log = Logger.getLogger(LOGGER_PREFIX);	
-	private static Logger log = Logger.getLogger(AcarisRepositoryServiceImpl.class);
-	
+{	
+	private static Logger log = Logger.getLogger(AcarisRepositoryServiceImpl.class);	
 	private RepositoryServicePort repositoryService;
 	
 	@Autowired
 	private DoquiServiceFactory acarisServiceFactory;
 	
-	private String pdFile;
+	//private String pdFile;
 	
 	private RepositoryServicePort getRepositoryService(boolean forceLoading) throws Exception{
 		String method = "getRepositoryService";
@@ -50,6 +46,7 @@ public class AcarisRepositoryServiceImpl extends CommonManagementServiceImpl imp
 		return getRepositoryService(false);
 	}
 	
+	/*
 	public String getPdFile() 
 	{
 		return pdFile;
@@ -59,7 +56,7 @@ public class AcarisRepositoryServiceImpl extends CommonManagementServiceImpl imp
 	{
 		this.pdFile = pdFile;
 	}
-	
+	*/
 
 	public void init(){
 		String method = "init";
@@ -100,16 +97,8 @@ public class AcarisRepositoryServiceImpl extends CommonManagementServiceImpl imp
 				log.debug(method + ". repositoryId = " + repositoryId.getValue());
 			}
 		} 
-		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {
-			
-			log.error(method + ". acEx.getMessage() = " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
-			
+		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {			
+			this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 			throw new IntegrationException("Impossibile recuperare repositoryId: " + acEx.getMessage(), acEx);
 		} 
 		catch (Exception e) {

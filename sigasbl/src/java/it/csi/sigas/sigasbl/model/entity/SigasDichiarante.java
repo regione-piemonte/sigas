@@ -52,12 +52,12 @@ public class SigasDichiarante implements Serializable {
 	private String telefonoDichiarante;
 
 	//bi-directional many-to-one association to SigasComune
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)	
 	@JoinColumn(name="fk_comune_sede_legale_dichiar")
 	private SigasComune sigasComune;
 
 	//bi-directional many-to-one association to SigasProvincia
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="fk_provincia")
 	private SigasProvincia sigasProvincia;
 

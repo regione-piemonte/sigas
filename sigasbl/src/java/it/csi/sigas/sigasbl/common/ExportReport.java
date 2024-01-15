@@ -16,7 +16,9 @@ public enum ExportReport {
 	REPORT_EXCEL_SOGGETTO("EXCEL_SOGGETTO", "Report excel per un soggetto", "SoggettoExcel.jrxml"),
 	REPORT_EXCEL_ELENCO_SOGGETTI("EXCEL_ELENCO_SOGGETTI", "Report excel per l'elenco soggetti", "ElencoSoggettiExcel.jrxml"),
 	REPORT_WORD_DETERMINA("WORD_DETERMINA", "Determina di n rimborso", "DeterminaWord.jrxml"),
+	//Marts da togliere _1
 	REPORT_EXCEL_DICHIARAZIONE_VERSAMENTI("EXCEL_DICHIARAZIONE_VERSAMENTI", "Report excel per l'elenco dei versamenti", "ElencoVeramentiExcel.jrxml"),
+	REPORT_EXCEL_DICHIARAZIONE_VERSAMENTI_1("EXCEL_DICHIARAZIONE_VERSAMENTI_1", "Report excel per l'elenco dei versamenti", "ElencoVeramentiExcel.jrxml"),
 	REPORT_EXCEL_DOCUMENTAZIONE("EXCEL_DOCUMENTAZIONE", "Report excel per l'elenco della documentazione", "ElencoDocumentazioneExcel.jrxml"),
 	REPORT_EXCEL_ACCERTAMENTI("EXCEL_ACCERTAMENTI", "Report excel per esportare la lista degli accertamenti", "ElencoAccertamentiExcel.jrxml");
 

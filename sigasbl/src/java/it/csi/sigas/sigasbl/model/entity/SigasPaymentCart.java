@@ -5,6 +5,7 @@
 package it.csi.sigas.sigasbl.model.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -69,36 +70,10 @@ public class SigasPaymentCart implements Serializable {
 	private Integer fkStatoCarrello = STATO_CARRELLO_APERTO;
 
 	@Column(name="importo")
-	private Double importo;
+	private BigDecimal importo;
 
 	@Column(name="denominazione_versante")
-	private String denominazioneVersante;
-
-	/*
-	@Column(name="pagamento_riconciliato")
-	private String pagamentoRiconciliato;
-
-	@Column(name="importo_pagato_riconciliato")
-	private Boolean importoPagatoRiconciliato;
-
-	@Column(name="data_valuta_riconciliata")
-	private Date dataValutaRiconciliata;
-
-	@Column(name="data_quietanza")
-	private Date dataQuietanza;
-
-	@Column(name="imposta_riconciliata")
-	private String impostaRiconciliata;
-
-	@Column(name="sanzione_riconciliata")
-	private String sanzioneRiconciliata;
-
-	@Column(name="interesse_riconciliato")
-	private String interesseRiconciliato;
-
-	@Column(name="totale_riconciliato")
-	private String totaleRiconciliato;
-	 */
+	private String denominazioneVersante;	
 	
 	@Column(name="fk_utente_insert")
 	private Integer fkUtenteInsert;
@@ -146,9 +121,7 @@ public class SigasPaymentCart implements Serializable {
 	private String note;	
 	
 	@Column(name="cf_piva", nullable=false)
-	private String cfPiva;
-	
-	
+	private String cfPiva;	
 	
 	
 	public String getCfPiva() {
@@ -245,11 +218,11 @@ public class SigasPaymentCart implements Serializable {
 		this.fkStatoCarrello = fkStatoCarrello;
 	}
 
-	public Double getImporto() {
+	public BigDecimal getImporto() {
 		return importo;
 	}
 
-	public void setImporto(Double importo) {
+	public void setImporto(BigDecimal importo) {
 		this.importo = importo;
 	}
 

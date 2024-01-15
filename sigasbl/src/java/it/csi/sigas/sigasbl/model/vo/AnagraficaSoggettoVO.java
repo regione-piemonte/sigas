@@ -30,7 +30,7 @@ public class AnagraficaSoggettoVO implements VO {
     public Long idProvincia;
     public Long idComune;
     public double totVersato;
-    private long version;
+    private Long version;
 
 	private String insUser;
 	private Date insDate;
@@ -191,11 +191,11 @@ public class AnagraficaSoggettoVO implements VO {
 		this.totVersato = totVersato;
 	}
 
-	public long getVersion() {
+	public Long getVersion() {
 		return version;
 	}
 
-	public void setVersion(long version) {
+	public void setVersion(Long version) {
 		this.version = version;
 	}
 

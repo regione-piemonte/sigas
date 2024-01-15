@@ -7,6 +7,7 @@ package it.csi.sigas.sigasbl.service;
 import java.util.List;
 
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.AnnualitaVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
@@ -18,7 +19,9 @@ import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
 
 public interface IVersamentiService {
 
-	List<String> ricercaAnnualitaVersamenti(Long id);
+	List<String> annualitaVersamentiPerRicerca(Long id);
+	
+	AnnualitaVersamentiVO ricercaAnnualitaVersamenti(Long id);
 
 	List<ProvinciaVO> ricercaProvinceVersamenti(Long id);
 

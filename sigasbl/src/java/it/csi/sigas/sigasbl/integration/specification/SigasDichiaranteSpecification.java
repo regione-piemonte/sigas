@@ -19,24 +19,40 @@ import it.csi.sigas.sigasbl.model.entity.SigasDichiarante;
 
 
 public class SigasDichiaranteSpecification {
+		
+	
+	private static Collection<Predicate> preparePredicateCollection(String codiceFiscale, String partitaIva, String denominazione, boolean useLike,
+															 Root<SigasDichiarante> root, CriteriaQuery<?> criteria, CriteriaBuilder builder)
+	{
+		Collection<Predicate> predicates = new ArrayList<Predicate>();		
+		if (StringUtils.isNotEmpty(codiceFiscale)) {
+			final Predicate cfPredicate = builder.or(builder.equal(root.get("cfDichiarante"), codiceFiscale));
+			predicates.add(cfPredicate);
+		}
+		if (StringUtils.isNotEmpty(partitaIva)) {
+			final Predicate cfPredicate = builder.or(builder.equal(root.get("pivaDichiarante"), partitaIva));
+			predicates.add(cfPredicate);
+		}
+		if (StringUtils.isNotEmpty(denominazione)) {
+			if(useLike) {
+				final Predicate denominazionePredicate = builder.like(root.get("denomDichiarante"), "%" + denominazione.toUpperCase() + "%");
+				predicates.add(denominazionePredicate);
+			}else {
+				final Predicate denominazionePredicate = builder.equal(root.get("denomDichiarante"), denominazione.toUpperCase());
+				predicates.add(denominazionePredicate);
+			}			
+		}		
+		return predicates;
+	}
 
 	public static Specification<SigasDichiarante> codiceFiscaleOrPartitaIvaOrLikeDenominazione(String codiceFiscale, String partitaIva, String denominazione) {
 		return new Specification<SigasDichiarante>() {
 			@Override
-			public Predicate toPredicate(Root<SigasDichiarante> root, CriteriaQuery<?> criteria, CriteriaBuilder builder) {
-				final Collection<Predicate> predicates = new ArrayList<Predicate>();
-				if (StringUtils.isNotEmpty(codiceFiscale)) {
-					final Predicate cfPredicate = builder.or(builder.equal(root.get("cfDichiarante"), codiceFiscale));
-					predicates.add(cfPredicate);
-				}
-				if (StringUtils.isNotEmpty(partitaIva)) {
-					final Predicate cfPredicate = builder.or(builder.equal(root.get("pivaDichiarante"), partitaIva));
-					predicates.add(cfPredicate);
-				}
-				if (StringUtils.isNotEmpty(denominazione)) {
-					final Predicate denominazionePredicate = builder.like(root.get("denomDichiarante"), "%" + denominazione.toUpperCase() + "%");
-					predicates.add(denominazionePredicate);
-				}
+			public Predicate toPredicate(Root<SigasDichiarante> root, CriteriaQuery<?> criteria, CriteriaBuilder builder) {				
+				boolean useLike = true;
+				final Collection<Predicate> predicates = preparePredicateCollection(codiceFiscale, partitaIva, denominazione, 
+																					useLike, 
+										   											root, criteria, builder);
 				return builder.or(predicates.toArray(new Predicate[predicates.size()]));
 			}
 		};
@@ -65,20 +81,11 @@ public class SigasDichiaranteSpecification {
 	public static Specification<SigasDichiarante> codiceFiscaleOrPartitaIvaOrDenominazione(String codiceFiscale, String partitaIva, String denominazione) {
 		return new Specification<SigasDichiarante>() {
 			@Override
-			public Predicate toPredicate(Root<SigasDichiarante> root, CriteriaQuery<?> criteria, CriteriaBuilder builder) {
-				final Collection<Predicate> predicates = new ArrayList<Predicate>();
-				if (StringUtils.isNotEmpty(codiceFiscale)) {
-					final Predicate cfPredicate = builder.or(builder.equal(root.get("cfDichiarante"), codiceFiscale));
-					predicates.add(cfPredicate);
-				}
-				if (StringUtils.isNotEmpty(partitaIva)) {
-					final Predicate cfPredicate = builder.or(builder.equal(root.get("pivaDichiarante"), partitaIva));
-					predicates.add(cfPredicate);
-				}
-				if (StringUtils.isNotEmpty(denominazione)) {
-					final Predicate denominazionePredicate = builder.equal(root.get("denomDichiarante"), denominazione.toUpperCase());
-					predicates.add(denominazionePredicate);
-				}
+			public Predicate toPredicate(Root<SigasDichiarante> root, CriteriaQuery<?> criteria, CriteriaBuilder builder) {				
+				boolean useLike = false;
+				final Collection<Predicate> predicates = preparePredicateCollection(codiceFiscale, partitaIva, denominazione, 
+																					useLike, 
+										   											root, criteria, builder);
 				return builder.or(predicates.toArray(new Predicate[predicates.size()]));
 			}
 		};

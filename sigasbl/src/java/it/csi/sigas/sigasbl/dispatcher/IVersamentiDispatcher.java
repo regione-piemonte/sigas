@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import it.csi.sigas.sigasbl.common.AuthorizationRoles;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.AnnualitaVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
@@ -20,10 +21,13 @@ import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
 
 
-public interface IVersamentiDispatcher {
-
+public interface IVersamentiDispatcher {	
+	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
-	List<String> ricercaAnnualitaVersamenti(Long idAnag);
+	List<String> annualitaVersamentiPerRicerca(Long idAnag);
+
+	@PreAuthorize(value = AuthorizationRoles.HOME)	
+	AnnualitaVersamentiVO ricercaAnnualitaVersamenti(Long idAnag);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<ProvinciaVO> ricercaProvinceVersamenti(Long idAnag);

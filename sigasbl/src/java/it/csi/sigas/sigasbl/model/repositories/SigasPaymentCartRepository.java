@@ -117,4 +117,10 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 			"	FROM sigas_carrello_pagamenti c " +
 			"	WHERE c.fk_stato_carrello  = ?1 ", nativeQuery = true)
     List<SigasPaymentCart> findByFkStatoCarrello(Integer idStato);
+    
+    @Query(value="SELECT * " +			
+		 	 " FROM	sigas_carrello_pagamenti c " +
+			 " WHERE c.fk_dich_versamento = :idVersamento ",
+	   nativeQuery = true)
+    List<SigasPaymentCart> getPaymentByIdVersamento(@Param("idVersamento") long idVersamento);
 }

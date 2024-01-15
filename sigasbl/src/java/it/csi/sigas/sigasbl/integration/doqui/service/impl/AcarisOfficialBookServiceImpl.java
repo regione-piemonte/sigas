@@ -46,16 +46,13 @@ import it.doqui.acta.actasrv.dto.acaris.type.officialbook.RiferimentoSoggettoEsi
 public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl implements AcarisOfficialBookService 
 {
 	
-//	public static final String LOGGER_PREFIX = DoquiConstants.LOGGER_PREFIX + ".integration";	    
-//	private static Logger log = Logger.getLogger(LOGGER_PREFIX);	
-	private static Logger log = Logger.getLogger(AcarisOfficialBookServiceImpl.class);	
-
+	private static Logger log = Logger.getLogger(AcarisOfficialBookServiceImpl.class);
 	private OfficialBookServicePort officialBookService;
 	
 	@Autowired
 	private DoquiServiceFactory acarisServiceFactory;
 	
-	private String pdFile;
+	//private String pdFile;
 		
 	private OfficialBookServicePort getOfficialBookService(boolean forceLoading) throws Exception{
 		String method = "getOfficialBookService";
@@ -75,7 +72,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		return getOfficialBookService(false);
 	}
 	
-	
+	/*
 	public String getPdFile() 
 	{
 		return pdFile;
@@ -85,6 +82,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 	{
 		this.pdFile = pdFile;
 	}
+	*/
 	
 	public void init(){
 		String method = "init";
@@ -104,6 +102,109 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		
 	}
 	
+	private IdentificazioneProtocollante setupIdentificazioneProtocollante(ObjectIdType idStruttura, ObjectIdType idNodo) {
+		//******************************
+		//IdentificazioneProtocollante
+		//******************************		
+		IdentificazioneProtocollante identificazioneProtocollante = new IdentificazioneProtocollante();
+		identificazioneProtocollante.setNodoId(idNodo);
+		identificazioneProtocollante.setStrutturaId(idStruttura);
+		
+		return identificazioneProtocollante;
+	}
+	
+	private InfoCreazioneRegistrazione setupInfoCreazioneRegistrazione(ObjectIdType idStruttura, ObjectIdType idNodo, String idDocumento) {
+		//******************************
+		//InfoCreazioneRegistrazione
+		//******************************		
+		InfoCreazioneRegistrazione infoCreazioneRegistrazione = new InfoCreazioneRegistrazione();
+		infoCreazioneRegistrazione.setProtocollante(setupIdentificazioneProtocollante(idStruttura,idNodo));
+		infoCreazioneRegistrazione.setDocumentoRiservato(false);		
+		infoCreazioneRegistrazione.setOggetto(idDocumento);
+		infoCreazioneRegistrazione.setRegistrazioneRiservata(false);	
+		infoCreazioneRegistrazione.setForzareSePresenzaInviti(true);
+		infoCreazioneRegistrazione.setForzareSeRegistrazioneSimile(true);
+		
+		//******************************
+		//InfoCreazioneCorrispondente - Destinatario (Regione)
+		//******************************		
+		DestinatarioInterno[]  elencoDestinatarioInterno = new DestinatarioInterno[1];
+		DestinatarioInterno destinatarioInterno = new DestinatarioInterno();
+		destinatarioInterno.setIdRuoloCorrispondente(1);
+
+		ObjectIdType idNodoInternoDestinatario = new ObjectIdType();	
+		idNodoInternoDestinatario.setValue(idNodo.getValue());		
+
+		RiferimentoSoggettoEsistente infoSoggetto = new RiferimentoSoggettoEsistente();		
+		infoSoggetto.setSoggettoId(idNodoInternoDestinatario); // idNodoInternoDestinatario � il nodo interno	    
+		infoSoggetto.setTipologia(EnumTipologiaSoggettoAssociato.NODO);
+		
+		InfoCreazioneCorrispondente infoCreazioneCorrispondenteDestinatario = new InfoCreazioneCorrispondente();		
+		infoCreazioneCorrispondenteDestinatario.setDenominazione("");
+		infoCreazioneCorrispondenteDestinatario.setInfoSoggettoAssociato(infoSoggetto);
+		
+		destinatarioInterno.setCorrispondente(infoCreazioneCorrispondenteDestinatario);
+		
+		elencoDestinatarioInterno[0] = destinatarioInterno;
+		infoCreazioneRegistrazione.setDestinatarioInterno(elencoDestinatarioInterno);
+		
+		
+		return infoCreazioneRegistrazione;
+	}
+	
+	private RegistrazioneArrivo setupRegistrazioneArrivo(InfoCreazioneRegistrazione infoCreazioneRegistrazione, MittenteEsterno[] elencoMittenteEsterno) {
+		//******************************
+		//RegistrazioneArrivo
+		//******************************	
+    	RegistrazioneArrivo registrazioneArrivo = new RegistrazioneArrivo();
+    	registrazioneArrivo.setTipoRegistrazione(EnumTipoAPI.ARRIVO);
+    	registrazioneArrivo.setInfoCreazione(infoCreazioneRegistrazione);
+
+    	registrazioneArrivo.setMittenteEsterno(elencoMittenteEsterno);
+    	
+    	return registrazioneArrivo;
+	}
+	
+	private ProtocollazioneDocumentoEsistente setupProtocollazioneDocumentoEsistente(ObjectIdType idAOO, ObjectIdType classificazionePartenza,
+																					 InfoCreazioneRegistrazione infoCreazioneRegistrazione, MittenteEsterno[] elencoMittenteEsterno) 
+	{
+		//******************************
+		//ProtocollazioneDocumentoEsistente
+		//******************************		
+		ProtocollazioneDocumentoEsistente protocollazioneDocumentoEsistente = new ProtocollazioneDocumentoEsistente();
+    	protocollazioneDocumentoEsistente.setAooProtocollanteId(idAOO);
+    	protocollazioneDocumentoEsistente.setRegistrazioneAPI(setupRegistrazioneArrivo(infoCreazioneRegistrazione,elencoMittenteEsterno));
+    	protocollazioneDocumentoEsistente.setSenzaCreazioneSoggettiEsterni(true);		
+    	protocollazioneDocumentoEsistente.setClassificazioneId(classificazionePartenza);
+    	
+    	return protocollazioneDocumentoEsistente;
+		
+	}
+	
+	private MittenteEsterno[] setupElencoMittenteEsterno(String mittentiEsterni, String denominazione, String cognome, String nome ) {
+		//******************************
+		//InfoCreazioneCorrispondente - Mittente (Utente)
+		//******************************	
+    	MittenteEsterno[] elencoMittenteEsterno = new MittenteEsterno[1];
+    	MittenteEsterno mittenteEsterno = new MittenteEsterno();
+    	
+    	InfoCreazioneCorrispondente infoCreazioneCorrispondenteMittente = new InfoCreazioneCorrispondente();    	
+    	
+    	if(StringUtils.isNotBlank(mittentiEsterni)) {
+    		infoCreazioneCorrispondenteMittente.setDenominazione(mittentiEsterni);	
+    	}
+    	else {
+    		infoCreazioneCorrispondenteMittente.setDenominazione(denominazione);
+        	infoCreazioneCorrispondenteMittente.setCognome(cognome);
+        	infoCreazioneCorrispondenteMittente.setNome(nome);
+    	}    	
+    	
+    	mittenteEsterno.setCorrispondente(infoCreazioneCorrispondenteMittente);
+    	elencoMittenteEsterno[0] = mittenteEsterno;
+    	
+    	return elencoMittenteEsterno;
+		
+	}
 	
 	/*
 	 * Registrazione Logica in Entrata
@@ -116,91 +217,26 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		IdentificazioneRegistrazione identificazioneRegistrazione = null;
 		
 		EnumTipoRegistrazioneDaCreare tipologiaCreazione = EnumTipoRegistrazioneDaCreare.PROTOCOLLAZIONE_DOCUMENTO_ESISTENTE;
-       
-		//******************************
-		//IdentificazioneProtocollante
-		//******************************		
-		IdentificazioneProtocollante identificazioneProtocollante = new IdentificazioneProtocollante();
-		identificazioneProtocollante.setNodoId(idNodo);
-		identificazioneProtocollante.setStrutturaId(idStruttura);
 		
 		//******************************
 		//InfoCreazioneRegistrazione
-		//******************************		
-		InfoCreazioneRegistrazione infoCreazioneRegistrazione = new InfoCreazioneRegistrazione();
-		infoCreazioneRegistrazione.setProtocollante(identificazioneProtocollante);
-		infoCreazioneRegistrazione.setDocumentoRiservato(false);
-		infoCreazioneRegistrazione.setOggetto(documentoActa.getIdDocumento());
-		infoCreazioneRegistrazione.setRegistrazioneRiservata(false);	
-		infoCreazioneRegistrazione.setForzareSePresenzaInviti(true);
-		infoCreazioneRegistrazione.setForzareSeRegistrazioneSimile(true);
-		
 		//******************************
-		//InfoCreazioneCorrispondente - Destinatario (Regione)
-		//******************************		
-		DestinatarioInterno[]  elencoDestinatarioInterno = new DestinatarioInterno[1];
-		DestinatarioInterno destinatarioInterno = new DestinatarioInterno();
-		destinatarioInterno.setIdRuoloCorrispondente(1);
-
-		 ObjectIdType idNodoInternoDestinatario = new ObjectIdType();	
-		 idNodoInternoDestinatario.setValue(idNodo.getValue());		
-
-		RiferimentoSoggettoEsistente infoSoggetto = new RiferimentoSoggettoEsistente();
-		//infoSoggetto.setSoggettoId(idNodo); // idNodo � il nodo interno
-		infoSoggetto.setSoggettoId(idNodoInternoDestinatario); // idNodoInternoDestinatario � il nodo interno	    
-		infoSoggetto.setTipologia(EnumTipologiaSoggettoAssociato.NODO);
-
-		
-		InfoCreazioneCorrispondente infoCreazioneCorrispondenteDestinatario = new InfoCreazioneCorrispondente();
-		//infoCreazioneCorrispondenteDestinatario.setDenominazione(documentoActa.getFolder());
-		infoCreazioneCorrispondenteDestinatario.setDenominazione("");
-		infoCreazioneCorrispondenteDestinatario.setInfoSoggettoAssociato(infoSoggetto);
-		
-		destinatarioInterno.setCorrispondente(infoCreazioneCorrispondenteDestinatario);
-		
-		elencoDestinatarioInterno[0] = destinatarioInterno;
-		infoCreazioneRegistrazione.setDestinatarioInterno(elencoDestinatarioInterno);
-		
+		InfoCreazioneRegistrazione infoCreazioneRegistrazione = setupInfoCreazioneRegistrazione(idStruttura, idNodo, documentoActa.getIdDocumento());
+       		
+				
 		//******************************
 		//InfoCreazioneCorrispondente - Mittente (Utente)
 		//******************************	
-    	MittenteEsterno[] elencoMittenteEsterno = new MittenteEsterno[1];
-    	MittenteEsterno mittenteEsterno = new MittenteEsterno();
+		MittenteEsterno[] elencoMittenteEsterno = setupElencoMittenteEsterno(documentoActa.getMittentiEsterni(),
+				 															 documentoActa.getSoggettoActa().getDenominazione(),
+				 															 documentoActa.getSoggettoActa().getCognome(),
+				 															 documentoActa.getSoggettoActa().getNome());
     	
-    	InfoCreazioneCorrispondente infoCreazioneCorrispondenteMittente = new InfoCreazioneCorrispondente();
+    	//******************************
+    	//ProtocollazioneDocumentoEsistente
+    	//******************************
+    	ProtocollazioneDocumentoEsistente protocollazioneDocumentoEsistente = setupProtocollazioneDocumentoEsistente(idAOO,classificazionePartenza,infoCreazioneRegistrazione,elencoMittenteEsterno);
     	
-    	if(StringUtils.isNotBlank(documentoActa.getMittentiEsterni())) {
-    		infoCreazioneCorrispondenteMittente.setDenominazione(documentoActa.getMittentiEsterni());	
-    	}
-    	else {
-    		infoCreazioneCorrispondenteMittente.setDenominazione(documentoActa.getSoggettoActa().getDenominazione());
-        	infoCreazioneCorrispondenteMittente.setCognome(documentoActa.getSoggettoActa().getCognome());
-        	infoCreazioneCorrispondenteMittente.setNome(documentoActa.getSoggettoActa().getNome());
-    	}
-    	
-    	
-    	
-    	mittenteEsterno.setCorrispondente(infoCreazioneCorrispondenteMittente);
-    	elencoMittenteEsterno[0] = mittenteEsterno;
-    	
-		//******************************
-		//RegistrazioneArrivo
-		//******************************	
-    	RegistrazioneArrivo registrazioneArrivo = new RegistrazioneArrivo();
-    	registrazioneArrivo.setTipoRegistrazione(EnumTipoAPI.ARRIVO);
-    	registrazioneArrivo.setInfoCreazione(infoCreazioneRegistrazione);
-
-    	registrazioneArrivo.setMittenteEsterno(elencoMittenteEsterno);
-    	
-		//******************************
-		//ProtocollazioneDocumentoEsistente
-		//******************************		
-		ProtocollazioneDocumentoEsistente protocollazioneDocumentoEsistente = new ProtocollazioneDocumentoEsistente();
-    	protocollazioneDocumentoEsistente.setAooProtocollanteId(idAOO);
-    	protocollazioneDocumentoEsistente.setRegistrazioneAPI(registrazioneArrivo);
-    	protocollazioneDocumentoEsistente.setSenzaCreazioneSoggettiEsterni(true);		
-    	protocollazioneDocumentoEsistente.setClassificazioneId(classificazionePartenza);
-
     	try {
     		
     		identificazioneRegistrazione = getOfficialBookService().creaRegistrazione(repositoryId, principalId, tipologiaCreazione, protocollazioneDocumentoEsistente);
@@ -209,14 +245,8 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
     			throw new IntegrationException("Impossibile creare registrazione: ", new NullPointerException("identificazioneRegistrazione is null"));
     		}
 		}
-    	catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {
-			log.error(method + ". Impossibile effettuare operazione: " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+    	catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {			
+			this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) {
@@ -225,7 +255,9 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		}
 		return identificazioneRegistrazione;
 	}
-
+	
+	
+	
 
 	/*
 	 * Registrazione Logica in Uscita
@@ -290,8 +322,8 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		MittenteInterno[] elencoMittenteInterno = new MittenteInterno[1];
     	MittenteInterno mittenteInterno = new MittenteInterno();
     	
-		 ObjectIdType idNodoInternoDestinatario = new ObjectIdType();	
-		 idNodoInternoDestinatario.setValue(idNodo.getValue());
+		ObjectIdType idNodoInternoDestinatario = new ObjectIdType();	
+		idNodoInternoDestinatario.setValue(idNodo.getValue());
 		 
 		RiferimentoSoggettoEsistente infoSoggetto = new RiferimentoSoggettoEsistente();
 		//infoSoggetto.setSoggettoId(idNodo); // idNodo � il nodo interno
@@ -302,9 +334,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
     	InfoCreazioneCorrispondente infoCreazioneCorrispondenteMittente = new InfoCreazioneCorrispondente();
 		infoCreazioneCorrispondenteMittente.setDenominazione(""); //<------------ � obbligatorio (altrimenti ACTA rialza una properties non presente)
 		infoCreazioneCorrispondenteMittente.setInfoSoggettoAssociato(infoSoggetto);
-		//infoCreazioneCorrispondenteMittente.setInfoSoggettoAssociato(null); //<------------------------------------------con il set dell'infoSoggettoAssociato a null ricadiamo nella vecchia configurazione di stadoc (nonsense) 
-		//infoCreazioneCorrispondenteMittente.setDenominazione(documentoElettronicoActa.getFolder()); //<------------ necessario se infoSoggetto = null
-		
+				
 		infoCreazioneRegistrazione.setNumeroRegistrazionePrecedente(documentoActa.getMetadatiActa().getNumeroRegistrazionePrecedente()); 
         infoCreazioneRegistrazione.setAnnoRegistrazionePrecedente(documentoActa.getMetadatiActa().getAnnoRegistrazionePrecedente());
 
@@ -336,16 +366,9 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
     		if(identificazioneRegistrazione == null) {
     			 
     		}
-		}
-		
-    	catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {
-			log.error(method + ". Impossibile creare la registrazione: " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo   = " + acEx.getFaultInfo().getTechnicalInfo());
+		}		
+    	catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {			
+			this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) {
@@ -374,85 +397,24 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		EnumTipoRegistrazioneDaCreare tipologiaCreazione = EnumTipoRegistrazioneDaCreare.PROTOCOLLAZIONE_DOCUMENTO_ESISTENTE;
 		
 		//******************************
-		//IdentificazioneProtocollante
-		//******************************	
-		IdentificazioneProtocollante identificazioneProtocollante = new IdentificazioneProtocollante();
-		identificazioneProtocollante.setNodoId(idNodo);
-		identificazioneProtocollante.setStrutturaId(idStruttura);
-		
-		//******************************
 		//InfoCreazioneRegistrazione
-		//******************************	
-		InfoCreazioneRegistrazione infoCreazioneRegistrazione = new InfoCreazioneRegistrazione();
-		infoCreazioneRegistrazione.setProtocollante(identificazioneProtocollante);
-		infoCreazioneRegistrazione.setDocumentoRiservato(false);
-		infoCreazioneRegistrazione.setOggetto(documentoElettronicoActa.getIdDocumento());
-		infoCreazioneRegistrazione.setRegistrazioneRiservata(false);	
-		infoCreazioneRegistrazione.setForzareSePresenzaInviti(true);
-		infoCreazioneRegistrazione.setForzareSeRegistrazioneSimile(true);
-		
 		//******************************
-		//InfoCreazioneCorrispondente - Destinatario (Regione)
-		//******************************		
-		DestinatarioInterno[]  elencoDestinatarioInterno = new DestinatarioInterno[1];
-		DestinatarioInterno destinatarioInterno = new DestinatarioInterno();
-		destinatarioInterno.setIdRuoloCorrispondente(1);
-
-		 ObjectIdType idNodoInternoDestinatario = new ObjectIdType();	
-		 idNodoInternoDestinatario.setValue(idNodo.getValue());		
-
-		RiferimentoSoggettoEsistente infoSoggetto = new RiferimentoSoggettoEsistente();
-		//infoSoggetto.setSoggettoId(idNodo); // idNodo � il nodo interno
-		infoSoggetto.setSoggettoId(idNodoInternoDestinatario); // idNodoInternoDestinatario � il nodo interno	    
-		infoSoggetto.setTipologia(EnumTipologiaSoggettoAssociato.NODO);
-
-		InfoCreazioneCorrispondente infoCreazioneCorrispondenteDestinatario = new InfoCreazioneCorrispondente();
-		infoCreazioneCorrispondenteDestinatario.setDenominazione("");
-		infoCreazioneCorrispondenteDestinatario.setInfoSoggettoAssociato(infoSoggetto);
+		InfoCreazioneRegistrazione infoCreazioneRegistrazione = setupInfoCreazioneRegistrazione(idStruttura, idNodo, documentoElettronicoActa.getIdDocumento());
 		
-		destinatarioInterno.setCorrispondente(infoCreazioneCorrispondenteDestinatario);
-		
-		elencoDestinatarioInterno[0] = destinatarioInterno;
-		infoCreazioneRegistrazione.setDestinatarioInterno(elencoDestinatarioInterno);
-
+				
 		//******************************
 		//InfoCreazioneCorrispondente - Mittente (Utente)
 		//******************************	
-    	MittenteEsterno[] elencoMittenteEsterno = new MittenteEsterno[1];
-    	MittenteEsterno mittenteEsterno = new MittenteEsterno();
+		MittenteEsterno[] elencoMittenteEsterno = setupElencoMittenteEsterno(documentoElettronicoActa.getMittentiEsterni(),
+				 															 documentoElettronicoActa.getSoggettoActa().getDenominazione(),
+				 															 documentoElettronicoActa.getSoggettoActa().getCognome(),
+				 															 documentoElettronicoActa.getSoggettoActa().getNome());
     	
-    	InfoCreazioneCorrispondente infoCreazioneCorrispondenteMittente = new InfoCreazioneCorrispondente();
-    	
-    	// gestione mittenti esterni
-    	if(StringUtils.isNotBlank(documentoElettronicoActa.getMittentiEsterni())) {
-    		infoCreazioneCorrispondenteMittente.setDenominazione(documentoElettronicoActa.getMittentiEsterni());	
-    	}
-    	else {
-    		infoCreazioneCorrispondenteMittente.setDenominazione(documentoElettronicoActa.getSoggettoActa().getDenominazione());
-        	infoCreazioneCorrispondenteMittente.setCognome(documentoElettronicoActa.getSoggettoActa().getCognome());
-        	infoCreazioneCorrispondenteMittente.setNome(documentoElettronicoActa.getSoggettoActa().getNome());
-    	}
-    	
-    	mittenteEsterno.setCorrispondente(infoCreazioneCorrispondenteMittente);
-    	elencoMittenteEsterno[0] = mittenteEsterno;
-    	
-		//******************************
-		//RegistrazioneArrivo
-		//******************************
-		RegistrazioneArrivo registrazioneArrivo = new RegistrazioneArrivo();
-		registrazioneArrivo.setTipoRegistrazione(EnumTipoAPI.ARRIVO);
-		registrazioneArrivo.setInfoCreazione(infoCreazioneRegistrazione);
-    	registrazioneArrivo.setMittenteEsterno(elencoMittenteEsterno);
-
-		//******************************
-		//ProtocollazioneDocumentoEsistente
-		//******************************
-		ProtocollazioneDocumentoEsistente protocollazioneDocumentoEsistente = new ProtocollazioneDocumentoEsistente();
-		protocollazioneDocumentoEsistente.setAooProtocollanteId(idAOO);
-		protocollazioneDocumentoEsistente.setRegistrazioneAPI(registrazioneArrivo);
-		protocollazioneDocumentoEsistente.setSenzaCreazioneSoggettiEsterni(true);		
-		protocollazioneDocumentoEsistente.setClassificazioneId(classificazionePartenza);
-		
+    	//******************************
+    	//ProtocollazioneDocumentoEsistente
+    	//******************************
+    	ProtocollazioneDocumentoEsistente protocollazioneDocumentoEsistente = setupProtocollazioneDocumentoEsistente(idAOO,classificazionePartenza,infoCreazioneRegistrazione,elencoMittenteEsterno);
+    		
 		try 
 		{
 			identificazioneRegistrazione = getOfficialBookService().creaRegistrazione(repositoryId, principalId, tipologiaCreazione, protocollazioneDocumentoEsistente);
@@ -464,13 +426,8 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 			log.error(method + ". AcarisException.getMessage() = " + acEx.getMessage());
 			log.error(method + ". AcarisException.getFaultInfo() = " + acEx.getFaultInfo());	
 			if(acEx.getFaultInfo() != null)
-			{
-				log.error(method + ". AcarisException.getFaultInfo().getErrorCode() = "+acEx.getFaultInfo().getErrorCode());
-				log.error(method + ". AcarisException.getFaultInfo().getPropertyName() = "+ acEx.getFaultInfo().getPropertyName());
-				log.error(method + ". AcarisException.getFaultInfo().getObjectId() = "+ acEx.getFaultInfo().getObjectId());
-				log.error(method + ". AcarisException.getFaultInfo().getExceptionType() = "+ acEx.getFaultInfo().getExceptionType());
-				log.error(method + ". AcarisException.getFaultInfo().getClassName() = "+ acEx.getFaultInfo().getClassName());
-				log.error(method + ". AcarisException.getFaultInfo().getTechnicalInfo = "+ acEx.getFaultInfo().getTechnicalInfo());
+			{				
+				this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 			}
 			throw new IntegrationException("AcarisException ", acEx);
 		}
@@ -544,10 +501,6 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
     		infoCreazioneCorrispondenteDestinatario.setNome(documentoElettronicoActa.getSoggettoActa().getNome());
     	}
     	
-//		infoCreazioneCorrispondenteDestinatario.setDenominazione(documentoElettronicoActa.getSoggettoActa().getDenominazione());
-//		infoCreazioneCorrispondenteDestinatario.setCognome(documentoElettronicoActa.getSoggettoActa().getCognome());
-//		infoCreazioneCorrispondenteDestinatario.setNome(documentoElettronicoActa.getSoggettoActa().getNome());
-			
 		destinatarioEsterno.setCorrispondente(infoCreazioneCorrispondenteDestinatario);
 		elencoDestinatarioEsterno[0] = destinatarioEsterno;
 		infoCreazioneRegistrazione.setDestinatarioEsterno(elencoDestinatarioEsterno);
@@ -571,9 +524,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		InfoCreazioneCorrispondente infoCreazioneCorrispondenteMittente = new InfoCreazioneCorrispondente();
 		infoCreazioneCorrispondenteMittente.setDenominazione(""); //<------------ � obbligatorio (altrimenti ACTA rialza una properties non presente)
 		infoCreazioneCorrispondenteMittente.setInfoSoggettoAssociato(infoSoggetto);
-		//infoCreazioneCorrispondenteMittente.setInfoSoggettoAssociato(null); //<------------------------------------------con il set dell'infoSoggettoAssociato a null ricadiamo nella vecchia configurazione di stadoc (nonsense) 
-		//infoCreazioneCorrispondenteMittente.setDenominazione(documentoElettronicoActa.getFolder()); //<------------ necessario se infoSoggetto = null
-		
+				
 		infoCreazioneRegistrazione.setNumeroRegistrazionePrecedente(documentoElettronicoActa.getMetadatiActa().getNumeroRegistrazionePrecedente()); 
         infoCreazioneRegistrazione.setAnnoRegistrazionePrecedente(documentoElettronicoActa.getMetadatiActa().getAnnoRegistrazionePrecedente());
 		log.debug(method + ". InfoCreazioneCorrispondente NumeroRegistrazionePrecedente = " + documentoElettronicoActa.getMetadatiActa().getNumeroRegistrazionePrecedente());
@@ -588,8 +539,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 		//******************************	
 		log.debug(method + ". ProtocollazioneDocumentoEsistente ....");
 		ProtocollazioneDocumentoEsistente protocollazioneDocumentoEsistente = new ProtocollazioneDocumentoEsistente();
-		protocollazioneDocumentoEsistente.setAooProtocollanteId(idAOO);
-		//protocollazioneDocumentoEsistente.setAooProtocollanteId(idAOOInternoDestinatario);		
+		protocollazioneDocumentoEsistente.setAooProtocollanteId(idAOO);				
     	
 		//******************************
 		//RegistrazionePartenza
@@ -607,19 +557,13 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
     		identificazioneRegistrazione = getOfficialBookService().creaRegistrazione(repositoryId, principalId, tipologiaCreazione, protocollazioneDocumentoEsistente);
 		}
 		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) 
-		{
-			
+		{			
 			log.error(method + ". AcarisException =" + acEx + " acEx.getCause(): " + acEx.getCause());		
 			log.error(method + ". AcarisException.getMessage() = " + acEx.getMessage());
 			log.error(method + ". AcarisException.getFaultInfo() = " + acEx.getFaultInfo());	
 			if(acEx.getFaultInfo() != null)
-			{
-				log.error(method + ". AcarisException.getFaultInfo().getErrorCode() = "+acEx.getFaultInfo().getErrorCode());
-				log.error(method + ". AcarisException.getFaultInfo().getPropertyName() = "+ acEx.getFaultInfo().getPropertyName());
-				log.error(method + ". AcarisException.getFaultInfo().getObjectId() = "+ acEx.getFaultInfo().getObjectId());
-				log.error(method + ". AcarisException.getFaultInfo().getExceptionType() = "+ acEx.getFaultInfo().getExceptionType());
-				log.error(method + ". AcarisException.getFaultInfo().getClassName() = "+ acEx.getFaultInfo().getClassName());
-				log.error(method + ". AcarisException.getFaultInfo().getTechnicalInfo = "+ acEx.getFaultInfo().getTechnicalInfo());
+			{				
+				this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 				throw new IntegrationException("AcarisException ", acEx);
 			}			
 		}
@@ -705,13 +649,8 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 			log.error(method + ". AcarisException.getMessage() = " + acEx.getMessage());
 			log.error(method + ". AcarisException.getFaultInfo() = " + acEx.getFaultInfo());	
 			if(acEx.getFaultInfo() != null)
-			{
-				log.error(method + ". AcarisException.getFaultInfo().getErrorCode() = "+acEx.getFaultInfo().getErrorCode());
-				log.error(method + ". AcarisException.getFaultInfo().getPropertyName() = "+ acEx.getFaultInfo().getPropertyName());
-				log.error(method + ". AcarisException.getFaultInfo().getObjectId() = "+ acEx.getFaultInfo().getObjectId());
-				log.error(method + ". AcarisException.getFaultInfo().getExceptionType() = "+ acEx.getFaultInfo().getExceptionType());
-				log.error(method + ". AcarisException.getFaultInfo().getClassName() = "+ acEx.getFaultInfo().getClassName());
-				log.error(method + ". AcarisException.getFaultInfo().getTechnicalInfo = "+ acEx.getFaultInfo().getTechnicalInfo());
+			{				
+				this.logAcarisException("AcarisObjectServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 				throw new IntegrationException("AcarisException ", acEx);
 			}			
 		}
@@ -720,9 +659,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 			log.error(method + ". Exception" + e);
 			log.error(method + ". e.getMessage() = " + e.getMessage());
 			throw new IntegrationException("Exception ", e);
-		}
-
-        //ObjectIdType classId = pagingResponseType.getObjects()[0].getObjectId();
+		}       
         
         if(null!=classId)
         	log.debug(method + ". classId.getValue() " + classId.getValue());

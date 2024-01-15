@@ -23,7 +23,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="sigas_quadro_i_utf")
 @NamedQuery(name="SigasQudroI.findAll", query="SELECT i FROM SigasQuadroI i")
-public class SigasQuadroI implements Serializable {
+public class SigasQuadroI extends EntityQuadroBase implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -36,7 +36,8 @@ public class SigasQuadroI implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="id_import", nullable=false)
 	private SigasImportUTF sigasImport;
-
+	
+	/*
 	@Temporal(TemporalType.DATE)
 	@Column(name="data_estrazione", nullable=false)
 	private Date dataEstrazione;
@@ -55,6 +56,7 @@ public class SigasQuadroI implements Serializable {
 	
 	@Column(name="prog_rigo", nullable=false)
 	private String progRigo;
+	*/
 	
 	@Column(name="consumi", nullable=false)
 	private int consumi;
@@ -98,7 +100,8 @@ public class SigasQuadroI implements Serializable {
 	public void setSigasImport(SigasImportUTF sigasImport) {
 		this.sigasImport = sigasImport;
 	}
-
+	
+	/*
 	public Date getDataEstrazione() {
 		return dataEstrazione;
 	}
@@ -126,15 +129,17 @@ public class SigasQuadroI implements Serializable {
 	public String getProvincia() {
 		return provincia;
 	}
+	*/
 
 	public long getIdQuadroI() {
 		return idQuadroI;
-	}
-
+	}	
+	
 	public void setIdQuadroI(long idQuadroI) {
 		this.idQuadroI = idQuadroI;
 	}
 
+	/*
 	public String getQuadro() {
 		return quadro;
 	}
@@ -154,6 +159,7 @@ public class SigasQuadroI implements Serializable {
 	public void setProvincia(String provincia) {
 		this.provincia = provincia;
 	}
+	*/
 
 	public double getAliquota() {
 		return aliquota;

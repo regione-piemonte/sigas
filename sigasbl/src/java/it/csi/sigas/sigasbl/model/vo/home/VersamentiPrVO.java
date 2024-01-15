@@ -4,11 +4,12 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.model.vo.home;
 
+import it.csi.sigas.sigasbl.model.vo.base.InsModBaseVO;
+
 import java.util.Date;
+import java.util.List;
 
-import it.csi.sigas.sigasbl.common.rest.VO;
-
-public class VersamentiPrVO implements VO {
+public class VersamentiPrVO extends InsModBaseVO {
 
 	private static final long serialVersionUID = -1;
 	private long idVersamento;
@@ -29,13 +30,21 @@ public class VersamentiPrVO implements VO {
 	private double interessiMora;
 	private double sanzioni;
 	private double interessi;
-	private String insUser;
-	private Date insDate;
-	private Date modDate;
-	private String modUser;
 	private double differenza;
-
-
+	private boolean hasPagamentiVersamenti;
+	private List<Long> pagamentiVersamenti;
+	
+	//SIGAS-245
+	//--
+	private int codMese;
+	public int getCodMese() {
+		return codMese;
+	}
+	public void setCodMese(int codMese) {
+		this.codMese = codMese;
+	}
+	//---
+	
 	public long getIdVersamento() {
 		return idVersamento;
 	}
@@ -144,38 +153,22 @@ public class VersamentiPrVO implements VO {
 	public void setInteressi(double interessi) {
 		this.interessi = interessi;
 	}
-	public String getInsUser() {
-		return insUser;
-	}
-	public void setInsUser(String insUser) {
-		this.insUser = insUser;
-	}
-	public Date getInsDate() {
-		return insDate;
-	}
-	public void setInsDate(Date insDate) {
-		this.insDate = insDate;
-	}
-	public Date getModDate() {
-		return modDate;
-	}
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-	public String getModUser() {
-		return modUser;
-	}
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
 	public double getDifferenza() {
 		return differenza;
 	}
 	public void setDifferenza(double differenza) {
 		this.differenza = differenza;
 	}
-	
-
-	
-	
+	public boolean isHasPagamentiVersamenti() {
+		return hasPagamentiVersamenti;
+	}
+	public void setHasPagamentiVersamenti(boolean hasPagamentiVersamenti) {
+		this.hasPagamentiVersamenti = hasPagamentiVersamenti;
+	}
+	public List<Long> getPagamentiVersamenti() {
+		return pagamentiVersamenti;
+	}
+	public void setPagamentiVersamenti(List<Long> pagamentiVersamenti) {
+		this.pagamentiVersamenti = pagamentiVersamenti;
+	}	
 }

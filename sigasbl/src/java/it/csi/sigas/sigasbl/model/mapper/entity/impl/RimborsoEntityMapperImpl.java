@@ -63,8 +63,10 @@ public class RimborsoEntityMapperImpl implements RimborsoEntityMapper {
 		dto.setDataRimborso(vo.getDataRimborso());
 		dto.setImporto(vo.getImporto());
 		dto.setImportoRimborsato(vo.getImportoRimborsato());
-		dto.setStatoPratica(vo.getStatoPratica());
-		dto.setVersion(vo.getVersion());
+		dto.setStatoPratica(vo.getStatoPratica());		
+		
+		dto.setVersion(vo.getVersion());				
+		
 		dto.setSigasAnagraficaSoggetti(anagraficaSoggettoEntityMapperImpl.mapVOtoEntity(vo.getAnagraficaSoggettoVO()));
 		dto.setSigasAnaComunicazioni(anaComunicazioniEntityMapperImpl.mapVOtoEntity(vo.getAnaComunicazioniVO()));
 		dto.setVersion(vo.getVersion());

@@ -27,8 +27,6 @@ import it.doqui.acta.actasrv.dto.acaris.type.common.VarargsType;
 public class AcarisMultifilingServiceImpl extends CommonManagementServiceImpl implements AcarisMultifilingService
 {
 	
-//	public static final String LOGGER_PREFIX = DoquiConstants.LOGGER_PREFIX + ".integration";	    
-//	private static Logger log = Logger.getLogger(LOGGER_PREFIX);	
 	private static Logger log = Logger.getLogger(AcarisMultifilingServiceImpl.class);	
 
 	private MultifilingServicePort multifilingService;
@@ -36,7 +34,7 @@ public class AcarisMultifilingServiceImpl extends CommonManagementServiceImpl im
 	@Autowired
 	private DoquiServiceFactory acarisServiceFactory;
 	
-	private String pdFile;
+	//private String pdFile;
 
 	private MultifilingServicePort getMultifilingService(boolean forceLoading) throws Exception{
 		String method = "getMultifilingService";
@@ -54,10 +52,9 @@ public class AcarisMultifilingServiceImpl extends CommonManagementServiceImpl im
 	
 	private MultifilingServicePort getMultifilingService() throws Exception{
 		return getMultifilingService(false);
-	}
-	
+	}	
 
-	
+	/*
 	public String getPdFile() 
 	{
 		return pdFile;
@@ -67,9 +64,8 @@ public class AcarisMultifilingServiceImpl extends CommonManagementServiceImpl im
 	{
 		this.pdFile = pdFile;
 	}
-	
-	
-	
+	*/
+			
 	public void init(){
 		String method = "init";
 		
@@ -86,13 +82,6 @@ public class AcarisMultifilingServiceImpl extends CommonManagementServiceImpl im
 		}
 	}
 
-
-
-	
-	
-	
-	
-
 	// 20200618_LC
 	public ObjectIdType aggiungiClassificazione(ObjectIdType repositoryId, PrincipalIdType principalId, ObjectIdType sourceClassificazioneId, ObjectIdType destinationFolderId, boolean isRichiestaOffline) throws IntegrationException {
 		String method = "spostaDocumento";
@@ -102,81 +91,50 @@ public class AcarisMultifilingServiceImpl extends CommonManagementServiceImpl im
 
 		try {		
 		
-		//	properties	
-		// -----------------------------------------------------------------------------------------------------
-		
-		// (XXX) verificare questi parametri (non si valorizza la nuovaClassificazione)			
-		List<ItemType>	properties = new ArrayList<ItemType>();
-		ItemType prop1 = null;
-		prop1 = new ItemType();
-		prop1.setKey("addConAllegati");
-		prop1.setValue("true");
-		ItemType prop2 = null;
-		prop2 = new ItemType();
-		prop2.setKey("offlineAddRequest");
-		prop2.setValue(Boolean.toString(isRichiestaOffline));
-		properties.add(prop1);
-		properties.add(prop2);
-		properties.toArray(new ItemType[0]);
-		
-		
-		
+			//	properties	
+			// -----------------------------------------------------------------------------------------------------					
+			List<ItemType>	properties = new ArrayList<ItemType>();
+			ItemType prop1 = null;
+			prop1 = new ItemType();
+			prop1.setKey("addConAllegati");
+			prop1.setValue("true");
+			ItemType prop2 = null;
+			prop2 = new ItemType();
+			prop2.setKey("offlineAddRequest");
+			prop2.setValue(Boolean.toString(isRichiestaOffline));
+			properties.add(prop1);
+			properties.add(prop2);
+			properties.toArray(new ItemType[0]);		
+	
+			VarargsType params = new VarargsType();		
+			params.setItems(properties.toArray(new ItemType[0]));
 			
-		
-//		ItemType[] props = new ItemType[2];
-//		// -
-//		props[0].setKey("addConAllegati");
-//		props[0].setValue("true");
-//		// -
-//		props[1].setKey("offlineAddRequest");
-//		props[1].setValue(Boolean.toString(isRichiestaOffline));				// come nella moveDocument
-//		// -
-		
-
-		VarargsType params = new VarargsType();		
-		params.setItems(properties.toArray(new ItemType[0]));
-		
-		// -----------------------------------------------------------------------------------------------------
-		
-		
-		
-
+			// -----------------------------------------------------------------------------------------------------
 			
 			// chiamata tramite WS
-			classificazioneId = acarisServiceFactory.getAcarisService().getMultifilingServicePort().aggiungiClassificazione(repositoryId, principalId, sourceClassificazioneId, destinationFolderId, params);
-			
-			
+			classificazioneId = acarisServiceFactory.getAcarisService()
+													.getMultifilingServicePort()
+													.aggiungiClassificazione(repositoryId, principalId, sourceClassificazioneId, destinationFolderId, params);			
 			if(classificazioneId == null){
 				throw new IntegrationException("Non e' stato possibile copiare il documento, idNuovaClassificazione is null");
-			}
-			
+			}			
 			if(log.isDebugEnabled()){
 				log.debug(method + ". copiato documento, nuova classificazione Id\n " + XmlSerializer.objectToXml(classificazioneId));
-			}
-			
+			}			
 		}
 		catch (AcarisException acEx){
 			log.error(method + ". Si e' verificato un errore in fase di copia del documento " + acEx.getMessage());
-			if(acEx.getFaultInfo() != null) {
-				log.error(method + ". acEx.getFaultInfo().getErrorCode()     =  " + acEx.getFaultInfo().getErrorCode());
-				log.error(method + ". acEx.getFaultInfo().getPropertyName()  = " + acEx.getFaultInfo().getPropertyName());
-				log.error(method + ". acEx.getFaultInfo().getObjectId()      = " + acEx.getFaultInfo().getObjectId());
-				log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-				log.error(method + ". acEx.getFaultInfo().getClassName()     = " + acEx.getFaultInfo().getClassName());
-				log.error(method + ". acEx.getFaultInfo().getTechnicalInfo() = " + acEx.getFaultInfo().getTechnicalInfo());	
+			if(acEx.getFaultInfo() != null) {				
+				this.logAcarisException("AcarisMultifilingServiceImpl", method, acEx.getMessage(), acEx.getFaultInfo());
 			}
 			throw new IntegrationException("Impossibile copiare il documento ", acEx);
 		}
 		catch (Exception e) {
 			log.error(method + ". Exception = " + e.getMessage());
 			throw new IntegrationException("Impossibile copiare il documento ", e);
-		}
-		
+		}		
 		return classificazioneId;
-	}
-
-
-	
+	}	
 
 }
 

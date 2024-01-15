@@ -23,7 +23,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="sigas_quadro_h_utf")
 @NamedQuery(name="SigasQudroH.findAll", query="SELECT i FROM SigasQuadroH i")
-public class SigasQuadroH implements Serializable {
+public class SigasQuadroH extends EntityQuadroBase implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -36,7 +36,8 @@ public class SigasQuadroH implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="id_import", nullable=false)
 	private SigasImportUTF sigasImport;
-
+	
+	/*
 	@Temporal(TemporalType.DATE)
 	@Column(name="data_estrazione", nullable=false)
 	private Date dataEstrazione;
@@ -55,6 +56,7 @@ public class SigasQuadroH implements Serializable {
 	
 	@Column(name="prog_rigo", nullable=false)
 	private String progRigo;
+	*/
 	
 	@Column(name="ubicazione")
 	private String ubicazione;
@@ -113,7 +115,7 @@ public class SigasQuadroH implements Serializable {
 	public void setSigasImport(SigasImportUTF sigasImport) {
 		this.sigasImport = sigasImport;
 	}
-
+	/*
 	public Date getDataEstrazione() {
 		return dataEstrazione;
 	}
@@ -141,6 +143,7 @@ public class SigasQuadroH implements Serializable {
 	public String getProvincia() {
 		return provincia;
 	}
+	*/
 
 	public long getIdQuadroH() {
 		return idQuadroH;
@@ -149,7 +152,8 @@ public class SigasQuadroH implements Serializable {
 	public void setIdQuadroH(long idQuadroH) {
 		this.idQuadroH = idQuadroH;
 	}
-
+	
+	/*
 	public String getQuadro() {
 		return quadro;
 	}
@@ -169,6 +173,7 @@ public class SigasQuadroH implements Serializable {
 	public void setProvincia(String provincia) {
 		this.provincia = provincia;
 	}
+	*/
 
 	public String getUbicazione() {
 		return ubicazione;

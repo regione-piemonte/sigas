@@ -378,7 +378,9 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
         DocumentoElettronicoActa documentoElettronicoActa = new DocumentoElettronicoActa();
         DocumentoElettronicoActa documentoElettronicoActaAllegato = null;
         List<DocumentoElettronicoActa> listDocumentoElettronicoActaAllegato = new ArrayList<DocumentoElettronicoActa>();
+        
         this.valorizzaDocumentoElettronicoActaUtenteActa(utenteActa, documentoElettronicoActa, sigasFruitore, documentiVO, documentoElettronicoActaAllegato, listDocumentoElettronicoActaAllegato);
+        
         ObjectIdType repositoryId = null;
         PrincipalIdType principalId = null;
         ObjectIdType rootId = null;
@@ -406,7 +408,7 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             elencoVitalRecordCodeType = acarisManagementService.recuperaVitalRecordCode(repositoryId);
             VitalRecordCodeType vitalRecordCodeType = estratiVitalRecordCodeTypeByDescrizione(elencoVitalRecordCodeType, utenteActa.getDescrizioneVitalrecordcodetype());
             //idStatoDiEfficacia
-            log.debug(method + ". getStatoDiEfficacia...");
+            log.debug(method + ". getStatoDiEfficacia...");            
             Integer idStatoDiEfficacia = null;
             try {
                 idStatoDiEfficacia = Long.valueOf(getStatoEfficaciaByDescrizione(repositoryId, principalId, utenteActa.getDescrizioneStatoDiEfficacia()).getValue()).intValue();
@@ -448,15 +450,26 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
                 }
             }
             idFormaDocumentaria = acarisObjectService.getIdFormaDocumentaria(repositoryId, principalId, utenteActa);
+            
+            //SIGAS-225
+            //Creazione parola chiave
+            documentoElettronicoActa.setParolaChiave(UUID.randomUUID().toString());
+            //----
+            
             // CREA DOCUMENTO ELETTRONICO
             identificatoreDocumentoFisico = acarisDocumentService.creaDocumentoElettronico(repositoryId, principalId, strutturaId, vitalRecordCodeType, idStatoDiEfficacia, idFormaDocumentaria, null, null, documentoElettronicoActa, isProtocollazioneInUscitaSenzaDocumento);
             if (identificatoreDocumentoFisico != null)
                 log.debug(method + ". identificatoreDocumentoFisico = " + identificatoreDocumentoFisico.getObjectIdDocumento().hashCode());
-            for (DocumentoElettronicoActa documentoElettronicoAllegatoActa : listDocumentoElettronicoActaAllegato) {
+            
+            //GESTIONE ALLEGATI
+            for (DocumentoElettronicoActa documentoElettronicoAllegatoActa : listDocumentoElettronicoActaAllegato) {            	
                 identificatoreDocumentoFisicoAllegato = acarisDocumentService.creaDocumentoElettronico(repositoryId, principalId, identificatoreDocumentoFisico.getObjectIdClassificazione(), vitalRecordCodeType, idStatoDiEfficacia, idFormaDocumentaria, null, "", documentoElettronicoAllegatoActa, isProtocollazioneInUscitaSenzaDocumento);
             }
-            log.debug(method + ". Running Servizio getUUIDDocumento...");
-           // UUIDDocumento = getUUIDDocumentoByParolaChiave(documentoElettronicoActa.getIdDocumento(), repositoryId, principalId);
+            log.debug(method + ". Running Servizio getUUIDDocumento...");            
+            
+            //SIGAS-225
+            //recupero attraverso parola chiave e non più medinate oggetto del documento che puo essere identico per più documenti 
+            UUIDDocumento = getUUIDDocumentoByParolaChiave(documentoElettronicoActa.getParolaChiave(), repositoryId, principalId);            
             log.debug(method + ". Running Servizio recuperaIdNodo...");
 
             idNodo = acarisBackOfficeService.recuperaIdNodo(utenteActa.getIdNodo(), repositoryId, principalId);
@@ -481,6 +494,7 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             if (identificazioneRegistrazione != null) {
                 log.debug(method + ". identificazioneRegistrazione Numero = " + identificazioneRegistrazione.getNumero());
             }
+            /* SIGAS-226
             if (identificatoreDocumentoFisico != null) {
 
                 String numeroProtocollo = documentoElettronicoActa.getIdDocumento() + " - " + identificazioneRegistrazione.getNumero() + "/" + DateFormat.getCurrentYear();
@@ -491,6 +505,9 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
                     log.error("Errore nell'aggiornamento delle properties: ", t);
                 }
             }
+            */       
+           
+            
             return ottengoKeyActa(documentoElettronicoActa, UUIDDocumento, null, identificazioneRegistrazione, identificatoreDocumentoFisico);
         } finally {
             log.debug(method + ". END");
@@ -622,7 +639,8 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             throw new BusinessException(e.getMessage(), ErrorCodes.BUSSINESS_EXCEPTION);
         }
         return datadown;
-    }
+    }   
+    
 
     private void valorizzaDocumentoElettronicoActaUtenteActa(UtenteActa utenteActa, DocumentoElettronicoActa documentoElettronicoActa,
                                                              SigasFruitoreVO sigasFruitore, DocumentiVO documentiVO, DocumentoElettronicoActa documentoElettronicoActaAllegato,
@@ -662,7 +680,29 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
         documentoElettronicoActa.setNomeFile(documentiVO.getNomeFile());
         documentoElettronicoActa.setDescrizione(documentiVO.getTipoDocumentoVO().getDescrizione());
         String mimeType = URLConnection.guessContentTypeFromName(documentiVO.getNomeFile());
+        //SIGAS-225
+        if(mimeType == null &&
+           documentiVO.getNomeFile().contains("p7m")) 
+        {
+        	/*
+        	String mimeArray[] = documentiVO.getNomeFile().split("\\.");
+        	if(mimeArray!=null && mimeArray.length >= 2) {
+        		mimeType = mimeArray[1];
+        		try
+    			{        			
+    				EnumMimeTypeType.fromValue(mimeType);
+    			}
+    			catch (IllegalArgumentException e)
+    			{
+    				log.error("ERRORE MIMETYPE NON VALIDO -> " + mimeType);
+    			}
+        	}
+        	*/
+        	mimeType = EnumMimeTypeType.APPLICATION_PKCS_7_MIME.value();        	
+        }
+        //------------------------------        
         documentoElettronicoActa.setMimeType(mimeType);
+        
         if (documentiVO.getStatoDocumentoVO() == null || documentiVO.getSigasAllegatos() == null) {
             documentoElettronicoActa.setNumeroAllegati(0);
         } else {
@@ -693,7 +733,12 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
                 documentoElettronicoActaAllegato.setStream(allegato.getFile());
                 documentoElettronicoActaAllegato.setNomeFile(allegato.getNomeFile());
                 documentoElettronicoActaAllegato.setDescrizione(documentiVO.getTipoDocumentoVO().getDescrizione());//cnmDTipoDocumento.getDescrTipoDocumento()
-                documentoElettronicoActaAllegato.setMimeType(URLConnection.guessContentTypeFromName(allegato.getNomeFile()));
+                	
+                //SIGAS-225
+                //documentoElettronicoActaAllegato.setMimeType(URLConnection.guessContentTypeFromName(allegato.getNomeFile()));
+                documentoElettronicoActaAllegato.setMimeType(mimeType);
+                //------------------
+                
                 documentoElettronicoActaAllegato.setNumeroAllegati(0);
                 documentoElettronicoActaAllegato.setTipoStrutturaRoot(1);        // 20200630_LC
                 documentoElettronicoActaAllegato.setTipoStrutturaFolder(1);    // 20200630_LC
@@ -704,9 +749,16 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
                 documentoElettronicoActaAllegato.setSoggettoActa(soggettoActaAllegato);
                 documentoElettronicoActaAllegato.setAutoreGiuridico(documentiVO.getAnagraficaSoggettoVO().getDenominazione() + " - " + documentiVO.getCfPiva());
                 documentoElettronicoActaAllegato.setDestinatarioGiuridico(DoquiConstants.DESTINATARIO_GIURIDICO);
+                
+                documentoElettronicoActaAllegato.setAutoreFisico("NULL_VALUE");
+                
                 listDocumentoElettronicoActaAllegato.add(documentoElettronicoActaAllegato);
             }
         }
+        
+        //SIGAS-225
+        documentoElettronicoActa.setAutoreFisico("NULL_VALUE");
+        
     }
 
     private String calcolaSerieFascicoloRoot(TipoDocumentoVO tipoDocumento) {

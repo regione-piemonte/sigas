@@ -483,7 +483,17 @@
 		<echo message="*****************************************" />
 		<echoproperties prefix="java."/>
 	</target>
+	
+	<!--build in lcl -->
+	<target name="_deploy-jboss" description="deploy server jboss locale" depends="distribution">
+	        <echo message="Deploy ${build}/archives/${target}/sigasbl.ear  su JBoss "/>
+	        <tstamp>
+	            <format property="TODAY_IT" pattern="dd/MM/yyyy hh:mm:ss" locale="it"/>
+	        </tstamp>
+	        <copy file="${build}/archives/${target}/sigasbl.ear" todir="${jboss.deploy.dir}"/>
 
+	        <echo message="${build}/archives/${target}/sigasbl.ear deployed in date  ${TODAY_IT}"/>
+	</target>
 
 	<!--build in dev -->
 	<target name="deploy-dev"

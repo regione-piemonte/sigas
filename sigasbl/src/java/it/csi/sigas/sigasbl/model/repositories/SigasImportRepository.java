@@ -22,7 +22,7 @@ public interface SigasImportRepository extends CrudRepository<SigasImportUTF, Lo
 	@Query("select u from SigasImportUTF u where u.annualita = :annualita and u.esito > 0")
 	SigasImportUTF findDowloadedByAnno(@Param("annualita") String annualita);
 	
-	@Query("select u from SigasImportUTF u where u.esito = 4")
+	@Query("SELECT u FROM SigasImportUTF u WHERE u.esito = 4 ORDER BY annualita DESC")
 	List<SigasImportUTF> findImported();
 
 }

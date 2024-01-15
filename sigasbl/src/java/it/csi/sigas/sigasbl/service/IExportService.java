@@ -5,6 +5,7 @@
 package it.csi.sigas.sigasbl.service;
 
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
+import it.csi.sigas.sigasbl.request.home.DownloadDettaglioSoggettoReport;
 import it.csi.sigas.sigasbl.request.home.DownloadDocumentazioneReport;
 import it.csi.sigas.sigasbl.request.home.DownloadReport;
 import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
@@ -23,5 +24,7 @@ public interface IExportService {
 	byte[] getExcel(DownloadAccertamentiReport downloadAccertamentiReport, String reportName);
 
 	byte[] getExcel(DownloadReport downloadReport, String reportName);
+	
+	byte[] getExcel(DownloadDettaglioSoggettoReport downloadReport, String reportName);
 
 }

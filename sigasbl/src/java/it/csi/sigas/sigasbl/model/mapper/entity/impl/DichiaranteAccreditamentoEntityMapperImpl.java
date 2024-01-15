@@ -83,16 +83,20 @@ public class DichiaranteAccreditamentoEntityMapperImpl implements DichiaranteAcc
 			return null;
 		else {
 			SigasDichiarante dto = new SigasDichiarante();
-//			dto.setDenomDichiarante(Utilities.nullOrUppercase(vo.getDenominazione()));
+			
+			/* ***********************************************************************
+			 *  REQUISITO UTENTE PREVEDE L'INSERIMENTO DI UN RECORD AD OGNI MODIFICA
+			 * ***********************************************************************
+			if(vo.getIdDichiarante()!=null && vo.getIdDichiarante() > 0) {
+				dto.setIdDichiarante(vo.getIdDichiarante());
+			}
+			*/		
 			dto.setDenomDichiarante(vo.getDenominazione());
 			if (vo.getComune() != null && vo.getComune().getId() != null) {
 				SigasComune comune = sigasComuneRepository.findOne(vo.getComune().getId());
 				dto.setSigasComune(comune);				
 				dto.setSigasProvincia(comune.getSigasProvincia());
-			} 
-//			else
-//				throw new BadRequestException("comune non valorizzato");
-
+			}
 			dto.setIndirizzoSeleLegaleDichiar(Utilities.nullOrUppercase(vo.getIndirizzo()));
 			dto.setCodiceAzienda(vo.getCodiceAzienda());
 			dto.setEmailDichiarante(vo.getEmailDichiarante());

@@ -1,7 +1,7 @@
 package it.csi.sigas.sigasbl.service.impl;
 
 import java.io.ByteArrayInputStream;
-
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,8 +14,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -483,15 +485,14 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 		cart.setDenominazioneVersante(subject_name);
 		cart.setMese(month);
 		cart.setFkTipoCarrello(storePaymentCartRequest.getType());
-//		cart.setFkUtenteInsert(paymentCartRepository.getIdUser(getTaxCode()));
 		cart.setFkUtenteInsert(paymentCartRepository.getIdUser(getUser().getIdentita().getCodFiscale()));
 		cart.setSiglaProvincia(storePaymentCartRequest.getArea());
 		cart.setFkProvincia(paymentCartRepository.resolveAreaId(storePaymentCartRequest.getArea()));
 		cart.setCodiceAzienda(storePaymentCartRequest.getSubjectCode());
 		cart.setCfPiva(cfPiva);
 		
-		try {
-			cart.setImporto(Double.parseDouble(storePaymentCartRequest.getAmount().replace(',', '.')));
+		try {			
+			cart.setImporto(new BigDecimal(storePaymentCartRequest.getAmount().replace(',', '.')));
 		} catch (Exception skipAndGetNull) { }
     	
 		cart.setCodicePagamento(paymentCartRepository.getUniquePaymentCode(idAnag, year, cart.getFkUtenteInsert()));
@@ -574,31 +575,37 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     		paymentCartRepository.save(cartItem);
     	}
 	}
+    
+    
 	
     @Override
-    public PaymentRedirectVO getPaymentPagoPaRedirectInfo(StorePaymentCartRequest storePaymentCartRequest) {
+    public PaymentRedirectVO getPaymentPagoPaRedirectInfo(StorePaymentCartRequest storePaymentCartRequest) {    	
+    	
     	String year = storePaymentCartRequest.getYear(); 
 		String subject_name = storePaymentCartRequest.getSubjectName();
 		
     	String iuv;
     	SigasPaymentCart paymentInfo = null;
 		if(year != null && year.length() > 0)
-	    	try {
+	    	try {	    		
+	    		
 	        	List<SigasPaymentCart> cart_items = paymentCartRepository.retrieveCartItems(getUser().getIdentita().getCodFiscale(),
 	        			SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO, SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO,
 	        			year,
 	        			subject_name);
 	        	
 	        	if(cart_items.size() > 0
-	        			&& ((paymentInfo = cart_items.get(0)) != null)
-	        			&& paymentInfo.getFkStatoCarrello() != null
-	        			&& paymentInfo.getFkStatoCarrello() == SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO
-	        			&& paymentInfo.getFkTipoPagamento() == SigasPaymentCart.CART_PAYMENT_TYPE_PAGOPA
-	        			&& ((iuv = paymentInfo.getIuv()) != null && iuv.length() > 0)) {
+	        	   && ((paymentInfo = cart_items.get(0)) != null)
+	        	   && paymentInfo.getFkStatoCarrello() != null
+	        	   && paymentInfo.getFkStatoCarrello() == SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO
+	        	   && paymentInfo.getFkTipoPagamento() == SigasPaymentCart.CART_PAYMENT_TYPE_PAGOPA
+	        	   && ((iuv = paymentInfo.getIuv()) != null && iuv.length() > 0)) {
+	        		
 	        		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(paymentInfo.getFkAnagSoggetto().longValue());
+	        			        		
+	        		
 	        		return ePayServiceFacade.getPaymentRedirectInfo(iuv, 
 	    															paymentInfo.getCodicePagamento(),
-//	    															paymentInfo.getCodiceAzienda(),
 	    															sigasAnagraficaSoggetti.getCfPiva(),
 	    															sigasCMessaggiRepository.findByDescChiaveMessaggio("carrelloAttesaPagamentoRedirect").getValoreMessaggio());
 	        	}
@@ -691,11 +698,10 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     	
     	Integer fkversamento = null;
     	if(finalizePayment && cart_items != null && cart_items.size() > 0) {
-        	Double total = 0d;
-    		for(SigasPaymentCart cartItem : cart_items)
-    			total += cartItem.getImporto();
-
-//    		SigasPaymentCart cartItem = cart_items.get(0);
+        	BigDecimal total = BigDecimal.ZERO;
+    		for(SigasPaymentCart cartItem : cart_items) {
+    			total = total.add(cartItem.getImporto());
+    		}
     		
     		for (SigasPaymentCart cartItem : cart_items) {
     			SigasTipoCarrello sigasTipoCarrello = sigasTipoCarrelloRepository.findOne(cartItem.getFkTipoCarrello().longValue());
@@ -717,12 +723,11 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     	    		
     	    		versamento.setAnnualita(cartItem.getAnno());
     	    		versamento.setDataVersamento(new Date());
-    	    		versamento.setImporto(cartItem.getImporto());
+    	    		versamento.setImporto(cartItem.getImporto().doubleValue());
     	    		versamento.setMese(subjectFoRepository.findMonthById(cartItem.getMese()));
-    	    		versamento.setImportoComplessivo(total);
+    	    		versamento.setImportoComplessivo(total.doubleValue());
     	    		versamento.setNote(cartItem.getNote());
     	    		versamento.setSigasProvincia(sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(cartItem.getSiglaProvincia()));
-//    	    		versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findByIdAnag(cartItem.getFkAnagSoggetto().longValue()));
     	    		versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findOne(cartItem.getFkAnagSoggetto().longValue()));
     	    		versamento.setSigasTipoVersamento(sigasTipoVersamento);
     	    		
@@ -844,11 +849,24 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 	}
 	
 	private void startPaymentPAGOPA(List<SigasPaymentCart> cart_items) {
-		ePayServiceFacade.inserisciListaDiCarico(
-				ePayWsInputMapper.mapPagamentoWsMapper(cart_items, 
-					getTaxCode(),
-					sigasCParametroRepository.findByDescParametro("oggettoPagamentoPpay").getValoreString(),
-					sigasCParametroRepository.findByDescParametro("codiceFiscaleEnteCreditore").getValoreString()));
+		
+		//CR WS Security
+		SigasCParametro oggettoPagamentoPpay = sigasCParametroRepository.findByDescParametro("oggettoPagamentoPpay");
+		SigasCParametro codiceFiscaleEnteCreditore = sigasCParametroRepository.findByDescParametro("codiceFiscaleEnteCreditore");
+		SigasCParametro wsSecurityIsOn = sigasCParametroRepository.findByDescParametro("ws_security_is_on");
+		
+		if(wsSecurityIsOn != null && wsSecurityIsOn.getValoreBoolean() != null && wsSecurityIsOn.getValoreBoolean()) {
+			SigasCParametro wsUserParam = sigasCParametroRepository.findByDescParametro("ws_user");
+			SigasCParametro wsPWDParam = sigasCParametroRepository.findByDescParametro("ws_pwd");
+			
+			ePayServiceFacade.inserisciListaDiCarico(ePayWsInputMapper.mapPagamentoWsMapper(cart_items,	getTaxCode(),oggettoPagamentoPpay.getValoreString(),codiceFiscaleEnteCreditore.getValoreString()),
+													 wsUserParam.getValoreString(),
+													 wsPWDParam.getValoreString());
+		} else {
+			
+			ePayServiceFacade.inserisciListaDiCarico(ePayWsInputMapper.mapPagamentoWsMapper(cart_items, getTaxCode(),oggettoPagamentoPpay.getValoreString(),codiceFiscaleEnteCreditore.getValoreString()));
+			
+		}		
 	}
 
     @Override

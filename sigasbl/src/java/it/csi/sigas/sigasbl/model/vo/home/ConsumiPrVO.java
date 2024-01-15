@@ -55,6 +55,28 @@ public class ConsumiPrVO implements VO {
 	private boolean scarti;
 	private double compensazione;
 	private double totaleDichOrigine;
+	
+	//SIGAS-245
+	private double totaleVersato;	
+
+	public double getTotaleVersato() {
+		return totaleVersato;
+	}
+
+	public void setTotaleVersato(double totaleVersato) {
+		this.totaleVersato = totaleVersato;
+	}
+	//-----
+	
+	private CompensazionePrVO compensazionePrVO;	
+
+	public CompensazionePrVO getCompensazionePrVO() {
+		return compensazionePrVO;
+	}
+
+	public void setCompensazionePrVO(CompensazionePrVO compensazionePrVO) {
+		this.compensazionePrVO = compensazionePrVO;
+	}
 
 	public long getId_consumi() {
 		return id_consumi;

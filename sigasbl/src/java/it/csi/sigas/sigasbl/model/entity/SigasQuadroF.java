@@ -17,14 +17,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
+/******************************************************************************
+ * 
+ * @author mabuonai
+ * 
+ * Classe per la gestione dei consumi inseriti nella tabella Quadro F.
+ * Utilizzo classe base EntityQuadroBase
+ *
+ *****************************************************************************/
 @Entity
 @Table(name="sigas_quadro_f_utf")
 @NamedQuery(name="SigasQudroF.findAll", query="SELECT i FROM SigasQuadroF i")
-public class SigasQuadroF implements Serializable {
+public class SigasQuadroF extends EntityQuadroBase implements Serializable {
 	
+	/***************************************************
+	 * Variabili
+	 **************************************************/	
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -36,35 +45,19 @@ public class SigasQuadroF implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="id_import", nullable=false)
 	private SigasImportUTF sigasImport;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="data_estrazione", nullable=false)
-	private Date dataEstrazione;
-	
-	@Column(name="codice_ditta", nullable=false)
-	private String codiceDitta;
-	
-	@Column(name="anno", nullable=false)
-	private String anno;
-	
-	@Column(name="provincia", nullable=false)
-	private String provincia;
-	
-	@Column(name="quadro", nullable=false)
-	private String quadro;
-	
-	@Column(name="fascia_clima", nullable=false)
-	private String fasciaClima;
-	
-	@Column(name="prog_rigo", nullable=false)
-	private String progRigo;
-	
+		
 	@Column(name="utenze", nullable=false)
 	private String utenze;
 	
 	@Column(name="utenze_mc", nullable=false)
 	private int utenzeMc;
 	
+	@Column(name="fascia_clima", nullable=false)
+	private String fasciaClima;	
+	
+	/***************************************************
+	 * Costruttori
+	 **************************************************/
 	public SigasQuadroF() {
 	}
 	
@@ -90,75 +83,19 @@ public class SigasQuadroF implements Serializable {
 		this.utenze = utenze;
 		this.utenzeMc = utenzeMc;
 	}
-
+	
+	/***************************************************
+	 * Metodi publici
+	 **************************************************/
 	public SigasImportUTF getSigasImport() {
 		return sigasImport;
 	}
 
 	public void setSigasImport(SigasImportUTF sigasImport) {
 		this.sigasImport = sigasImport;
-	}
-
-	public Date getDataEstrazione() {
-		return dataEstrazione;
-	}
-
-	public void setDataEstrazione(Date dataEstrazione) {
-		this.dataEstrazione = dataEstrazione;
-	}
-
-	public String getCodiceDitta() {
-		return codiceDitta;
-	}
-
-	public void setCodiceDitta(String codiceDitta) {
-		this.codiceDitta = codiceDitta;
-	}
-
-	public String getAnno() {
-		return anno;
-	}
-
-	public void setAnno(String anno) {
-		this.anno = anno;
-	}
-
-	public String getProvincia() {
-		return provincia;
-	}
-
-	public long getIdQuadroF() {
-		return idQuadroF;
-	}
-
-	public void setIdQuadroF(long idQuadroF) {
-		this.idQuadroF = idQuadroF;
-	}
-
-	public String getQuadro() {
-		return quadro;
-	}
-
-	public void setQuadro(String quadro) {
-		this.quadro = quadro;
-	}
-
-	public String getFasciaClima() {
-		return fasciaClima;
-	}
-
-	public void setFasciaClima(String fasciaClima) {
-		this.fasciaClima = fasciaClima;
-	}
-
-	public String getProgRigo() {
-		return progRigo;
-	}
-
-	public void setProgRigo(String progRigo) {
-		this.progRigo = progRigo;
-	}
-
+	}	
+	
+	
 	public String getUtenze() {
 		return utenze;
 	}
@@ -175,8 +112,21 @@ public class SigasQuadroF implements Serializable {
 		this.utenzeMc = utenzeMc;
 	}
 
-	public void setProvincia(String provincia) {
-		this.provincia = provincia;
+	public long getIdQuadroF() {
+		return idQuadroF;
 	}
+
+	public void setIdQuadroF(long idQuadroF) {
+		this.idQuadroF = idQuadroF;
+	}
+	
+
+	public String getFasciaClima() {
+		return fasciaClima;
+	}
+
+	public void setFasciaClima(String fasciaClima) {
+		this.fasciaClima = fasciaClima;
+	}	
 
 }

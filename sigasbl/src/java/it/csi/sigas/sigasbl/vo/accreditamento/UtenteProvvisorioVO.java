@@ -24,13 +24,13 @@ public class UtenteProvvisorioVO {
 	private String stato;
 	
 	
-	private Timestamp insDate;
+	private Timestamp insDateUP;
 
-	private String insUser;
+	private String insUserUP;
 
-	private Timestamp modDate;
+	private Timestamp modDateUP;
 
-	private String modUser;
+	private String modUserUP;
 
 
 	public long getIdUtenteProvv() {
@@ -95,35 +95,35 @@ public class UtenteProvvisorioVO {
 	}
 
 	public Timestamp getInsDate() {
-		return insDate;
+		return insDateUP;
 	}
 
 	public void setInsDate(Timestamp insDate) {
-		this.insDate = insDate;
+		this.insDateUP = insDate;
 	}
 
 	public String getInsUser() {
-		return insUser;
+		return insUserUP;
 	}
 
 	public void setInsUser(String insUser) {
-		this.insUser = insUser;
+		this.insUserUP = insUser;
 	}
 
 	public Timestamp getModDate() {
-		return modDate;
+		return modDateUP;
 	}
 
 	public void setModDate(Timestamp modDate) {
-		this.modDate = modDate;
+		this.modDateUP = modDate;
 	}
 
 	public String getModUser() {
-		return modUser;
+		return modUserUP;
 	}
 
 	public void setModUser(String modUser) {
-		this.modUser = modUser;
+		this.modUserUP = modUser;
 	}
 	
 

@@ -1,0 +1,9 @@
+/.settings/
+/.project
+/dist/
+/build
+/lib/
+### IntelliJ IDEA ###
+/.idea
+*.iml
+/out

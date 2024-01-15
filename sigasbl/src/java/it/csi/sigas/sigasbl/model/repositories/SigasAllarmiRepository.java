@@ -6,6 +6,7 @@ package it.csi.sigas.sigasbl.model.repositories;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -47,5 +48,9 @@ public interface SigasAllarmiRepository extends CrudRepository<SigasAllarmi, Int
 	
 	
 	List<SigasAllarmi> findBySigasAnaComunicazioniIdComunicazione(Long idComunicazione);
+	
+	@Modifying
+	@Query(value="update sigas_allarmi set status = :status  where id_allarme = :idAllarme ", nativeQuery=true)	
+	void updateStatoAllarmeAccertamento(@Param("idAllarme") int idAllarme, @Param("status") int status);
 
 }

@@ -28,7 +28,7 @@ import it.csi.sigas.sigasbl.request.documentazione.RicercaDocumentazioneRequest;
 
 
 @Path("documentazione")
-@Consumes({ MediaType.APPLICATION_JSON })
+@Consumes({ MediaType.APPLICATION_JSON  })
 @Produces({ MediaType.APPLICATION_JSON })
 public interface IDocumentazioneApi {
 	

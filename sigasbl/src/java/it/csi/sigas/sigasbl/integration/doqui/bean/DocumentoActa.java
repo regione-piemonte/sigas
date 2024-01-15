@@ -71,7 +71,18 @@ public class DocumentoActa implements Serializable {
 	private boolean 		documentoCartaceo;
 	private String 			collocazioneCartacea;
 	
-	
+	//SIGAS-225
+	//----------------
+	private String parolaChiave;
+	public String getParolaChiave() {
+		return parolaChiave;
+	}
+
+	public void setParolaChiave(String parolaChiave) {
+		this.parolaChiave = parolaChiave;
+	}
+	//----------------
+
 	public int getNumeroAllegati() {
 		return numeroAllegati;
 	}

@@ -35,7 +35,7 @@ public class ShibbolethAuthenticationFilter extends RequestHeaderAuthenticationF
 			Identita i = null;
 			try {
 				/* <[REPLACE_HERE]> */
-				i = irideServFacade.identificaUserPassword(UserMock.DEMO22, "PIEMONTE");// rp
+				i = irideServFacade.identificaUserPassword(UserMock.DEMO22, "P!_MONTe2022");// rp
 				/* <[/REPLACE_HERE]> */
 			} catch (Exception e) {
 				e.printStackTrace();

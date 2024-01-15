@@ -12,27 +12,19 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import it.csi.sigas.sigasbl.model.entity.custom.PaymentSubjectFOEntityGroupedCustom;
+import it.csi.sigas.sigasbl.model.entity.SigasPaymentCart;
 import it.csi.sigas.sigasbl.model.entity.custom.PaymentSubjectFODetailEntityCustom;
 import it.csi.sigas.sigasbl.model.entity.custom.PaymentSubjectFOEntityCustomBase;
 import it.csi.sigas.sigasbl.model.entity.custom.PaymentSubjectFOEntitySingleCustom;
 
 @Repository
-public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentSubjectFOEntityCustomBase, Long> {
+public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentSubjectFOEntityCustomBase, Long> {	
 		
 	@Query(value="SELECT codice_fiscale FROM sigas_utenti WHERE id_utente = :id ", nativeQuery = true)
 	String retrieveCF(@Param("id") Integer id);
 	
 	@Query(value="SELECT c.annualita " +
 			"	FROM sigas_dich_consumi c  " +
-//			"	FROM sigas_utenti u " +
-//			"		inner join sigas_utente_provvisorio up on (u.id_utente_provv = up.id_utente_provv AND up.stato='ACCETTATA')" +
-//			"		INNER JOIN sigas_anagrafica_utente us on u.id_utente_provv=us.id_utente_provv" +
-//			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag" +
-//			"		INNER JOIN sigas_dich_consumi c on c.id_anag=s.id_anag" +
-//			"		LEFT JOIN sigas_provincia sp on s.fk_provincia=sp.id_provincia" +
-//			"	WHERE (:cf='' OR u.codice_fiscale = :cf) " +
-//			"		AND c.mod_id_consumi = 0" +
-//			"	WHERE (:cf='' OR u.codice_fiscale = :cf) " +
 			"	GROUP BY c.annualita" +
 			"	ORDER BY c.annualita DESC" ,nativeQuery = true)
 	List<String> findListaYearsPaymentFO();
@@ -46,14 +38,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"	WHERE (:cf='' OR u.codice_fiscale = :cf) " +
 			"	ORDER BY c.anno DESC" ,nativeQuery = true)
 	List<String> retrievePaidYears(@Param("cf") String cf);
-
-	/*
-	@Query(value="SELECT concat(x.mese, ':', SUM(importo))" + 
-			"	FROM sigas.sigas_dich_versamenti x" + 
-			"	WHERE x.id_anag = ?1 " + 
-			"		AND x.annualita = ?2" + 
-			"	GROUP BY x.mese" ,nativeQuery = true)
-	 */
+	
 	@Query(value="SELECT to_char(SUM(importo)/12, 'FM999999999.00')" + 
 			"	FROM sigas_dich_versamenti x" + 
 			"	WHERE x.id_anag = ?1 " + 
@@ -61,34 +46,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 	List<String> getUserAmountsForPrevYear(Long idAnag, String year);
 	
 	@Query(value="SELECT sigla_provincia FROM sigas_provincia WHERE fk_regione=1" ,nativeQuery = true)
-	List<String> getAllPiemonteCounties();
-	
-	/*
-	@Query(value="SELECT DISTINCT " +
-			"		concat(s.id_anag, spc.sigla_provincia) as id," + 
-			"		denominazione as nomeAzienda," + 
-			"		s.id_anag as IdAnag," + 
-			"		sc.denom_comune as Comune," + 
-			"		sc.cap as Cap," + 
-			"		s.indirizzo as Indirizzo," + 
-			"		s.codice_azienda as CodiceAzienda," + 
-			"		concat(denominazione, ' - ', codice_azienda) as Denominazione," + 
-			"		sp.sigla_provincia as SiglaProvinciaAzienda," + 
-			"		spc.sigla_provincia as SiglaProvincia," + 
-			"		u.codice_fiscale as CodiceFiscale" +
-			"	FROM sigas_utenti u " +
-			"		INNER JOIN sigas_anagrafica_utente us on u.id_utente_provv=us.id_utente_provv" +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag " +
-			"		INNER JOIN sigas.sigas_provincia sp on s.fk_provincia=sp.id_provincia " +
-			"		INNER JOIN sigas.sigas_comune sc on s.fk_comune = sc.id_comune " +
-			"		INNER JOIN sigas_dich_consumi c on c.id_anag=s.id_anag " +
-			"		INNER JOIN sigas.sigas_provincia spc on c.provincia_erogazione = spc.sigla_provincia " +
-			"	WHERE (:cf='' OR u.codice_fiscale = :cf) " +
-			"		AND c.mod_id_consumi = 0 " +
-			"		AND c.annualita = :year ",nativeQuery = true)
-	List<PaymentSubjectFOEntitySingleCustom> findPaymentSubjectsFO(@Param("cf") String cf, 
-			@Param("year") String year);
-	*/
+	List<String> getAllPiemonteCounties();	
 
 	@Query(value=
 			"select" + 
@@ -135,7 +93,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"	c.fk_anag_soggetto = :idanag" +
 			"	and c.anno = :year",nativeQuery = true)
 	List<PaymentSubjectFODetailEntityCustom> getPaymentSubjectsFODetails(@Param("year") String year, 
-															@Param("idanag") Integer idAnag);
+																		 @Param("idanag") Integer idAnag);
 	
 	@Query(value="SELECT  " + 
 			"					(''||MAX(s.id_anag)) as id, " + 
@@ -152,8 +110,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"					LEFT JOIN sigas_provincia sp on s.fk_provincia=sp.id_provincia " + 
 			"					LEFT JOIN sigas_comune sc on s.fk_comune = sc.id_comune " + 
 			"				WHERE	s.id_anag = :idanag", nativeQuery = true)
-	List<PaymentSubjectFODetailEntityCustom> getPaymentSubjectsFOByIdAnag(@Param("idanag") Integer idAnag);
-	
+	List<PaymentSubjectFODetailEntityCustom> getPaymentSubjectsFOByIdAnag(@Param("idanag") Integer idAnag);	
 	
 	@Query(value="SELECT DISTINCT " +
 			"		(s.id_anag||c.sigla_provincia) as id," + 
@@ -175,10 +132,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"		LEFT JOIN sigas_provincia sp on s.fk_provincia=sp.id_provincia " +
 			"		LEFT JOIN sigas_comune sc on s.fk_comune = sc.id_comune " +
 			"		INNER JOIN sigas_carrello_pagamenti c on c.fk_anag_soggetto=s.id_anag " +
-//			"		INNER JOIN sigas_dich_consumi c on c.id_anag=s.id_anag " +
-//			"		INNER JOIN sigas.sigas_provincia spc on c.provincia_erogazione = spc.sigla_provincia " +
 			"	WHERE (:cf='' OR u.codice_fiscale = :cf) " +
-//			"		AND c.fk_dich_versamento IS NOT NULL " +
 			"		AND c.anno = :year ",nativeQuery = true)
 	List<PaymentSubjectFOEntitySingleCustom> findFOSubjectsForPaymentSearch(@Param("cf") String cf, 
 			@Param("year") String year);
@@ -208,55 +162,29 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"					GROUP BY codice_pagamento) cp ON c.codice_pagamento=cp.codice_pagamento" + 
 			"			INNER JOIN (SELECT codice_pagamento, sum(importo) as totalAmount" + 
 			"					FROM sigas_carrello_pagamenti " + 
-			"					GROUP BY codice_pagamento) ca ON c.codice_pagamento=ca.codice_pagamento" +
-//			"			LEFT JOIN sigas_dichiarante d on d.codice_azienda=s.codice_azienda" + 
+			"					GROUP BY codice_pagamento) ca ON c.codice_pagamento=ca.codice_pagamento" + 
 			"		WHERE (:cf='' OR u.codice_fiscale = :cf)" + 
-//			"			AND c.fk_dich_versamento IS NOT NULL" + 
 			"				AND (:cf='' OR (c.fk_utente_insert in (select su.id_utente from sigas_utenti su where su.codice_fiscale = :cf)))" +				
 			"				AND c.anno = :year" + 
 			"				AND (:fromMonth=0 OR (c.mese BETWEEN :fromMonth AND :toMonth))" + 
 			"				AND (:fromDate='' OR (c.DATA_PAGAMENTO >= :fromDate\\:\\:date and c.DATA_PAGAMENTO <= :toDate\\:\\:date))" + 
 			"				AND (:area='' OR counties like '%' || :area || '%')" + 
-//			"				AND (:vatcode='' OR d.piva_dichiarante = :vatcode)" + 
 			"				AND (:paytype=0 OR c.fk_tipo_carrello = :paytype)" + 
 			"				AND (:subject='' OR s.denominazione = :subject)" +
 			"				AND (c.fk_stato_carrello >= :statoIniziale)" +
 			"				AND (c.fk_stato_carrello <= :statoFinale)"+
 			"				AND (:codiceFiscalePIva='' OR c.cf_piva = :codiceFiscalePIva)", nativeQuery = true)
 	List<PaymentSubjectFOEntityGroupedCustom> searchFOPaymentsGrouppedByPayCode(@Param("cf") String cf, 
-			@Param("year") String year, 
-			@Param("fromMonth") Integer fromMonth, 
-			@Param("toMonth") Integer toMonth, 
-			@Param("fromDate") String fromDate, 
-			@Param("toDate") String toDate, 
-			@Param("subject") String subject,
-//			@Param("vatcode") String vatcode,
-			@Param("paytype") Integer paytype,
-			@Param("area") String area,
-			@Param("statoIniziale") int statoIniziale,
-			@Param("statoFinale") int statoFinale,
-			@Param("codiceFiscalePIva") String codiceFiscalePIva);
-
-	/*
-	 * ALTERNATIVE VERSION FOR 'searchFOPaymentsGrouppedByPayCode'
-	@Query(value="SELECT DISTINCT c.codice_pagamento, s.codice_azienda as codice_azienda, s.denominazione as denominazione, c.mese AS mesi, c.sigla_provincia as provincie, c.importo as totale" + 
-			"	FROM sigas_utenti u" + 
-			"		INNER JOIN sigas_anagrafica_utente us on u.id_utente_provv=us.id_utente_provv" + 
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag" + 
-			"		INNER JOIN sigas_carrello_pagamenti c on c.fk_anag_soggetto=s.id_anag" + 
-			"	WHERE u.codice_fiscale = :cf" + 
-			"		AND c.fk_dich_versamento IS NOT NULL" + 
-			"		AND c.anno = :year" + 
-			"		AND (:fromMonth IS NULL OR (c.mese BETWEEN :fromMonth AND :toMonth))" + 
-			"		AND (:area IS NULL OR c.sigla_provincia like '%' || :area || '%')" + 
-			"		AND (:subject IS NULL OR s.denominazione = :subject)", nativeQuery = true)
-	List<PaymentSubjectFOEntityCustom> searchFOPaymentsSingleRow(@Param("cf") String cf, 
-			@Param("year") String year, 
-			@Param("fromMonth") String fromMonth, 
-			@Param("toMonth") String toMonth, 
-			@Param("subject") String subject,
-			@Param("area") String area);
-	*/
-	
+																				@Param("year") String year, 
+																				@Param("fromMonth") Integer fromMonth, 
+																				@Param("toMonth") Integer toMonth, 
+																				@Param("fromDate") String fromDate, 
+																				@Param("toDate") String toDate, 
+																				@Param("subject") String subject,
+																				@Param("paytype") Integer paytype,
+																				@Param("area") String area,
+																				@Param("statoIniziale") int statoIniziale,
+																				@Param("statoFinale") int statoFinale,
+																				@Param("codiceFiscalePIva") String codiceFiscalePIva); 		
 	
 }

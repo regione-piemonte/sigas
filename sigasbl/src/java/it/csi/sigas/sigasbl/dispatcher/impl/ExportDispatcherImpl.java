@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import it.csi.sigas.sigasbl.common.ExportReport;
 import it.csi.sigas.sigasbl.dispatcher.IExportDispatcher;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
+import it.csi.sigas.sigasbl.request.home.DownloadDettaglioSoggettoReport;
 import it.csi.sigas.sigasbl.request.home.DownloadDocumentazioneReport;
 import it.csi.sigas.sigasbl.request.home.DownloadReport;
 import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
@@ -28,7 +29,7 @@ public class ExportDispatcherImpl implements IExportDispatcher {
 	}
 	
 	@Override
-	public byte[] salvaSoggetto(DownloadReport downloadReport) {
+	public byte[] salvaSoggetto(DownloadDettaglioSoggettoReport downloadReport) {
 		return ExportService.getExcel(downloadReport, ExportReport.REPORT_EXCEL_SOGGETTO.getCodice());
 	}
 	

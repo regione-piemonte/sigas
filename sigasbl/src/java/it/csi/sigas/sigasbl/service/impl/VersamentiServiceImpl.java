@@ -7,14 +7,18 @@ package it.csi.sigas.sigasbl.service.impl;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -58,6 +62,7 @@ import it.csi.sigas.sigasbl.model.repositories.SigasProvinciaRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasTipoAllarmiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasTipoVersamentoRepository;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.AnnualitaVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
@@ -131,12 +136,51 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private final String PARAM_NUOVO_VERSAMENTO_ANNI_PREVISTI = "nuovo_versamento_numero_anni";
+	private final String PARAM_NUOVO_VERSAMENTO_ANNO_RIFERIMENTO = "nuovo_versamento_anno_riferimento";
     
 	
 	/* Versamenti per Soggetto*/
-    @Override
-    public List<String> ricercaAnnualitaVersamenti(Long idAnag) {
+	@Override
+    public List<String> annualitaVersamentiPerRicerca(Long idAnag) {   	
+    	    	
 		return sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
+    }
+	
+    @Override
+    public AnnualitaVersamentiVO ricercaAnnualitaVersamenti(Long idAnag) {
+    	
+    	AnnualitaVersamentiVO output = new AnnualitaVersamentiVO();
+    	
+    	//Lettura parametri applicativi
+    	Integer limiteAnni = sigasCParametroRepository.findByDescParametro(PARAM_NUOVO_VERSAMENTO_ANNI_PREVISTI).getValoreNumber().intValue();
+    	Integer annoRiferimento;
+    	BigDecimal annoRiferimentoParam = sigasCParametroRepository.findByDescParametro(PARAM_NUOVO_VERSAMENTO_ANNO_RIFERIMENTO).getValoreNumber();    	
+    	List<String> anniPresenti = new ArrayList<>();
+    	if(annoRiferimentoParam==null) {
+    		Calendar cal = Calendar.getInstance();        	
+    		annoRiferimento = cal.get(Calendar.YEAR);    		
+    	} else {
+    		annoRiferimento = annoRiferimentoParam.intValue();
+    	}
+    	
+    	anniPresenti.add(annoRiferimento.toString());
+    	for(int i=1; i <= limiteAnni; i++) {
+    		anniPresenti.add(String.valueOf(annoRiferimento-i));
+    	}
+    	
+    	Collections.sort(anniPresenti, Collections.reverseOrder());    	
+    	output.setLista_annualita(anniPresenti);
+    	
+    	List<String> annualitaVersamentiList = sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
+    	if(annualitaVersamentiList!=null & !annualitaVersamentiList.isEmpty()) {
+    		output.setAnno_ultimo_versamento(annualitaVersamentiList.get(0));
+    	}    	
+    	return output; 	
+    	
+    	    	
+		//return sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
     }
 
 	@Override
@@ -152,6 +196,75 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		List<SigasTipoVersamento> tipoVersamentoDBList = sigasTipoVersamentoRepository.findAll();
 		return	tipoVersamentoEntityMapper.mapListEntityToListVO(tipoVersamentoDBList);
 	}
+	
+	private List<String> creaMappaOridnataMesi(List<String> mesiDBList){
+		if(mesiDBList==null) {
+			return null;
+		}
+		Map<String, Integer> map = new HashMap<>();
+		
+		for (String mese : mesiDBList) {
+			switch (StringUtils.upperCase(mese)) {
+				case "GENNAIO": 
+					map.put(mese,1);
+					break;
+				case "FEBBRAIO": 
+					map.put(mese,2);
+					break;
+				case "MARZO": 
+					map.put(mese,3);
+					break;
+				case "APRILE": 
+					map.put(mese,4);
+					break;
+				case "MAGGIO": 
+					map.put(mese,5);
+					break;
+				case "GIUGNO": 
+					map.put(mese,6);
+					break;
+				case "LUGLIO": 
+					map.put(mese,7);
+					break;
+				case "AGOSTO": 
+					map.put(mese,8);
+					break;
+				case "SETTEMBRE": 
+					map.put(mese,9);
+					break;
+				case "OTTOBRE": 
+					map.put(mese,10);
+					break;
+				case "NOVEMBRE": 
+					map.put(mese,11);
+					break;
+				case "DICEMBRE": 
+					map.put(mese,12);
+					break;
+				default:
+					map.put(mese, -1);
+					break;
+			}
+		}
+		
+		List<Map.Entry<String, Integer> > list = new LinkedList<Map.Entry<String, Integer> >(map.entrySet()); 
+		
+		// Sort the list 
+	    Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() { 
+	         public int compare(Map.Entry<String, Integer> o1,  
+	                            Map.Entry<String, Integer> o2) 
+	         { 
+	             return (o1.getValue()).compareTo(o2.getValue()); 
+	         } 
+	    });
+	    
+	    List<String> output = new ArrayList<>();
+	    Iterator<Map.Entry<String, Integer>> iter = list.iterator();
+	    while(iter.hasNext()) {
+	    	output.add(iter.next().getKey());
+	    }		
+		return output;
+	}
 
 	@Override
 	public List<String> ricercaMeseVersamenti(Long id, String annualita) {
@@ -161,7 +274,7 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		for(String meseCurr : mesiDBList) {
 			mesiVersamentoList.add(meseCurr);
 		}
-		 return mesiVersamentoList;
+		 return this.creaMappaOridnataMesi(mesiVersamentoList);
 	}
 
 	 @Override
@@ -365,12 +478,12 @@ public class VersamentiServiceImpl implements IVersamentiService {
 			oggOper += "sigas_dich_versamenti ";
 			listKeyOper.add(String.valueOf(versamentoSavedDB.getIdVersamento()) );
 			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())) {
-				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.ACCERTAMENTO.getName(), user));
+				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.ACCERTAMENTO.getName(), user, StatusAllarme.NON_ATTIVO.getName()));
 				oggOper += "sigas_allarmi ";
 				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
 			}
 			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName())) {
-				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.RAVVEDIMENTO.getName(), user));
+				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.RAVVEDIMENTO.getName(), user, StatusAllarme.ATTIVO.getName()));
 				oggOper += "sigas_allarmi ";
 				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
 			} 
@@ -479,12 +592,12 @@ public class VersamentiServiceImpl implements IVersamentiService {
 			oggOper += "sigas_dich_versamenti ";
 			listKeyOper.add(String.valueOf(versamentoSavedDB.getIdVersamento()) );
 			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())) {
-				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.ACCERTAMENTO.getName(), user));
+				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.ACCERTAMENTO.getName(), user, StatusAllarme.NON_ATTIVO.getName()));
 				oggOper += "sigas_allarmi ";
 				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
 			}
 			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName())) {
-				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.RAVVEDIMENTO.getName(), user));
+				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.RAVVEDIMENTO.getName(), user, StatusAllarme.ATTIVO.getName()));
 				oggOper += "sigas_allarmi ";
 				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
 			}
@@ -559,12 +672,12 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		oggOper += "sigas_dich_versamenti ";
 		listKeyOper.add(String.valueOf(versamentoSavedDB.getIdVersamento()) );		
 		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())){
-			sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(confermaVersamentoRequest.getVersamento(), TipoVersamenti.ACCERTAMENTO.getName(),user));
+			sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(confermaVersamentoRequest.getVersamento(), TipoVersamenti.ACCERTAMENTO.getName(),user, StatusAllarme.NON_ATTIVO.getName()));
 			oggOper += "sigas_allarmi ";
 			listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
 		}
 		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName())){
-			sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(confermaVersamentoRequest.getVersamento(), TipoVersamenti.RAVVEDIMENTO.getName(), user));
+			sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(confermaVersamentoRequest.getVersamento(), TipoVersamenti.RAVVEDIMENTO.getName(), user, StatusAllarme.ATTIVO.getName()));
 			oggOper += "sigas_allarmi ";
 			listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
 		}
@@ -575,7 +688,7 @@ public class VersamentiServiceImpl implements IVersamentiService {
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 	}
 	
-	private SigasAllarmi allarmeAccertamento(VersamentiPrVO versamento,String tipoAllarme, String user) {
+	private SigasAllarmi allarmeAccertamento(VersamentiPrVO versamento,String tipoAllarme, String user, int statusAllarme) {
 		SigasTipoAllarmi sigasTipoAllarme = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(tipoAllarme);
 		SigasAnagraficaSoggetti sogg = sigasAnagraficaSoggettiRepository.findByIdAnag(versamento.getIdAnag());
 		SigasDichConsumi consumo = null;
@@ -591,7 +704,8 @@ public class VersamentiServiceImpl implements IVersamentiService {
 			sigasAllarmi.setAnnualita(String.valueOf(versamento.getAnnualita()));
 			sigasAllarmi.setUtente(user);
 			sigasAllarmi.setNota("Allarme "+ tipoAllarme + " per id versamento - " + versamento.getIdVersamento());
-			sigasAllarmi.setStatus(StatusAllarme.ATTIVO.getName()); 
+			//sigasAllarmi.setStatus(StatusAllarme.ATTIVO.getName());
+			sigasAllarmi.setStatus(statusAllarme);
 			sigasAllarmi.setSigasDichVersamenti(sigasDichVersamentiRepository.findOne(versamento.getIdVersamento()));
 			
 		return sigasAllarmi;

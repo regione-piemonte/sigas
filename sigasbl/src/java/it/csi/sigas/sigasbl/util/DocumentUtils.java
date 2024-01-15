@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,8 +20,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.activation.MimetypesFileTypeMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+//import org.apache.tika.Tika;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 
@@ -38,6 +43,9 @@ import com.lowagie.text.pdf.PdfString;
 import com.lowagie.text.pdf.PdfWriter;
 
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
+import it.csi.sigas.sigasbl.integration.doqui.utils.XmlSerializer;
+
+
 
 
 public class DocumentUtils {
@@ -74,22 +82,52 @@ public class DocumentUtils {
 		
 	}
 	
-	public static String getMimeTypeFomFilename(String fileName) {
+	public static String getMimeTypeFomFilename(String fileName, String estensione) {
 		if(StringUtils.isBlank(fileName)) 
 			return null;
 
 		Path path = new File(fileName).toPath();
+		logger.info("getMimeTypeFomFilename" + ">>>>>>MARTS PATH: " + XmlSerializer.objectToXml(path));
 		String mimeType;
 		try {
-			mimeType = Files.probeContentType(path);
-		} catch (IOException e) {
+			
+			if(estensione.equalsIgnoreCase("p10")) {
+				mimeType = "application/pkcs10";
+			} else if(estensione.equalsIgnoreCase("p12")) {
+				mimeType = "application/pkcs-12";
+			} else if(estensione.equalsIgnoreCase("p7a")) {				
+				mimeType = "application/x-pkcs7-signature";
+			} else if(estensione.equalsIgnoreCase("p7c")||
+					  estensione.equalsIgnoreCase("p7m")) 
+			{
+				mimeType = "application/pkcs7-mime";
+			} else if(estensione.equalsIgnoreCase("p7r")) {
+				mimeType = "application/x-pkcs7-certreqresp"; 
+			} else if(estensione.equalsIgnoreCase("p7s")) {
+				mimeType = "application/pkcs7-signature"; 
+			} else {
+				File file = new File(fileName);
+			    FileNameMap fileNameMap = URLConnection.getFileNameMap();
+			    mimeType = fileNameMap.getContentTypeFor(file.getName());
+			}			
+		    		    
+			/* Possibile altra libreria 
+			File file = new File(fileName);
+		    MimetypesFileTypeMap fileTypeMap = new MimetypesFileTypeMap();
+		    mimeType = fileTypeMap.getContentType(file.getName());
+		    */
+		    
+			
+		    //OLD CODE
+			//mimeType = Files.probeContentType(path);		    
+		 
+		    
+			logger.info("getMimeTypeFomFilename" + ">>>>>>MARTS MIME TYPE: " + mimeType);
+		//} catch (IOException e) {
+		} catch (Exception e) {
 			throw new BusinessException("Mime type non estratto");
 		}
-//		String mimeType = URLConnection.guessContentTypeFromName(fileName);
-		// gestire qui i mimeType non riconosciuti
-//		if(mimeType == null && fileName.endsWith(".p7m")) {
-//			mimeType = "application/pkcs7-mime";
-//		}
+
 		return mimeType;
 	}
 	

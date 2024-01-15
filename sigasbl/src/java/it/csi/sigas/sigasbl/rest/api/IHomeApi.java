@@ -31,6 +31,7 @@ import it.csi.sigas.sigasbl.request.home.ConfermaPagamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
+import it.csi.sigas.sigasbl.request.home.DownloadDettaglioSoggettoReport;
 import it.csi.sigas.sigasbl.request.home.DownloadDocumentazioneReport;
 import it.csi.sigas.sigasbl.request.home.DownloadReport;
 import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
@@ -38,7 +39,9 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
+import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ValidazioneRequest;
 
 @Path("/home")
@@ -112,7 +115,8 @@ public interface IHomeApi {
     
     @POST
     @Path("/salvaSoggetto")
-    Response salvaSoggetto(DownloadReport downloadReport);
+    //Response salvaSoggetto(DownloadReport downloadReport);
+    Response salvaSoggetto(DownloadDettaglioSoggettoReport downloadReport);    
 
     @POST
     @Path("/salvaElencoSoggetti")
@@ -234,6 +238,11 @@ public interface IHomeApi {
     @POST
     @Path("/updateAccertamenti")
     Response updateAccertamenti(@Valid @NotNull(message = "ConfermaVersamentoRequest non deve essere vuota") List<ConfermaVersamentoRequest> accertamentiDaSalvare);
+    
+    @POST
+    @Path("/updateAllarmeAccertamento")
+    Response updateAllarmeAccertamento(@Valid @NotNull(message = "UpdateAllarmeAccertamentoRequest non deve essere vuota") 
+    								   UpdateAllarmeAccertamentoRequest UpdateAllarmeAccertamentoRequest);
 
     @POST
     @Path("/salvaRimborso")
@@ -263,6 +272,11 @@ public interface IHomeApi {
     @DELETE
     @Path("/delete/{idDocumento}")
     Response deleteDocumento(@Valid @PathParam("idDocumento") @NotNull(message = "idDocumento non deve essere null") Long idDocumento);
+    
+    @POST
+    @Path("/salvaCompensazione")
+    Response salvaCompensazione(@Valid @NotNull(message = "SalvaCompensazione non deve essere vuota") SalvaCompensazioneRequest salvaCompensazioneRequest);
+    
    
     
 }

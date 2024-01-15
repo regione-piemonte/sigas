@@ -20,4 +20,7 @@ public abstract class Constants {
 	public static final String operatoreFO = "operatoreFO";
 	public static final String operatoreBO = "operatoreBO";
 	
+	//SIGAS-225
+	public static final String TESTO_ANNOTAZIONE_ART_65 = "Dichiarazione presentata ai sensi dell'art. 65, comma 1, lettera b) del CAD";
+	
 }

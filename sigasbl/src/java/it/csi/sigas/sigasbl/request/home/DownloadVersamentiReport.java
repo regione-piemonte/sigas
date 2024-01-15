@@ -5,22 +5,31 @@
 package it.csi.sigas.sigasbl.request.home;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class DownloadVersamentiReport implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
 	private Long id_anag;
+	private String denominazioneAnag;
     private String anno;
     private Long id_provincia;
-    private Long id_tipo_carrello;
+    private Long id_tipo_versamento;
     private String mese;
+    private List<ItemVersamentiReport> itemVersamentiReportList;
     
 	public Long getId_anag() {
 		return id_anag;
 	}
 	public void setId_anag(Long id_anag) {
 		this.id_anag = id_anag;
+	}	
+	public String getDenominazioneAnag() {
+		return denominazioneAnag;
+	}
+	public void setDenominazioneAnag(String denominazioneAnag) {
+		this.denominazioneAnag = denominazioneAnag;
 	}
 	public String getAnno() {
 		return anno;
@@ -34,11 +43,11 @@ public class DownloadVersamentiReport implements Serializable{
 	public void setId_provincia(Long id_provincia) {
 		this.id_provincia = id_provincia;
 	}
-	public Long getId_tipo_carrello() {
-		return id_tipo_carrello;
+	public Long getId_tipo_versamento() {
+		return id_tipo_versamento;
 	}
-	public void setId_tipo_carrello(Long id_tipo_carrello) {
-		this.id_tipo_carrello = id_tipo_carrello;
+	public void setId_tipo_versamento(Long id_tipo_versamento) {
+		this.id_tipo_versamento = id_tipo_versamento;
 	}
 	public String getMese() {
 		return mese;
@@ -46,5 +55,11 @@ public class DownloadVersamentiReport implements Serializable{
 	public void setMese(String mese) {
 		this.mese = mese;
 	}
+	public List<ItemVersamentiReport> getItemVersamentiReportList() {
+		return itemVersamentiReportList;
+	}
+	public void setItemVersamentiReportList(List<ItemVersamentiReport> itemVersamentiReportList) {
+		this.itemVersamentiReportList = itemVersamentiReportList;
+	}	
 
 }

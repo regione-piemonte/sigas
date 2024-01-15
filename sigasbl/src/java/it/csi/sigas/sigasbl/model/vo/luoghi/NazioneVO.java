@@ -5,35 +5,19 @@
 package it.csi.sigas.sigasbl.model.vo.luoghi;
 
 
-public class NazioneVO {
+import it.csi.sigas.sigasbl.model.vo.base.LuogoBaseVO;
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -5083332652616186599L;
+public class NazioneVO extends LuogoBaseVO {
 
-	private Long id;
-	private String denominazione;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -5083332652616186599L;
 
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getDenominazione() {
-		return denominazione;
-	}
-
-	public void setDenominazione(String denominazione) {
-		this.denominazione = denominazione;
-	}
-
-	@Override
-	public String toString() {
-		return "NazioneVO [id=" + id + ", denominazione=" + denominazione + "]";
-	}
+    @Override
+    public String toString() {
+        return "NazioneVO " + super.toString();
+    }
 
 }

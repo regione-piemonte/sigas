@@ -6,15 +6,19 @@ package it.csi.sigas.sigasbl.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,8 +36,11 @@ public class SigasComune implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="SIGAS_COMUNE_IDCOMUNE_GENERATOR" , sequenceName="SEQ_COMUNE", allocationSize = 1)
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SIGAS_COMUNE_IDCOMUNE_GENERATOR")
+	
+	//**** SEQUENZE NON PRESENTE NEL DB **************************
+	
+	//@SequenceGenerator(name="SIGAS_COMUNE_IDCOMUNE_GENERATOR" , sequenceName="SEQ_COMUNE", allocationSize = 1)
+	//@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SIGAS_COMUNE_IDCOMUNE_GENERATOR")
 	@Column(name="id_comune", unique=true, nullable=false, precision=8)
 	private long idComune;
 
@@ -58,33 +65,21 @@ public class SigasComune implements Serializable {
 	private Date inizioValidita;
 
 	//bi-directional many-to-one association to IrbaDProvincia
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="fk_provincia", nullable=false)
 	private SigasProvincia sigasProvincia;
+		
+	//bi-directional many-to-one association to IrbaTDichiarante
+	@OneToMany(targetEntity=SigasDichiarante.class, fetch= FetchType.LAZY, mappedBy="sigasComune")
+	private List<SigasDichiarante> sigasDichiaranteList;
+	
+	public List<SigasDichiarante> getSigasDichiaranteList() {
+		return sigasDichiaranteList;
+	}
 
-//	//bi-directional many-to-one association to IrbaTDichiarante
-//	@OneToMany(mappedBy="irbaDComune")
-//	private List<IrbaTDichiarante> irbaTDichiarantes;
-//
-//	//bi-directional many-to-one association to IrbaTGestore
-//	@OneToMany(mappedBy="irbaDComune")
-//	private List<IrbaTGestore> irbaTGestores;
-//
-//	//bi-directional many-to-one association to IrbaTImpianto
-//	@OneToMany(mappedBy="irbaDComune")
-//	private List<IrbaTImpianto> irbaTImpiantos;
-//
-//	//bi-directional many-to-one association to IrbaTLegaleRappresent
-//	@OneToMany(mappedBy="irbaDComune")
-//	private List<IrbaTLegaleRappresent> irbaTLegaleRappresents;
-//
-//	//bi-directional many-to-one association to IrbaTOperatore
-//	@OneToMany(mappedBy="irbaDComune")
-//	private List<IrbaTOperatore> irbaTOperatores;
-//
-//	//bi-directional many-to-one association to IrbaTTitolare
-//	@OneToMany(mappedBy="irbaDComune")
-//	private List<IrbaTTitolare> irbaTTitolares;
+	public void setSigasDichiaranteList(List<SigasDichiarante> sigasDichiaranteList) {
+		this.sigasDichiaranteList = sigasDichiaranteList;
+	}	
 
 	public SigasComune() {
 	}

@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
+import java.util.UUID;
 
 import javax.activation.DataHandler;
 
@@ -18,6 +20,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.csi.sigas.sigasbl.common.Constants;
+import it.csi.sigas.sigasbl.doqui.acta.acaris.common.AnnotazioniPropertiesType;
 import it.csi.sigas.sigasbl.integration.doqui.DoquiConstants;
 import it.csi.sigas.sigasbl.integration.doqui.DoquiServiceFactory;
 import it.csi.sigas.sigasbl.integration.doqui.MimeType;
@@ -57,6 +61,10 @@ import it.doqui.acta.actasrv.dto.acaris.type.document.InfoRichiestaTrasformazion
 import it.doqui.acta.actasrv.dto.acaris.type.document.StepErrorAction;
 import it.doqui.acta.actasrv.dto.acaris.type.management.VitalRecordCodeType;
 import it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException;
+
+
+import it.doqui.acta.acaris.managementservice.ManagementServicePort;
+
 
 @Service
 public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl implements AcarisDocumentService
@@ -166,13 +174,7 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 			identificatoreDocumento = getDocumentService().creaDocumento(repositoryId, principalId, EnumTipoOperazione.SOLO_METADATI, datiCreazione);
 		} 
 		catch (AcarisException acEx) {
-			log.error(method + ". Impossibile creare il documento    : " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+			this.logAcarisException("AcarisDocumentServiceImpl",method,acEx.getMessage(),acEx.getFaultInfo());			
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		
@@ -186,7 +188,8 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 	
 	
 	private void datiDocumento(DocumentoArchivisticoIRC datiCreazione, VitalRecordCodeType vitalRecordCodeType, DocumentoActa documentoActa, Integer idFormaDocumentaria, Integer idStatoDiEfficacia)
-	{ 	
+	{ 		
+		
 		String method= "datiDocumento";
 		log.debug(method + ". BEGIN");
 		//DATI PRINCIPALI
@@ -206,7 +209,7 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     	
     	// autore fisico
     	if(documentoActa.getAutoreFisico() != null)
-    		properties.setAutoreFisico(new String[]{CleanUtil.cleanNullValue(documentoActa.getAutoreFisico())});
+    		properties.setAutoreFisico(new String[]{CleanUtil.cleanNullValue(documentoActa.getAutoreFisico())});    		
     	
     	// scrittore
     	if(documentoActa.getScrittore() != null)
@@ -283,22 +286,9 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
         String descrizioneTipoLettera = "";
         
         if(documentoActa.getSoggettoActa().isMittente()){
-        	properties.setOrigineInterna(false);
-        	// SE IL CONTRIBUENTE � UNA PERSONA FISICA
-        	
-        	/*
-        	properties.setAutoreFisico(new String[]{(documentoActa.getSoggettoActa().getNome()!=null ||  documentoActa.getSoggettoActa().getCognome()!=null) ? documentoActa.getSoggettoActa().getNome() + " " + 
-        								documentoActa.getSoggettoActa().getCognome() : ""});  
-           	*/
-        	
-            // SE IL CONTRIBUENTE � UNA PERSONA GIURIDICA
-            properties.setAutoreGiuridico(new String[]{documentoActa.getSoggettoActa().getDenominazione()!=null ? documentoActa.getSoggettoActa().getDenominazione() : ""}); 
-    	    
-            //properties.setDestinatarioGiuridico(new String[]{Constants.ENTE});
-    	    
-    	    properties.setFirmaElettronica(true);
-    	    
-    	    
+        	properties.setOrigineInterna(false);        	
+            properties.setAutoreGiuridico(new String[]{documentoActa.getSoggettoActa().getDenominazione()!=null ? documentoActa.getSoggettoActa().getDenominazione() : ""});    	    
+    	    properties.setFirmaElettronica(true);    	    
     	} else {
     		
     		log.debug(method + ". InfoCreazioneCorrispondente NumeroRegistrazionePrecedente = " + documentoActa.getMetadatiActa().getNumeroRegistrazionePrecedente());
@@ -313,39 +303,27 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     		if(!StringUtils.isEmpty(documentoActa.getMetadatiActa().getNumeroRegistrazionePrecedente()))
     			intestazioneOggetto = "RISPOSTA_AL_PROT_IN_"+documentoActa.getMetadatiActa().getNumeroRegistrazionePrecedente() + "/" +documentoActa.getMetadatiActa().getAnnoRegistrazionePrecedente() +" - ";
     		properties.setOrigineInterna(true);
-    		properties.setAutoreFisico(new String[]{DoquiConstants.DIRIGENTE});
-    	    
-    		//properties.setAutoreGiuridico(new String[]{Constants.ENTE});
+    		
+    		String cognomeDirigente= sigasCPatametroRepository.findByDescParametro(DoquiConstants.COGNOME_DIRIGENTE).getValoreString();
+    		String nomeDirigente= sigasCPatametroRepository.findByDescParametro(DoquiConstants.NOME_DIRIGENTE).getValoreString();
+    		String autoreFisico = nomeDirigente + " " + cognomeDirigente;
+    		properties.setAutoreFisico(new String[]{autoreFisico});    		
     	    
     	    if(documentoActa.getMetadatiActa()!= null){
 	    	    //UTENTE CHE STA LAVORANDO (QUELLO LOGGATO A STABOF)
 	    	    properties.setScrittore(new String[]{documentoActa.getMetadatiActa().getScrittore()});
 	    	    properties.setDestinatarioFisico(new String[]{documentoActa.getMetadatiActa().getDestinatarioFisico()}); // SE IL CONTRIBUENTE � UNA PERSONA FISICA
-	    	    properties.setDestinatarioGiuridico(new String[]{documentoActa.getMetadatiActa().getDestinatarioGiuridico()}); // SE IL CONTRIBUENTE � UNA PERSONA GIURIDICA
-	    	  //RAFFAELLA RIPRISTINATA LA FUNZIONALITA' DELLA PAROLA CHIAVE COME IDENTIFICATIVO UNIVOCO AGGIUNTA L'INFORMAZIONE SUL TIPO DI LETTERA NELL'OGGETTO COME DA ANALISI ARCHIVISTICA V09
-//	    	    String paroleChiave = properties.getParoleChiave() + (documentoActa.getMetadatiActa().getDescrizioneTipoLettera()!=null?" - " + documentoActa.getMetadatiActa().getDescrizioneTipoLettera():"");
-//	    	    properties.setParoleChiave(paroleChiave);
+	    	    properties.setDestinatarioGiuridico(new String[]{documentoActa.getMetadatiActa().getDestinatarioGiuridico()}); // SE IL CONTRIBUENTE � UNA PERSONA GIURIDICA	    	  
 	    	    descrizioneTipoLettera = documentoActa.getMetadatiActa().getDescrizioneTipoLettera()!=null?" - " +documentoActa.getMetadatiActa().getDescrizioneTipoLettera():"";
     	    }
     	    properties.setDataDocTopica(DoquiConstants.LUOGO);
     	    properties.setFirmaElettronica(false);
     	    properties.setComposizione(EnumDocPrimarioType.DOCUMENTO_SINGOLO);
     	   
-      	    // 20200731_LC sostituito da nuova logica (fine del metodo):
-//    		//new param
-//    	    if(documentoActa.getCollocazioneCartacea() != null)
-//    	    	classificazionePropertiesType.setCollocazioneCartacea(documentoActa.getCollocazioneCartacea());
-//    	    else
-//    	    	classificazionePropertiesType.setCollocazioneCartacea(DoquiConstants.COLLOCAZIONE_CARTACEA);
+      	    
     	}
         
-//        if (documentoActa.getMetadatiActa() != null)
-//    		properties.setOggetto(intestazioneOggetto + documentoActa.getMetadatiActa().toString() + descrizioneTipoLettera);
-//    	else
-//    		properties.setOggetto(documentoActa.getIdDocumento());
-        
-        properties.setOggetto(documentoActa.getIdDocumento());
-        
+    	properties.setOggetto(documentoActa.getIdDocumento());        
     	classificazionePropertiesType.setCopiaCartacea(false);
     	classificazionePropertiesType.setCartaceo(documentoActa.isDocumentoCartaceo());   
     	
@@ -374,13 +352,18 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 		//non necessario per implementazione WS
 //		contentStream.setStream(stream);
 		String estensioneFile = fileName.substring(fileName.lastIndexOf('.')+1);
-		contentStream.setFilename(fileName);
-		mimeType=DocumentUtils.getMimeTypeFomFilename(fileName);
-		contentStream.setMimeType(EnumMimeTypeType.fromValue(mimeType));
+		contentStream.setFilename(fileName);			
 		
+		log.info(method + ">>>>>>MARTS FILE NAME: " + fileName);
+		log.info(method + ">>>>>>MARTS ESTENSIONE FILE: " + estensioneFile);
+		
+		mimeType=DocumentUtils.getMimeTypeFomFilename(fileName, estensioneFile);		
+		contentStream.setMimeType(EnumMimeTypeType.fromValue(mimeType));		
 		
 		final InputStream iS = new ByteArrayInputStream(stream);
 		final OutputStream oS = new ByteArrayOutputStream(stream.length);
+		
+		
 		
 		javax.activation.DataSource a = new javax.activation.DataSource() {
 			
@@ -577,13 +560,7 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 	
 		} 
 		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {
-			log.error(method + ". Impossibile trasformare i placeholder in documento elettronico: " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+			this.logAcarisException("AcarisDocumentServiceImpl",method,acEx.getMessage(),acEx.getFaultInfo());			
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) {
@@ -596,11 +573,27 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 		
 	}
 	
+	//SIGAS-225
+	private void aggiungiAnnotazione(ObjectIdType repositoryId, PrincipalIdType principalId, ObjectIdType objectId, String annotazioneTesto) throws it.doqui.acta.acaris.managementservice.AcarisException {
+		it.doqui.acta.actasrv.dto.acaris.type.common.AnnotazioniPropertiesType annotazioni = new it.doqui.acta.actasrv.dto.acaris.type.common.AnnotazioniPropertiesType();
+		annotazioni.setAnnotazioneFormale(true);
+		annotazioni.setDescrizione(annotazioneTesto);
+		ManagementServicePort managementService = acarisServiceFactory.getAcarisService().getManagementServicePort();
+		managementService.addAnnotazioni(repositoryId, objectId, principalId, annotazioni);
+	}
+	//------------------
+	
 	/*
 	 * (non-Javadoc)
 	 * @see it.csi.stacore.stadoc.business.stadoc.integration.AcarisDocumentServiceStadoc#creaDocumentoElettronico(it.doqui.acta.actasrv.dto.acaris.type.common.ObjectIdType, it.doqui.acta.actasrv.dto.acaris.type.common.PrincipalIdType, it.doqui.acta.actasrv.dto.acaris.type.common.ObjectIdType, it.doqui.acta.actasrv.dto.acaris.type.management.VitalRecordCodeType, java.lang.Integer, it.csi.stacore.stadoc.business.stadoc.dto.DocumentoElettronicoActa)
 	 */
-	public IdentificatoreDocumento creaDocumentoElettronico(ObjectIdType repositoryId, PrincipalIdType principalId, ObjectIdType folderId, VitalRecordCodeType vitalRecordCodeType, Integer idStatoDiEfficacia, Integer idFormaDocumentaria, String numeroProtocolloPadre, String pkAllegato, DocumentoElettronicoActa documentoElettronicoActa,boolean isProtocollazioneInUscitaSenzaDocumento) throws IntegrationException {
+	public IdentificatoreDocumento creaDocumentoElettronico(ObjectIdType repositoryId, PrincipalIdType principalId, 
+															ObjectIdType folderId, VitalRecordCodeType vitalRecordCodeType, 
+															Integer idStatoDiEfficacia, Integer idFormaDocumentaria, 
+															String numeroProtocolloPadre, String pkAllegato, 
+															DocumentoElettronicoActa documentoElettronicoActa,
+															boolean isProtocollazioneInUscitaSenzaDocumento) throws IntegrationException 
+	{
 		String method = "creaDocumentoElettronico";
 		log.debug(method + ".  BEGIN");
 		log.debug(method + ".  repositoryId: " + repositoryId.getValue());
@@ -641,8 +634,6 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 		}
 		
 		datiDocumentoElettronico(datiCreazione, vitalRecordCodeType, idStatoDiEfficacia, idFormaDocumentaria, numeroProtocolloPadre, pkAllegato, documentoElettronicoActa, isProtocollazioneInUscitaSenzaDocumento);
-
-
 	
 		try {
 			
@@ -657,20 +648,22 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 			}	
 			if(log.isDebugEnabled()){
 				log.debug(method + ". identificatoreDocumento\n " + XmlSerializer.objectToXml(identificatoreDocumento));	
-			}
+			}			
 			
-			
-						
+			//SIGAS-225: gestione annotazioni
+			//in caso di lettera di risposta l'applicativo si comporta come di seguito:
+			//protocollaDocumentoFisico(false, confermaDocumentazioneRequest.getLetteraRisposta()); -> isProtocollazioneInUscitaSenzaDocumento = false 
+			//Di conseguenza per aggiungere l'annotazione a tutti i tipi di doc tranne le lettere di risposta, 
+			//utilizziamo il flag uguale a true. Di fatto all'incontrario di quello indicato nella mail di M.Santoro del 14/12/2021
+			//-------------------------------------
+			if(isProtocollazioneInUscitaSenzaDocumento) {
+				aggiungiAnnotazione(repositoryId, principalId, identificatoreDocumento.getObjectIdDocumento(), Constants.TESTO_ANNOTAZIONE_ART_65);
+			}			
+			//------------------------------------------			
 			
 		} 
 		catch (it.doqui.acta.acaris.documentservice.AcarisException acEx) {
-			log.error(method + ". Impossibile creare il documento elettronico: " + acEx.getMessage(), acEx);
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+			this.logAcarisException("AcarisDocumentServiceImpl",method,acEx.getMessage(),acEx.getFaultInfo());			
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) {
@@ -683,15 +676,19 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 	}
 	
 	
-	private void datiDocumentoElettronico(DocumentoArchivisticoIRC datiCreazione, VitalRecordCodeType vitalRecordCodeType, Integer idStatoDiEfficacia, Integer idFormaDocumentaria, String numeroProtocolloPadre, String pkAllegato, DocumentoElettronicoActa documentoElettronicoActa,boolean isProtocollazioneInUscitaSenzaDocumento) { 	
+	private void datiDocumentoElettronico(DocumentoArchivisticoIRC datiCreazione, VitalRecordCodeType vitalRecordCodeType, 
+										  Integer idStatoDiEfficacia, Integer idFormaDocumentaria, 
+										  String numeroProtocolloPadre, String pkAllegato, 
+										  DocumentoElettronicoActa documentoElettronicoActa,
+										  boolean isProtocollazioneInUscitaSenzaDocumento) 
+	{ 	
 		String method = "datiDocumentoElettronico";
 		
 		log.debug(method + ". BEGIN");
 		
     	DocumentoSemplicePropertiesType properties = new DocumentoSemplicePropertiesType();
     	
-    	ClassificazionePropertiesType classificazionePropertiesType = new ClassificazionePropertiesType();
-    	
+    	ClassificazionePropertiesType classificazionePropertiesType = new ClassificazionePropertiesType();    	
     	 
     	// originatore
     	if(documentoElettronicoActa.getOriginatore() != null)
@@ -702,10 +699,15 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     		properties.setAutoreGiuridico(new String[]{CleanUtil.cleanNullValue(documentoElettronicoActa.getAutoreGiuridico())});
     	
     	// autore fisico
-    	if(documentoElettronicoActa.getAutoreFisico() != null)
-    		properties.setAutoreFisico(new String[]{CleanUtil.cleanNullValue(documentoElettronicoActa.getAutoreFisico())});
-    	else
-    		properties.setAutoreFisico(new String[]{DoquiConstants.DIRIGENTE});
+    	if(documentoElettronicoActa.getAutoreFisico() != null) {
+    		properties.setAutoreFisico(new String[]{CleanUtil.cleanNullValue(documentoElettronicoActa.getAutoreFisico())});    	
+    	} else {
+    		String cognomeDirigente= sigasCPatametroRepository.findByDescParametro(DoquiConstants.COGNOME_DIRIGENTE).getValoreString();
+    		String nomeDirigente= sigasCPatametroRepository.findByDescParametro(DoquiConstants.NOME_DIRIGENTE).getValoreString();
+    		String autoreFisico = nomeDirigente + " " + cognomeDirigente;
+    		properties.setAutoreFisico(new String[]{autoreFisico});
+    		//properties.setAutoreFisico(new String[]{DoquiConstants.DIRIGENTE});    		
+    	}    	    		
     	
     	// scrittore
     	if(documentoElettronicoActa.getScrittore() != null)
@@ -736,11 +738,15 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     	properties.setDatiRiservati(false);
     	properties.setDatiSensibili(false);
     	
-    	//[Raffaella] parte da verificare: parole chiave e oggetto
-    	properties.setParoleChiave(documentoElettronicoActa.getIdDocumento());	// 20200713_LC comprende già il PREFIX_PAROLA_CHIAVE
     	
-    	//String[] listaAutore = {documentoElettronicoActa.getAutore()};	
-    	//properties.setAutoreFisico(listaAutore);
+    	//SIGAS-225
+    	//------------------------------------------------------------------
+    	//[Raffaella] parte da verificare: parole chiave e oggetto
+    	//OLD CODE
+    	//properties.setParoleChiave(documentoElettronicoActa.getIdDocumento() + UUID.randomUUID().toString());	// 20200713_LC comprende già il PREFIX_PAROLA_CHIAVE    	
+    	
+    	properties.setParoleChiave(documentoElettronicoActa.getParolaChiave());
+    	//------------------------------------------------------------------    	
     	
     	properties.setApplicativoAlimentante(documentoElettronicoActa.getApplicativoAlimentante());
 
@@ -753,77 +759,47 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
        	if(idFormaDocumentaria != null){
        		idFormaDocumentariaType.setValue(idFormaDocumentaria);
        		properties.setIdFormaDocumentaria(idFormaDocumentariaType);
-       	}
+       	}       	
        	
-       	
-        properties.setRappresentazioneDigitale(true); 
+        properties.setRappresentazioneDigitale(true);       
         
-        //20200708 PP - CDU_18 - se idStatoDiEfficaciaType = "PERFETTO ED EFFICACE" (id = 2), si tratta di un doc firmato, quindi setto TipoDocFisico a FIRMATO
-        //new param
-        if(idStatoDiEfficacia == 2) {
+        //Segnalazione relativa alla protocollazione di Master/Allegato con il primo di tipo signed e il secondo NO
+        boolean isDocSigned = DocumentUtils.isDocumentSigned(documentoElettronicoActa.getStream(), documentoElettronicoActa.getNomeFile());        
+        //if(idStatoDiEfficacia == 2) {
+        if(isDocSigned) {
         	properties.setTipoDocFisico(EnumTipoDocumentoType.FIRMATO);
         	properties.setFirmaElettronicaDigitale(true);
         }
         else {
 	    	properties.setTipoDocFisico(EnumTipoDocumentoType.SEMPLICE);
         	properties.setFirmaElettronicaDigitale(false);
-//	    	properties.setComposizione(EnumDocPrimarioType.DOCUMENTO_SINGOLO);
         }
         
     	properties.setMultiplo(false);
-    	
-    	//new param
-    	//La data di creazione dovrebbe essere un parametro impostato da acta
-    	//properties.setDataCreazione(DateFormat.getCurrentDate());
-    	
+    	    	
     	properties.setDataDocCronica(documentoElettronicoActa.getDataCronica() !=null ? documentoElettronicoActa.getDataCronica() : DateFormat.getCurrentDate());
         properties.setDataDocTopica(documentoElettronicoActa.getDataTopica() !=null ? documentoElettronicoActa.getDataTopica() : null);
-    	
-         
-         
-         DocumentoFisicoIRC[] documenti = new DocumentoFisicoIRC[1];
+        
+        DocumentoFisicoIRC[] documenti = new DocumentoFisicoIRC[1];
  		
- 		 documenti[0] = new DocumentoFisicoIRC();
- 	   	 DocumentoFisicoPropertiesType documentoFisicoProperty = new DocumentoFisicoPropertiesType();
+ 		documenti[0] = new DocumentoFisicoIRC();
+ 	   	DocumentoFisicoPropertiesType documentoFisicoProperty = new DocumentoFisicoPropertiesType();
  	   	
- 	     documentoFisicoProperty.setDescrizione(documentoElettronicoActa.getDescrizione());
-// 	     if(pkAllegato!=null){
-// 	    	documentoFisicoProperty.setProgressivoPerDocumento(Integer.parseInt(pkAllegato));
-// 	    	documentoFisicoProperty.setDocMimeTypes(documentoElettronicoActa.getMimeType());
-// 	     }
-     	 documenti[0].setPropertiesDocumentoFisico(documentoFisicoProperty);
-         
+ 	    documentoFisicoProperty.setDescrizione(documentoElettronicoActa.getDescrizione());
+     	documenti[0].setPropertiesDocumentoFisico(documentoFisicoProperty);         
      	 
      	String intestazioneOggetto = "";
      	String descrizioneTipoLettera = "";
         if(documentoElettronicoActa.getSoggettoActa().isMittente()){ 
-          	properties.setOrigineInterna(false);
-            // SE IL CONTRIBUENTE � UNA PERSONA FISICA
-          	/*
-          	properties.setAutoreFisico(new String[]{(documentoElettronicoActa.getSoggettoActa().getNome()!=null || 
-          	documentoElettronicoActa.getSoggettoActa().getCognome()!=null) ? documentoElettronicoActa.getSoggettoActa().getNome() + " " + 
-          			documentoElettronicoActa.getSoggettoActa().getCognome() : ""});  
-            */
-            // SE IL CONTRIBUENTE � UNA PERSONA GIURIDICA
-          	
-          	//properties.setAutoreGiuridico(new String[]{documentoElettronicoActa.getSoggettoActa().getDenominazione()!=null ?  documentoElettronicoActa.getSoggettoActa().getDenominazione() : ""}); 
-      	    
-          	//properties.setDestinatarioGiuridico(new String[]{Constants.ENTE});
-      	    
+          	properties.setOrigineInterna(false);      	    
       	    properties.setFirmaElettronica(true); // questo valore non viene settato sulla console di acta perche abbiamo stato di efficacia 'perfetto efficacie ma non firmato'          	
-      	} else {
-      		
-      		//x conam
+      	} else {      		
       		log.debug(method + ". isProtocollazioneInUscitaSenzaDocumento"+isProtocollazioneInUscitaSenzaDocumento);
       		
       		if(!isProtocollazioneInUscitaSenzaDocumento && documentoElettronicoActa.getMetadatiActa().getNumeroRegistrazionePrecedente() != null)
       			intestazioneOggetto = "RISPOSTA_AL_PROT_IN_" + documentoElettronicoActa.getMetadatiActa().getNumeroRegistrazionePrecedente() + "/" +documentoElettronicoActa.getMetadatiActa().getAnnoRegistrazionePrecedente()+" - ";
       		
-      		properties.setOrigineInterna(true);
-      		
-      		//properties.setAutoreFisico(new String[]{Constants.DIRIGENTE});
-      		//properties.setAutoreGiuridico(new String[]{Constants.ENTE});
-      	    
+      		properties.setOrigineInterna(true);      	    
       	    if(documentoElettronicoActa.getMetadatiActa() != null){
       	    	
 	      	    //UTENTE CHE STA LAVORANDO (QUELLO LOGGATO A STABOF)
@@ -832,25 +808,13 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
       	    	if(documentoElettronicoActa.getMetadatiActa().getDestinatarioFisico() != null)
       	    		properties.setDestinatarioFisico(new String[]{documentoElettronicoActa.getMetadatiActa().getDestinatarioFisico()}); // SE IL CONTRIBUENTE � UNA PERSONA FISICA
       	    	if(documentoElettronicoActa.getMetadatiActa().getDestinatarioGiuridico() != null)
-      	    		properties.setDestinatarioGiuridico(new String[]{documentoElettronicoActa.getMetadatiActa().getDestinatarioGiuridico()}); // SE IL CONTRIBUENTE � UNA PERSONA GIURIDICA
-	      	   
-	      	    //RAFFAELLA RIPRISTINATA LA FUNZIONALITA' DELLA PAROLA CHIAVE COME IDENTIFICATIVO UNIVOCO AGGIUNTA L'INFORMAZIONE SUL TIPO DI LETTERA NELL'OGGETTO COME DA ANALISI ARCHIVISTICA V09
-//	      	    String paroleChiave = properties.getParoleChiave() + (documentoElettronicoActa.getMetadatiActa().getDescrizioneTipoLettera()!=null?" - " +documentoElettronicoActa.getMetadatiActa().getDescrizioneTipoLettera():"");
-//	      	    properties.setParoleChiave(paroleChiave);
+      	    		properties.setDestinatarioGiuridico(new String[]{documentoElettronicoActa.getMetadatiActa().getDestinatarioGiuridico()}); // SE IL CONTRIBUENTE � UNA PERSONA GIURIDICA	      
 	      	    
 	      	    descrizioneTipoLettera = documentoElettronicoActa.getMetadatiActa().getDescrizioneTipoLettera()!=null?" - " +documentoElettronicoActa.getMetadatiActa().getDescrizioneTipoLettera():"";
       	    }
       	    
       	    properties.setDataDocTopica(DoquiConstants.LUOGO);
-      	    properties.setFirmaElettronica(false);
-
-      	    
-      	    // 20200731_LC sostituito da nuova logica (fine del metodo):
-//      		//new param
-//      	  if(documentoElettronicoActa.getCollocazioneCartacea() != null)
-//      		  classificazionePropertiesType.setCollocazioneCartacea(documentoElettronicoActa.getCollocazioneCartacea());
-//      	  else
-//      		  classificazionePropertiesType.setCollocazioneCartacea(DoquiConstants.COLLOCAZIONE_CARTACEA);
+      	    properties.setFirmaElettronica(false);      	    
       	}
         
         //nel caso ci sia un numero allegati maggiore di zero procedo a settare il doc allegato
@@ -889,31 +853,19 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 		      	
 		    documenti[0].setContenutiFisici(contenuti);
      	}else {
-     		properties.setComposizione(EnumDocPrimarioType.DOCUMENTO_SINGOLO);
+     		properties.setComposizione(EnumDocPrimarioType.DOCUMENTO_SINGOLO);     		
        	    
         	ContenutoFisicoIRC[] contenuti = new ContenutoFisicoIRC[1];
           	
       		contenuti[0] = new ContenutoFisicoIRC();
           	ContenutoFisicoPropertiesType contenutoFisicoPropertiesType = new ContenutoFisicoPropertiesType();
-          	contenutoFisicoPropertiesType.setSbustamento(false);
+          	contenutoFisicoPropertiesType.setSbustamento(false);        
+          	
           	contenuti[0].setPropertiesContenutoFisico(contenutoFisicoPropertiesType);
-          	AcarisContentStreamType contentStream = creaContentStream(documentoElettronicoActa.getStream(), documentoElettronicoActa.getNomeFile(), documentoElettronicoActa.getMimeType());
+          	AcarisContentStreamType contentStream = creaContentStream(documentoElettronicoActa.getStream(), documentoElettronicoActa.getNomeFile(), documentoElettronicoActa.getMimeType());          	
+          	
           	contenuti[0].setStream(contentStream);
           	contenuti[0].setTipo(EnumStreamId.PRIMARY);
-          	
-
-
-        	// 20200825_PP - 	Inserimento StepErrorAction per specificare se nel caso di fallimento del singolo step il sistema effettua comunque l inserimento del documento. 
-        	//					Viene usato per i documenti firmati che possono avere la firma non valida (es. scaduta) 
-        	
-        	/**
-        	
-        	stepErrorActionList e' una stringa di flag.
-        	indica se lo step corrispondente alla posizione del digit deve:
-        	- restare attivo ('0')
-        	- essere disabilitato ('1')
-        	
-        	 */
         	
         	String digitalSignStepToBypass = getActaDigitalSignStepToBypass();//"0001011";
         	
@@ -968,7 +920,7 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     	    	
     	    	contenuti[0].setAzioniVerificaFirma(stepErrorAction);
     	    	documenti[0].setAzioniVerificaFirma(stepErrorAction);
-        	}
+        	}       	
 
           	documenti[0].setContenutiFisici(contenuti);
           	
@@ -983,20 +935,14 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     		properties.setOggetto(oggetto + " " + (numeroProtocolloPadre!=null?" - " + numeroProtocolloPadre:"") + descrizioneTipoLettera);
      	} else {
     		properties.setOggetto(documentoElettronicoActa.getIdDocumento()); 
-     	}
+     	}     	
      	
+  	    properties.setOggetto(documentoElettronicoActa.getIdDocumento());     	
+     	properties.setFirmaElettronicaDigitale(false);     	 
      	
-  	    properties.setOggetto(documentoElettronicoActa.getIdDocumento()); 
-     
-     	//properties.setIdFormaDocumentaria(value);
-     	
-     	properties.setFirmaElettronicaDigitale(false);
-     	 
-    	classificazionePropertiesType.setCopiaCartacea(false);
+    	classificazionePropertiesType.setCopiaCartacea(false);    	
+    	classificazionePropertiesType.setCartaceo(documentoElettronicoActa.isDocumentoCartaceo());    	
     	
-    	classificazionePropertiesType.setCartaceo(documentoElettronicoActa.isDocumentoCartaceo());
-    	
-    	// 20200731_LC per tutti i documenti
     	if(documentoElettronicoActa.getCollocazioneCartacea() != null)
     		classificazionePropertiesType.setCollocazioneCartacea(documentoElettronicoActa.getCollocazioneCartacea());
     	
@@ -1005,12 +951,10 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
         datiCreazione.setPropertiesDocumento(properties);	
     	datiCreazione.setPropertiesClassificazione(classificazionePropertiesType);
     	
-    	log.debug(method + ". END");
     	
-
-	}	
-	
-	
+    	
+    	log.debug(method + ". END");
+	}
 	
 	
 

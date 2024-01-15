@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import it.csi.sigas.sigasbl.common.AuthorizationRoles;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
+import it.csi.sigas.sigasbl.request.home.DownloadDettaglioSoggettoReport;
 import it.csi.sigas.sigasbl.request.home.DownloadDocumentazioneReport;
 import it.csi.sigas.sigasbl.request.home.DownloadReport;
 import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
@@ -19,7 +20,7 @@ public interface IExportDispatcher {
 	byte[] salvaConsumiPerProvince(DownloadReport downloadReport);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
-	byte[] salvaSoggetto(DownloadReport downloadReport);
+	byte[] salvaSoggetto(DownloadDettaglioSoggettoReport downloadReport);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	byte[] salvaElencoSoggetti(DownloadSoggettiReport downloadSoggettiReport);

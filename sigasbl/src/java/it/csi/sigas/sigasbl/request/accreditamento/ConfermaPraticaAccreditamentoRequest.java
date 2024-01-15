@@ -4,84 +4,51 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.request.accreditamento;
 
-import java.io.Serializable;
-
-import javax.validation.constraints.NotNull;
-
+import it.csi.sigas.sigasbl.request.accreditamento.base.PraticaAccreditamentoBase;
 import it.csi.sigas.sigasbl.vo.accreditamento.DichiaranteVO;
 import it.csi.sigas.sigasbl.vo.accreditamento.LegaleRappresentanteVO;
 import it.csi.sigas.sigasbl.vo.accreditamento.OperatoreVO;
 
-public class ConfermaPraticaAccreditamentoRequest implements Serializable{
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	@NotNull(message = "dichiarante non deve essere vuoto")
-	private DichiaranteVO dichiarante;
-	@NotNull(message = "operatore non deve essere vuoto")
-	private OperatoreVO operatore;
-	@NotNull(message = "legaleRappresentante non deve essere vuoto")
-	private LegaleRappresentanteVO legaleRappresentante;
-	
-	private Long idUtenteProvv;
-	
-	private String stato;
-	
-	private String note;
+public class ConfermaPraticaAccreditamentoRequest extends PraticaAccreditamentoBase implements Serializable {
 
-	
-	public DichiaranteVO getDichiarante() {
-		return dichiarante;
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public void setDichiarante(DichiaranteVO dichiarante) {
-		this.dichiarante = dichiarante;
-	}
+    @NotNull(message = "dichiarante non deve essere vuoto")
+    private DichiaranteVO dichiarante;
+    @NotNull(message = "operatore non deve essere vuoto")
+    private OperatoreVO operatore;
+    @NotNull(message = "legaleRappresentante non deve essere vuoto")
+    private LegaleRappresentanteVO legaleRappresentante;
 
-	public OperatoreVO getOperatore() {
-		return operatore;
-	}
 
-	public void setOperatore(OperatoreVO operatore) {
-		this.operatore = operatore;
-	}
+    public DichiaranteVO getDichiarante() {
+        return dichiarante;
+    }
 
-	public LegaleRappresentanteVO getLegaleRappresentante() {
-		return legaleRappresentante;
-	}
+    public void setDichiarante(DichiaranteVO dichiarante) {
+        this.dichiarante = dichiarante;
+    }
 
-	public void setLegaleRappresentante(LegaleRappresentanteVO legaleRappresentante) {
-		this.legaleRappresentante = legaleRappresentante;
-	}
+    public OperatoreVO getOperatore() {
+        return operatore;
+    }
 
-	public Long getIdUtenteProvv() {
-		return idUtenteProvv;
-	}
+    public void setOperatore(OperatoreVO operatore) {
+        this.operatore = operatore;
+    }
 
-	public void setIdUtenteProvv(Long idUtenteProvv) {
-		this.idUtenteProvv = idUtenteProvv;
-	}
+    public LegaleRappresentanteVO getLegaleRappresentante() {
+        return legaleRappresentante;
+    }
 
-	public String getStato() {
-		return stato;
-	}
+    public void setLegaleRappresentante(LegaleRappresentanteVO legaleRappresentante) {
+        this.legaleRappresentante = legaleRappresentante;
+    }
 
-	public void setStato(String stato) {
-		this.stato = stato;
-	}
-
-	public String getNote() {
-		return note;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-	
-	
-	
-	
 }

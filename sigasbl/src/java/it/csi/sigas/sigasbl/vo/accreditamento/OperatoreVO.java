@@ -13,20 +13,22 @@ import it.csi.sigas.sigasbl.web.serializer.CustomDateDeserializer;
 import it.csi.sigas.sigasbl.web.serializer.CustomDateSerializer;
 
 
-public class OperatoreVO{
+public class OperatoreVO extends AnagraficaBaseVO{
 
 	private static final long serialVersionUID = 4917524949915963523L;
-
+	/*
 	private String cognome;
 	private String nome;
 	private String codiceFiscale;
 	private String telefono;
 	private String email;
+	*/
 	@JsonSerialize(using = CustomDateSerializer.class)
 	@JsonDeserialize(using = CustomDateDeserializer.class)
 	
 	private List<Long> servizi;
-
+	
+	/*
 	public String getCognome() {
 		return cognome;
 	}
@@ -66,7 +68,7 @@ public class OperatoreVO{
 	public void setEmail(String mail) {
 		this.email = mail;
 	}
-
+	*/
 	
 
 	public List<Long> getServizi() {

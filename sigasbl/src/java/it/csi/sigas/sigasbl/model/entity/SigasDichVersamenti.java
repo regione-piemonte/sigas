@@ -6,6 +6,7 @@ package it.csi.sigas.sigasbl.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,17 +15,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.FetchType;
 
 @Entity
 @Table(name="sigas_dich_versamenti")
 @NamedQuery(name="SigasDichVersamenti.findAll", query="SELECT i FROM SigasDichVersamenti i")
 
-public class SigasDichVersamenti implements Serializable {
+public class SigasDichVersamenti extends EntityBase implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -61,21 +64,7 @@ public class SigasDichVersamenti implements Serializable {
 	private double importo;
 	
 	@Column(name="iban_vers", nullable=false)
-	private String ibanVers;
-	
-	@Column(name="ins_user", nullable=false)
-	private String insUser;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="ins_date", nullable=false)
-	private Date insDate;
-	
-	@Column(name="mod_user", nullable=false)
-	private String modUser;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="mod_date")
-	private Date modDate;
+	private String ibanVers;	
 	
 	@Column(name="mese", nullable=false)
 	private String mese;
@@ -94,6 +83,8 @@ public class SigasDichVersamenti implements Serializable {
 	@Column(name="importo_complessivo",nullable = true)
 	private double importoComplessivo;
 	
+	@OneToMany(mappedBy="sigasDichVersamenti", fetch = FetchType.EAGER)
+	private List<SigasPagamentiVersamenti> sigasPagamentiVersamenti;
 	
 	public SigasDichVersamenti() {
 	}
@@ -168,39 +159,7 @@ public class SigasDichVersamenti implements Serializable {
 
 	public void setIbanVers(String ibanVers) {
 		this.ibanVers = ibanVers;
-	}
-
-	public String getInsUser() {
-		return insUser;
-	}
-
-	public void setInsUser(String insUser) {
-		this.insUser = insUser;
-	}
-
-	public Date getInsDate() {
-		return insDate;
-	}
-
-	public void setInsDate(Date insDate) {
-		this.insDate = insDate;
-	}
-
-	public String getModUser() {
-		return modUser;
-	}
-
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
-
-	public Date getModDate() {
-		return modDate;
-	}
-
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
+	}	
 
 	public String getMese() {
 		return mese;
@@ -242,7 +201,26 @@ public class SigasDichVersamenti implements Serializable {
 		this.importoComplessivo = importoComplessivo;
 	}
 
+	public List<SigasPagamentiVersamenti> getSigasPagamentiVersamenti() {
+		return sigasPagamentiVersamenti;
+	}
 
+	public void setSigasPagamentiVersamenti(List<SigasPagamentiVersamenti> sigasPagamentiVersamenti) {
+		this.sigasPagamentiVersamenti = sigasPagamentiVersamenti;
+	}
+
+	public SigasPagamentiVersamenti addSigasPagamentoVersamento(SigasPagamentiVersamenti sigasPagamentoVersamento) {
+		getSigasPagamentiVersamenti().add(sigasPagamentoVersamento);
+		sigasPagamentoVersamento.setSigasDichVersamenti(this);
+		return sigasPagamentoVersamento;
+	}
+	
+	public SigasPagamentiVersamenti removeSigasPagamentoVersamento(SigasPagamentiVersamenti sigasPagamentoVersamento) {
+		getSigasPagamentiVersamenti().remove(sigasPagamentoVersamento);
+		sigasPagamentoVersamento.setSigasDichVersamenti(null);
+		return sigasPagamentoVersamento;
+	}
+	
 	public String printAll() {
 		return 	"idVersamento: " + idVersamento + ", " +
 				"sigasAnagraficaSoggetti: " + sigasAnagraficaSoggetti + ", " +
@@ -261,7 +239,8 @@ public class SigasDichVersamenti implements Serializable {
 				"tipologia: " + tipologia + ", " +
 				"note: " + note + ", " +
 				"dataAccertamento: " + dataAccertamento + ", " +
-				"importoComplessivo: " + importoComplessivo;
+				"importoComplessivo: " + importoComplessivo + ", " +
+				"sigasPagamentiVersamenti: " + sigasPagamentiVersamenti;
 
 	}
 }

@@ -29,6 +29,10 @@ public interface IVersamentiApi {
    
     
     /*Versamenti per soggetto*/
+	@GET
+    @Path("/annualitaVersamentiPerRicerca")
+    Response annualitaVersamentiPerRicerca(@Valid @QueryParam("id") @NotNull(message = "L'id non deve essere null") Long id);
+	
     @GET
     @Path("/ricercaAnnualitaVersamenti")
     Response ricercaAnnualitaVersamenti(@Valid @QueryParam("id") @NotNull(message = "L'id non deve essere null") Long id);

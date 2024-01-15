@@ -15,9 +15,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +54,7 @@ import it.csi.sigas.sigasbl.model.entity.SigasAnaComunicazioni;
 import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasCMessaggi;
 import it.csi.sigas.sigasbl.model.entity.SigasCParametro;
+import it.csi.sigas.sigasbl.model.entity.SigasDichCompensazioni;
 import it.csi.sigas.sigasbl.model.entity.SigasDichConsumi;
 import it.csi.sigas.sigasbl.model.entity.SigasDichScarti;
 import it.csi.sigas.sigasbl.model.entity.SigasDichVersamenti;
@@ -68,6 +73,7 @@ import it.csi.sigas.sigasbl.model.mapper.entity.AliquoteEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.AllarmiSoggettoEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.AnaComunicazioniEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.AnagraficaSoggettiEntityMapper;
+import it.csi.sigas.sigasbl.model.mapper.entity.DichCompensazioniEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.DichConsumiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.DichScartiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.DichVersamentiEntityMapper;
@@ -84,6 +90,7 @@ import it.csi.sigas.sigasbl.model.repositories.SigasAnaComunicazioniRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasAnagraficaSoggettiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasCMessaggiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasCParametroRepository;
+import it.csi.sigas.sigasbl.model.repositories.SigasDichCompensazioniRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasDichConsumiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasDichScartiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasDichVersamentiRepository;
@@ -102,6 +109,7 @@ import it.csi.sigas.sigasbl.model.repositories.SoggettoRepository;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
+import it.csi.sigas.sigasbl.model.vo.home.CompensazionePrVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
 import it.csi.sigas.sigasbl.model.vo.home.MessaggiVO;
 import it.csi.sigas.sigasbl.model.vo.home.NuovoAllacciamentoVO;
@@ -124,7 +132,9 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
+import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
 import it.csi.sigas.sigasbl.security.UserDetails;
 import it.csi.sigas.sigasbl.service.IHomeService;
 import it.csi.sigas.sigasbl.util.ActaUtils;
@@ -151,6 +161,9 @@ public class HomeServiceImpl implements IHomeService {
 	
 	@Autowired
 	private SigasDichConsumiRepository sigasDichConsumiRepository;
+	
+	@Autowired
+	private SigasDichCompensazioniRepository sigasDichCompensazioniRepository;
 
 	@Autowired
 	private SigasDichScartiRepository sigasDichScartiRepository;
@@ -185,6 +198,9 @@ public class HomeServiceImpl implements IHomeService {
 	
 	@Autowired
 	private DichConsumiEntityMapper dichConsumiEntityMapper;
+	
+	@Autowired
+	private DichCompensazioniEntityMapper dichCompensazioniEntityMapper;
 	
 	@Autowired
 	private DichVersamentiEntityMapper dichVersamentiEntityMapper;
@@ -322,38 +338,7 @@ public class HomeServiceImpl implements IHomeService {
 	public List<OrdinativiIncassoVO> ricercaOrdinativi(RicercaOrdinativiRequest ricercaOrdinativiRequest) {
     	
     	List<OrdinativiIncassoVO> ordinativoVOList = new ArrayList<OrdinativiIncassoVO>();
-    	List<SigasPagamenti> sigasPagamentiList = null;
-    	
-    	 
-//    	String dataIncassoDAAsString = null;
-//    	String dataIncassoAAsString = null;
-//    	if(ricercaOrdinativiRequest.getDataIncassoDa()!=null ) {
-//    		dataIncassoDAAsString = DateFormatUtils.format(ricercaOrdinativiRequest.getDataIncassoDa(),"yyyy-MM-dd");
-//        	
-//    	}
-//    	
-//    	if(ricercaOrdinativiRequest.getDataIncassoA()!=null) {
-//    		dataIncassoAAsString = DateFormatUtils.format(ricercaOrdinativiRequest.getDataIncassoA(),"yyyy-MM-dd");
-//        	
-//    	}
-//    	
-//    	
-//    	
-//    	if(dataIncassoDAAsString==null && dataIncassoAAsString==null) {
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDecsOrdInc(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"");
-//    	}else if(dataIncassoDAAsString!=null && dataIncassoAAsString!=null && ricercaOrdinativiRequest.getConciliato()==null){
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDataIncassoDaDataIncassoA(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"", dataIncassoDAAsString, dataIncassoAAsString);
-//    	}else if(dataIncassoDAAsString!=null && dataIncassoAAsString==null && ricercaOrdinativiRequest.getConciliato()==null){
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDataIncassoDa(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"", dataIncassoDAAsString);
-//    	}else if(dataIncassoDAAsString==null && dataIncassoAAsString!=null && ricercaOrdinativiRequest.getConciliato()==null){
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDataIncassoA(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"", dataIncassoAAsString);
-//    	}else if(dataIncassoDAAsString!=null && dataIncassoAAsString!=null && ricercaOrdinativiRequest.getConciliato()!=null) {
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDataIncassoDaDataIncassoAAndConciliato(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"", dataIncassoDAAsString, dataIncassoAAsString, ricercaOrdinativiRequest.getConciliato());
-//    	}else if(dataIncassoDAAsString!=null && dataIncassoAAsString==null && ricercaOrdinativiRequest.getConciliato()!=null) {
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDataIncassoDaAndConciliato(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"", dataIncassoDAAsString, ricercaOrdinativiRequest.getConciliato());
-//    	}else if(dataIncassoDAAsString==null && dataIncassoAAsString!=null && ricercaOrdinativiRequest.getConciliato()!=null) {
-//    		sigasPagamentiList = sigasPagamentiRepository.findPagamentoByDataIncassoAAndConciliato(ricercaOrdinativiRequest.getAzienda(), ricercaOrdinativiRequest.getCodiceAzienda()!=null ? ricercaOrdinativiRequest.getCodiceAzienda():"", dataIncassoAAsString, ricercaOrdinativiRequest.getConciliato());
-//    	}
+    	List<SigasPagamenti> sigasPagamentiList = null;    	
       	
     	SigasCParametro sigasCParametro = sigasCParametroRepository.findByDescParametro("filtroDescrizioneAzienda");
     	String[] filtroDescrizioneAzienda = sigasCParametro.getValoreString().split(",");
@@ -452,17 +437,14 @@ public class HomeServiceImpl implements IHomeService {
 		List<NuovoAllacciamentoVO> nuovoAllacciamentoVOList = null;
 		List<ConsumiPrVO> consumiPrVO_TempList = new ArrayList<ConsumiPrVO>();
 		
-		List<SigasDichConsumi> dichConsumiListDB = sigasDichConsumiRepository
-				.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiOrderByProvinciaErogazioneAsc(idAnag, anno, 0L);
+		List<SigasDichConsumi> dichConsumiListDB = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiAndProvinciaErogazioneIsNotNullOrderByProvinciaErogazioneAsc(idAnag, anno, 0L);
 		
 		for (SigasDichConsumi sigasDichConsumi: dichConsumiListDB) {
-			List<SigasQuadroM> sigasQuadroMList = sigasQuadroMRepository.findByAnnoAndCodiceDittaAndProvincia( 
-					sigasDichConsumi.getAnnualita(),
-					sigasDichConsumi.getSigasAnagraficaSoggetti().getCodiceAzienda(), 
-					sigasDichConsumi.getProvinciaErogazione());
+			List<SigasQuadroM> sigasQuadroMList = sigasQuadroMRepository.findByAnnoAndCodiceDittaAndProvincia(sigasDichConsumi.getAnnualita(),
+																											  sigasDichConsumi.getSigasAnagraficaSoggetti().getCodiceAzienda(), 
+																											  sigasDichConsumi.getProvinciaErogazione());
 			
-			nuovoAllacciamentoVOList = new ArrayList<NuovoAllacciamentoVO>();
-			
+			nuovoAllacciamentoVOList = new ArrayList<NuovoAllacciamentoVO>();			
 			for (SigasQuadroM sigasQuadroM : sigasQuadroMList) {
 				SigasAliquote sigasAliquote = sigasAliquoteRepository.findByAliquotaAndProgRigo(sigasQuadroM.getAliquota(),sigasQuadroM.getProgRigo(), Integer.parseInt(anno));
 				
@@ -476,35 +458,7 @@ public class HomeServiceImpl implements IHomeService {
 					
 					nuovoAllacciamentoVOList.add(nuovoAllacciamentoVO);
 				}
-			}
-			
-			SigasProvincia sigasProvincia = sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(sigasDichConsumi.getProvinciaErogazione());
-			double totaleVersamenti = 0;
-			if (null != sigasProvincia) {
-				List<Long> idConsumoPadreList = calcolaIdConsumoPadre(sigasDichConsumi.getIdConsumi());
-				List<SigasDichVersamenti> sigasDichVersamentiList = new ArrayList<SigasDichVersamenti>();
-				if(idConsumoPadreList!=null && !idConsumoPadreList.isEmpty()) {
-					for (Long longTmp : idConsumoPadreList) {
-						sigasDichVersamentiList.addAll(sigasDichVersamentiRepository.findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(
-								longTmp.longValue(),
-								sigasProvincia.getIdProvincia()) );
-					}					
-				} else {
-					sigasDichVersamentiList.addAll(sigasDichVersamentiRepository.findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(
-							sigasDichConsumi.getIdConsumi(),
-							sigasProvincia.getIdProvincia()) );
-				}
-				
-				
-				
-				
-				for (SigasDichVersamenti sigasDichVersamenti : sigasDichVersamentiList) {
-					if (!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName())) {
-						totaleVersamenti += sigasDichVersamenti.getImporto();
-					}
-				}
-			}
-			sigasDichConsumi.setConguaglioCalcolato(sigasDichConsumi.getConguaglioCalcolato() - totaleVersamenti);
+			}				
 			
 			ConsumiPrVO consumiPrVO = new ConsumiPrVO();
 			consumiPrVO.setNuoviAllacciamenti(nuovoAllacciamentoVOList);
@@ -515,9 +469,22 @@ public class HomeServiceImpl implements IHomeService {
 		List<ConsumiPrVO> ConsumiPrVOList = dichConsumiEntityMapper.mapListEntityToListVO(dichConsumiListDB);
 		
 		int i = 0;
-		for (ConsumiPrVO consumiPrVO : ConsumiPrVOList) {
+		for (ConsumiPrVO consumiPrVO : ConsumiPrVOList) {			
+			
 			consumiPrVO.setNuoviAllacciamenti(consumiPrVO_TempList.get(i).getNuoviAllacciamenti());
-			i++;
+			i++;			
+						
+			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, consumiPrVO.getAnnualita(), (consumiPrVO.getProvincia_erogazione()==null) ? "" : consumiPrVO.getProvincia_erogazione());
+			Double totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato");			
+			Double conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato");
+			consumiPrVO.setConguaglio_calc(conguaglioCalcolato);						
+			consumiPrVO.setTotaleVersato(totaleVersato);
+			
+			consumiPrVO.setCompensazione(0D);
+			
+			SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(consumiPrVO.getId_consumi());
+			consumiPrVO.setCompensazionePrVO(this.dichCompensazioniEntityMapper.mapEntityToVO(sigasDichCompensazioni));
+			
 		}
 		
 		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
@@ -533,18 +500,6 @@ public class HomeServiceImpl implements IHomeService {
 			}
 		}
 		
-//		List<String> listKeyOper = new ArrayList<String>();
-//		if(idAnag!=null) {
-//        	listKeyOper.add(idAnag.toString());
-//        }
-//    	
-//    	for (ConsumiPrVO consumoTmp : ConsumiPrVOList) {
-//    		listKeyOper.add(String.valueOf(consumoTmp.getId_consumi()) );
-//		}
-//		
-//		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaConsumiPerProvince", "sigas_dich_consumi",String.join("_", listKeyOper) );
-//		csiLogAuditRepository.save(csiLogAudit);
-		
 		return ConsumiPrVOList;
 	}
 	
@@ -555,6 +510,10 @@ public class HomeServiceImpl implements IHomeService {
 		SigasAnagraficaSoggetti sigasAnagraficaSoggettiInsert = anagraficaSoggettiEntityMapper.mapVOtoEntity(confermaSoggettoRequest.getSoggetto());
 		sigasAnagraficaSoggettiInsert.setInsUser(user);
 		sigasAnagraficaSoggettiInsert.setInsDate(new Date());
+		
+		
+	    String codAzienda = "NEW_" +  Calendar.getInstance().getTimeInMillis();	    
+		sigasAnagraficaSoggettiInsert.setCodiceAzienda(codAzienda);
 		
 		SigasAnagraficaSoggetti sigasAnagraficaSoggettiNuova = sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettiInsert);
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertSoggetto", "sigas_anagrafica_soggetti",String.valueOf(sigasAnagraficaSoggettiNuova.getIdAnag()) );
@@ -573,7 +532,6 @@ public class HomeServiceImpl implements IHomeService {
 		sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettiUpdate);
 		
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - updateSoggetto", "sigas_anagrafica_soggetti",String.valueOf(sigasAnagraficaSoggettiUpdate.getIdAnag()));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		
@@ -636,15 +594,14 @@ public class HomeServiceImpl implements IHomeService {
 		List<SigasDichVersamenti> listaVersamenti = sigasDichVersamentiRepository.findBySigasAnagraficaSoggettiIdAnag(sigasAnagSoggAssociateNew.getIdAnag());
 		for (SigasDichVersamenti s : listaVersamenti) {
 			s.setSigasAnagraficaSoggetti(sigasAnagSoggAssociateSelezionato);
-			List<SigasDichConsumi> listaConsumi = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiOrderByProvinciaErogazioneAsc(sigasAnagSoggAssociateSelezionato.getIdAnag(), s.getAnnualita() , 0L);
+			List<SigasDichConsumi> listaConsumi = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiAndProvinciaErogazioneIsNotNullOrderByProvinciaErogazioneAsc(sigasAnagSoggAssociateSelezionato.getIdAnag(), s.getAnnualita() , 0L);
 			for (SigasDichConsumi c : listaConsumi) {
 				if (c.getProvinciaErogazione().equals(s.getSigasProvincia().getSiglaProvincia())) {
 					s.setSigasDichConsumi(c);
 				}
 			}
 			
-		}
-		//sigasAnagSoggAssociateNew.setIdAnag(sigasAnagSoggAssociateSelezionato.getIdAnag());
+		}		
 		sigasAnagSoggAssociateSelezionato.setModUser(user);
 		sigasAnagSoggAssociateSelezionato.setModDate(new Date());
 		sigasAnagSoggAssociateSelezionato = sigasAnagraficaSoggettiRepository.save(sigasAnagSoggAssociateSelezionato);
@@ -686,7 +643,6 @@ public class HomeServiceImpl implements IHomeService {
 	@Transactional
 	public List<AnagraficaSoggettoVO> ricercaListaNuoviSoggetti() {
 		List<AnagraficaSoggettoVO> anagraficaNuoviSoggettoVOList = new ArrayList<AnagraficaSoggettoVO>();
-//		List<SigasAnagraficaSoggetti> anagraficaNuoviSoggettiList = sigasAnagraficaSoggettiRepository.findByCodiceAziendaStartingWith("NEW");
 		List<SigasAnagraficaSoggetti> anagraficaNuoviSoggettiList = sigasAnagraficaSoggettiRepository.findAnagraficaSoggettiNotInConsumi();
 
 		logger.debug("Trovati " + anagraficaNuoviSoggettiList.size() + " nuovi soggetti");
@@ -719,15 +675,12 @@ public class HomeServiceImpl implements IHomeService {
 		List<SigasDichScarti> listSigasDichScarti = sigasDichScartiRepository.findBySigasDichConsumiIdConsumi(idConsumi);
 		listaScartoVO = dichScartiEntityMapper.mapListEntityToListVO(listSigasDichScarti);
 		
-		SigasDichConsumi sigasDichConsumi = sigasDichConsumiRepository.findOne(idConsumi);
-		
+		SigasDichConsumi sigasDichConsumi = sigasDichConsumiRepository.findOne(idConsumi);		
 
 		List<SigasQuadroM> sigasQuadroMList = sigasQuadroMRepository.findByCodiceDittaAndProvinciaAndImportUTF(sigasDichConsumi.getSigasAnagraficaSoggetti().getCodiceAzienda(), 
-				sigasDichConsumi.getProvinciaErogazione(), sigasDichConsumi.getSigasImport(), sigasDichConsumi.getAnnualita());
+				sigasDichConsumi.getProvinciaErogazione(), sigasDichConsumi.getSigasImport(), sigasDichConsumi.getAnnualita());		
 		
-		
-		for (SigasQuadroM sigasQuadroM : sigasQuadroMList) {
-			
+		for (SigasQuadroM sigasQuadroM : sigasQuadroMList) {			
 			if (sigasQuadroM.getAliquota() != 0) {
 				// Cerca tipo consumo per aliquota e prog_rigo
     			SigasAliquote sigasAliquote = sigasAliquoteRepository.findByAliquotaAndProgRigo(sigasQuadroM.getAliquota(),sigasQuadroM.getProgRigo(), Integer.parseInt(sigasDichConsumi.getAnnualita()) );
@@ -767,7 +720,7 @@ public class HomeServiceImpl implements IHomeService {
 		
 		listaAliquoteVO = aliquoteEntityMapper.mapListEntityToListVO(sigasAliquoteList);
 		return listaAliquoteVO;
-	}
+	}	
 	
 	@Override
 	@Transactional
@@ -785,7 +738,6 @@ public class HomeServiceImpl implements IHomeService {
 		sigasDichConsumiUpdate.setAddizionaleLiquidata(sigasDichConsumiStorico.getAddizionaleLiquidata());
 		sigasDichConsumiUpdate.setSigasAnagraficaSoggetti(sigasDichConsumiStorico.getSigasAnagraficaSoggetti());
 		sigasDichConsumiUpdate.setConguaglioDich(sigasDichConsumiStorico.getConguaglioDich());
-//		sigasDichConsumiUpdate.setConguaglioCalcolato(sigasDichConsumiStorico.getConguaglioCalcolato());
 		
 		//Inizio Salvo il conguaglio senza i versamenti
 		SigasProvincia sigasProvincia = sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(confermaConsumiRequest.getConsumi().getProvincia_erogazione());
@@ -812,10 +764,8 @@ public class HomeServiceImpl implements IHomeService {
 				}
 			}
 		}
-		sigasDichConsumiUpdate.setConguaglioCalcolato(confermaConsumiRequest.getConsumi().getConguaglio_calc() + totaleVersamenti);
-		
-		//Fine
-		
+		sigasDichConsumiUpdate.setConguaglioCalcolato(confermaConsumiRequest.getConsumi().getConguaglio_calc() + totaleVersamenti);		
+				
 		sigasDichConsumiUpdate.setDataPresentazione(sigasDichConsumiStorico.getDataPresentazione());
 		sigasDichConsumiUpdate.setProvinciaErogazione(sigasDichConsumiStorico.getProvinciaErogazione());
 		sigasDichConsumiUpdate.setRateoDich(sigasDichConsumiStorico.getRateoDich());
@@ -825,6 +775,19 @@ public class HomeServiceImpl implements IHomeService {
 		sigasDichConsumiUpdate.setTotaleDichOrigine(sigasDichConsumiStorico.getTotaleDichOrigine());
 		
 		sigasDichConsumiUpdate = sigasDichConsumiRepository.save(sigasDichConsumiUpdate);
+		
+		if(confermaConsumiRequest.getConsumi()!= null && confermaConsumiRequest.getConsumi().getCompensazionePrVO()!=null) { 
+			
+			CompensazionePrVO compensazione = new CompensazionePrVO();    		
+    	        	    
+    	    compensazione.setCompensazione(confermaConsumiRequest.getConsumi().getCompensazionePrVO().getCompensazione());
+    	    compensazione.setConguaglio_compensato(confermaConsumiRequest.getConsumi().getCompensazionePrVO().getConguaglio_compensato());
+    	    compensazione.setConguaglio_di_riferimento(confermaConsumiRequest.getConsumi().getCompensazionePrVO().getConguaglio_di_riferimento());
+    	    Calendar cal = Calendar.getInstance();
+    	    compensazione.setData_compensazione(cal.getTime());
+    	    compensazione.setId_consumi(sigasDichConsumiUpdate.getIdConsumi());
+    		sigasDichCompensazioniRepository.save(this.dichCompensazioniEntityMapper.mapVOtoEntity(compensazione));    		
+    	}
 		
 		sigasDichConsumiStorico.setModdate(new Date());
 		sigasDichConsumiStorico.setModIdConsumi(sigasDichConsumiUpdate.getIdConsumi());
@@ -861,17 +824,21 @@ public class HomeServiceImpl implements IHomeService {
 			sigasAllarmi.setSigasDichConsumi(sigasDichConsumiUpdate);
 			sigasAllarmiRepository.save(sigasAllarmi);
 		}
+		
 		// Allarme compensazione
 		int isAlarmActive = 0;
-		if (sigasDichConsumiUpdate.getCompensazione() != 0)  {
+		if (confermaConsumiRequest.getConsumi()!= null && confermaConsumiRequest.getConsumi().getCompensazionePrVO()!=null)  {
 			isAlarmActive = 1;
 		} else {
 			isAlarmActive = 0;
 		}
 		
-		SigasTipoAllarmi sigasTipoAllarmeCompensazione = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(TipoAllarme.COMPENSAZIONE.getName());
+		SigasTipoAllarmi sigasTipoAllarmeCompensazione = sigasTipoAllarmeRepository
+														 .findByDenominazioneIgnoreCase(TipoAllarme.COMPENSAZIONE.getName());
 
-		SigasAllarmi sigasAllarmiCompensazione = sigasAllarmiRepository.findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(sigasDichConsumiUpdate.getIdConsumi(), sigasTipoAllarmeCompensazione.getIdTipoAllarme());
+		SigasAllarmi sigasAllarmiCompensazione = sigasAllarmiRepository
+												 .findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(sigasDichConsumiUpdate.getIdConsumi(), 
+														 														  sigasTipoAllarmeCompensazione.getIdTipoAllarme());
 		if (sigasAllarmiCompensazione == null && isAlarmActive == 1) {
 					
 			sigasAllarmiCompensazione = new SigasAllarmi();
@@ -940,11 +907,9 @@ public class HomeServiceImpl implements IHomeService {
 	
 	@Override
 	@Transactional
-	public List<StoricoConsumiVO> storicoConsumi(Long idConsumi) {
-		
+	public List<StoricoConsumiVO> storicoConsumi(Long idConsumi) {		
 		List<SigasDichConsumi> sigasStoricoConsumiList = new ArrayList<SigasDichConsumi>();
-		SigasDichConsumi sigasStoricoConsumi = sigasDichConsumiRepository.findByModIdConsumi(idConsumi);
-		
+		SigasDichConsumi sigasStoricoConsumi = sigasDichConsumiRepository.findByModIdConsumi(idConsumi);		
 		
 		while ( sigasStoricoConsumi != null) {
 			sigasStoricoConsumiList.add(sigasStoricoConsumi);
@@ -1013,9 +978,7 @@ public class HomeServiceImpl implements IHomeService {
 		List<SigasDichScarti> sigasDichScartiList = new ArrayList<SigasDichScarti>();
 		
 		for (SigasDichScarti scarto : sigasDichScartiStoricoList) {
-
-			SigasDichScarti sigasDichScarti = new SigasDichScarti();
-			
+			SigasDichScarti sigasDichScarti = new SigasDichScarti();			
 			sigasDichScarti.setAliquota(scarto.getAliquota());
 			sigasDichScarti.setConciliato(scarto.isConciliato());
 			sigasDichScarti.setConsumi(scarto.getConsumi());
@@ -1026,7 +989,6 @@ public class HomeServiceImpl implements IHomeService {
 			if(scarto.isConciliato()) {
 				scartiDaConciliare++;
 			}
-
 		}
 		
 		sigasDichScartiRepository.save(sigasDichScartiList);
@@ -1040,8 +1002,7 @@ public class HomeServiceImpl implements IHomeService {
 				sigasAllarmi.setStatus(0);
 			} else {
 				sigasAllarmi.setStatus(1);
-			}
-			
+			}			
 			sigasAllarmi.setSigasDichConsumi(sigasConsumiRipristina);
 			sigasAllarmiRepository.save(sigasAllarmi);	
 		}
@@ -1144,13 +1105,17 @@ public class HomeServiceImpl implements IHomeService {
     	for (AnaComunicazioniVO anaComunicazioniVO : anaComunicazioniVOList) {
     		if (!StringUtils.isEmpty(anaComunicazioniVO.getNProtocollo())) {
     			String[] params = anaComunicazioniVO.getNProtocollo().split("/");
-
         		if (params.length == 2) {
         			ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
             		
         			try {
 						anaComunicazioniVO.setAllegati(actaUtils.listaAllegati(params[1], params[0]) );
-					} catch (AcarisException e) {
+					}
+        			catch (BusinessException be) {
+        				// TODO Auto-generated catch block
+						be.printStackTrace();
+        			}
+        			catch (AcarisException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -1171,9 +1136,9 @@ public class HomeServiceImpl implements IHomeService {
 		}
     	
     	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaDocumentiByAnnoAndTipologia", "sigas_ana_comunicazioni", String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
     	
 		return anaComunicazioniVOList;
     	
@@ -1198,7 +1163,6 @@ public class HomeServiceImpl implements IHomeService {
 		SigasAllarmi sigasAllarmi = sigasAllarmiRepository.findBySigasAnaComunicazioniIdComunicazioneAndSigasTipoAllarmeIdTipoAllarme(comunicazione.getIdComunicazione(), sigasTipoAllarmeAnaComunicazioni.getIdTipoAllarme()!=null ? sigasTipoAllarmeAnaComunicazioni.getIdTipoAllarme().intValue():0);
 
 		if (null == sigasAllarmi) {
-
 			SigasTipoAllarmi sigasTipoAllarme = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(allarmeRequest.getTipoAllarme());
 
 			sigasAllarmi = new SigasAllarmi();
@@ -1385,7 +1349,6 @@ public class HomeServiceImpl implements IHomeService {
     	
     	
     	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - salvaAllegatoVerbale", oggOper, String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		
@@ -1407,30 +1370,14 @@ public class HomeServiceImpl implements IHomeService {
     		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     		Date dataDoc = df.parse(dataDocumento);
     		if(null != doc) {
-//    			SigasAnaComunicazioni doc = new SigasAnaComunicazioni();
-//    			SigasAnagraficaSoggetti soggetto = new SigasAnagraficaSoggetti();
-//    			soggetto = sigasAnagraficaSoggettiRepository.findOne(idAnag);
-//
-//    			SigasTipoComunicazioni tipoComunicazioni = new SigasTipoComunicazioni();
-//
-//    			//Recupero dei dati dal formData
-				
+    			//Recupero dei dati dal formData				
     			note = input.getFormDataPart("note", String.class, null);
     			datiRiassuntivi = input.getFormDataPart("datiRiassuntivi", String.class, null);
     			nprotocollo = input.getFormDataPart("nprotocollo", String.class, null);
-//    			if(null == uid) {	//VERIFICARE - codice non raggiungibile
-//    				uid = input.getFormDataPart("rifArchivio", String.class, null);
-//    			}
     			idTipoComunicazione = input.getFormDataPart("idTipoComunicazione", String.class, null);
     			SigasTipoComunicazioni tipoComunicazioni = sigasTipoComunicazioniRepository.findOne(Long.parseLong(idTipoComunicazione));
-
-    			//Date date= new Date();
-    			//long time = date.getTime();
-    			//Timestamp ts = new Timestamp(time);
-				//doc.setIdComunicazione(Long.parseLong(idComunic));
-    			//doc.setDataDocumento(ts);
+    			
     			doc.setSigasTipoComunicazioni(tipoComunicazioni);
-//    			doc.setSigasAnagraficaSoggetti(soggetto);
     			doc.setAnnualita(anno);
     			if (StringUtils.isNotEmpty(nomeFile))
     				doc.setDescrizione(anno + "_" + doc.getSigasAnagraficaSoggetti().getCodiceAzienda() + "_" + nomeFile);
@@ -1442,23 +1389,16 @@ public class HomeServiceImpl implements IHomeService {
     			doc.setModDate(new Date());
     			doc.setModUser(user);
     			
-    			anaComunicazioniEntity = sigasAnaComunicazioniRepository.save(doc);
-    			
+    			anaComunicazioniEntity = sigasAnaComunicazioniRepository.save(doc);    			
     			
     			// Controllo su tipoComunicazioni per aggiornare sigas_rimborsi
 				if(tipoComunicazioni.getDenominazione().equals(TipoComunicazioni.ISTANZA_DI_RIMBORSO.getName())) {
-
 					SigasRimborso sigasRimborso = sigasRimborsoRepository.findBySigasAnagraficaSoggettiIdAnagAndSigasAnaComunicazioniIdComunicazione(idAnag, doc.getIdComunicazione());
 					if(sigasRimborso!=null && dataDoc.compareTo(sigasRimborso.getDataIstanza())!=0) {
 						if(!"DETERMINA".equalsIgnoreCase(sigasRimborso.getStatoPratica())) {						
 							sigasRimborso.setDataIstanza(dataDoc);
 							sigasRimborso.getSigasAnaComunicazioni().setModDate(new Date());
 							sigasRimborso.getSigasAnaComunicazioni().setModUser(user);
-//							if("CALCOLATA".equalsIgnoreCase(sigasRimborso.getStatoPratica())) {
-//								sigasRimborso.setImporto(0D);
-//								sigasRimborso.setImportoRimborsato(0D);
-//								sigasRimborso.setStatoPratica("ISTANZA");
-//							}
 							
 							sigasRimborsoRepository.save(sigasRimborso);
 						}else {
@@ -1475,7 +1415,6 @@ public class HomeServiceImpl implements IHomeService {
     	}
 
     	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - aggiornaAllegatoVerbale", "sigas_ana_comunicazioni",String.valueOf(anaComunicazioniEntity.getIdComunicazione())  );
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		
@@ -1484,7 +1423,6 @@ public class HomeServiceImpl implements IHomeService {
     @Transactional
     @Override
     public AnaComunicazioniVO updateTestataDocumento(AnaComunicazioniVO anaComunicazione, String user) {
-//    	String idComunic, anno, note, datiRiassuntivi, nprotocollo, idTipoComunicazione,dataDocumento;
     	
     	SigasAnaComunicazioni anaComunicazioniEntity = null;
     	SigasAnaComunicazioni doc = new SigasAnaComunicazioni();
@@ -1508,14 +1446,11 @@ public class HomeServiceImpl implements IHomeService {
     @Override
     public byte[] getDocumento(String descComunicazione) throws IOException {
     	InputStream is = getClass().getResourceAsStream("/application.properties");
-    	Properties p=new Properties();  
-    	// p.load(reader);
-    	p.load(is);
-    	
+    	Properties p=new Properties();    	
+    	p.load(is);   	
     	byte[] datadown = null;
 
-    	SigasAnaComunicazioni sigasAnaComunicazioni = sigasAnaComunicazioniRepository.findByDescrizione(descComunicazione);
-    	
+    	SigasAnaComunicazioni sigasAnaComunicazioni = sigasAnaComunicazioniRepository.findByDescrizione(descComunicazione);    	
     	if (StringUtils.isEmpty(sigasAnaComunicazioni.getNProtocollo())) {
 
 			String baseUrl=p.getProperty("baseUrl");
@@ -1569,32 +1504,24 @@ public class HomeServiceImpl implements IHomeService {
 	
     	} else {
     		String[] params = sigasAnaComunicazioni.getNProtocollo().split("/");
-
     		if (params.length < 2)
     			throw new BusinessException("Il numero di protocollo '" + sigasAnaComunicazioni.getNProtocollo() + "' non e' valido", ErrorCodes.BUSSINESS_EXCEPTION); 
     		
-    		ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
-    		
+    		ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);    		
     		datadown = actaUtils.download(params[1], params[0]);
     	}
     
-    	return datadown;
-    	
-			
-    } 
-    
+    	return datadown;			
+    }    
     
     @Override
     public byte[] getDocumentoMaster(String descComunicazione) throws IOException { 
     	InputStream is = getClass().getResourceAsStream("/application.properties");
-    	Properties p=new Properties();  
-    	// p.load(reader);
-    	p.load(is);
-    	
+    	Properties p=new Properties();    	
+    	p.load(is);    	
     	byte[] datadown = null;
 
-    	SigasAnaComunicazioni sigasAnaComunicazioni = sigasAnaComunicazioniRepository.findByDescrizione(descComunicazione);
-    	
+    	SigasAnaComunicazioni sigasAnaComunicazioni = sigasAnaComunicazioniRepository.findByDescrizione(descComunicazione);    	
     	if (StringUtils.isEmpty(sigasAnaComunicazioni.getNProtocollo())) {
 
 			String baseUrl=p.getProperty("baseUrl");
@@ -1652,44 +1579,36 @@ public class HomeServiceImpl implements IHomeService {
     		if (params.length < 2)
     			throw new BusinessException("Il numero di protocollo '" + sigasAnaComunicazioni.getNProtocollo() + "' non e' valido", ErrorCodes.BUSSINESS_EXCEPTION); 
     		
-    		ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
-    		
+    		ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);    		
     		datadown = actaUtils.downloadMaster(params[1], params[0]);
     	}
     
-    	return datadown;
-    	
-			
-    } 
-    
+    	return datadown;			
+    }    
     
     @Override
     public byte[] getStampaAllegato(String descComunicazione, String descAllegato) throws IOException {
     	InputStream is = getClass().getResourceAsStream("/application.properties");
-    	Properties p=new Properties();  
-    	// p.load(reader);
-    	p.load(is);
-    	
+    	Properties p=new Properties();    	
+    	p.load(is);    	
     	byte[] datadown = null;
 
-    	SigasAnaComunicazioni sigasAnaComunicazioni = sigasAnaComunicazioniRepository.findByDescrizione(descComunicazione);
-    	
+    	SigasAnaComunicazioni sigasAnaComunicazioni = sigasAnaComunicazioniRepository.findByDescrizione(descComunicazione);    	
 		String[] params = sigasAnaComunicazioni.getNProtocollo().split("/");
-
 		if (params.length < 2)
 			throw new BusinessException("Il numero di protocollo '" + sigasAnaComunicazioni.getNProtocollo() + "' non e' valido", ErrorCodes.BUSSINESS_EXCEPTION); 
 		
-		ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);
-		
+		ActaUtils actaUtils = new ActaUtils(acarisServiceFactory);		
 		try {
 			datadown = actaUtils.downloadAllegato(params[1], params[0], descAllegato);
-		} catch (AcarisException e) {
-			throw new BusinessException("Il numero di protocollo '" + params[0] + "' non contiene allegati", ErrorCodes.BUSSINESS_EXCEPTION);
 		}
-    
-    	return datadown;
-    	
-			
+		catch (BusinessException be) {			
+			throw be;
+		}
+		catch (AcarisException e) {
+			throw new BusinessException("Il numero di protocollo '" + params[0] + "' non contiene allegati", ErrorCodes.BUSSINESS_EXCEPTION);
+		}    
+    	return datadown;			
     }
     
     @Override
@@ -1738,74 +1657,119 @@ public class HomeServiceImpl implements IHomeService {
 			listKeyOper.add(String.valueOf(rimborsoTmp.getIdRimborso()) );
 		}
     	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaListaRimborsi", "sigas_rimborso", String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		
 		
 		return rimborsoVoList;
-	}
+	}	
 	
-	@Override
-	public ConsumiPrVO ricercaConsumiPerProvinceAndAnnualita(Long idAnag, String anno, String prov) {
-		SigasDichConsumi dichConsumiDB = sigasDichConsumiRepository
-				.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndProvinciaErogazioneAndModIdConsumi(idAnag, anno, prov, 0L);
+	//CR Totale versato	
+	private Map <String, Double> calcolaTotaleVersatoAPartiredaAnno(Long idAnag, String anno, String prov) {
+		Map<String,Double> mappaTotaleDichiarato = new HashMap<String,Double>();
+		Map<String,Double> mappaSommatoriaVersamenti = new HashMap<String,Double>();
+		Map<String,Double> mappaTotaleVersato = new HashMap<String,Double>();
+		Map<String,Double> mappaConguaglioCalcolato = new HashMap<String,Double>();
+		Map<String,Double> mappaCompensazioni = new HashMap<String,Double>();
 		
-		if(prov!=null && !prov.isEmpty() && dichConsumiDB!=null) {
+		//Determinazione Totale Dichiarato e Totale Versato per ogni annualita
+		List<SigasDichConsumi> dichConsumiDBList = sigasDichConsumiRepository.findConsumiFinoAnnoByIdAnagProv(idAnag,prov, anno);
+		if(dichConsumiDBList!= null && !dichConsumiDBList.isEmpty() ) {
 			SigasProvincia sigasProvincia = sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(prov);
-			double totaleVersamenti = 0;
-			if (null != sigasProvincia) {
-				List<Long> idConsumoPadreList = calcolaIdConsumoPadre(dichConsumiDB.getIdConsumi());
-				List<SigasDichVersamenti> sigasDichVersamentiList = new ArrayList<SigasDichVersamenti>();
-				if(idConsumoPadreList!=null && !idConsumoPadreList.isEmpty()) {
-					for (Long longTmp : idConsumoPadreList) {
-						sigasDichVersamentiList.addAll(sigasDichVersamentiRepository.findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(
-								longTmp.longValue(),
-								sigasProvincia.getIdProvincia()) );
-					}					
-				} else {
-					sigasDichVersamentiList.addAll(sigasDichVersamentiRepository.findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(
-							dichConsumiDB.getIdConsumi(),
-							sigasProvincia.getIdProvincia()) );
-				}
-				
-				
-				for (SigasDichVersamenti sigasDichVersamenti : sigasDichVersamentiList) {
-					if (!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName())) {
-						totaleVersamenti += sigasDichVersamenti.getImporto();
+			Iterator<SigasDichConsumi> iter = dichConsumiDBList.iterator();
+			while(iter.hasNext()) {
+				SigasDichConsumi digasDichConsumi = iter.next();
+				if(digasDichConsumi.getModdate() == null) {
+					mappaTotaleDichiarato.put(digasDichConsumi.getAnnualita(), digasDichConsumi.getTotaleDich());
+					double totaleVersamenti = 0;
+					List<SigasDichVersamenti> sigasDichVersamentiList = sigasDichVersamentiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasProvinciaIdProvincia(idAnag, digasDichConsumi.getAnnualita(),sigasProvincia.getIdProvincia());
+					Iterator<SigasDichVersamenti> iterVer = sigasDichVersamentiList.iterator();
+					while(iterVer.hasNext()) {
+						SigasDichVersamenti sigasDichVersamenti = iterVer.next();
+						if (!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName())) {
+							totaleVersamenti += sigasDichVersamenti.getImporto();
+						}
 					}
-				}
-			}
-			dichConsumiDB.setConguaglioCalcolato(dichConsumiDB.getConguaglioCalcolato() - totaleVersamenti);
+					mappaSommatoriaVersamenti.put(digasDichConsumi.getAnnualita(), totaleVersamenti);
+					
+					SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(digasDichConsumi.getIdConsumi());
+					if(sigasDichCompensazioni!=null) {
+						mappaCompensazioni.put(digasDichConsumi.getAnnualita(), sigasDichCompensazioni.getConguaglio_compensato());
+					}					
+				}				
+			}			
 		}
 		
+		//Determinazione Totale Versato e Conguaglio Calcolato per ogni annualita
+		if(mappaTotaleDichiarato!=null && !mappaTotaleDichiarato.isEmpty()) {
+			String annoLowerBound = Collections.min(mappaTotaleDichiarato.keySet());		
+			for(int i = Integer.valueOf(annoLowerBound); i<= Integer.valueOf(anno); i++ ) {
+				String annoRif = String.valueOf(i);
+				String annoPrecedente = String.valueOf(i-1);
+				Double sommaVersamentiAnnoRif =  (mappaSommatoriaVersamenti.get(annoRif)==null) ? 0D : mappaSommatoriaVersamenti.get(annoRif);
+				
+				Double conguaglioCalcolatoAnnoPrecedente = (mappaConguaglioCalcolato.get(annoPrecedente)==null) ? 0D : mappaConguaglioCalcolato.get(annoPrecedente);
+				Double totaleVersatoAnnoRif = sommaVersamentiAnnoRif - conguaglioCalcolatoAnnoPrecedente;				
+				mappaTotaleVersato.put(annoRif, totaleVersatoAnnoRif);
+				
+				Double totaleDichiaratoAnnoRif = (mappaTotaleDichiarato.get(annoRif)==null) ? 0D : mappaTotaleDichiarato.get(annoRif);
+				
+				Double conguagloCalcolatoAnnoRif = 0D;
+				Double compensazioneAnnoRif = (mappaCompensazioni.get(annoRif)==null) ? 0D : mappaCompensazioni.get(annoRif);
+				if(compensazioneAnnoRif!=0) {
+					conguagloCalcolatoAnnoRif = compensazioneAnnoRif;
+				} else {
+					conguagloCalcolatoAnnoRif = totaleDichiaratoAnnoRif - totaleVersatoAnnoRif;
+				}				
+				//Double conguagloCalcolatoAnnoRif = totaleDichiaratoAnnoRif - totaleVersatoAnnoRif;
+				mappaConguaglioCalcolato.put(annoRif, conguagloCalcolatoAnnoRif);
+			}
+		}	
 		
+		Map<String, Double> output = new HashMap<String, Double>();
+		Double totaleVersatoAnnoRichiesto = (mappaTotaleVersato.get(anno) == null) ? 0D : mappaTotaleVersato.get(anno);
+		output.put("totaleVersato", totaleVersatoAnnoRichiesto);
 		
-		return dichConsumiEntityMapper.mapEntityToVO(dichConsumiDB);
+		Double conguaglioCalcolatoAnnoRichiesto = (mappaConguaglioCalcolato.get(anno) == null) ? 0D : mappaConguaglioCalcolato.get(anno);
+		output.put("conguaglioCalcolato", conguaglioCalcolatoAnnoRichiesto);
+		
+		return output;		
+	}
+	//Marts
+	@Override
+	public ConsumiPrVO ricercaConsumiPerProvinceAndAnnualita(Long idAnag, String anno, String prov) {
+		Double totaleVersato = 0D;
+		Double conguaglioCalcolato = 0D;
+		ConsumiPrVO consumiPrVO = null;
+		SigasDichConsumi dichConsumiDB = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndProvinciaErogazioneAndModIdConsumi(idAnag, anno, prov, 0L);		
+		if(dichConsumiDB!=null) {			
+						
+			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, anno, prov);
+			totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato");
+			conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato");			
+			
+			consumiPrVO = dichConsumiEntityMapper.mapEntityToVO(dichConsumiDB);
+			consumiPrVO.setTotaleVersato(totaleVersato);
+			consumiPrVO.setConguaglio_calc(conguaglioCalcolato);
+			
+			consumiPrVO.setCompensazione(0D);
+			
+			SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(dichConsumiDB.getIdConsumi());
+			consumiPrVO.setCompensazionePrVO(this.dichCompensazioniEntityMapper.mapEntityToVO(sigasDichCompensazioni));
+		}	
+		
+		return consumiPrVO;
 	}
 
-	private List<Long> calcolaIdConsumoPadre(long idConsumi) {
-//		SigasDichConsumi sigasStoricoConsumiTmp = sigasDichConsumiRepository.findByModIdConsumi(idConsumi);
-//		SigasDichConsumi sigasStoricoConsumi = null;
-//		
-//		while ( sigasStoricoConsumiTmp != null) {
-//			sigasStoricoConsumi = sigasStoricoConsumiTmp;
-//			sigasStoricoConsumiTmp = sigasDichConsumiRepository.findByModIdConsumi(sigasStoricoConsumiTmp.getIdConsumi());	
-//		}
-//		
-//		return sigasStoricoConsumi!=null ? sigasStoricoConsumi.getIdConsumi():null;
-		
+	private List<Long> calcolaIdConsumoPadre(long idConsumi) {		
 		
 		List<Long> sigasStoricoConsumiList = new ArrayList<Long>();
 		sigasStoricoConsumiList.add(idConsumi);
-		SigasDichConsumi sigasStoricoConsumi = sigasDichConsumiRepository.findByModIdConsumi(idConsumi);
-		
-		
+		SigasDichConsumi sigasStoricoConsumi = sigasDichConsumiRepository.findByModIdConsumi(idConsumi);		
 		while ( sigasStoricoConsumi != null) {
 			sigasStoricoConsumiList.add(sigasStoricoConsumi.getIdConsumi());
 			sigasStoricoConsumi = sigasDichConsumiRepository.findByModIdConsumi(sigasStoricoConsumi.getIdConsumi());	
-		}
-		
+		}		
 		return sigasStoricoConsumiList;
 	}
 
@@ -1825,7 +1789,6 @@ public class HomeServiceImpl implements IHomeService {
 		return rimborsoEntityMapper.mapEntityToVO(sigasRimborsoRepository.findOne(idRimborso));
 	}
 
-
 	@Override
 	public void salvaDetermina(Long idComunicazione) {
 		SigasTipoAllarmi sigasTipoAllarmeRimborso = sigasTipoAllarmeRepository
@@ -1837,9 +1800,8 @@ public class HomeServiceImpl implements IHomeService {
 
 		if (null != sigasAllarmi) {
 			sigasAllarmi.setStatus(StatusAllarme.NON_ATTIVO.getName());
+			sigasAllarmiRepository.save(sigasAllarmi);
 		}
-		sigasAllarmiRepository.save(sigasAllarmi);
-
 	}
 	
 	//ACCERTAMENTI
@@ -1868,16 +1830,13 @@ public class HomeServiceImpl implements IHomeService {
 		List<VersamentiPrVO> accertamentoVo = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDB);
 			
 		for(VersamentiPrVO accertamento : accertamentoVo ) {
-//			if(accertamento.getConsumo()!= null) {
-				List<SigasAllarmi> listAllarmDB = sigasAllarmiRepository.findBySigasDichVersamentiIdVersamentoAndSigasTipoAllarmeIdTipoAllarme(
-								accertamento.getIdVersamento(), sigasTipoAllarmeVersamento.getIdTipoAllarme()!=null ? sigasTipoAllarmeVersamento.getIdTipoAllarme().intValue():0);
-				for (SigasAllarmi sigasAllarmi : listAllarmDB) {
-					if (sigasAllarmi != null) {
-						accertamento.setAllarme(allarmiSoggettoEntityMapper.mapEntityToVO(sigasAllarmi));
-					}
+			List<SigasAllarmi> listAllarmDB = sigasAllarmiRepository.findBySigasDichVersamentiIdVersamentoAndSigasTipoAllarmeIdTipoAllarme(
+							accertamento.getIdVersamento(), sigasTipoAllarmeVersamento.getIdTipoAllarme()!=null ? sigasTipoAllarmeVersamento.getIdTipoAllarme().intValue():0);
+			for (SigasAllarmi sigasAllarmi : listAllarmDB) {
+				if (sigasAllarmi != null) {
+					accertamento.setAllarme(allarmiSoggettoEntityMapper.mapEntityToVO(sigasAllarmi));
 				}
-				
-//			}
+			}
 		}
 		
 		List<String> listKeyOper = new ArrayList<String>();
@@ -1888,7 +1847,6 @@ public class HomeServiceImpl implements IHomeService {
 		}
 		
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - elencoAccertamentiByIdAnag", "sigas_dich_versamenti", String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		
@@ -1906,7 +1864,7 @@ public class HomeServiceImpl implements IHomeService {
 			SigasDichVersamenti sigasAccertamento = dichVersamentiEntityMapper.mapVOtoEntity(accertamento.getVersamento());
 			sigasDichVersamenti = sigasDichVersamentiRepository.save(sigasAccertamento);
 			SigasAllarmi sigasAllarmeTmp = allarmeAccertamento(accertamento.getVersamento(), user); 
-			if(sigasAllarmeTmp!=null) {
+			if(sigasAllarmeTmp!=null) {				
 				sigasAllarmi = sigasAllarmiRepository.save(sigasAllarmeTmp);
 			}
 			 
@@ -1919,9 +1877,27 @@ public class HomeServiceImpl implements IHomeService {
 	
 		
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - updateAccertamenti", "sigas_dich_versamenti sigas_allarmi", String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+	}
+	
+	@Override
+	@Transactional
+	public void updateAllarmeAccertamento(UpdateAllarmeAccertamentoRequest updateAllarmeAccertamentoRequest, String utente) {
+		if(updateAllarmeAccertamentoRequest != null && updateAllarmeAccertamentoRequest.getIdAllarme() != null) {
+			
+			
+			sigasAllarmiRepository.updateStatoAllarmeAccertamento(updateAllarmeAccertamentoRequest.getIdAllarme(),
+																  updateAllarmeAccertamentoRequest.getStatoAllarme() );
+			
+			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+																 "UPDATE - UpdateAllarmeAccertamentoRequest", 
+																 "sigas_allarmi", 
+																 String.join("_", "id allarme: " + updateAllarmeAccertamentoRequest.getIdAllarme()));
+			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+					csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
+			
+		}		
 	}
 	
 	
@@ -1951,8 +1927,7 @@ public class HomeServiceImpl implements IHomeService {
 			sigasAllarmi.setSigasDichVersamenti(sigasDichVersamentiRepository.findOne(versamento.getIdVersamento()));
 			sigasAllarmi.setNota("Allarme accertamento per il soggetto " + versamento.getIdAnag());
 			sigasAllarmi.setStatus(StatusAllarme.NON_ATTIVO.getName());
-		}
-		
+		}	
 		
 		return sigasAllarmi;
 	}
@@ -1961,22 +1936,18 @@ public class HomeServiceImpl implements IHomeService {
 	@Transactional
 	public OrdinativiIncassoVO conciliaPagameto(ConfermaPagamentoRequest confermaPagamentoRequest, String user) {
 		confermaPagamentoRequest.getPagamento().setConciliato(true);
-		SigasPagamenti sigasPagamentiUpdate = ordinativoEntityMapper.mapVOtoEntity(confermaPagamentoRequest.getPagamento());
-
-		
+		SigasPagamenti sigasPagamentiUpdate = ordinativoEntityMapper.mapVOtoEntity(confermaPagamentoRequest.getPagamento());		
 		sigasPagamentiCrudRepository.save(sigasPagamentiUpdate);
 		
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - conciliaPagamento", "sigas_pagamenti",String.valueOf(sigasPagamentiUpdate.getIdPagamento()));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		
 		return new OrdinativiIncassoVO();
 	}
 
 	@Override
 	public OrdinativiIncassoVO eliminaConciliazione(ConfermaPagamentoRequest confermaPagamentoRequest) {
-
 		
 		for (PagamentiVersamentiVO pagamentoVesamentoVo: confermaPagamentoRequest.getPagamento().getSigasPagamentiVersamentis()) {
 			sigasPagamentiVersamentiRepository.delete(pagamentoVesamentoVo.getIdPagamentoVersamento());
@@ -2001,9 +1972,7 @@ public class HomeServiceImpl implements IHomeService {
 			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - eliminaConciliazione", "sigas_pagamenti",String.valueOf(ordIncVO.getIdPagamento()));
 			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 					csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
-		}
-		
-		
+		}		
 		
 		return new OrdinativiIncassoVO();
 	}
@@ -2065,8 +2034,7 @@ public class HomeServiceImpl implements IHomeService {
 	    			aliquotaStartDate.setTime(sigasAliquote.getValiditaStart());
 	    			aliquotaEndDate = new GregorianCalendar();
 	    			aliquotaEndDate.setTime(sigasAliquote.getValiditaEnd());
-    			}
-    			
+    			}    			
     			
     			if (sigasAliquote != null && 
     					Integer.parseInt(sigasDichConsumi.getAnnualita()) >= aliquotaStartDate.get(Calendar.YEAR) &&
@@ -2150,15 +2118,6 @@ public class HomeServiceImpl implements IHomeService {
             if (documento == null) {
                 throw new BusinessException("Nessun documento trovato per l'ID: " + idDocumento);
             }
-//            List<SigasAllarmi> listAllarmi = this.sigasAllarmiRepository.findBySigasAnaComunicazioniIdComunicazione(idDocumento);
-//            for (SigasAllarmi sigasAllarmi : listAllarmi) {
-//            	Integer allarmeDaCancellare = sigasAllarmi.getIdAllarme();
-//				this.sigasAllarmiRepository.delete(allarmeDaCancellare);
-//				
-//				CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"DELETE - deleteDocumento", "sigas_allarmi",String.valueOf(allarmeDaCancellare));
-//				csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-//						csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
-//			}
             
             documento.setDelDate(new Date());
             
@@ -2171,8 +2130,8 @@ public class HomeServiceImpl implements IHomeService {
             this.sigasAnaComunicazioniRepository.save(documento);			
             CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"CANCELLAZIONE LOGICA DOCUMENTO", "sigas_ana_comunicazioni",String.valueOf(idDocumento));
 			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-					csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
-			
+											   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+											   csiLogAudit.getId().getKeyOper());			
 			
             return true;
         } catch (Exception e) {
@@ -2180,7 +2139,46 @@ public class HomeServiceImpl implements IHomeService {
             return false;
         }
     }
-	
-	
+    
+    @Override
+	@Transactional
+	public boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user) {
+    	boolean output = false;
+    	if(salvaCompensazioneRequest.getCompensazionePrVO()!=null) {
+    		
+    		//Setting data compensazione
+    	    Calendar cal = Calendar.getInstance();
+    		salvaCompensazioneRequest.getCompensazionePrVO().setData_compensazione(cal.getTime());
+    		sigasDichCompensazioniRepository.save(this.dichCompensazioniEntityMapper.mapVOtoEntity(salvaCompensazioneRequest.getCompensazionePrVO()));
+    		
+    		SigasTipoAllarmi sigasTipoAllarmeCompensazione = sigasTipoAllarmeRepository
+					 										 .findByDenominazioneIgnoreCase(TipoAllarme.COMPENSAZIONE.getName());
+
+			SigasAllarmi sigasAllarmiCompensazione = sigasAllarmiRepository
+						 							 .findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(salvaCompensazioneRequest.getCompensazionePrVO().getId_consumi(), 
+						 									 														  sigasTipoAllarmeCompensazione.getIdTipoAllarme());
+			//Se non presente un allarme va inserito
+			if(sigasAllarmiCompensazione == null) {
+				SigasDichConsumi sigasDichConsumi = sigasDichConsumiRepository
+													.findOne(salvaCompensazioneRequest.getCompensazionePrVO().getId_consumi());
+
+				sigasAllarmiCompensazione = new SigasAllarmi();
+				sigasAllarmiCompensazione.setAttivazione(new Date());
+				sigasAllarmiCompensazione.setCodiceAzienda(sigasDichConsumi.getSigasAnagraficaSoggetti().getCodiceAzienda());
+				sigasAllarmiCompensazione.setNota("Compensazione credito/debito consumo " + sigasDichConsumi.getSigasAnagraficaSoggetti().getCodiceAzienda());
+				sigasAllarmiCompensazione.setSigasTipoAllarme(sigasTipoAllarmeCompensazione);
+				sigasAllarmiCompensazione.setAnnualita(sigasDichConsumi.getAnnualita());
+				sigasAllarmiCompensazione.setUtente(user);
+				sigasAllarmiCompensazione.setSigasDichConsumi(sigasDichConsumi);			
+				
+				int isAlarmActive = 1;
+				sigasAllarmiCompensazione.setStatus(isAlarmActive);				
+				sigasAllarmiRepository.save(sigasAllarmiCompensazione);
+			}			
+    		
+    		output = true;
+    	}
+    	return output;    	
+	}
 
 }

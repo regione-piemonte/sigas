@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,9 +64,19 @@ public class SigasProvincia implements Serializable {
 	
 	//bi-directional many-to-one association to sigasSigasAnagraficaSoggetti
 	@OneToMany(mappedBy="sigasProvincia")
-	private List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettis;
-
+	private List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettis;	
+		
+	//bi-directional many-to-one association to IrbaTDichiarante
+	@OneToMany(targetEntity=SigasDichiarante.class, fetch= FetchType.LAZY, mappedBy="sigasProvincia")
+	private List<SigasDichiarante> sigasDichiaranteList;
 	
+	public List<SigasDichiarante> getSigasDichiaranteList() {
+		return sigasDichiaranteList;
+	}
+
+	public void setSigasDichiaranteList(List<SigasDichiarante> sigasDichiaranteList) {
+		this.sigasDichiaranteList = sigasDichiaranteList;
+	}
 
 
 	public SigasProvincia() {

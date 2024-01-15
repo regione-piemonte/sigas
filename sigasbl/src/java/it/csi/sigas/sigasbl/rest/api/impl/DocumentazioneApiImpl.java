@@ -260,8 +260,8 @@ public class DocumentazioneApiImpl extends SpringSupportedResource implements ID
         vo.setAnagraficaSoggettoVO(anagraficaSoggettiEntityMapper.mapEntityToVO(sigasAnagraficaSoggettiRepository.findByIdAnag(Long.parseLong(input.getFormDataPart("idAnag", String.class, null)))));
         vo.setAnnualita(input.getFormDataPart("annualita", String.class, null));
         vo.setCfPiva(input.getFormDataPart("cfPiva", String.class, null));
-        vo.setNomeFile(input.getFormDataPart("nomeFile", String.class, null));
-        vo.setNote(input.getFormDataPart("note", String.class, null));
+        vo.setNomeFile(input.getFormDataPart("nomeFile", String.class, null));        
+        vo.setNote(input.getFormDataPart("note", String.class, null));        
         vo.setRifArchivio(input.getFormDataPart("rifArchivio", String.class, null));
         vo.setTipoDocumentoVO(tipoDocumentoEntityMapper.mapEntityToVO(sigasTipoDocumentoRepository.findOne(Integer.parseInt(input.getFormDataPart("idTipoDocumento", String.class, null)))));
         String idTipoComunicazione = input.getFormDataPart("idTipoComunicazione", String.class, null);

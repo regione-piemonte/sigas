@@ -28,10 +28,10 @@ public interface SigasDichVersamentiRepository extends CrudRepository<SigasDichV
 	
 	List<SigasDichVersamenti> findBySigasAnagraficaSoggettiIdAnag(Long idAnag);
 
-	@Query("SELECT DISTINCT a.annualita FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id")
+	@Query("SELECT DISTINCT a.annualita FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id order by a.annualita desc ")
 	List<String> findDistinctBySigasAnagraficaSoggettiIdAnag(@Param("id")Long id);
 	
-	@Query("SELECT DISTINCT a.sigasProvincia FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id")
+	@Query("SELECT DISTINCT a.sigasProvincia FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id ORDER BY a.sigasProvincia.siglaProvincia ASC")
 	List<SigasProvincia> findDistinctProvBySigasAnagraficaSoggettiIdAnag(@Param("id")Long id);
 
 	@Query("SELECT DISTINCT a.mese FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id"

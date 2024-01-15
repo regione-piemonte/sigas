@@ -24,7 +24,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name="sigas_ana_comunicazioni")
 @NamedQuery(name="SigasAnaComunicazioni.findAll", query="SELECT i FROM SigasAnaComunicazioni i")
-public class SigasAnaComunicazioni implements Serializable {
+public class SigasAnaComunicazioni extends EntityBase implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -62,27 +62,14 @@ public class SigasAnaComunicazioni implements Serializable {
 	private String nProtocollo;
 
 	@Column(name="rif_archivio")
-	private String rifArchivio;
-	
-	@Column(name="ins_user", nullable=false)
-	private String insUser;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="ins_date", nullable=false)
-	private Date insDate;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="mod_date", nullable=false)
-	private Date modDate;
-	 
-	@Column(name="mod_user", nullable=false)
-	private String modUser;
+	private String rifArchivio;	
 	
 	@Column(name="del_date")
 	private Date delDate;
 
 	@Column(name="del_user")
 	private String delUser;
+	
 
 	public SigasAnaComunicazioni() {
 	}
@@ -173,44 +160,12 @@ public class SigasAnaComunicazioni implements Serializable {
 
 	public void setnProtocollo(String nProtocollo) {
 		this.nProtocollo = nProtocollo;
-	}
-
-	public String getInsUser() {
-		return insUser;
-	}
-
-	public void setInsUser(String insUser) {
-		this.insUser = insUser;
-	}
-
-	public Date getInsDate() {
-		return insDate;
-	}
-
-	public void setInsDate(Date insDate) {
-		this.insDate = insDate;
-	}
-
-	public Date getModDate() {
-		return modDate;
-	}
-
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-
-	public String getModUser() {
-		return modUser;
-	}
-
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
+	}	
 
 	public SigasTipoComunicazioni getSigasTipoComunicazioni() {
 		return sigasTipoComunicazioni;
-	}
-
+	}	
+	
 	public Date getDelDate() {
 		return delDate;
 	}
@@ -225,8 +180,6 @@ public class SigasAnaComunicazioni implements Serializable {
 
 	public void setDelUser(String delUser) {
 		this.delUser = delUser;
-	}
-	
-	
+	}	
 
 }

@@ -27,15 +27,18 @@ import org.springframework.stereotype.Service;
 import it.csi.sigas.sigasbl.model.entity.SigasReport;
 import it.csi.sigas.sigasbl.model.repositories.SigasReportRepository;
 import it.csi.sigas.sigasbl.service.IUtilsService;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.Exporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
@@ -142,7 +145,7 @@ public class UtilsServiceImpl implements IUtilsService {
 		try {
 			connection = dataSource.getConnection();
 
-			SigasReport sigasReport = sigasReportRepository.findByCodReport(codReport);
+			SigasReport sigasReport = sigasReportRepository.findByCodReport(codReport);			
 			if (null == sigasReport.getJasper()) {
 				bais = compile(sigasReport.getJrxml().getBytes(StandardCharsets.UTF_8));
 				sigasReport.setJasper(IOUtils.toByteArray(bais));
@@ -150,13 +153,13 @@ public class UtilsServiceImpl implements IUtilsService {
 				sigasReport = sigasReportRepository.save(sigasReport);
 				bais = null;
 			}
-
 			bais = new ByteArrayInputStream(sigasReport.getJasper());
 
 			jasperReport = (JasperReport) JRLoader.loadObject(bais);
 			bais = null;
 
 			// Generazione report da compilato
+			// JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jasperParam, new JREmptyDataSource());
 			JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, jasperParam, connection);
 
 			return jasperPrint;
@@ -176,10 +179,10 @@ public class UtilsServiceImpl implements IUtilsService {
 	}
 
 	private ByteArrayInputStream compile(byte[] template) throws PrintException {
-		ByteArrayInputStream result;
+		ByteArrayInputStream result = null;
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		try {
-			ByteArrayInputStream bais = new ByteArrayInputStream(template);
+		try {			
+			ByteArrayInputStream bais = new ByteArrayInputStream(template);			
 			JasperCompileManager.compileReportToStream(bais, os);
 			result = new ByteArrayInputStream(os.toByteArray());
 		} catch (JRException e) {

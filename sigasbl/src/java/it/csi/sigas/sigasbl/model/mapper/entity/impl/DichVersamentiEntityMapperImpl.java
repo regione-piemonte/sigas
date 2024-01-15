@@ -13,15 +13,22 @@ import org.springframework.stereotype.Component;
 import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasDichConsumi;
 import it.csi.sigas.sigasbl.model.entity.SigasDichVersamenti;
+import it.csi.sigas.sigasbl.model.entity.SigasPagamentiVersamenti;
+import it.csi.sigas.sigasbl.model.entity.SigasPaymentCart;
 import it.csi.sigas.sigasbl.model.entity.SigasProvincia;
 import it.csi.sigas.sigasbl.model.entity.SigasTipoVersamento;
+//import it.csi.sigas.sigasbl.model.entity.custom.PaymentSubjectFODetailEntityCustom;
 import it.csi.sigas.sigasbl.model.mapper.entity.DichConsumiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.DichVersamentiEntityMapper;
+//import it.csi.sigas.sigasbl.model.mapper.entity.PagamentiVersamentiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.TipoVersamentoEntityMapper;
 import it.csi.sigas.sigasbl.model.repositories.SigasAnagraficaSoggettiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasDichConsumiRepository;
+import it.csi.sigas.sigasbl.model.repositories.SigasPaymentCartRepository;
+//import it.csi.sigas.sigasbl.model.repositories.SigasPaymentSubjectFORepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasProvinciaRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasTipoVersamentoRepository;
+//import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
 
 @Component
@@ -43,7 +50,10 @@ public class DichVersamentiEntityMapperImpl implements DichVersamentiEntityMappe
 	private	SigasDichConsumiRepository dichConsumiRepository;
 	
 	@Autowired
-	private SigasAnagraficaSoggettiRepository anagraficaSoggettiRepository; 
+	private SigasAnagraficaSoggettiRepository anagraficaSoggettiRepository;
+	
+	@Autowired
+	private SigasPaymentCartRepository sigasPaymentCartRepository;	
 	
 	@Override
 	public VersamentiPrVO mapEntityToVO(SigasDichVersamenti dto) {
@@ -80,7 +90,37 @@ public class DichVersamentiEntityMapperImpl implements DichVersamentiEntityMappe
 		versamentiPrVO.setInsUser(dto.getInsUser());
 		versamentiPrVO.setModDate(dto.getModDate());
 		versamentiPrVO.setModUser(dto.getModUser());
-//		versamentiPrVO.setEliminato(dto.isEliminato());
+		
+		/*
+		List<SigasPagamentiVersamenti> pagamentiVersamenti = dto.getSigasPagamentiVersamenti();
+		if(pagamentiVersamenti != null && pagamentiVersamenti.size() > 0) {
+			versamentiPrVO.setHasPagamentiVersamenti(true);			
+			List<Long> idsPagamentiVersametni = new ArrayList<Long>();			
+			for(SigasPagamentiVersamenti pagamentoVersamento: pagamentiVersamenti) {
+				idsPagamentiVersametni.add(pagamentoVersamento.getIdPagamentoVersamento());
+			}			
+			versamentiPrVO.setPagamentiVersamenti(idsPagamentiVersametni);
+			
+		} else {			
+			versamentiPrVO.setHasPagamentiVersamenti(false);
+			versamentiPrVO.setPagamentiVersamenti(null);
+		}
+		*/
+		
+		List<SigasPaymentCart> pagamentiList = sigasPaymentCartRepository.getPaymentByIdVersamento(versamentiPrVO.getIdVersamento());
+		if(pagamentiList != null && !pagamentiList.isEmpty()) {
+			versamentiPrVO.setHasPagamentiVersamenti(true);			
+			List<Long> idsPagamentiVersametni = new ArrayList<Long>();			
+			for(SigasPaymentCart sigasPaymentCart: pagamentiList) {
+				idsPagamentiVersametni.add(sigasPaymentCart.getIdCarrello());
+			}			
+			versamentiPrVO.setPagamentiVersamenti(idsPagamentiVersametni);
+			
+		} else {			
+			versamentiPrVO.setHasPagamentiVersamenti(false);
+			versamentiPrVO.setPagamentiVersamenti(null);
+		}
+		
 		
 		return versamentiPrVO;
 	}
@@ -137,7 +177,7 @@ public class DichVersamentiEntityMapperImpl implements DichVersamentiEntityMappe
 		dto.setInsDate(vo.getInsDate());
 		dto.setInsUser(vo.getInsUser());
 //		dto.setEliminato(vo.isEliminato());
+		
 		return dto;
 	}
-
 }

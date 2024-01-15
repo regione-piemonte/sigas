@@ -25,7 +25,7 @@ import javax.persistence.Version;
 @Entity
 @Table(name="sigas_rimborso")
 @NamedQuery(name="SigasRimborso.findAll", query="SELECT i FROM SigasRimborso i")
-public class SigasRimborso implements Serializable {
+public class SigasRimborso extends EntityBase implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -62,30 +62,11 @@ public class SigasRimborso implements Serializable {
 	
 	@Column(name="stato_pratica")
 	private String statoPratica;
-	
-	@Version
-	@Column(name="version", nullable=false)
-	private long version;
-	
+		
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name="data_versamento")
-	private Date dataVersamento;
-	
-	
-	@Column(name="ins_user", nullable=false)
-	private String insUser;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="ins_date", nullable=false)
-	private Date insDate;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="mod_date", nullable=false)
-	private Date modDate;
-	 
-	@Column(name="mod_user", nullable=false)
-	private String modUser;
+	private Date dataVersamento;	
 	
 	public SigasRimborso() {
 		
@@ -161,15 +142,7 @@ public class SigasRimborso implements Serializable {
 
 	public void setStatoPratica(String statoPratica) {
 		this.statoPratica = statoPratica;
-	}
-
-	public long getVersion() {
-		return version;
-	}
-
-	public void setVersion(long version) {
-		this.version = version;
-	}
+	}	
 
 	public Date getDataVersamento() {
 		return dataVersamento;
@@ -177,40 +150,6 @@ public class SigasRimborso implements Serializable {
 
 	public void setDataVersamento(Date dataVersamento) {
 		this.dataVersamento = dataVersamento;
-	}
-
-	public String getInsUser() {
-		return insUser;
-	}
-
-	public void setInsUser(String insUser) {
-		this.insUser = insUser;
-	}
-
-	public Date getInsDate() {
-		return insDate;
-	}
-
-	public void setInsDate(Date insDate) {
-		this.insDate = insDate;
-	}
-
-	public Date getModDate() {
-		return modDate;
-	}
-
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-
-	public String getModUser() {
-		return modUser;
-	}
-
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
-	
-	
+	}		
 
 }

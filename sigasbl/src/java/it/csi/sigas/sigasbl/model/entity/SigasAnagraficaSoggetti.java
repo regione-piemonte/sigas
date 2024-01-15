@@ -24,7 +24,7 @@ import javax.persistence.Version;
 @Entity
 @Table(name="sigas_anagrafica_soggetti")
 @NamedQuery(name="SigasAnagraficaSoggetti.findAll", query="SELECT i FROM SigasAnagraficaSoggetti i")
-public class SigasAnagraficaSoggetti implements Serializable {
+public class SigasAnagraficaSoggetti extends EntityBase implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -78,21 +78,7 @@ public class SigasAnagraficaSoggetti implements Serializable {
 	private String pec;
 	
 	@Column(name="note", nullable=false)
-	private String note;
-	
-	@Column(name="ins_user", nullable=false)
-	private String insUser;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="ins_date", nullable=false)
-	private Date insDate;
-	
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="mod_date", nullable=false)
-	private Date modDate;
-	 
-	@Column(name="mod_user", nullable=false)
-	private String modUser;
+	private String note;	
 		
 	//bi-directional many-to-one association to IrbaDProvincia
 	@ManyToOne
@@ -102,10 +88,6 @@ public class SigasAnagraficaSoggetti implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="fk_comune", nullable=false)
 	private SigasComune sigasComune;
-	
-	@Version
-	@Column(name="version", nullable=false)
-	private long version;
 	
 	
 	@Column(name="cf_piva", nullable=false)
@@ -240,39 +222,7 @@ public class SigasAnagraficaSoggetti implements Serializable {
 
 	public void setNote(String note) {
 		this.note = note;
-	}
-	
-	public String getInsUser() {
-		return insUser;
-	}
-
-	public void setInsUser(String insUser) {
-		this.insUser = insUser;
-	}
-
-	public Date getInsDate() {
-		return insDate;
-	}
-
-	public void setInsDate(Date insDate) {
-		this.insDate = insDate;
-	}
-
-	public Date getModDate() {
-		return modDate;
-	}
-
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-
-	public String getModUser() {
-		return modUser;
-	}
-
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
+	}	
 
 	public SigasProvincia getSigasProvincia() {
 		return sigasProvincia;
@@ -288,15 +238,7 @@ public class SigasAnagraficaSoggetti implements Serializable {
 
 	public void setSigasComune(SigasComune sigasComune) {
 		this.sigasComune = sigasComune;
-	}
-
-	public long getVersion() {
-		return version;
-	}
-
-	public void setVersion(long version) {
-		this.version = version;
-	}
+	}	
 
 	public String getCfPiva() {
 		return cfPiva;
@@ -304,8 +246,6 @@ public class SigasAnagraficaSoggetti implements Serializable {
 
 	public void setCfPiva(String cfPiva) {
 		this.cfPiva = cfPiva;
-	}
-	
-	
+	}	
 	
 }

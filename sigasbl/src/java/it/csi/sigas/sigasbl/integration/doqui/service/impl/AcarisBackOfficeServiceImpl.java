@@ -135,14 +135,8 @@ public class AcarisBackOfficeServiceImpl extends CommonManagementServiceImpl imp
 
 		} 
 		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {
-
-			log.error(method + ". acEx.getMessage() = " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+			
+			this.logAcarisException("AcarisBackOfficeServiceImpl",method,acEx.getMessage(),acEx.getFaultInfo());			
 
 			throw new IntegrationException("Impossibile recuperare repositoryId ", acEx);
 		} 
@@ -239,13 +233,8 @@ public class AcarisBackOfficeServiceImpl extends CommonManagementServiceImpl imp
 			}
 		}
 		catch (AcarisException acEx) {
-			log.error(method + ". Impossibile recuperare l'identificatore: " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+			this.logAcarisException("AcarisBackOfficeServiceImpl",method,acEx.getMessage(),acEx.getFaultInfo());
+			
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) {

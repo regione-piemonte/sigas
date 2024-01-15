@@ -4,13 +4,13 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.model.vo.home;
 
+import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.base.InsModBaseVO;
+
 import java.util.Date;
 import java.util.List;
 
-import it.csi.sigas.sigasbl.common.rest.VO;
-import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
-
-public class AnaComunicazioniVO implements VO {
+public class AnaComunicazioniVO extends InsModBaseVO {
 
 	private static final long serialVersionUID = 8629077478321324164L;
 
@@ -27,10 +27,6 @@ public class AnaComunicazioniVO implements VO {
 	private String nprotocollo;
 	private String rifArchivio;
 	private boolean allarmeOn;
-	private String insUser;
-	private Date insDate;
-	private Date modDate;
-	private String modUser;
 	private List<AllegatoVO> allegati;
 	private Date delDate;
 	private String delUser;
@@ -102,30 +98,6 @@ public class AnaComunicazioniVO implements VO {
 		this.allarmeOn = allarmeOn;
 	}
 	
-	public String getInsUser() {
-		return insUser;
-	}
-	public void setInsUser(String insUser) {
-		this.insUser = insUser;
-	}
-	public Date getInsDate() {
-		return insDate;
-	}
-	public void setInsDate(Date insDate) {
-		this.insDate = insDate;
-	}
-	public Date getModDate() {
-		return modDate;
-	}
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-	public String getModUser() {
-		return modUser;
-	}
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
 	public List<AllegatoVO> getAllegati() {
 		return allegati;
 	}

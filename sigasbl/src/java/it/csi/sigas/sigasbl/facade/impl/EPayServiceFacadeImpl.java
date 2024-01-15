@@ -3,18 +3,24 @@ package it.csi.sigas.sigasbl.facade.impl;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.security.MessageDigest;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 //import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
 
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 //import it.csi.sigas.sigasbl.common.config.EPayConfig;
 import it.csi.sigas.sigasbl.common.exception.RemoteWebServiceException;
@@ -47,81 +53,41 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
 	
 	@Autowired
 	private SigasCParametroRepository sigasCParametroRepository;
-
 	
-//	@Override
-//	public void afterPropertiesSet() throws Exception {
-//		Enti2EPaywsoService_ServiceLocator locator = new Enti2EPaywsoService_ServiceLocator();
-//		locator.setEnti2EPaywsoServiceSOAPEndpointAddress(config.getEpayServiceEndpointUrl());
-//		binding = (Enti2EPaywsoServiceSOAPStub) locator.getEnti2EPaywsoServiceSOAP();
-//		
-//		String uid = config.getEpay_service_endpoint_uid();
-//		String pwd = config.getEpay_service_endpoint_pwd();
-//		
-//		binding.setUsername(uid);
-//		binding.setPassword(pwd);
-//		binding.setTimeout(100000);
-//		
-//		//binding.setProperty(WsseClientHandler.PASSWORD_OPTION, WsseClientHandler.PASSWORD_DIGEST_WITH_NONCE);
-//		//binding.setClientHandlers(new WsseClientHandler(), null);
-//
-//		//System.out.print((String)binding.invoke(new Object[] {}));		
-//	}
+	public void init(Boolean wsSecurityOn) throws ServiceException {
 	
-	public void init() throws ServiceException {
-	
-	Enti2EPaywsoService_ServiceLocator locator = new Enti2EPaywsoService_ServiceLocator();
-	locator.setEnti2EPaywsoServiceSOAPEndpointAddress(sigasCParametroRepository.findByDescParametro("epay_service_endpoint_url").getValoreString());
-	binding = (Enti2EPaywsoServiceSOAPStub) locator.getEnti2EPaywsoServiceSOAP();
-	
-	String uid = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_uid").getValoreString();
-	String pwd = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_pwd").getValoreString();
-	
-	binding.setUsername(uid);
-	binding.setPassword(pwd);
-	binding.setTimeout(100000);
-	
-}
-
-	void addWsSecurityHeader(Enti2EPaywsoServiceSOAPStub binding, String wsUser,String wsPass) throws Exception {
-	    // Create the top-level WS-Security SOAP header XML name.
-	    QName headerName = new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security");
-	    SOAPHeaderElement header = new SOAPHeaderElement(headerName);
-	    //  no intermediate actors are involved.
-	    header.setActor(null);
-	    // not important, "wsse" is standard
-	    header.setPrefix("wsse");
-	    header.setMustUnderstand(true);
-
-	    // Add the UsernameToken element to the WS-Security header
-	    SOAPElement utElem = header.addChildElement("UsernameToken");
-	    SOAPElement userNameElem = utElem.addChildElement("Username");
-	    userNameElem.removeContents();
-	    userNameElem.setValue(wsUser);
-
-	    SOAPElement passwordElem = utElem.addChildElement("Password");
-	    passwordElem.setValue(wsPass);
-	    
-	    /*
-		<wsu:Timestamp wsu:Id="TS-829D150E6BC958F7DF16061230788228">
-			<wsu:Created>2020-11-23T09:17:58.822Z</wsu:Created>
-			<wsu:Expires>2020-11-24T13:04:38.822Z</wsu:Expires>
-		</wsu:Timestamp>
-	    */
-	    
-	    
-	    binding.setHeader(header);
-	}
-
-	@Override
-	public void inserisciListaDiCarico(InserisciListaDiCaricoRequest inserisciListaDiCaricoRequest) {
-		ResponseType response;
+		String urlService = null;
+		if(wsSecurityOn){
+			urlService = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_url_ws_security").getValoreString();
+		}else {
+			urlService = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_url").getValoreString();
+		}
+			
+		Enti2EPaywsoService_ServiceLocator locator = new Enti2EPaywsoService_ServiceLocator();
+		locator.setEnti2EPaywsoServiceSOAPEndpointAddress(urlService);
+		binding = (Enti2EPaywsoServiceSOAPStub) locator.getEnti2EPaywsoServiceSOAP();
 		
+		String uid = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_uid").getValoreString();
+		String pwd = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_pwd").getValoreString();
+		
+		binding.setUsername(uid);
+		binding.setPassword(pwd);
+		binding.setTimeout(100000);
+	
+	}	
+	
+	private void _inserisciListaDiCarico(InserisciListaDiCaricoRequest inserisciListaDiCaricoRequest, 
+										 Boolean wsSecurityOn, String wsUser, String wsPWD) {
+		ResponseType response;		
 		try {
 			if(binding==null) {
-				init();
+				init(wsSecurityOn);
+			}
+			if(wsSecurityOn) {
+				response = binding.inserisciListaDiCarico(inserisciListaDiCaricoRequest, wsUser, wsPWD);
+			}else {
+				response = binding.inserisciListaDiCarico(inserisciListaDiCaricoRequest);
 			}			
-			response = binding.inserisciListaDiCarico(inserisciListaDiCaricoRequest);
 		} catch (RemoteException e) {
 			throw new RemoteWebServiceException(EPayErrorCodes.PIEMONTE_PAY_LISTA_CARICO_NON_DISPONIBILE);
 		} catch (ServiceException e) {
@@ -148,8 +114,17 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
 			throw new RemoteWebServiceException(EPayErrorCodes.PIEMONTE_PAY_LISTA_CARICO_CON_ERRORI);
 		}
 	}
+
+	@Override
+	public void inserisciListaDiCarico(InserisciListaDiCaricoRequest inserisciListaDiCaricoRequest) {		
+		_inserisciListaDiCarico(inserisciListaDiCaricoRequest,false,null,null);		
+	}
 	
-	
+	//CR WS Security
+	@Override
+	public void inserisciListaDiCarico(InserisciListaDiCaricoRequest inserisciListaDiCaricoRequest,  String wsUser, String wsPWD) {
+		_inserisciListaDiCarico(inserisciListaDiCaricoRequest,true,wsUser,wsPWD);		
+	}	
 /*
 
 	@Value("${epay_service_redirect}")
@@ -165,6 +140,16 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
 	private String epay_service_endpoint_redirect_call_pass;
 
  */
+	public boolean checkPiemontePayServiceHealth(String url) {    	
+    	RestTemplate restTemplate = new RestTemplate();    	
+    	ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+    	logger.info("EPayServiceFacadeImpl.checkPiemontePayServiceHealth response: " + response.getBody());
+    	if(response.getBody().contains("risulta in manutenzione")) {
+    		return false; 
+    	}    	
+    	return true;   	
+    }
+	
 	public PaymentRedirectVO getPaymentRedirectInfo(String iuv, 
 													String identificativoPagamento, 
 													String codiceFiscale,
@@ -172,9 +157,7 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
 		String url = sigasCParametroRepository.findByDescParametro("epay_service_callback").getValoreString(); // epay_service_endpoint_url 
 				
 		String codiceChiamante = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_redirect_callid").getValoreString();
-		//String codVersamento = sigasCParametroRepository.findByDescParametro("epay_service_codice_versamento").getValoreString();
 		
-		// {passphrase} + "%%%%" + {codiceChiamante}+{identificativo_pagamento}+{iuv}+{url}+ "%%%%"
 		String digestStr = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_redirect_call_pass").getValoreString() + "%%%%" + 
 				codiceChiamante + 
 				identificativoPagamento + iuv + url + "%%%%";
@@ -185,6 +168,10 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
 		
 		String urlRedicetPpay = sigasCParametroRepository.findByDescParametro("epay_service_redirect").getValoreString();
     	logger.info("EPayServiceFacadeImpl.getPaymentRedirectInfo url: " + urlRedicetPpay + " digest: " + digestStr + " --> digested-base64: " + new String(base64digest));
+    	
+    	if(checkPiemontePayServiceHealth(urlRedicetPpay)) {
+    		defaultWaitMsg = "Attenzione l'applicazione risulta in manutenzione riprova tra qualche istante";
+		}
     	
 		PaymentRedirectVO payInfo = new PaymentRedirectVO();
 		payInfo.setDigest(new String(base64digest));

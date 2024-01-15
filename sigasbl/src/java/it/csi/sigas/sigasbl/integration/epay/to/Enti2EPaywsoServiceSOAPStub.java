@@ -7,11 +7,28 @@
 
 package it.csi.sigas.sigasbl.integration.epay.to;
 
+import java.rmi.RemoteException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+
+import org.apache.axis.message.SOAPHeaderElement;
+import org.apache.log4j.Logger;
+
+import it.csi.sigas.sigasbl.facade.impl.EPayServiceFacadeImpl;
+import it.csi.sigas.sigasbl.integration.doqui.utils.XmlSerializer;
+
 public class Enti2EPaywsoServiceSOAPStub extends org.apache.axis.client.Stub implements it.csi.sigas.sigasbl.integration.epay.to.Enti2EPaywsoService_PortType {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();
     private java.util.Vector cachedSerFactories = new java.util.Vector();
     private java.util.Vector cachedDeserFactories = new java.util.Vector();
+    
+    private static final Logger logger = Logger.getLogger(Enti2EPaywsoServiceSOAPStub.class);
 
     static org.apache.axis.description.OperationDesc [] _operations;
 
@@ -453,24 +470,31 @@ public class Enti2EPaywsoServiceSOAPStub extends org.apache.axis.client.Stub imp
             throw new org.apache.axis.AxisFault("Failure trying to get the Call object", _t);
         }
     }
+    
+    private org.apache.axis.client.Call setupCall() throws RemoteException{
+    	 org.apache.axis.client.Call _call = createCall();
+         _call.setOperation(_operations[0]);
+         _call.setUseSOAPAction(true);
+         _call.setSOAPActionURI("http://www.csi.it/epay/epaywso/service/InserisciListaDiCarico");
+         _call.setEncodingStyle(null);
+         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+         _call.setOperationName(new javax.xml.namespace.QName("", "InserisciListaDiCarico"));
+         
+         return _call;
+    }
 
     public it.csi.sigas.sigasbl.integration.epay.to.ResponseType inserisciListaDiCarico(it.csi.sigas.sigasbl.integration.epay.to.InserisciListaDiCaricoRequest parameters) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[0]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://www.csi.it/epay/epaywso/service/InserisciListaDiCarico");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("", "InserisciListaDiCarico"));
-
+        }        
+        org.apache.axis.client.Call _call = setupCall();
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {parameters});
+        try {
+        	
+        	java.lang.Object _resp = _call.invoke(new java.lang.Object[] {parameters});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -483,9 +507,72 @@ public class Enti2EPaywsoServiceSOAPStub extends org.apache.axis.client.Stub imp
                 return (it.csi.sigas.sigasbl.integration.epay.to.ResponseType) org.apache.axis.utils.JavaUtils.convert(_resp, it.csi.sigas.sigasbl.integration.epay.to.ResponseType.class);
             }
         }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-  throw axisFaultException;
-}
+	  } catch (org.apache.axis.AxisFault axisFaultException) {
+		  throw axisFaultException;
+	  }
+    }
+       
+    
+    public it.csi.sigas.sigasbl.integration.epay.to.ResponseType inserisciListaDiCarico(it.csi.sigas.sigasbl.integration.epay.to.InserisciListaDiCaricoRequest parameters, String wsUser, String wsPWD) throws java.rmi.RemoteException {
+    	if (super.cachedEndpoint == null) {
+    		throw new org.apache.axis.NoEndPointException();
+    	}    	
+    	
+    	org.apache.axis.client.Call _call = setupCall();
+    	
+    	// Create the top-level WS-Security SOAP header XML name.
+    	QName headerName = new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", "Security");
+    	SOAPHeaderElement header = new SOAPHeaderElement(headerName);
+    	header.setAttribute("xmlns:wsu", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");    	
+    	header.setActor(null);    	
+    	header.setPrefix("wsse");
+    	header.setMustUnderstand(true);
+
+    	// Add the UsernameToken element to the WS-Security header        
+    	SOAPElement utElem=null;
+    	SOAPElement userNameElem=null;
+    	SOAPElement passwordElem =null;
+    	try {
+    		SOAPElement timestamp = header.addChildElement("Timestamp","wsu","http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");	    	    
+    	    String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+            DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+            timestamp.addChildElement("Created","wsu").setValue(timeStampFormatter.format(ZonedDateTime.now().toInstant().atZone(ZoneId.of("UTC"))));
+            timestamp.addChildElement("Expires","wsu").setValue(timeStampFormatter.format(ZonedDateTime.now().plusSeconds(300).toInstant().atZone(ZoneId.of("UTC"))));
+    		
+    		utElem = header.addChildElement("UsernameToken");
+    		userNameElem = utElem.addChildElement("Username");
+    		userNameElem.removeContents();
+    		userNameElem.setValue(wsUser);
+    		
+    		passwordElem = utElem.addChildElement("Password");        
+    		passwordElem.setValue(wsPWD);    		
+    		
+    		_call.addHeader(header);
+    	} catch (SOAPException e) {
+    		// TODO Auto-generated catch block
+    		e.printStackTrace();
+    	}    	
+
+    	setRequestHeaders(_call);
+    	setAttachments(_call);
+    	 try {
+    		 	String martsxml = XmlSerializer.objectToXml(parameters);
+    		 	java.lang.Object _resp = _call.invoke(new java.lang.Object[] {parameters});    		 	
+    	
+    			if (_resp instanceof java.rmi.RemoteException) {
+    				throw (java.rmi.RemoteException)_resp;
+    			}
+    			else {
+    				extractAttachments(_call);
+    				try {
+    					return (it.csi.sigas.sigasbl.integration.epay.to.ResponseType) _resp;
+    				} catch (java.lang.Exception _exception) {
+    					return (it.csi.sigas.sigasbl.integration.epay.to.ResponseType) org.apache.axis.utils.JavaUtils.convert(_resp, it.csi.sigas.sigasbl.integration.epay.to.ResponseType.class);
+    				}
+    			}
+    	  } catch (org.apache.axis.AxisFault axisFaultException) {
+    	  throw axisFaultException;
+    	}
     }
 
     public it.csi.sigas.sigasbl.integration.epay.to.ResponseType aggiornaPosizioniDebitorie(it.csi.sigas.sigasbl.integration.epay.to.AggiornaPosizioniDebitorieRequest parameters) throws java.rmi.RemoteException {

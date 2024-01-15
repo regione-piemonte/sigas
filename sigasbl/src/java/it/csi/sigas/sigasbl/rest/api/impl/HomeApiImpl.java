@@ -58,6 +58,7 @@ import it.csi.sigas.sigasbl.request.home.ConfermaPagamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.DownloadAccertamentiReport;
+import it.csi.sigas.sigasbl.request.home.DownloadDettaglioSoggettoReport;
 import it.csi.sigas.sigasbl.request.home.DownloadDocumentazioneReport;
 import it.csi.sigas.sigasbl.request.home.DownloadReport;
 import it.csi.sigas.sigasbl.request.home.DownloadSoggettiReport;
@@ -65,7 +66,9 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
+import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
 import it.csi.sigas.sigasbl.request.home.ValidazioneRequest;
 import it.csi.sigas.sigasbl.rest.api.IHomeApi;
 import it.csi.sigas.sigasbl.security.UserDetails;
@@ -229,7 +232,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 	}
 	
 	@Override
-	public Response salvaSoggetto(DownloadReport downloadReport) {
+	public Response salvaSoggetto(DownloadDettaglioSoggettoReport downloadReport) {
 		logger.info("START: salvaSoggetto : " + " downloadReport : " + downloadReport);
 		
 		byte[] file = this.exportDispatcher.salvaSoggetto(downloadReport);
@@ -335,7 +338,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 		
     	logger.info("END: updateConsumi");
         return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
-	}
+	}	
 	
 	@Override
 	public Response updateCompensazioneConsumi(ConfermaConsumiRequest confermaConsumiRequest, String user) {
@@ -634,7 +637,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 
 		ConsumiPrVO ricercaConsumiPerProvinceList = this.homeDispatcher.ricercaConsumiPerProvinceAndAnnualita(idAnag,anno,prov);
     	logger.info("END: ricercaConsumiPerProvinceAndAnnualita");
-		return Response.ok(new ResponseVO<ConsumiPrVO>(Esito.SUCCESS, ricercaConsumiPerProvinceList)).build();
+		return Response.ok(new ResponseVO<ConsumiPrVO>(Esito.SUCCESS, ricercaConsumiPerProvinceList)).build();	
 	}
 	
 	@Override
@@ -705,6 +708,17 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 		
 	}
 	
+	@Override
+	public Response updateAllarmeAccertamento(UpdateAllarmeAccertamentoRequest UpdateAllarmeAccertamentoRequest) {
+		logger.info("START: updateAllarmeAccertamento");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+		this.homeDispatcher.updateAllarmeAccertamento(UpdateAllarmeAccertamentoRequest, utente.getUsername());
+		logger.info("END: updateAllarmeAccertamento");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();		
+	}
+	
 	
 	@Override
     public Response eliminaConciliazione(ConfermaPagamentoRequest confermaPagamentoRequest) {
@@ -739,5 +753,19 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 	    public Response deleteDocumento(Long idDocumento) {
 	        logger.info("START: deleteDocumento");
 	        return Response.ok().entity(this.homeDispatcher.deleteDocumento(idDocumento)).build();
-	    }
+	}
+	 
+	@Override
+	public Response salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest) {
+		logger.info("START: salvaCompensazione");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+	   	
+		Boolean output = this.homeDispatcher.salvaCompensazione(salvaCompensazioneRequest, utente.getIdentita().getCodFiscale());
+		
+    	logger.info("END: salvaCompensazione");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
+	
 }

@@ -18,19 +18,15 @@ import it.doqui.acta.actasrv.dto.acaris.type.management.VitalRecordCodeType;
 @Service
 public class AcarisManagementServiceImpl extends CommonManagementServiceImpl implements AcarisManagementService
 {
-	
-//	public static final String LOGGER_PREFIX = DoquiConstants.LOGGER_PREFIX + ".integration";	    
-//	private static Logger log = Logger.getLogger(LOGGER_PREFIX);
+
 	private static Logger log = Logger.getLogger(AcarisManagementServiceImpl.class);
 
 	private ManagementServicePort managementService;
 
 	@Autowired
 	private DoquiServiceFactory acarisServiceFactory;
-	
-	
-	
-	private String pdFile;
+		
+	//private String pdFile;
 		
 	private ManagementServicePort getManagementService(boolean forceLoading) throws Exception{
 		String method = "getManagementService";
@@ -49,7 +45,7 @@ public class AcarisManagementServiceImpl extends CommonManagementServiceImpl imp
 	private ManagementServicePort getManagementService() throws Exception{
 		return getManagementService(false);
 	}
-	
+	/*
 	public String getPdFile() 
 	{
 		return pdFile;
@@ -59,6 +55,7 @@ public class AcarisManagementServiceImpl extends CommonManagementServiceImpl imp
 	{
 		this.pdFile = pdFile;
 	}
+	*/
 	
 	public void init(){
 		String method = "init";
@@ -86,7 +83,7 @@ public class AcarisManagementServiceImpl extends CommonManagementServiceImpl imp
 	public VitalRecordCodeType[] recuperaVitalRecordCode(it.doqui.acta.actasrv.dto.acaris.type.common.ObjectIdType repositoryId) throws IntegrationException {
 		String method = "recuperaVitalRecordCode";
 		VitalRecordCodeType[] elencoVitalRecordCodeType = null;
-		try {
+		try {		
 			
 			elencoVitalRecordCodeType = getManagementService().getVitalRecordCode(repositoryId);
 			if(elencoVitalRecordCodeType == null){
@@ -96,14 +93,8 @@ public class AcarisManagementServiceImpl extends CommonManagementServiceImpl imp
 				log.debug(method + ". elencoVitalRecordCodeType\n " + XmlSerializer.objectToXml(elencoVitalRecordCodeType));	
 			}	
 		} 
-		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {
-			log.error(method + ". Impossibile recuperare recuperaVitalRecordCode: " + acEx.getMessage());
-			log.error(method + ". acEx.getFaultInfo().getErrorCode() =  " + acEx.getFaultInfo().getErrorCode());
-			log.error(method + ". acEx.getFaultInfo().getPropertyName() = " + acEx.getFaultInfo().getPropertyName());
-			log.error(method + ". acEx.getFaultInfo().getObjectId() = " + acEx.getFaultInfo().getObjectId());
-			log.error(method + ". acEx.getFaultInfo().getExceptionType() = " + acEx.getFaultInfo().getExceptionType());
-			log.error(method + ". acEx.getFaultInfo().getClassName() = " + acEx.getFaultInfo().getClassName());
-			log.error(method + ". acEx.getFaultInfo().getTechnicalInfo = " + acEx.getFaultInfo().getTechnicalInfo());
+		catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) {			
+			this.logAcarisException("AcarisManagementServiceImpl",method,acEx.getMessage(),acEx.getFaultInfo());
 			throw new IntegrationException("AcarisException ", acEx);
 		} 
 		catch (Exception e) {

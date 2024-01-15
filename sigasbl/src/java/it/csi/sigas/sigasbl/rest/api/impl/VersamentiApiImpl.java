@@ -21,6 +21,7 @@ import it.csi.sigas.sigasbl.dispatcher.IExportDispatcher;
 import it.csi.sigas.sigasbl.dispatcher.IVersamentiDispatcher;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.AnnualitaVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
@@ -52,16 +53,29 @@ public class VersamentiApiImpl extends SpringSupportedResource implements IVersa
 	
 	
 	/*Versamenti per soggetto*/
+	@Override
+	public Response annualitaVersamentiPerRicerca(Long id) {
+		logger.info("START: ricercaAnnualitaVersamenti");
+	   	
+    	List<String> ricercaAnnualitaVersList = this.versamentiDispatcher.annualitaVersamentiPerRicerca(id);
+    	
+		
+    	logger.info("END: ricercaAnnualitaVersamenti");
+        return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, ricercaAnnualitaVersList)).build();
+    	
+	}
 	
 	@Override
     public Response ricercaAnnualitaVersamenti(Long idAnag) {
     	
     	logger.info("START: ricercaAnnualitaVersamenti");
    	
-    	List<String> ricercaAnnualitaVersList = this.versamentiDispatcher.ricercaAnnualitaVersamenti(idAnag);
+    	//List<String> ricercaAnnualitaVersList = this.versamentiDispatcher.ricercaAnnualitaVersamenti(idAnag);
+    	AnnualitaVersamentiVO annualitaVersamentiVO = this.versamentiDispatcher.ricercaAnnualitaVersamenti(idAnag);
 		
     	logger.info("END: ricercaAnnualitaVersamenti");
-        return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, ricercaAnnualitaVersList)).build();
+        //return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, ricercaAnnualitaVersList)).build();
+    	return Response.ok(new ResponseVO<AnnualitaVersamentiVO>(Esito.SUCCESS, annualitaVersamentiVO)).build();
     }
 
 	@Override
@@ -181,7 +195,5 @@ public class VersamentiApiImpl extends SpringSupportedResource implements IVersa
 		
     	return Response.ok().entity(file).build();
 	}
-	
-
 	
 }

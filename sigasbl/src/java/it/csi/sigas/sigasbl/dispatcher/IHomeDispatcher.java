@@ -35,7 +35,9 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
+import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
 
 
 public interface IHomeDispatcher {
@@ -160,6 +162,9 @@ public interface IHomeDispatcher {
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	void updateAccertamento(List<ConfermaVersamentoRequest> confermaVersamentoRequest, String utente);
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	void updateAllarmeAccertamento(UpdateAllarmeAccertamentoRequest updateAllarmeAccertamentoRequest, String utente);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<VersamentiPrVO> listaAccertamentiAnagrafica(Long idAnag, String anno, String provincia);
@@ -175,5 +180,8 @@ public interface IHomeDispatcher {
 	
     @PreAuthorize(value = AuthorizationRoles.HOME)
     boolean deleteDocumento(Long idDocumento);
+    
+    @PreAuthorize(value = AuthorizationRoles.HOME)
+    public boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user);
 
 }

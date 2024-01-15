@@ -33,7 +33,9 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
+import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
 
 public interface IHomeService {
 
@@ -111,6 +113,8 @@ public interface IHomeService {
 	List<VersamentiPrVO> ricercaAccertamentiPerAnagrafica(Long id, String anno, String provincia);
 	
 	void updateAccertamento(List<ConfermaVersamentoRequest> listaAccertamenti, String utente);
+	
+	void updateAllarmeAccertamento(UpdateAllarmeAccertamentoRequest updateAllarmeAccertamentoRequest, String utente);
 
 	RimborsoVO ricercaRimborso(long idRimborso);
 
@@ -132,5 +136,6 @@ public interface IHomeService {
 
 	boolean deleteDocumento(Long idDocumento);
 	
+	boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user);
 	
 }

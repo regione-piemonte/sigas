@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import it.csi.sigas.sigasbl.dispatcher.IVersamentiDispatcher;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.home.AnnualitaVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.PagamentiVersamentiVO;
 import it.csi.sigas.sigasbl.model.vo.home.TipoVersamentoVO;
 import it.csi.sigas.sigasbl.model.vo.home.VersamentiPrVO;
@@ -28,7 +29,12 @@ public class VersamentiDispatcherImpl implements IVersamentiDispatcher {
 	private IVersamentiService versamentiService;
 	
 	@Override
-	public List<String> ricercaAnnualitaVersamenti(Long id) {
+	public List<String> annualitaVersamentiPerRicerca(Long id) {
+		return versamentiService.annualitaVersamentiPerRicerca(id);
+	}
+	
+	@Override
+	public AnnualitaVersamentiVO ricercaAnnualitaVersamenti(Long id) {
 		return versamentiService.ricercaAnnualitaVersamenti(id);
 	}
 

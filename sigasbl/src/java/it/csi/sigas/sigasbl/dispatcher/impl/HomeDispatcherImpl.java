@@ -36,7 +36,9 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
+import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
 import it.csi.sigas.sigasbl.service.IHomeService;
 
 @Component
@@ -246,6 +248,11 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 		HomeService.updateAccertamento(listaAccertamentiDaSalvare,utente);
 	}
 	
+	@Override
+	public void updateAllarmeAccertamento(UpdateAllarmeAccertamentoRequest updateAllarmeAccertamentoRequest, String utente) {
+		HomeService.updateAllarmeAccertamento(updateAllarmeAccertamentoRequest,utente);
+	}
+	
 	
 	@Override 
 	public OrdinativiIncassoVO conciliaPagamento(ConfermaPagamentoRequest confermaPagamentoRequest, String user) {
@@ -276,7 +283,10 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	@Override
 	public boolean deleteDocumento(Long idDocumento) {
 		return HomeService.deleteDocumento(idDocumento);
+	}	
+	
+	@Override
+	public boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user) {
+		return HomeService.salvaCompensazione(salvaCompensazioneRequest, user);
 	}
-	
-	
 }

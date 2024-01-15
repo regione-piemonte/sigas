@@ -204,9 +204,7 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 				sigasUtentiRepository.save(sigasUtenti);
 			}
 			
-		}
-		 
-		
+		}	
 		
 		
 		if(ACCETTATA.equalsIgnoreCase(confermaPraticaAccreditamentoRequest.getStato()) ){
@@ -217,17 +215,7 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 			sigasAnagraficaUtente.setIdUtenteProvv(BigDecimal.valueOf(utenteProvvisorio.getIdUtenteProvv()) );
 			SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByCodiceAzienda(sigasDichiarante.getCodiceAzienda());
 			if(sigasAnagraficaSoggetti!=null) {
-				sigasAnagraficaUtente.setIdAnag(Long.valueOf((sigasAnagraficaSoggetti.getIdAnag())).intValue());
-				
-	//			sigasAnagraficaSoggetti.setEmail(sigasDichiarante.getEmailDichiarante());
-	//			sigasAnagraficaSoggetti.setPec(sigasDichiarante.getPecDichiarante());
-	//			sigasAnagraficaSoggetti.setTelefono(sigasDichiarante.getTelefonoDichiarante());
-	//			
-	//			sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggetti);
-	//			
-	//			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - updateSoggetto", "sigas_anagrafica_soggetti",String.valueOf(sigasAnagraficaSoggetti.getIdAnag()) );
-	//			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-	//					csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
+				sigasAnagraficaUtente.setIdAnag(Long.valueOf((sigasAnagraficaSoggetti.getIdAnag())).intValue());	
 			}else {
 				SigasAnagraficaSoggetti sigasAnagraficaSoggettiInsert = new SigasAnagraficaSoggetti();
 				sigasAnagraficaSoggettiInsert.setCodiceAzienda(sigasDichiarante.getCodiceAzienda());
@@ -384,7 +372,10 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 			
 			return null;
 		}
-
+		
+		/* OLD CODE
+		 * 
+		 
 		@Override
 		@Transactional
 		public SigasDichiarante confermaDichiarante(DichiaranteVO dichiarante) { 
@@ -416,6 +407,23 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 
 			return dichiaranteEntity;
 
+		}
+		*/
+		
+		
+		@Override
+		@Transactional
+		public SigasDichiarante confermaDichiarante(DichiaranteVO dichiarante) {
+			if (dichiarante == null) {
+				throw new BadRequestException("Dati del dichiarante e/o del utente vuoti. Per favore valorizzare i campi richiesti", ErrorCodes.FIELD_IS_NULL_OR_EMPTY);
+			}
+			
+			SigasDichiarante dichiaranteEntity = null;			
+			dichiaranteEntity = dichiaranteAccreditamentoEntityMapper.mapVOtoEntity(dichiarante);
+			dichiaranteEntity.setDataInsert(new Timestamp(new Date().getTime()));			
+			dichiaranteEntity = sigasDichiaranteRepository.save(dichiaranteEntity);		
+
+			return dichiaranteEntity;
 		}
 
 		

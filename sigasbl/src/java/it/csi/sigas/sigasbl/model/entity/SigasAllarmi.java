@@ -34,7 +34,8 @@ public class SigasAllarmi implements Serializable {
 	@Column(name="id_allarme", unique=true, nullable=false)
 	private Integer idAllarme;
 	
-	@ManyToOne(cascade = {CascadeType.ALL})
+	//@ManyToOne(cascade = {CascadeType.ALL})
+	@ManyToOne()
 	@JoinColumn(name="id_consumi")
 	private SigasDichConsumi sigasDichConsumi;
 	

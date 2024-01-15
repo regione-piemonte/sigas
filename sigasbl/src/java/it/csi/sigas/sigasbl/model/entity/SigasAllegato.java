@@ -32,9 +32,6 @@ public class SigasAllegato implements Serializable {
 
 	private String descrizione;
 
-
-
-
 	@Column(name="id_index")
 	private String idIndex;
 
@@ -54,10 +51,6 @@ public class SigasAllegato implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="id_allegato_documento")
 	private SigasDocumenti sigasDocumenti;
-	
-//	@ManyToOne
-//	@JoinColumn(name="id_allegato_documento")
-//	private Integer idAllegatoDocumento;
 
 	//bi-directional many-to-one association to SigasStatoArchiviazione
 	@ManyToOne
@@ -91,8 +84,6 @@ public class SigasAllegato implements Serializable {
 		this.descrizione = descrizione;
 	}
 
-
-
 	public String getIdIndex() {
 		return this.idIndex;
 	}
@@ -100,7 +91,8 @@ public class SigasAllegato implements Serializable {
 	public void setIdIndex(String idIndex) {
 		this.idIndex = idIndex;
 	}
-
+	
+	
 	public Timestamp getInsDate() {
 		return this.insDate;
 	}
@@ -115,7 +107,7 @@ public class SigasAllegato implements Serializable {
 
 	public void setInsUser(String insUser) {
 		this.insUser = insUser;
-	}
+	}	
 
 	public String getNomeFile() {
 		return this.nomeFile;
@@ -131,9 +123,7 @@ public class SigasAllegato implements Serializable {
 
 	public void setNumeroProtocollo(String numeroProtocollo) {
 		this.numeroProtocollo = numeroProtocollo;
-	}
-
-	
+	}	
 
 	public SigasDocumenti getSigasDocumenti() {
 		return sigasDocumenti;
