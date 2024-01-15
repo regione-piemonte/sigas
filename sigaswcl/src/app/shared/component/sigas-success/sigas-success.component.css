@@ -1,10 +1,17 @@
 
+   /*
+   Sezione dispositiva
+   */
    img {
      width: 30%;
      display: block;
      margin:0 auto;
    }
-  
+
+   
+   /*
+   Testo
+   */  
    h3 {
     font-family: verdana, arial, sans-serif;
     font-size: 20px;

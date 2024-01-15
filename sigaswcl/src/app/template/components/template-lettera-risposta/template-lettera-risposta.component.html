@@ -1,10 +1,12 @@
+<!--  MAIN CONTAINER -->
 <div>
     <!-- INTESTAZIONE LETTERA - COSTANTI -->
     <shared-template-intestazione (formValid)="setFormIntestazioneValid($event)"
                                   [datiCompilati]="datiCompilati"
                                   [datiTemplate]="data">
     </shared-template-intestazione>
-
+     <!--FINE INTESTAZIONE LETTERA - COSTANTI -->
+     <!-- Form inserimento Dati -->
     <form #formTemplate="ngForm">
 
         <!-- DENOMINAZIONE - INDIRIZZO - PROVINCIA -->
@@ -21,6 +23,7 @@
                        style="display: inline-block; width: 40%"
                        type="text">
             </div>
+            <!--Fine DENOMINAZIONE-->
 
             <div>
                 <!-- INDIRIZZO -->
@@ -36,10 +39,13 @@
                            style="display: inline-block; width: 40%"
                            type="text">
                 </div>
+                <!-- fine Indirizzo -->
 
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-15">
                     <div>
                         <div>
+
+                            <!-- Gestione anteprima / stampa -->
                 <span *ngIf="isAnteprima || isStampa"
                       class="form-control-view">{{datiCompilati.capComuneProvinvcia}}</span>
                             <input *ngIf="!isAnteprima && !isStampa"
@@ -50,8 +56,10 @@
                                    name="capComuneProvinvcia" required
                                    style="display: inline-block; width: 40%" type="text">
                         </div>
+                        <!-- fine Gestione  anteprima / stampa -->
                     </div>
                 </div>
+                <!-- fine  -->
             </div>
 
 
@@ -72,6 +80,7 @@
                        type="text">
             </div>
         </div>
+        <!-- fine OGGETTO -->
 
         <!-- DESCRIZIONE -->
         <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -82,6 +91,8 @@
                     {{datiCompilati.descrizione}}
                 </textarea>
 
+
+                <!-- Gestione anteprima / stampa -->
                 <textarea *ngIf="!isAnteprima && !isStampa" [(ngModel)]="datiCompilati.descrizione"
                           class="form-control"
                           id="legge"
@@ -91,24 +102,28 @@
                 </textarea>
             </div>
         </div>
+        <!-- FINE DESCRIZIONE -->
 
         <!-- FOOTER LETTERA RISPOSTA -->
         <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-15">
                 Cordiali saluti.
             </div>
-
+            <!-- DIRIGENTE -->
             <div class="col-xs-11 col-sm-11 col-md-11 col-lg-11 text-right padding-top-25">
                 Il Dirigente del Settore
             </div>
-
+             <!-- DATI DIRIGENTE -->
             <div class="col-xs-11 col-sm-11 col-md-11 col-lg-11 text-right">
                 {{data.nomeDirigente}} {{data.cognomeDirigente}}
             </div>
 
+            <!-- Gestione Firma omessa -->
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-right small-font">
                 (firma omessa ai sensi dell'art. 1, comma 87, della legge 549/1995)
             </div>
         </div>
     </form>
+    <!--End Form inserimento Dati -->
 </div>
+<!-- End main -->

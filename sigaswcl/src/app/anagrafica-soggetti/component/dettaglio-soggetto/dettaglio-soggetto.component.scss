@@ -1,5 +1,7 @@
+/*Import di classe*/
 @import '../../../color.scss';
 
+/*Selettori*/
 .col-value {
     padding-top: 8px;
 }
@@ -14,19 +16,26 @@
     resize: none;
 }
 
+/*Bottoni*/
 .btn-secondary{
     color: #fff !important;
 }
 
+.nav-link-color{
+    color: #06489f;
+}
 .btn-secondary.focus, .btn-secondary:focus,
 .btn-secondary.active, .btn-secondary:active {
     background:#5a6268;
 }
+/*Bottoni FINE*/
 
+//Margine superiore
 .margin-top-toggle {
     margin-top: -4px;
 }
 
+//Margine inferiore
 .margin-bottom-toggle {
     margin-bottom: 4px;
 }
@@ -35,15 +44,27 @@
     width: 47% !important;
 }
 
+//Badge
 .badge {
     min-width: 45px;
     padding-top: 5px;
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .col-form-label {
     min-width: 75px;
 }
+
+/*Gestione H1*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
+ }
+
+  /*Gestione H4*/
+  .h3-font {
+    margin-top: 2px;
+    font-size: 1.1em; /* 40px/16=2.5em */
+  }

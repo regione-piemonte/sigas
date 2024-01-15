@@ -1,31 +1,38 @@
+<!-- DIV PRINCIPALE -->
 <div>
+    <!-- ALERT ACCERTAMENTO -->
     <sigas-alert [message]="'Inserire la Data dell\' Accertamento e premere il pulsante Calcola accertamento
      per calcolare gli interessi maturati e le sanzioni. Se si vuole procedere con la 
      registrazione dell\' Accertamento per il Soggetto, una volta calcolati gli importi,premere il 
      pulsante Salva Accertamento'" *ngIf="!showSuccess && !errorDateEmpy && !showError"  [type]="'INFO'">
    </sigas-alert>
-
+    <!--END ALERT ACCERTAMENTO -->
+    <!-- ALERT DATA -->
    <sigas-alert 
    [message]="'Inserire una data valida'" 
    *ngIf="errorDateEmpy"  [type]="'DANGER'">
   </sigas-alert>
-
+  <!-- END ALERT DATA -->
+   <!-- CHECK DATA -->
    <sigas-alert 
    [message]="'La data dell\' accertamento deve essere maggiore di tutte le date di scandenza dei versamenti selezionati '" 
    *ngIf="showError"  [type]="'DANGER'">
   </sigas-alert>
+   <!--END CHECK DATA -->
 
    <sigas-alert [message]="messageSuccess" *ngIf="showSuccess" [type]="'SUCCESS'"></sigas-alert>
+   <!-- CARD BODY CONTAINER -->
   <div class="card-body container">
     <div class="form-group col-lg-12 text-center">
-      <h3 class="title">Calcolo Accertamento</h3>
+      <h1 class="title">Calcolo Accertamento</h1>
     </div>
+    <!-- FORM DATI -->
     <div clas="form-group row padding-search">
         <div class="form-group row padding-search">
             <!--anno-->
             <div class="form-group col-lg-10">
                 <div class="row">
-                    <label for="anno" class="col-lg-3 col-form-label" id="dataAccertamento">Data Accertamento:</label>
+                    <label id="lblDataAccertamento" for="dataAccertamento" class="col-lg-3 col-form-label">Data Accertamento:</label>
                     <div class="col-lg-3">
                     <!-- 
                           <input type="date" class="form-control " required name="dataAccertamento" id="dataAccertamento" value="dataAccertamento" [ngModel]="dataAccertamento" #data/>
@@ -33,7 +40,7 @@
                           <div class="input-group">
                                                     
                                                             
-                                                          <input #dataAccert="ngbDatepicker"
+                                                <input #dataAccert="ngbDatepicker"
 				                                               (click)="dataAccert.toggle()"
 				                                               [(ngModel)]="dataAccertamento"
 				                                               [footerTemplate]="footerTemplateDataAccert"
@@ -41,14 +48,17 @@
 				                                               class="form-control"
 				                                               name="dataAccertamento"
 				                                               id="dataAccertamento"
+                                                       aria-labelledby="lblDataAccertamento"
 				                                               ngbDatepicker
 				                                               placeholder="gg/mm/aaaa"
 				                                               readonly>
 				                                        <ng-template #footerTemplateDataAccert>
 				                                            <hr class="my-0">
+                                                            <!-- BUTTON PULISCI -->
 				                                            <button (click)="dataAccertamento = null; dataAccert.close();"
 				                                                    class="btn btn-primary btn-sm m-2 float-left">Pulisci
 				                                            </button>
+                                                            <!-- BUTTON CLOSE -->
 				                                            <button (click)="dataAccert.close()"
 				                                                    class="btn btn-secondary btn-sm m-2 float-right">Chiudi
 				                                            </button>
@@ -56,14 +66,21 @@
 				                                        <div class="input-group-append">
 				                                            <button (click)="dataAccert.toggle()" class="btn btn-outline-secondary calendar"
 				                                                    type="button">
-				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" 
+                                                              aria-hidden="true" focusable="false" data-prefix="far" 
+                                                              data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" 
+                                                              viewBox="0 0 448 512" data-fa-i2svg="">
+                                                              <title>Calendar</title>
+                                                              <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path>
+                                                        </svg>
 				                                                <!--<i class="far fa-calendar-alt"></i>-->
 				                                            </button>
 				                                        </div>  
                                                     </div>
                     </div>
                     <div class="btn-group">
-                          <button class="form-control  btn btn-primary margin-icon" (click)="calcolaAccertamenti(dataAccert.value)"> 
+                        <!-- BUTTON CALCOLA ACCERTAMENTI -->
+                          <button class="form-control  btn btn-primary margin-icon" (click)="calcolaAccertamenti(dataAccertamento)"> 
                               <i class="fas fa-check"></i> calcola Accertmento 
                           </button>
                   </div> 
@@ -74,6 +91,7 @@
             <div class="form-group row col-lg-12">
                 <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12"></div>
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 text-center">
+                    <!-- BUTTON INDIETRO -->
                     <div class="btn-group">
                         <a class="btn btn-default" (click)="goBack()" role="button">
                             <i class="fa fa-angle-left"></i>
@@ -98,30 +116,37 @@
                         <th>Totale Complessivo</th> 
                     </tr>
                   </thead>
+                  <!-- CICLO FOR SU ACCERTAMENTI -->
                   <tbody *ngFor="let el of accertamenti; let i = index">
                     <tr>
+                        <!-- DATA SCADENZA -->
                         <td>{{ el.dataVersamento  | date: 'dd/MM/yyyy' }}</td>
+                        <!-- IMPORTO -->
                         <td>{{ el.importo | currency:'EUR':'symbol' }}</td>
+                        <!-- INTERESSI -->
                         <td>{{el.interessi| currency:'EUR':'symbol'}}</td>
+                        <!-- MORA -->
                         <td>{{el.interessiMora | currency:'EUR':'symbol'}}</td>
+                        <!-- SANZIONI -->
                         <td>{{el.sanzioni | currency:'EUR':'symbol'}}</td>
+                        <!-- TOTALE COMPLESSIVO -->
                         <td>{{el.importoComplessivo | currency:'EUR':'symbol'}}</td>
                     </tr>
                   </tbody>
                 </table>
                 <div class="row" style="margin-top:3%">
                     <span class="col-lg-4"></span>
-                        <label class="col-lg-3 col-form-label">Importo Totale Accertamento</label>
+                        <label id="lblImportoTotaleAccertamento" for="importoTotaleAccertamento" class="col-lg-3 col-form-label">Importo Totale Accertamento</label>
                         <div class="col-lg-3">
-                            <input class="form-control" type="number" required disabled class="form-control" placeholder="{{totaleAccertamenti | currency:'EUR':'symbol'}}" /> 
+                            <input class="form-control" id="importoTotaleAccertamento" aria-labelledby="lblImportoTotaleAccertamento" type="number" required disabled class="form-control" placeholder="{{totaleAccertamenti | currency:'EUR':'symbol'}}" /> 
                         </div>
                 </div>
 
                 <div class="row" style="margin-top:3%">
                   <span class="col-lg-4"></span>
-                      <label class="col-lg-3 col-form-label">Note</label>
+                      <label id="lblNoteAccertamento" for="noteAccertamento" class="col-lg-3 col-form-label">Note</label>
                       <div class="col-lg-3">
-                          <textarea  class="form-control"   class="form-control" [ngModel]="note" > </textarea>
+                          <textarea id="noteAccertamento" aria-labelledby="lblNoteAccertamento" class="form-control"   class="form-control" [ngModel]="note" > </textarea>
                       </div>
               </div>
 
@@ -146,21 +171,28 @@
           </div>
         </div>
     </div>
+    <!--END FORM DATI -->
   </div>
+  <!--END CARD BODY CONTAINER -->
 </div>
+<!--FINE DIV PRINCIPALE -->
+<!-- FORM VISUALIZA ACCERTAMENTI -->
 <div class="form-group col-lg-10">
   <div class="row" *ngIf="showAccertementiCalcolati">
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
                 
           <div class="btn-group">
+            <!-- BUTTON INDIETRO -->
               <a class="btn btn-default margin-icon btn-standard" (click)="goBack()" role="button">
                   <i class="fa fa-angle-left"></i>
                   indietro</a>
+                  <!-- BUTON SALVA -->
               <button type="button" class="btn btn-primary margin-icon" (click)="onSaveAccertamento()">
                   <i class="fas fa-check"></i> Salva Accertamento </button>
+                  <!-- BUTTON SALVA PRESTAMPATO -->
                 <button type="button" *ngIf="!loaderExcel"  class="btn btn-warning margin-icon" (click)="salvaPrestampato()">
                   <i class="fas fa-check"></i> Salva prestampato determina </button>
-                <a *ngIf="loaderExcel" class="btn btn-success pointer excel margin-icon">
+                <a *ngIf="loaderExcel" class="btn btn-success btn-excel pointer excel margin-icon">
                     <sigas-spinner-form [diameter]="20"></sigas-spinner-form>
                 </a>
           </div>

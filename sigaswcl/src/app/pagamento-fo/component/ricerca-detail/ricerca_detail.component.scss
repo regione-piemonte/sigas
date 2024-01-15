@@ -1,5 +1,7 @@
+//import di sistema
 @import '../../../color.scss';
 
+//Sezione dispositiva
 .detailCell {
     border-bottom:1pt solid grey;
     padding-left: 50px;
@@ -7,6 +9,7 @@
     padding-bottom: 10px;    
 }
 
+//Pay
 .payLabel {
     text-align: center;
     margin-top: 40px;
@@ -15,18 +18,37 @@
     font-size: 20px;
 }
 
-.subjectLabel {
-    text-align: center; margin-bottom: 10px;;
-}
-
 .payDiv {
     margin-left: 20%;
     margin-bottom: 20px;
 }
+//-----------------------
 
+//Label
+.subjectLabel {
+    text-align: center; margin-bottom: 10px;;
+}
+
+//Lable totale
 .totalLabel {
     text-align: right;
     color: black;
     font-weight: bold;
     margin-right: 50px;
+}
+
+//Pulsante excel
+.btn-excel {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+  }
+
+/*Gestione H1 font*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
+}
+
+/*Gestione H2 font*/
+.h2-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

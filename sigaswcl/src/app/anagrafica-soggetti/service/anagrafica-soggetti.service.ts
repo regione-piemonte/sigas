@@ -8,6 +8,7 @@ import { RicercaVersamentiRequest } from '../../commons/request/ricerca-versamen
 import { LoggerService } from '../../core/services/logger.service';
 import { DownloadReport } from '../../commons/request/download-Report-request';
 import { DownloadVersamentiReport } from '../../commons/request/download-Versamenti-Report-request';
+import { ItemVersamentiReport } from '../../commons/request/ItemVersamentiReport';
 import { DownloadAccertamentiReport } from '../../commons/request/download-Accertamenti-Report-request';
 import { DownloadSoggettiReport } from '../../commons/request/download-Soggetti-Report-request';
 import { DownloadComunicazioneReport } from '../../commons/request/download-Comunicazione-Report-request';
@@ -30,7 +31,7 @@ import { ProvinceVO } from '../../commons/vo/luoghi-vo/province-vo';
 import { TipoVersamentiVO } from '../../commons/vo/tipo-versamenti-vo';
 import { VersamentiPrVO } from '../../commons/vo/versamenti-pr-vo';
 import { AllarmiSoggettoVO } from '../../commons/vo/allarmi-soggetto-vo';
-import { Observable } from 'rxjs';
+import { Observable, Subject  } from 'rxjs';
 import { AnaComunicazioniVO } from '../../commons/vo/ana-comunicazioni-vo';
 import { TipoComunicazioniVO } from '../../commons/vo/tipo-comunicazioni-vo';
 import { ConfermaAnaComunicazioniRequest } from '../../commons/request/conferma-anaComunicazioni-request';
@@ -38,6 +39,11 @@ import { RimborsoVO } from '../../commons/vo/rimborso-vo';
 import { RicercaAnaComunicazioniRequest } from '../../commons/request/ricerca-anaComunicazioni-request';
 import { AllarmeDocumentoRequest } from '../../commons/request/allarme-documento-request';
 import { MessaggiVO } from '../../commons/vo/messaggi-vo';
+import { DownloadDettaglioSoggettoReport } from 'src/app/commons/request/DownloadDettaglioSoggettoReport-request';
+import { UpdateAllarmeAccertamentoRequest } from 'src/app/commons/request/update-allarme-accertamento-request';
+import { CompensazioniPrVO } from 'src/app/commons/vo/compensazioni-pr-vo';
+import { SalvaCompensazioneRequest } from 'src/app/commons/request/salva-compensazione-request';
+import { AnnualitaVersamentoVO } from 'src/app/commons/vo/annualita-versamenti-vo';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +70,54 @@ export class AnagraficaSoggettiService {
   private requestAcc: Array<DownloadVersamentiReport>;
   listaAccertamentiRequest: Array<ConfermaVersamentoRequest>;
   private subscribers: any = {};
+
+  /**
+   * Evolutiva 202107-01 
+  */  
+  private totaleDichiarazioneSubject = new Subject<any>();
+  public totaleDichiarazione = this.totaleDichiarazioneSubject.asObservable();
+  emitTotaleDichiarazione(totaleDichiarazione: any) {
+    this.totaleDichiarazioneSubject.next(totaleDichiarazione);
+  }
+
+  private totaleVersatoSubject = new Subject<any>();
+  public totaleVersato = this.totaleVersatoSubject.asObservable();
+  emitTotaleVersato(totaleVersato: any) {
+    this.totaleVersatoSubject.next(totaleVersato);
+  }
+
+  private versamentiPrSubject = new Subject<any>();
+  public versamentiPr = this.versamentiPrSubject.asObservable();
+  emitVersamentiPr(versamentiPr: any){
+    this.versamentiPrSubject.next(versamentiPr);
+  }
+
+  private versamentiPrAnnoPrecSubject = new Subject<any>();
+  public versamentiPrAnnoPrec = this.versamentiPrAnnoPrecSubject.asObservable();
+  emitVersamentiPrAnnoPrec(versamentiPrAnnoPrec: any){
+    this.versamentiPrAnnoPrecSubject.next(versamentiPrAnnoPrec);
+  }
+
+  private consumiPrSubject = new Subject<any>();
+  public consumiPr = this.consumiPrSubject.asObservable();
+  emitConsumiPr(consumiPr: any){
+    this.consumiPrSubject.next(consumiPr);
+  };
+
+  public ricercaConsumiForProvinceByAnno(anno: number) {
+    var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvince';
+    let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())
+    .set('anno', anno.toString());
+    return this.http.get<Array<ConsumiPrVO>>(url, { params: params });
+  }
+
+  public ricercaVersamentiForProvinceByAnno(anno: number) {
+    var url: string = this.config.getBEServer() + '/rest/home/ricercaVersamentiPerProvince';    
+    let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())     
+    .set('anno',anno.toString());
+    return this.http.get<Array<VersamentiPrVO>>(url, { params: params });
+  }
+  //-----------------------------------
   
   constructor(
     private http: HttpClient,
@@ -181,6 +235,16 @@ export class AnagraficaSoggettiService {
     this.dichiaranteSelezionato = dichiaranteSelezionato;
   }
 
+  //CR REQ17 possibilità di aeffetuare n-compensazioni
+  public salvaCompensazione(compensazionePrVO : CompensazioniPrVO) {
+    var url: string = this.config.getBEServer() + '/rest/home/salvaCompensazione'; 
+    
+    let salvaCompensazioneRequest = <SalvaCompensazioneRequest>{};
+    salvaCompensazioneRequest.compensazionePrVO = compensazionePrVO;
+    return this.http.post<SalvaCompensazioneRequest>(url, salvaCompensazioneRequest);
+  }
+  //---------------------------------------------------
+
   public ricercaConsumi() {
     var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumi';
     return this.http.post<Array<ConsumiVO>>(url, this.ricercaConsumiRequest);
@@ -276,8 +340,9 @@ export class AnagraficaSoggettiService {
   
   public ricercaVersamentiForProvinceAnnoPrec() {
       var url: string = this.config.getBEServer() + '/rest/home/ricercaVersamentiPerProvince';    
-      let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())     
-      .set('anno',(+this.anno -1).toLocaleString());
+      let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())
+      //.set('anno',(+this.anno -1).toLocaleString());     
+      .set('anno',(+this.anno -1).toLocaleString().replace(".", ""));
       return this.http.get<Array<VersamentiPrVO>>(url, { params: params });
   }
   
@@ -292,9 +357,21 @@ export class AnagraficaSoggettiService {
       });
   }
 
+  /*
   public scaricaExcelSoggetto() {
     var url: string = this.config.getBEServer() + '/rest/home/salvaSoggetto';
     let request = new DownloadReport(this.dichiarante.idAnag, this.annoDichiarazione);
+    console.log(request);
+    const body = request;
+    return this.http.post(url, body, { responseType: 'blob' }).map(
+      (res) => {
+        return new Blob([res], { type: 'application/xls' })
+      });
+  }
+  */
+
+  public scaricaExcelSoggetto(request: DownloadDettaglioSoggettoReport) {
+    var url: string = this.config.getBEServer() + '/rest/home/salvaSoggetto';    
     console.log(request);
     const body = request;
     return this.http.post(url, body, { responseType: 'blob' }).map(
@@ -314,9 +391,12 @@ export class AnagraficaSoggettiService {
       });
   }
 
-  public scaricaExcelElencoVersamenti(id_provincia: number, id_tipo_versamento: number, mese: string) {
+  public scaricaExcelElencoVersamenti(id_provincia: number, id_tipo_versamento: number, mese: string, itemVersamentiReportList: Array<ItemVersamentiReport>) {
     var url: string = this.config.getBEServer() + '/rest/versamenti/salvaElencoVersamenti';
-    let request = new DownloadVersamentiReport(this.dichiarante.idAnag, this.annoDichiarazione, id_provincia, id_tipo_versamento, mese);
+    
+    let request = new DownloadVersamentiReport(this.dichiarante.idAnag, this.dichiarante.denominazione, 
+                                               this.annoDichiarazione, id_provincia, id_tipo_versamento, 
+                                               mese, itemVersamentiReportList);
     console.log(request);
     const body = request;
     return this.http.post(url, body, { responseType: 'blob' }).map(
@@ -379,12 +459,6 @@ export class AnagraficaSoggettiService {
     let params = new HttpParams().set('id', this.idConsumi.toString());
     return this.http.get<Array<ScartoVO>>(url, { params: params });
   }
-  
-//  public controlloImportiConsumi() {
-//      var url: string = this.config.getBEServer() + '/rest/home/controlloImportiConsumi';
-//      let params = new HttpParams().set('id', this.idConsumi.toString());
-//      return this.http.get<Array<MessaggiVO>>(url, { params: params });
-//    }
 
   public getAllAliquote() {
     var url: string = this.config.getBEServer() + '/rest/home/getAllAliquote';
@@ -442,9 +516,18 @@ export class AnagraficaSoggettiService {
      var url: string = this.config.getBEServer() + '/rest/versamenti/ricercaAnnualitaVersamenti';
      if   (this.dichiarante !=null && this.dichiarante.idAnag != null){
          let params = new HttpParams().set('id', this.dichiarante.idAnag.toString());
-         return this.http.get<Array<string>>(url, { params: params });
+         //return this.http.get<Array<string>>(url, { params: params });
+         return this.http.get<AnnualitaVersamentoVO>(url, { params: params });
      }
   }
+
+  public ricercaAnniVersamentiPerRicerca() {
+    var url: string = this.config.getBEServer() + '/rest/versamenti/annualitaVersamentiPerRicerca';
+    if   (this.dichiarante !=null && this.dichiarante.idAnag != null){
+        let params = new HttpParams().set('id', this.dichiarante.idAnag.toString());
+        return this.http.get<Array<string>>(url, { params: params });        
+    }
+ }
   
   public ricercaProvinceVersamenti() {
     var url: string = this.config.getBEServer() + '/rest/versamenti/ricercaProvinceVersamenti';
@@ -642,7 +725,8 @@ export class AnagraficaSoggettiService {
   public ricercaConsumiForProvinceAndAnnualita(annualita: number, provincia:string ) {
       var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvinceAndAnnualita';
       let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())
-      .set('anno', annualita.toString()).set('provincia', provincia);
+                                  .set('anno', annualita.toString())
+                                  .set('provincia', provincia);
      return this.http.get<ConsumiPrVO>(url, { params: params });
   }
 
@@ -711,7 +795,9 @@ export class AnagraficaSoggettiService {
           versamento.importo,
           versamento.note,
           versamento.dataAccertamento,
-          versamento.importoComplessivo);
+          versamento.importoComplessivo,
+          versamento.hasPagamentiVersamenti, 
+          versamento.pagamentiVersamenti);
           ver.allarme = versamento.allarme ; 
           console.log('Ver e  ugale', ver);
           let rq = new ConfermaVersamentoRequest(ver);
@@ -723,6 +809,14 @@ export class AnagraficaSoggettiService {
       console.log('Body',this.listaAccertamentiRequest);
       return this.http.post<VersamentiPrVO>(url, this.listaAccertamentiRequest);
     }
+
+    public aggiornaAllarmeAccertamento(updateAllarmeAccertamentoRequest: UpdateAllarmeAccertamentoRequest) {      
+      var url: string = this.config.getBEServer() + '/rest/home/updateAllarmeAccertamento';
+      
+      console.log('Update url', url);
+      console.log('Body',updateAllarmeAccertamentoRequest);
+      return this.http.post<UpdateAllarmeAccertamentoRequest>(url, updateAllarmeAccertamentoRequest);
+    }
     
     /**
      * Consente di eliminare un documento.
@@ -732,5 +826,6 @@ export class AnagraficaSoggettiService {
     public eliminaDocumento(idDocumento: number) {
         const url = this.config.getBEServer() + '/rest/home/delete/' + idDocumento;
         return this.http.delete(url, {});
-    }
+    }   
+    
 }

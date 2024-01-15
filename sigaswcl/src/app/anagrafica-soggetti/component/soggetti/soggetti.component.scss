@@ -1,14 +1,17 @@
+//Import di sistema
 @import '../../../color.scss';
 
+//Sezione dispositiva
 .badge {
     min-width: 45px;
-    padding-top: 5px;
+    padding-top: 5px; //padding
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 10px;
+    font-size: 13px; //Font size
 }
 
+//Alert badge
 .alert-badge {
     display: inline-block;
     margin-right: 4px;
@@ -17,4 +20,15 @@
 
 .col-form-label {
     min-width: 75px;
+}
+
+//----------------------
+.btn-excel {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+}
+
+/*Gestione H1*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

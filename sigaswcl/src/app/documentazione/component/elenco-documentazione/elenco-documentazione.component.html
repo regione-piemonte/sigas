@@ -1,15 +1,19 @@
-<div class="principal-div">
+<!-- DIV PRINCIPALE -->
+<div class="principal-div" id="principal-div" name="principal-div">
+    <!-- CARD DIV -->
     <div class="card card-primary center-default">
         <div class="card-header text-white">
-            <strong>Gestione Documentazione </strong>
+            <!--<strong>Gestione Documentazione </strong>-->
+            <h1 class="h1-font"><strong>Gestione Documentazione</strong></h1>            
         </div>
-
+        <!-- FORM DOCUMENTI -->
         <form #elencoDocumenti="ngForm">
-
+            <!-- GESTIONE ALERT -->
             <sigas-alert
                     [message]="'Utilizza i filtri per ricercare la documentazione.I documenti contrassegnati in rosso rappresentano le Lettere di Risposta.'"
                     [type]="'INFO'"></sigas-alert>
-
+                    <!-- END ALERT -->
+                    <!-- CARD BODY -->
             <div class="card-body container">
 
                 <!-- FORM DI RICERCA -->
@@ -18,9 +22,9 @@
                     <!-- AZIENDA -->
                     <div class="col-lg-12 hight">
                         <div class="form-group row">
-                            <label class="col-lg-3 col-form-label">Azienda</label>
+                            <label id="lblAzienda" for="azienda" class="col-lg-3 col-form-label">Azienda</label>
                             <div class="col-lg-9">
-                                <select [(ngModel)]="anagraficaSoggettoVO" class="form-control" id="azienda"
+                                <select [(ngModel)]="anagraficaSoggettoVO" class="form-control" id="azienda" aria-labelledby="lblAzienda"
                                         name="azienda">
                                     <option *ngFor="let azienda of listaAziende"
                                             [ngValue]="azienda">{{azienda.denominazione}}</option>
@@ -28,6 +32,7 @@
                             </div>
                         </div>
                     </div>
+                    <!--FINE AZIENDA -->
 
                 </div>
 
@@ -36,9 +41,9 @@
                     <!-- STATO DOCUMENTO -->
                     <div class="col-lg-3 hight">
                         <div class="form-group row">
-                            <label class="col-lg-3 col-form-label">Stato</label>
+                            <label id="lblStatoDocumento" for="statoDocumento" class="col-lg-3 col-form-label">Stato</label>
                             <div class="col-lg-8">
-                                <select [(ngModel)]="statoDocumentoVO" class="form-control" id="statoDocumento"
+                                <select [(ngModel)]="statoDocumentoVO" class="form-control" id="statoDocumento" aria-labelledby="lblStatoDocumento"
                                         name="statoDocumento">
                                     <option *ngFor="let statoDocumento of listaStatoDocumento"
                                             [ngValue]="statoDocumento">{{statoDocumento.descrizione}}</option>
@@ -46,11 +51,12 @@
                             </div>
                         </div>
                     </div>
+                    <!--FINE STATO DOCUMENTO -->
 
                     <!-- DATA PROTOCOLLAZIONE DAL -->
                     <div class="col-lg-5 hight">
                         <div class="form-group row">
-                            <label class="col-lg-7 col-form-label" for="protocollazioneDal">Data Protocollazione:
+                            <label id="lblProtocollazioneDal" class="col-lg-7 col-form-label" for="protocollazioneDal">Data Protocollazione:
                                 dal </label>
                             <div class="col-lg-5 col-value">
                                 <div class="input-group">
@@ -62,6 +68,7 @@
                                            class="form-control col-mg-8 col-lg-8"
                                            class="form-control"
                                            id="protocollazioneDal"
+                                           aria-labelledby="lblProtocollazioneDal"
                                            name="protocollazioneDal"
                                            ngbDatepicker
                                            placeholder="gg/mm/aaaa"
@@ -78,12 +85,15 @@
                                     <div class="input-group-append">
                                         <button (click)="protocollazioneDal.toggle()"
                                                 class="btn btn-outline-secondary calendar"
+                                                aria-label="seleziona data dal"
+                                                title="seleziona data dal"
                                                 type="button">
                                             <svg _ngcontent-c4="" aria-hidden="true"
                                                  class="svg-inline--fa fa-calendar-alt fa-w-14" data-fa-i2svg=""
                                                  data-icon="calendar-alt"
                                                  data-prefix="far" focusable="false" role="img"
                                                  viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+                                                 <title>Calendario</title>
                                                 <path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"
                                                       fill="currentColor"></path>
                                             </svg>
@@ -94,11 +104,12 @@
                             </div>
                         </div>
                     </div>
+                     <!--FINE DATA PROTOCOLLAZIONE DAL -->
 
                     <!-- DATA PROTOCOLLAZIONE AL -->
                     <div class="col-lg-4 hight">
                         <div class="form-group row">
-                            <label class="col-lg-2 col-form-label" for="protocollazioneAl">al</label>
+                            <label id="lblProtocollazioneAl" class="col-lg-2 col-form-label" for="protocollazioneAl">al</label>
                             <div class="col-lg-6 col-value">
                                 <div class="input-group">
                                     <input #protocollazioneAl="ngbDatepicker"
@@ -109,6 +120,7 @@
                                            class="form-control col-mg-8 col-lg-8"
                                            class="form-control"
                                            id="protocollazioneAl"
+                                           aria-labelledby="lblProtocollazioneAl"
                                            name="protocollazioneAl"
                                            ngbDatepicker
                                            placeholder="gg/mm/aaaa"
@@ -125,12 +137,15 @@
                                     <div class="input-group-append">
                                         <button (click)="protocollazioneAl.toggle()"
                                                 class="btn btn-outline-secondary calendar"
+                                                aria-label="seleziona data al"
+                                                title="seleziona data al"
                                                 type="button">
                                             <svg _ngcontent-c4="" aria-hidden="true"
                                                  class="svg-inline--fa fa-calendar-alt fa-w-14" data-fa-i2svg=""
                                                  data-icon="calendar-alt"
                                                  data-prefix="far" focusable="false" role="img"
                                                  viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+                                                 <title>Calendario</title>
                                                 <path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"
                                                       fill="currentColor"></path>
                                             </svg>
@@ -140,6 +155,7 @@
                             </div>
                         </div>
                     </div>
+                    <!--FINE DATA PROTOCOLLAZIONE AL -->
                 </div>
 
                 <!-- TASTI DI RICERCA -->
@@ -165,13 +181,12 @@
 
                     </div>
                 </div>
-
-                <div class="panel-body">
-                    <div class=" form-group col-lg-12">
-                        <div class="form-group col-lg-12">
-
+                <!-- PANEL BODY -->
+                <div class="panel-body" role="main">
+                    <div class="form-group col-lg-12">
+                        <div class="dataTables_wrapper no-footer">
                             <!-- LOADER -->
-                            <sigas-spinner-form *ngIf="loaderDT" [diameter]="30"></sigas-spinner-form>
+                            <sigas-spinner-form id="spinner" *ngIf="loaderDT" [diameter]="30"></sigas-spinner-form>                            
 
                             <!-- TABELLA DOCUMENTI -->
                             <table [dtOptions]="dtOptions"
@@ -179,12 +194,14 @@
                                    [style.display]="!loaderDT ? '' : 'none' "
                                    class="row-border hover"
                                    datatable id="elenco-doc"
-                                   width="100%" style="margin-left: -70px;">
+                                   id="elencoDocumentiTBL"
+                                   width="100%">
+                                <caption><strong>Numero totale di documenti ritrovati: {{documentCount}}</strong></caption>
                                 <thead>
                                     <tr>
-                                        <th></th>
-                                        <th> Azienda</th>
-                                        <th> Data</th>
+                                        <td></td>
+                                        <th>Azienda</th>
+                                        <th>Data</th>
                                         <th>Annualità</th>
                                         <th>Tipo</th>
                                         <th>Nome File</th>
@@ -194,59 +211,77 @@
                                         <td></td>
                                         <th>Download</th>
                                         <th>Stato</th>
+                                        <!-- Per ordinamento lettere -->
+                                        <th></th>
+                                        <!-- lettere di risposta -->
+                                        <th></th>
+                                        <!-- allegati -->
+                                        <th></th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
+                                    <!-- CICLO FOR SU ELENCODOC -->
                                     <ng-container *ngFor="let el of elencoDoc; index as i">
-
                                         <!-- COLONNE DI DEFAULT -->
                                         <tr class="pointer ">
-                                            <td class="dt-center">
+                                            <td class="dt-center" style="padding-left: 1.3rem;">
+                                                <label id="lblNumProtocollo" [for]="el.nprotocollo" class="sr-only">seleziona</label>
                                                 <input (click)="documentazioneSelect(el)" *ngIf="el.statoDocumentoVO!=null"
                                                        name="selection"
+                                                       [id]="el.nprotocollo"
+                                                       aria-labelledby="lblNumProtocollo"
                                                        type="radio">
                                             </td>
+                                            <!-- AZIENDA -->
                                             <td class="dt-center">{{ el.anagraficaSoggettoVO.denominazione }}</td>
+                                            <!-- DATA -->
                                             <td class="dt-center">
-                                                <span style="display: none">{{ el.dataProtocollazione | date:'yyyyMMdd' }}</span>
-                                                {{ el.dataProtocollazione | date:'dd/MM/yyyy' }}
+                                                <span style="display: none">{{ el.dataProtocollazione | date:'yyyyMMddhhmmss' }}</span>
+                                                {{el.dataProtocollazione|date:'dd/MM/yyyy'}}
                                             </td>
+                                            <!-- ANNUALITA -->
                                             <td class="dt-center">{{ el.annualita }}</td>
+                                            <!-- TIPO -->
                                             <td class="dt-center">{{ el.tipoDocumentoVO.descrizione }}</td>
-                                            <td class="col trunk20">{{ el.nomeFile }}</td>
-                                            <td class="dt-center"> {{ el.note }}</td>
+                                            <!-- NOME FILE -->
+                                            <td class="trunk20 dt-left" title="{{ el.nomeFile }}">{{ el.nomeFile }}</td>
+                                            <!-- NOTE -->
+                                            <td class="trunk20 dt-left" title="{{ el.note }}"> {{ el.note }}</td>
+                                            <!-- PROTOCOLLO -->
                                             <td class="dt-center">{{ el.nprotocollo }}</td>
+                                            <!-- PROTOCOLLO DI RIFERIMENTO -->
                                             <td class="dt-center">{{ el.rifArchivio }}</td>
-                                            <td class="dt-center">
-                                                <a *ngIf="el.sigasAllegatos && el.sigasAllegatos.length > 0"
-                                                   [attr.aria-controls]="'collapse-' + i"
-                                                   [attr.aria-expanded]="false"
-                                                   [attr.data-target]="'#collapse-' + i"
-                                                   class="accordion-toggle collapsed"
-                                                   data-toggle="collapse"
-                                                   title="Visualizza Allegati">
-                                                </a>
+                                            <!--
+                                            <td class="dt-center" [ngClass]="gestioneClasse(el.sigasAllegatos, i)"  (click)="viewDetails(el, i)"></td>
+                                            -->
+                                            <td class="dt-center">                                                
+                                                <button *ngIf="el.sigasAllegatos && el.sigasAllegatos.length > 0"
+                                                        (click)="calculateDetails(el.nprotocollo, el, i)"
+                                                        [ngClass]="calculateClasses(el.nprotocollo)"
+                                                        [id]="calculateIdForButton(el.nprotocollo)"
+                                                        [attr.aria-label]="calculateArialLabel(el.nprotocollo)"
+                                                        type="button">+</button>
                                             </td>
-                                            <td class="dettagli-td">
-                                                <a *ngIf="!el.sigasAllegatos  || el.sigasAllegatos.length == 0"
-                                                   class="btn btn-success"
-                                                   download="{{ el.nomeFile }}"
-                                                   href="{{this.documentazioneService.getUrlScaricaDocumentoMaster()+el.idDocumento}}"
-                                                   style="width: 100px;">Scarica </a>
-                                                <a *ngIf="el.sigasAllegatos && el.sigasAllegatos.length != 0"
-                                                   class="btn btn-success mb-1"
-                                                   download="{{ el.nomeFile }}"
-                                                   href="{{this.documentazioneService.getUrlScaricaDocumentoMaster()+el.idDocumento}}"
-                                                   style="width: 100px;height: 30px;">Scarica </a>
-                                                <a *ngIf="el.sigasAllegatos && el.sigasAllegatos.length != 0"
-                                                   class="btn btn-success"
-                                                   download="{{el.tipoDocumentoVO.codiceTipoDocumento}}_{{el.insDate}}.zip"
-                                                   href="{{this.documentazioneService.getUrlScaricaPacchetto()+el.idDocumento}}"
-                                                   style="width: 100px;">Scarica
-                                                    pacchetto </a>
+                                            <td class="dt-center">                                                
+                                                <a *ngIf="!el.sigasAllegatos  || el.sigasAllegatos.length == 0"                                                   
+                                                   download="{{ el.nomeFile }}"                                                   
+                                                   href="{{this.documentazioneService.getUrlScaricaDocumentoMaster() + el.idDocumento}}">
+                                                   <img style="width:23px; height:23px;" alt="scarica documento" title="scarica documento" src="assets/documento.png"></a>
+                                                <a *ngIf="el.sigasAllegatos && el.sigasAllegatos.length != 0"                                                   
+                                                   download="{{ el.nomeFile }}"                                                   
+                                                   href="{{this.documentazioneService.getUrlScaricaDocumentoMaster() + el.idDocumento}}">
+                                                   <img style="width:23px; height:23px;" alt="scarica documento" title="scarica documento" src="assets/documento.png"></a>
+                                                <a *ngIf="determinaLettereRisposta(el.nprotocollo) != null"                                                   
+                                                   download="{{ determinaNomeFileLetteraRisposta(el.nprotocollo) }}"                                                   
+                                                   href="{{this.documentazioneService.getUrlScaricaDocumentoMaster() + determinaIdLetteraRisposta(el.nprotocollo)}}">
+                                                   <img style="width:23px; height:23px;" alt="scarica lettera di risposta" title="scarica lettera di risposta" src="assets/lettera.png"></a>                                                   
+                                                <a *ngIf="el.sigasAllegatos && el.sigasAllegatos.length != 0"                                                   
+                                                   download="{{el.tipoDocumentoVO.codiceTipoDocumento}}_{{el.insDate}}.zip"                                                   
+                                                   href="{{this.documentazioneService.getUrlScaricaPacchetto()+el.idDocumento}}">
+                                                   <img style="width:23px; height:23px;" alt="scarica pacchetto" title="scarica pacchetto" src="assets/pacchetto.png"></a>
                                             </td>
-                                            <td class="dt-center">
+                                            <td class="dt-center" style="width: 5%;">
                                                 <div *ngIf="el.statoDocumentoVO!=null">
                                                     <i *ngIf="el.statoDocumentoVO.codiceStato=='PRESEN' && el.noteBo!=null"
                                                        class="fa fa-check"
@@ -255,8 +290,8 @@
                                                        class="fa fa-hourglass"
                                                        title="{{el.statoDocumentoVO.descrizione + ' '+el.noteBo}}"></i>
                                                     <span *ngIf="el.noteBo!=null"
-                                                          [ngClass]="{ 'badge-success': el.statoDocumentoVO.codiceStato== 'ACC', 'badge-danger': el.statoDocumentoVO.codiceStato== 'RIF' }"
-                                                          class="badge"
+                                                          [ngClass]="{ 'badge-success btn-ok': el.statoDocumentoVO.codiceStato== 'ACC', 'badge-danger': el.statoDocumentoVO.codiceStato== 'RIF' }"
+                                                          class="badge btn-ok"
                                                           title="{{el.statoDocumentoVO.descrizione + ' '+el.noteBo}}">{{ el.statoDocumentoVO.codiceStato == 'ACC' ? "OK" : (el.statoDocumentoVO.codiceStato == 'RIF' ? "NOK" : "") }}</span>
 
                                                     <i *ngIf="el.statoDocumentoVO.codiceStato=='PRESEN' && el.noteBo==null"
@@ -264,81 +299,34 @@
                                                     <i *ngIf="el.statoDocumentoVO.codiceStato=='IN_LAV' && el.noteBo==null"
                                                        class="fa fa-hourglass" title="{{el.statoDocumentoVO.descrizione}}"></i>
                                                     <span *ngIf="el.noteBo==null"
-                                                          [ngClass]="{ 'badge-success': el.statoDocumentoVO.codiceStato== 'ACC', 'badge-danger': el.statoDocumentoVO.codiceStato== 'RIF' }"
-                                                          class="badge"
+                                                          [ngClass]="{ 'badge-success btn-ok': el.statoDocumentoVO.codiceStato== 'ACC', 'badge-danger': el.statoDocumentoVO.codiceStato== 'RIF' }"
+                                                          class="badge btn-ok"
                                                           title="{{el.statoDocumentoVO.descrizione}}">{{ el.statoDocumentoVO.codiceStato == 'ACC' ? "OK" : (el.statoDocumentoVO.codiceStato == 'RIF' ? "NOK" : "") }}</span>
                                                 </div>
                                             </td>
+                                            <!-- Per ordinamento SIGAS-224 -->
+                                            <td>{{ el.dataProtocollazione | date:'yyyyMMddhhmmss' }}</td>
+                                            <!-- lettere di risposta -->
+                                            <td>{{determinaLettereRisposta(el.nprotocollo)}}</td>
+                                            <!-- Allegati -->
+                                            <td>{{determinaAllegati(el.sigasAllegatos, el.idDocumento)}}</td>
                                         </tr>
-
                                         <!-- ALLEGATI DOCUMENTO-->
-                                        <tr class="collapse-row container collapse out"
-                                            *ngFor="let al of el.sigasAllegatos"
-                                            [attr.id]="'collapse-' + i">
-                                            <td class="col"></td>
-                                            <td class="col"></td>
-                                            <td class="col">
-                                                <span style="display: none">{{ al.dataOraProtocollo | date:'yyyyMMdd' }}</span>
-                                                {{al.dataOraProtocollo | date:'dd/MM/yyyy' }}
-                                            </td>
-                                            <td class="col"></td>
-                                            <td class="col"></td>
-                                            <td class="col trunk20">{{al.nomeFile}}</td>
-                                            <td class="col">{{al.descrizione}}</td>
-                                            <td class="col">Allegato Acta</td>
-<!--                                            <td class="col"></td>-->
-                                            <td class="col"></td>
-                                            <td class="col"></td>
-                                            <td class="col">
-                                                <a class="btn btn-success mb-1"
-                                                   download="{{ al.nomeFile }}"
-                                                   href="{{this.documentazioneService.getUrlScaricaDocumentoAllegato(el.idDocumento,al.nomeFile)}}"
-                                                   style="width: 90px;">Scarica
-                                                </a>
-                                            </td>
-                                            <td class="col"></td>
-                                        </tr>
 
-                                        <!-- LETTERE RISPOSTA -->
-                                        <ng-container *ngFor="let lettRisp of elencoLettereRisposta; index as iLettRisp">
-                                            <tr class="pointer"
-                                                *ngIf="lettRisp.rifArchivio === el.nprotocollo"
-                                                [ngStyle]="{'color': (lettRisp.statoDocumentoVO== null || lettRisp.statoDocumentoVO.codiceStato=='LETT_RISP') ? '#da330d' : ''}">
-                                                <td class="dt-center">
-                                                    <input (click)="documentazioneSelect(lettRisp)" *ngIf="lettRisp.statoDocumentoVO != null"
-                                                           name="selection"
-                                                           type="radio">
-                                                </td>
-                                                <td class="col">{{ lettRisp.anagraficaSoggettoVO.denominazione }}</td>
-                                                <td class="col">
-                                                    <span style="display: none">{{ lettRisp.dataProtocollazione | date:'yyyyMMdd' }}</span>
-                                                    {{ lettRisp.dataProtocollazione | date:'dd/MM/yyyy' }}
-                                                </td>
-                                                <td class="col">{{ lettRisp.annualita }}</td>
-                                                <td class="col">{{ lettRisp.tipoDocumentoVO.descrizione }}</td>
-                                                <td class="col trunk20">{{ lettRisp.nomeFile }}</td>
-                                                <td class="col">{{ lettRisp.note }}</td>
-                                                <td class="col">{{ lettRisp.nprotocollo }}</td>
-                                                <td class="col">{{ lettRisp.rifArchivio }}</td>
-                                                <td class="col"></td><!-- ACCORDION MA NON PRESENTE PER LE LETTERE -->
-                                                <td class="col">
-                                                    <a class="btn btn-success"
-                                                       download="{{ lettRisp.nomeFile }}"
-                                                       href="{{this.documentazioneService.getUrlScaricaDocumentoMaster()+lettRisp.idDocumento}}"
-                                                       style="width: 100px;">Scarica </a>
-                                                </td>
-                                                <td class="col"></td>
-                                                <td class="col"></td>
-                                            </tr>
-                                        </ng-container>
-
+                                        <!-- ALLEGATI DCUMENTO FINE-->
+                                        
+                                        <!-- LETTERE RISPOSTA -->                                        
+                                        
+                                        <!-- LETTERE RISPOSTA FINE -->
                                     </ng-container>
+                                    <!--END CICLO FOR SU ELENCODOC -->
                                 </tbody>
                             </table>
 
                         </div>
                     </div>
                 </div>
+                <!--END PANEL BODY -->
 
     <!-- TASTO CONFERMA -> VAI AL DETTAGLIO DOCUMENTO -->
     <div class="bs-example" data-example-id="single-button-dropdown">
@@ -347,11 +335,14 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
 
                 <div class="btn-group">
+                    <!-- BUTTON DETTAGLIO DOC -->
                     <button (click)="goDettaglioDocumentazione()" [disabled]="!isRowSelected"
                             class="btn btn-primary margin-icon"
+                            id="btnDettaglio"
                             type="button">
                         <i class="fas fa-check"></i> Conferma
                     </button>
+                     <!--END BUTTON DETTAGLIO DOC -->
                 </div>
 
             </div>
@@ -359,7 +350,11 @@
     </div>
 
 </div>
+ <!--END CARD BODY -->
 
         </form>
+        <!--END FORM DOCUMENTI -->
     </div>
+     <!--END CARD DIV -->
 </div>
+<!--END DIV PRINCIPALE -->

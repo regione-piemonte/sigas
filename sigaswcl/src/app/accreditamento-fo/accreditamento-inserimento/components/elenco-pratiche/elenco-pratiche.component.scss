@@ -1,5 +1,12 @@
+//Import di sistema
 @import '../../../../color.scss';
 .center {
   margin: auto;
   width: 65%;
 }
+
+/* Gestione classi Header */
+.h1-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
+}
+/**************************/

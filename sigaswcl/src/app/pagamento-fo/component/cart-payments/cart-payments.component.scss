@@ -1,10 +1,22 @@
+//Import di sistema
 @import '../../../color.scss';
 
+//Dichiarazioni dispositive
 .badge {
     min-width: 45px;
     padding-top: 5px;
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 14px;
+    font-size: 13px;
+}
+
+.btn-excel {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+}
+
+/*Gestione H2 font*/
+.h2-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

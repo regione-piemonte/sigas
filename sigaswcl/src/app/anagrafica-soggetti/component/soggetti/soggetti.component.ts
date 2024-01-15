@@ -11,6 +11,7 @@ import { ConsumiVO } from '../../../commons/vo/consumi-vo';
 import { RicercaConsumiRequest } from '../../../commons/request/ricerca-consumi-request';
 import { saveAs } from "file-saver";
 import { AllarmiSoggettoVO } from '../../../commons/vo/allarmi-soggetto-vo';
+import { AllarmiVO } from 'src/app/commons/vo/allarmi-vo';
 
 @Component({
   selector: 'app-soggetti',
@@ -63,10 +64,12 @@ export class SoggettiComponent implements OnInit {
       order: [],
       columnDefs: [
         { className: 'dt-center', "targets": [1,2,3,4] },
-        { width: '15%', targets: 2 },
-        { width: '15%', targets: 3 }, 
+        { width: '15%', targets: 2, orderData: 6 },
+        { width: '15%', targets: 3, orderData: 7 }, 
         { width: '10%', targets: 4 },
-        { width: '20%', targets: 5 }
+        { width: '20%', targets: 5 },
+        {targets: 6, visible: false },
+        {targets: 7, visible: false }
       ]
     };
 
@@ -121,10 +124,14 @@ export class SoggettiComponent implements OnInit {
       {
         "valore": "RIMBORSI",
         "descrizione":"Rimborsi"
-      },
+      },      
       {
         "valore": "DOCUMENTI",
         "descrizione":"Documenti"
+      },
+      {
+        "valore": "VERSAMENTO",
+        "descrizione":"Versamento"
       }
     ];
 
@@ -141,6 +148,11 @@ export class SoggettiComponent implements OnInit {
     this.subscribers.ricercaConsumi = this.anagraficaSoggettiService.ricercaConsumi()
       .subscribe(resp => {
         this.elencoConsumi = resp;
+        if ((this.anno === null || this.anno === '') && this.validato === 'NUOVI') {
+          this.elencoConsumi.forEach(item => {                
+              item.allarmi.nuovo = true
+          });
+        }
         this.loaderDT = false;
         setTimeout(() => {
           this.dtTrigger.next(); 
@@ -167,17 +179,21 @@ export class SoggettiComponent implements OnInit {
       if (this.validato === 'NUOVI') {
         this.anno = '';
       }
-      if (this.validato === 'INCOERENZE' || this.validato === 'RAVVEDIMENTI' || this.validato === 'SCARTI' ||
-          this.validato === 'NOTE' || this.validato === 'ACCERTAMENTI' ||
-          this.validato === 'RIMBORSI' || this.validato === 'DOCUMENTI') {
+      if (this.validato === 'INCOERENZE' || 
+          this.validato === 'RAVVEDIMENTI' || 
+          this.validato === 'SCARTI' ||
+          this.validato === 'NOTE' || 
+          this.validato === 'ACCERTAMENTI' ||
+          this.validato === 'RIMBORSI' || 
+          this.validato === 'DOCUMENTI'  ||
+          this.validato === 'VERSAMENTO') 
+      {
         this.filtro = this.validato;
         this.validato = '';
       } else {
         this.filtro = '';
       }
-      // console.log('filtro:' + this.filtro);
-      // console.log('anno:' + this.anno);
-      // console.log('validato:' + this.validato);
+     
       this.ricercaConsumiRequest.anno = this.anno;
       this.ricercaConsumiRequest.validato = this.validato;
       this.anagraficaSoggettiService.ricercaConsumiReq = this.ricercaConsumiRequest;
@@ -185,7 +201,8 @@ export class SoggettiComponent implements OnInit {
       if (this.validato === '') {
         this.validato = this.filtro;
       }
-	  if (((this.anno === null || this.anno === '') && this.validato === 'NUOVI') || (this.anno !== null && this.anno !== '' && this.validato !== 'NUOVI') ) {
+	  if (((this.anno === null || this.anno === '') && this.validato === 'NUOVI') || 
+        (this.anno !== null && this.anno !== '' && this.validato !== 'NUOVI') ) {
         this.subscribers.ricercaCosumi = this.anagraficaSoggettiService.ricercaConsumi()
           .subscribe(resp => {
             this.elencoConsumi = resp;
@@ -210,7 +227,18 @@ export class SoggettiComponent implements OnInit {
             } else if (this.filtro === 'DOCUMENTI') {
               this.elencoConsumi = this.elencoConsumi.filter(
                 consumi => consumi.allarmi.doc === true);
+            } else if (this.filtro === 'VERSAMENTO') {
+              this.elencoConsumi = this.elencoConsumi.filter(
+                consumi => consumi.allarmi.vers === true);
+            } else if (this.filtro === 'RIMBORSI_SCADUTI') {
+              this.elencoConsumi = this.elencoConsumi.filter(
+                consumi => consumi.allarmi.rimbscad === true);
+            } else if ((this.anno === null || this.anno === '') && this.validato === 'NUOVI') {
+              this.elencoConsumi.forEach(item => {                
+                item.allarmi.nuovo = true
+              });
             }
+
             this.loaderDT = false;
             this.filterDisabled = false;
             this.rerender();

@@ -1,51 +1,59 @@
+//Sezione dispositiva
 .up-row-input {
     margin-left: 7%;
     display: inline-block;
 }
+// -----------
 
 .first-row-input{
   display: inline-block;
   margin-left: 3%;
 }
+// -----------
 
 #first-div {
   padding-left: 2.3%;
 }
-
+// -----------
 #last-div {
   padding-left: 3.7%;
 }
 
+//Sezione Note
 #label-note {
   vertical-align: top;
 }
-
+// -----------
 .note-div {
   display: inline-block;
 }
-
+// -----------
 .note-textarea {
   width: 100%;
   overflow-y: scroll;
   resize: none;
 }
+//---------------
 
 .main-div {
     padding: 4%;
     padding-top: 0;
 }
-
+// -----------
+// label
 .label-file {
   margin-top: .5rem;
   float: left;
 }
+// -------------
 
+//Sezione Pulsanti
 .upload-btn-wrapper {
   position: relative;
   overflow: hidden;
   display: inline-block;
 }
-
+// -----------
 .upload-btn-wrapper input[type=file] {
   font-size: 100px;
   position: absolute;
@@ -53,43 +61,65 @@
   top: 0;
   opacity: 0;
 }
+//--------
 
 .upload-div {
   margin-left: 2%;
 }
-
+// -----------
 .input-upload {
   margin-left: 6%;
 }
-
+// -----------
 .up-div {
     margin-left: 0.5%;
 }
-
+// -----------
+//Sezione Tabella
 .upper-th {
     padding-left: 2%;
 }
-
+// -----------
 .all-td {
     width: 22% !important;
 }
-
+// -----------
 .first-td {
     width: 13%;
 }
+//-----------------
 
+// ----- testo
 .text-center {
   float: right;
 }
-
+// -----------
 .center-text-td {
     text-align: center;
     width: 14% !important;
 }
-
+// -----------
 .dettagli-td {
-    width: 57% !important
+    width: 30%
 }
+
+//Sezione Custom
+.marts-first-td {
+  width: 15%;
+}
+// -----------
+.marts-all-td {
+  width: 15%;
+}
+// -----------
+.marts-dettagli-td {
+  width: 40%
+}
+// -----------
+.marts-td{
+  width: 30% 
+}
+//-------------------
 
 .switch-small {
     position: relative;
@@ -100,6 +130,7 @@
     margin-top: 7px;
   }
   
+  //Sezione Slider
   .slider-small {
     position: absolute;
     cursor: pointer;
@@ -107,11 +138,11 @@
     left: 0;
     right: 0;
     bottom: 0px;
-    background-color: #A0A0A0;
+    background-color: #686868;
     transition: .4s;
     font-size: 12px;
   }
-  
+ // ----------- 
   .slider-small:before {
     position: absolute;
     content: "";
@@ -122,21 +153,25 @@
     background-color: white;
     transition: .4s;
   }
+  //-----------------
   
+  //Sezione Input
   input:checked + .slider-small {
-    background-color: #28a745;
+    background-color: #1e7e34;
   }
-  
+  // -----------
   input:focus + .slider-small {
-    box-shadow: 0 0 1px #28a745;
+    box-shadow: 0 0 1px #1e7e34;
   }
-  
+  // -----------
   input:checked + .slider-small:before {
     -webkit-transform: translateX(32px);
     -ms-transform: translateX(32px);
     transform: translateX(32px);
   }
-  
+  //-------------------------
+
+  // -----------
   .switch {
     position: relative;
     display: inline-block;
@@ -145,13 +180,13 @@
     margin-left: 20px;
     margin-top: 7px;
   }
-  
+  // -----------
   .switch input, .switch-small input { 
     opacity: 0;
     width: 0;
     height: 0;
   }
-  
+  // -----------
   .slider {
     position: absolute;
     cursor: pointer;
@@ -159,11 +194,11 @@
     left: 0;
     right: 0;
     bottom: 6px;
-    background-color:#A0A0A0;
+    background-color:#686868;
     -webkit-transition: .4s;
     transition: .4s;
   }
-  
+  // -----------
   .slider:before {
     position: absolute;
     content: "";
@@ -175,15 +210,15 @@
     -webkit-transition: .4s;
     transition: .4s;
   }
-  
+  // -----------
   input:checked + .slider {
-    background-color: #28a745;
+    background-color: #1e7e34;
   }
-  
+  // -----------
   input:focus + .slider {
-    box-shadow: 0 0 1px #28a745;
+    box-shadow: 0 0 1px #1e7e34;
   }
-  
+  // -----------
   input:checked + .slider:before {
     -webkit-transform: translateX(36px);
     -ms-transform: translateX(36px);
@@ -194,11 +229,11 @@
   .slider.round {
     border-radius: 34px;
   }
-  
+  // -----------
   .slider.round:before {
     border-radius: 50%;
   }
-  
+  // -----------
   .slider-small.round {
     border-radius: 34px;
   }
@@ -206,7 +241,7 @@
   .slider-small.round:before {
     border-radius: 50%;
   }
-  
+  // -----------
   .switch-on {
     color: white;
     font-weight: 700;
@@ -214,7 +249,7 @@
     top: 7px;
     left: 10px;
   }
-  
+  // -----------
   .switch-on-small {
     color: white;
     font-weight: 700;
@@ -223,6 +258,7 @@
     left: 10px;
   }
   
+  //Sezione switch-off
   .switch-off {
     color: white;
     font-weight: 700;
@@ -237,7 +273,9 @@
     top: 4px;
     left: 30px;
   }
-  
+  // -----------
+
+
 .accordion-toggle:after 						{font-family:'Glyphicons Halflings'; content:"▼"; float:right; color:grey;}
 .accordion-toggle.collapsed:after 			{content:"▲";}
 
@@ -248,8 +286,50 @@ td.collapse-row {
     padding: 0;
 }
 
-
+  // -----------
 .dettagli-subTable-td {
-    width: 30% !important
+    width: 25% !important
+}
+  // -----------
+
+//---------------------------
+.btn-excel {
+  background-color: #1e7e34;
+  border-color: #1e7e34;
+}
+//---------------------------
+
+.btn-ok {
+  background-color: #1e7e34;
+  border-color: #1e7e34;
+  //width:20px; 
+  //height:20px
 }
 
+.sr-only{
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+
+.h1-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
+}
+
+// ---------------------------
+.dt-left {
+  text-align: left;  
+}
+// ---------------------------
+.dt-center {
+  text-align: center;
+  white-space: normal;  
+}
+
+/*Gestione H4*/
+.h4-font {
+  font-size: 1.5em; /* 40px/16=2.5em */
+}

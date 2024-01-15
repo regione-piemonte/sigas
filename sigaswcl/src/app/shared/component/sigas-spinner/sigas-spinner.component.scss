@@ -1,3 +1,6 @@
+//Dichiarazioni dispositive
+
+//Gestione loader
 #loader {
     display:block;
     border-radius:50%;
@@ -7,7 +10,8 @@
     animation:spin 2s linear infinite;
     z-index:1001;
     }
-    
+//----------------- 
+    //before
     #loader:before {
     content:"";
     position:absolute;
@@ -21,7 +25,8 @@
     -webkit-animation:spin 3s linear infinite;
     animation:spin 3s linear infinite
     }
-    
+//-----------------   
+    //after
     #loader:after {
     content:"";
     position:absolute;
@@ -35,8 +40,8 @@
     -webkit-animation:spin 1.5s linear infinite;
     animation:spin 1.5s linear infinite
     }
-    
-    
+    //-------------
+ //-----------------    
     @-webkit-keyframes spin {
     0% {
      -webkit-transform:rotate(0deg);
@@ -61,8 +66,8 @@
      transform:rotate(360deg)
     }
     }
-    
-
+ //-----------------    
+    //Gestione IE9
     .loaderIE9{
     background-image: url('/assets/loaderIE9.gif');
     background-repeat: no-repeat;
@@ -70,5 +75,5 @@
     display: block;
     margin:0 auto;
     }
-    
+ //-----------------    
     

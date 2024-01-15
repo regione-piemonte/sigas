@@ -170,6 +170,12 @@ this.foPayService.cartReq.type = '1';
     });
 
   }
+
+  cleanAllSelection(){
+    this.foPayService.cartReq.amount = null;
+    this.foPayService.cartReq.type = null;
+    this.foPayService.cartReq.month = null;
+  }
   
   goHome() {
     this.router.navigateByUrl("home");

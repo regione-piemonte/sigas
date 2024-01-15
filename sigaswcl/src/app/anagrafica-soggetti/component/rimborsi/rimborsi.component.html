@@ -11,6 +11,7 @@
             <div class="form-group col-lg-12">
                 <div class="form-group col-lg-12">
                     <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+                    <!-- Table -->
                     <table [style.display]="!loaderDT ? '' : 'none' "  class="row-border hover" 
                         datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
 
@@ -28,20 +29,28 @@
                         <tbody>
                             <tr class ="pointer" *ngFor="let el of elencoRimborso" (click) = "goCalcola(el)" >
                                 
+                                <!-- Data Istanza -->
                                 <td>{{ el.dataIstanza | date : 'dd/MM/yyyy' }}</td>
+                                <!-- Data Rimborso -->
                                 <td>{{ el.dataRimborso | date : 'dd/MM/yyyy' }}</td>
+
+                                <!-- Annualita -->
                                 <td>{{ el.annualita }}</td>
+                                <!-- Importo -->
                                 <td>{{ el.importo | currency:'EUR':'symbol' }}</td>
+                                <!-- Importo rimborsato -->
                                 <td>{{ el.importoRimborsato | currency:'EUR':'symbol' }}</td>
                                 <td>
                                   <label class="switch">
-                                      <input type="checkbox" [(ngModel)]="el.allarme" disabled>
+                                      <input type="checkbox" [(ngModel)]="el.allarme" aria-label="Allarme" disabled>
                                       <span class="slider round">
                                           <span *ngIf="el.allarme" class="switch-on">ON</span>
                                           <span *ngIf="!el.allarme" class="switch-off">OFF</span>
                                       </span>
                                   </label>
                                 </td>
+
+                                <!-- Stato Pratica -->
                                 <td>{{ el.statoPratica }}</td>
                             </tr>
                         </tbody>
@@ -75,13 +84,14 @@
     <div class="card-body container">
       <!--testata-->
       <div class="form-group col-lg-12 text-center">
-        <h3 class="title">Gestione Rimborsi</h3>
+        <h2 class="title">Gestione Rimborsi</h2>
       </div>
       <div class="row padding-search">
         <form #calcolaRimborsoForm="ngForm" (ngSubmit)="calcolaRimborso()" class="col-lg-12">
           <div class="col-lg-10">
               <div class="form-group row">
-                  <label class="col-lg-3 col-form-label">Data Istanza Rimborso:</label>
+                  <!--Data Istanza rimborso-->
+                  <label id="lblDataIsta" for="dataIsta" class="col-lg-3 col-form-label">Data Istanza Rimborso:</label>
                    <!-- 
                   <input type="date" class="valid input-form form-control col-lg-3" id="dataIstanza"
                         [(ngModel)]="rimborso.dataIstanza" name="dataIstanza" [ngClass] = "{ 'valid' : !disableCalcolo, 'invalid' : disableCalcolo}"
@@ -98,6 +108,7 @@
                             class="form-control"
                             name="dataIsta"
                             id="dataIsta"
+                            aria-labelledby="lblDataIsta"
                             ngbDatepicker
                             placeholder="gg/mm/aaaa"
                             readonly
@@ -115,14 +126,19 @@
                      <div class="input-group-append">
                          <button (click)="dataIsta.toggle()" class="btn btn-outline-secondary calendar"
                                  type="button">
-                             <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+                             <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" 
+                             data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" 
+                             viewBox="0 0 448 512" data-fa-i2svg="">
+                             <title>Calendario</title>
+                             <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
                              <!--<i class="far fa-calendar-alt"></i>-->
                          </button>
                      </div>  
                  </div>
                  </div>
-
-                  <label class="col-lg-3 col-form-label">Data Pagamento Rimborso:</label>
+                 
+                 <!--Data pagamento rimborso-->
+                  <label id="lblDataRimbo" for="dataRimbo" class="col-lg-3 col-form-label">Data Pagamento Rimborso:</label>
                   <!-- 
                     <input type="date" class="valid input-form form-control col-lg-3" id="dataRimborso"
                         [(ngModel)] = "rimborso.dataRimborso" name="dataRimborso" [ngClass] = "{ 'valid' : !disableCalcolo, 'invalid' : disableCalcolo}"
@@ -139,6 +155,7 @@
 	                            class="form-control"
 	                            name="dataRimbo"
 	                            id="dataRimbo"
+                                aria-labelledby="lblDataRimbo"
 	                            ngbDatepicker
 	                            placeholder="gg/mm/aaaa"
 	                            readonly
@@ -155,7 +172,11 @@
 	                     <div class="input-group-append">
 	                         <button (click)="dataRimbo.toggle()" class="btn btn-outline-secondary calendar"
 	                                 type="button">
-	                             <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+	                             <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" 
+                                 data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" 
+                                 viewBox="0 0 448 512" data-fa-i2svg="">
+                                 <title>Calendario</title>
+                                 <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
 	                             <!--<i class="far fa-calendar-alt"></i>-->
 	                         </button>
 	                     </div>  
@@ -163,12 +184,15 @@
                  	</div>
               </div>
               <div class="row form-group">
-                  <label class="col-lg-3 col-form-label">Importo Rimborso:</label>
-                    <input type="number" class="valid input-form form-control col-lg-2" [ngClass] = "{ 'valid' : !disableCalcolo, 'invalid' : disableCalcolo}"
+
+                   <!-- Importo rimborsato -->
+                  <label id="lblImportoRimborso" for="importoRimborso" class="col-lg-3 col-form-label">Importo Rimborso:</label>
+                    <input id="importoRimborso" aria-labelledby="lblImportoRimborso" type="number" class="valid input-form form-control col-lg-2" [ngClass] = "{ 'valid' : !disableCalcolo, 'invalid' : disableCalcolo}"
                         [(ngModel)] = "rimborso.importo" [readonly]="true" [ngModelOptions]="{standalone: true}"
                         [readonly]="disableCalcolo" required>
-                        
-                  <label class="col-lg-3 col-form-label">Data Versamento:</label>                   
+
+                  <!-- Data Versamento -->      
+                  <label id="lblDataVersa" for="dataVersa" class="col-lg-3 col-form-label">Data Versamento:</label>                   
                  <!--  <input type="date" class="valid input-form form-control col-lg-3" id="dataVersamento"
                         [(ngModel)]="rimborso.dataVersamento" name="dataVersamento" [ngClass] = "{ 'valid' : !disableCalcolo, 'invalid' : disableCalcolo}"
                         #dataVersamento="ngModel" [readonly]="disableCalcolo" required>  -->
@@ -183,6 +207,7 @@
 	                            class="form-control"
 	                            name="dataVersa"
 	                            id="dataVersa"
+                                aria-labelledby="lblDataVersa"
 	                            ngbDatepicker
 	                            placeholder="gg/mm/aaaa"
 	                            readonly
@@ -199,7 +224,12 @@
 	                     <div class="input-group-append">
 	                         <button (click)="dataVersa.toggle()" class="btn btn-outline-secondary calendar"
 	                                 type="button">
-	                             <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+	                             <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" 
+                                 data-prefix="far" data-icon="calendar-alt" role="img" 
+                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" 
+                                 data-fa-i2svg="">
+                                 <title>Calendario</title>
+                                 <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
 	                             <!--<i class="far fa-calendar-alt"></i>-->
 	                         </button>
 	                     </div>  
@@ -208,6 +238,7 @@
               </div>
               <div class="row">
                   <div class="col-lg-12 offset-lg-11">
+                      <!-- Pulsante calcola rimborso -->
                       <div class="btn-group">
                           <button type="submit" [disabled]="!calcolaRimborsoForm.form.valid ||disableCalcolo" class="btn btn-primary margin-icon">
                               <i class="fas fa-check"></i> Calcola Rimborso</button>
@@ -246,29 +277,35 @@
                             Totale interesse
                         </div>
                       </div>
+                      <!-- Elenco tassi -->
                       <div *ngFor="let tasso of elencoTassi; let last = last">
                         <div class="row" [ngClass]= "{ 'bottom-row' : !last, 'top-row' : last}">
                           <div class="col-lg-2">
-                              <input type="text" class="invalid input-form form-control col-lg-12"
+                              <!-- Valore / 100 -->
+                              <input aria-label="Tasso" type="text" class="invalid input-form form-control col-lg-12"
                                   value = "{{ tasso.valore/100 | percent:'1.3':'it'}}"
                                   readonly>
                           </div>
                           <div class="col-lg-3">
-                              <input type="text" class="invalid input-form form-control col-lg-12"
+                              <!-- Data Start -->
+                              <input aria-label="inizio applicazione tasso" type="text" class="invalid input-form form-control col-lg-12"
                                   value="{{ tasso.dataStart | date : 'dd/MM/yyyy' }}" readonly>  
                           </div>
                           <div class="col-lg-3">
-                              <input type="text" class="invalid input-form form-control col-lg-12"
+                              <!-- Data end -->
+                              <input aria-label="fine applicazione tasso" type="text" class="invalid input-form form-control col-lg-12"
                                   value="{{ tasso.dataEnd | date : 'dd/MM/yyyy' }}"
                                   readonly>
                           </div>
                           <div class="col-lg-2">
-                              <input type="text" class="invalid input-form form-control col-lg-12"
+                              <!-- Numero giorni -->
+                              <input aria-label="giorni" type="text" class="invalid input-form form-control col-lg-12"
                                   value="{{ tasso.numGiorni }}"
                                   readonly>
                           </div>
                           <div class="col-lg-2">
-                              <input type="text" class="invalid input-form form-control col-lg-12"
+                              <!-- Tasso Totale interesse -->
+                              <input aria-label="totale interessi" type="text" class="invalid input-form form-control col-lg-12"
                                   value="{{ tasso.totInteresse | currency:'EUR':'symbol' }}"
                                   readonly>
                           </div>
@@ -280,17 +317,18 @@
                           <b>Totale interessi</b>
                         </div>
                         <div class="col-lg-2">
-                            <input type="text" class="invalid input-form form-control col-lg-12"
+                            <input aria-label="totale interessi" type="text" class="invalid input-form form-control col-lg-12"
                                 value="{{ totaleInteressi | currency:'EUR':'symbol'}}"
                                 readonly>
                         </div>
                     </div>
+                    <!-- Importo totale rimborso -->
                     <div class="row wrapper-space">
                         <div class="col-lg-10" style="text-align: right;padding-top: 6px; font-size: 16px">
                           <b>Importo Totale Rimborso</b>
                         </div>
                         <div class="col-lg-2">
-                            <input type="text" class="invalid input-form form-control col-lg-12"
+                            <input aria-label="importo totale rimborso" type="text" class="invalid input-form form-control col-lg-12"
                                 value="{{ totaleRimborso | currency:'EUR':'symbol' }}"
                                 readonly>
                         </div>
@@ -307,7 +345,7 @@
                     <label class="col-lg-3 col-form-label" style="font-size: 16px; text-align: right;padding-top: 9px;">Allarme Rimborso:</label>
                     <div class="col-lg-1">
                       <label class="switch">
-                          <input type="checkbox" [(ngModel)]="rimborso.allarme" disabled>
+                          <input type="checkbox" [(ngModel)]="rimborso.allarme" aria-label="Allarme rimborso" disabled>
                           <span class="slider round">
                               <span *ngIf="rimborso.allarme" class="switch-on">ON</span>
                               <span *ngIf="!rimborso.allarme" class="switch-off">OFF</span>
@@ -323,10 +361,12 @@
         <div class="bs-example" data-example-id="single-button-dropdown">
             <div class="form-group" style ="width : 100%">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                    <!-- Indietro -->
                     <div class="btn-group">
                         <button type="button" class="btn btn-default margin-icon" (click)="goBackCalcola()">
                             <i class="fa fa-angle-left"></i> indietro</button>
                     </div>
+                    <!-- Salva -->
                     <div class="btn-group">
                         <button type="button" *ngIf="!loaderDetermina" [disabled]="disableDetermina" class="btn btn-warning margin-icon" (click)="salvaDetermina()">
                             <i class="fas fa-check"></i> Salva prestampato determina</button>

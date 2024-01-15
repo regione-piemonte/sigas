@@ -42,13 +42,24 @@ export class StartPagoPaComponent implements OnInit, OnDestroy {
             res => {
                 if(res) {
                     this.paymentInfo = res;
-
+                    if(this.paymentInfo.waitingUserMessage.indexOf('risulta in manutenzione') > 0){                        
+                        this.isPaymentReady = true;
+                    }else{
+                        if(res.url)
+                            setTimeout(() => { $('#postform')[0].submit(); }, 5000);
+                        else if(++this.maxRetryCounter < 40) // 20 minutes retry at most
+                            setTimeout(() => { this.getPaymentInfo() }, 30000);
+                        else
+                            this.gotoPayment();
+                    }
+                    /*
                     if(res.url)
                         setTimeout(() => { $('#postform')[0].submit(); }, 5000);
                     else if(++this.maxRetryCounter < 40) // 20 minutes retry at most
                         setTimeout(() => { this.getPaymentInfo() }, 30000);
                     else
                         this.gotoPayment();
+                    */
                 }
                 else
                     this.gotoPayment();

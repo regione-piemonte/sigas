@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { Router } from "@angular/router";
 import { formatDate } from "@angular/common";
 import { Routing } from "../../../commons/routing";
@@ -23,6 +23,12 @@ import * as moment from 'moment';
 import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import {NgbDateCustomParserFormatter} from '../../../commons/class/dateformat';
 
+import {UtilityService} from '../../../core/services/utility/utility.service';
+import {MessageEnum} from '../../../core/services/utility/enum/messageEnum';
+import { DownloadDettaglioSoggettoReport } from '../../../commons/request/DownloadDettaglioSoggettoReport-request';
+import { ItemSoggettoReport } from '../../../commons/request/ItemSoggettoReport';
+
+import { DOCUMENT } from '@angular/common';
 
 
 @Component({
@@ -52,11 +58,11 @@ export class AnagraficaSoggettoComponent implements OnInit {
   private totDich: number;
   private addLiq: number;
   private totVers: number;
-    private totVersAnnoPrec: number;
+  private totVersAnnoPrec: number;
   private selTotDich: number;
   private selAddLiq: number;
   private selTotVers: number;
-private congualioCalcAnnoPrec: number;
+  private congualioCalcAnnoPrec: number;
   private copFid: string;
   private impFid: number; 
   private loaderDT: boolean;
@@ -66,7 +72,7 @@ private congualioCalcAnnoPrec: number;
   private provinceModel: Array<ProvinceVO>;
   private comuniModel: Array<ComuniVO>;
   private loaderProvince: boolean;
-private loaderProvinceDettAna: boolean;
+  private loaderProvinceDettAna: boolean;
   private loaderComuni: boolean;
   private fusioneSoggetto: boolean;
   private fusioneReq: FusioneSoggettoVO;
@@ -74,24 +80,48 @@ private loaderProvinceDettAna: boolean;
   private dtOptionsFusione: any;
   private showMessageError: boolean;
   private loaderExcel:boolean;
-    private soggettoDerivante : AnagraficaSoggettoVO;
+  private soggettoDerivante : AnagraficaSoggettoVO;
 
   public subscribers: any = {};
 
   private dataFusione: any;
- viewAssociaSoggetto: boolean;
+  viewAssociaSoggetto: boolean;
+
+  private messageError: string;
 
 
   constructor(
     private router: Router,
     private logger: LoggerService,
     private anagraficaSoggettiService: AnagraficaSoggettiService,
-    private luoghiService: LuoghiService
+    private luoghiService: LuoghiService,
+    private utilityService: UtilityService,
+    @Inject(DOCUMENT) private document: Document
   ) { }
+
+  inviaTotaleDichiarato(totaleDichiarato: any){
+    this.anagraficaSoggettiService.emitTotaleDichiarazione(totaleDichiarato);
+  }
+
+  inviaTotaleVersato(totaleVersato: any){
+    this.anagraficaSoggettiService.emitTotaleVersato(totaleVersato);
+  }
+
+  inviaVersamentiPr(versamentiPrToSend: any){
+    this.anagraficaSoggettiService.emitVersamentiPr(versamentiPrToSend);
+  }
+
+  inviaVersamentiPrAnnoPrec(versamentiPrAnnoPrecToSend: any){
+    this.anagraficaSoggettiService.emitVersamentiPrAnnoPrec(versamentiPrAnnoPrecToSend);
+  }
+
+  inviaConsumiPr(consumiPrToSend: any){
+    this.anagraficaSoggettiService.emitConsumiPr(consumiPrToSend);
+  }   
 
   ngOnInit() {
     // Move on top
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0);    
 
     this.dtOptions = {
       head: 20,
@@ -148,99 +178,70 @@ private loaderProvinceDettAna: boolean;
       this.loaderPage = true;
       this.totDich = 0;
       this.addLiq = 0;
+      this.totVers = 0;
       this.loaderProvinceDettAna = true;
+
+      this.selTotDich = 0;          
+      this.selAddLiq = 0;
+      this.selTotVers = 0;  
      
       this.subscribers.rivervaConsumiForProvince = this.anagraficaSoggettiService.ricercaConsumiForProvince()
         .subscribe(res => {
-          this.consumiPr = res;
+          this.consumiPr = res;          
           if(this.consumiPr==null || this.consumiPr.length==0){
               this.viewAssociaSoggetto = true;
           }
           res.map(elem => { 
             this.totDich += elem.totaleDichOrigine;
             this.addLiq +=  elem.addizionale_liquidata;
-          });
-          
-          this.selTotDich = this.totDich;
+            this.totVers += elem.totaleVersato
+          });          
+          this.selTotDich = this.totDich;          
           this.selAddLiq = this.addLiq;
+          this.selTotVers = this.totVers;          
+
+          this.loaderProvinceDettAna = false;
           this.loaderPage = false;
+
+          setTimeout(() => {
+            let out: HTMLElement = document.getElementById('totale');
+            if(out!=null||out!=undefined){
+              console.log(">>>>>>>>>>>>>>>>>>>>>>>trovato")
+              out.focus();
+            }
+          }, 1000)
+
         }, err => {
           this.logger.error("errore ");
           this.loaderPage = false;
-      });
-      
-      this.congualioCalcAnnoPrec = 0;
-      this.loaderPage = true;
-      this.totVers = 0;
-      this.totVersAnnoPrec = 0;
-      this.subscribers.rivervaConsumiForProvince = this.anagraficaSoggettiService.ricercaConsumiForProvinceAnnoPrec()
-      .subscribe(res => {
-        res.map(elem => { 
-          this.congualioCalcAnnoPrec += elem.conguaglio_calc;
-          console.log('Congualio calc '+elem.conguaglio_calc +  ' '+ elem.provincia_erogazione);
-        });
-
-        
-        this.subscribers.ricercaVersamentiForPeovince = this.anagraficaSoggettiService.ricercaVersamentiForProvinceAnnoPrec()
-        .subscribe(resAnnoPrec => {
-          this.versamentiPrAnnoPrec = resAnnoPrec;
-          resAnnoPrec.map(elemAnnoPrec => { 
-              if (elemAnnoPrec.tipo.denominazione != 'Accertamento')
-              this.totVersAnnoPrec += elemAnnoPrec.importo;
-            });          
-        
-            this.subscribers.ricercaVersamentiForPeovince = this.anagraficaSoggettiService.ricercaVersamentiForProvince()
-              .subscribe(res => {
-                this.versamentiPr = res;
-                res.map(elem => { 
-                  if (elem.tipo.denominazione != 'Accertamento')
-                  this.totVers += elem.importo;
-                });
-                this.selTotVers = this.totVers - this.congualioCalcAnnoPrec - this.totVersAnnoPrec;
-                this.loaderPage = false;
-                setTimeout(() => {
-                    this.loaderProvinceDettAna = false;
-                  },3000);
-                
-              }, err => {
-                this.logger.error("errore ");
-                this.loaderPage = false;
-                this.loaderProvinceDettAna = false;
-            });
-      
-
-        }, err => {
-            this.logger.error("errore ");
-            this.loaderPage = false;
-            this.loaderProvinceDettAna = false;
-        });
-      
-      }, err => {
-        this.logger.error("errore ");
-        this.loaderPage = false;
-        this.loaderProvinceDettAna = false;
-    });
-
+      });      
     }
     this.fusioneReq = new FusioneSoggettoVO(0, 0, null, '');
 
   }
-
   
   modButtonFideussione() {
       this.soggettoToSave.fideussione = !this.soggettoToSave.fideussione;
       
     }
   
-  cambiaProvincia(provincia: string) {
+  cambiaProvincia(provincia: string) {       
+
       this.loaderProvinceDettAna = true;
       if (provincia === "TOTALE"){
-        this.selTotDich = this.totDich;
+        this.selTotDich = this.totDich;        
         this.selAddLiq = this.addLiq;
-        this.selTotVers = this.totVers - this.congualioCalcAnnoPrec;
+        this.selTotVers = this.totVers;        
+
         console.log(this.totVers);
         console.log(this.congualioCalcAnnoPrec);
         this.loaderProvinceDettAna = false;
+
+        let out: HTMLElement = document.getElementById('totale');        
+        if(out!=null||out!=undefined){
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>trovato")
+          out.focus();
+        }        
       } else{
 
         this.selTotDich = 0;
@@ -252,33 +253,21 @@ private loaderProvinceDettAna: boolean;
           }
         });
 
-        this.selTotVers = 0;
-        
-        this.anagraficaSoggettiService.ricercaConsumiForProvinceAndAnnualita(+this.anagraficaSoggettiService.annoDichiarazione-1, provincia).subscribe(resAnnoPrec=>{
-            var selTotVers = 0;
-            this.versamentiPr.map(versamento => {
-                if (versamento.provincia === provincia && versamento.tipo.denominazione != 'Accertamento'){
-                    selTotVers += versamento.importo;
-                }
-              });
-            
-            var selTotVersAnnoPrec = 0;
-            this.versamentiPrAnnoPrec.map(versamentoAnnoPrec => {
-                if (versamentoAnnoPrec.provincia === provincia && versamentoAnnoPrec.tipo.denominazione != 'Accertamento'){
-                    selTotVersAnnoPrec += versamentoAnnoPrec.importo;
-                }
-              });
-            
-            if(resAnnoPrec!=null){
-                this.selTotVers = selTotVers - resAnnoPrec.conguaglio_calc - selTotVersAnnoPrec;
-            }else{
-                this.selTotVers = selTotVers - selTotVersAnnoPrec;
+        this.selTotVers = 0;        
+        this.anagraficaSoggettiService.ricercaConsumiForProvinceAndAnnualita(+this.anagraficaSoggettiService.annoDichiarazione, provincia).subscribe(consumiPrVO=>{             
+            if(consumiPrVO!=null){
+              this.selTotVers = consumiPrVO.totaleVersato;
             }
-            
-            this.loaderProvinceDettAna = false;
-            console.log('selTotVers: '+selTotVers);
-            if(resAnnoPrec!=null){console.log('resAnnoPrec.conguaglio_calc: '+resAnnoPrec.conguaglio_calc);}
-            console.log('selTotVersAnnoPrec: '+selTotVersAnnoPrec);
+            setTimeout(() => {
+              this.loaderProvinceDettAna = false;
+
+              let out: HTMLElement = document.getElementById('btn-'+provincia);
+              if(out!=null||out!=undefined){
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>trovato")
+                out.focus();
+              }
+
+            }, 1000)                        
         }, err => {
             this.logger.error("errore ");
             this.loaderProvinceDettAna = false;
@@ -301,59 +290,40 @@ private loaderProvinceDettAna: boolean;
          this.logger.error("errore ");
          this.loaderPage = false;
     });
+
     this.loaderPage = true;
-      this.totDich = 0;
-      this.addLiq = 0;
-      this.subscribers.ricercaConsumiForProvince = this.anagraficaSoggettiService.ricercaConsumiForProvince()
-        .subscribe(res => {
-          this.consumiPr = res;
-          res.map(elem => { 
-            this.totDich += elem.totaleDichOrigine;
-            this.addLiq +=  elem.addizionale_liquidata;
-          });
-         
-          this.selTotDich = this.totDich;
-          this.selAddLiq = this.addLiq;
-          this.loaderPage = false;
-        }, err => {
-          this.logger.error("errore ricerca consumi per provincia");
-          this.loaderPage = false;
-      });
-      
-      
-      this.congualioCalcAnnoPrec = 0;
-      this.subscribers.rivervaConsumiForProvince = this.anagraficaSoggettiService.ricercaConsumiForProvinceAnnoPrec()
+    this.loaderProvinceDettAna = true;
+
+    this.totDich = 0;
+    this.addLiq = 0;
+    this.totVers = 0;
+    this.selTotDich = 0;          
+    this.selAddLiq = 0;
+    this.selTotVers = 0;
+    
+    this.subscribers.ricercaConsumiForProvince = this.anagraficaSoggettiService.ricercaConsumiForProvince()
       .subscribe(res => {
+        this.consumiPr = res;          
         res.map(elem => { 
-          this.congualioCalcAnnoPrec += elem.conguaglio_calc;
-          console.log('Congualio calc '+elem.conguaglio_calc +  ' '+ elem.provincia_erogazione);
+          this.totDich += elem.totaleDichOrigine;
+          this.addLiq +=  elem.addizionale_liquidata;
+          this.totVers += elem.totaleVersato
         });
+        
+        this.selTotDich = this.totDich;          
+        this.selAddLiq = this.addLiq;
+        this.selTotVers = this.totVers;
 
-      }, err => {
-        this.logger.error("errore ");
         this.loaderPage = false;
-    });
-      
-
-      this.loaderPage = true;
-      this.totVers = 0;
-      this.subscribers.ricercaVersamentiForProvince = this.anagraficaSoggettiService.ricercaVersamentiForProvince()
-        .subscribe(res => {
-          this.versamentiPr = res;
-          res.map(elem => { 
-            this.totVers += elem.importo;
-          });
-          this.selTotVers = this.totVers - this.congualioCalcAnnoPrec;
-          this.loaderPage = false;
-        }, err => {
-          this.logger.error("errore ricerca versmaneti per provincia");
-          this.loaderPage = false;
-      });
+        this.loaderProvinceDettAna = false;
+      }, err => {
+        this.logger.error("errore ricerca consumi per provincia");
+        this.loaderPage = false;
+    });      
    }
   
   modificaSoggetto() {
       this.loaderModPage = true;
-//    this.router.navigateByUrl(Routing.MODIFICA_SOGGETTO); esco dal tab dei soggetti
       this.updateSoggetto = true;
       this.loaderModPage = false;
       this.soggettoToSave = Object.assign({}, this.soggetto);
@@ -466,6 +436,31 @@ private loaderProvinceDettAna: boolean;
     
     onSubmitModifica() {
       this.soggettoToSave.version = this.soggetto.version;
+
+      if((this.soggettoToSave.note!=null && this.soggettoToSave.note!=undefined) && 
+         this.soggettoToSave.note.length > 255)
+      {
+        this.utilityService.getMessageByKey(MessageEnum.SIZENOTE).subscribe(msg => {
+				   this.showMessageError = true;
+           this.messageError = msg.message || '';
+        }, error => {this.logger.error(error);});
+      } else if (this.soggettoToSave.denominazione !=null && 
+                 this.soggettoToSave.denominazione && 
+                 this.soggettoToSave.denominazione.length > 150 ) 
+      {
+        this.utilityService.getMessageByKey(MessageEnum.SIZEDENOMINAZIONEANA).subscribe(msg => {
+          this.showMessageError = true;
+          this.messageError = msg.message || '';
+        }, error => {this.logger.error(error);});
+      }  else if (this.soggettoToSave.indirizzo !=null && 
+                  this.soggettoToSave.indirizzo && 
+                  this.soggettoToSave.indirizzo.length > 255)
+      {
+        this.utilityService.getMessageByKey(MessageEnum.SIZEINDIRIZZOANA).subscribe(msg => {
+          this.showMessageError = true;
+          this.messageError = msg.message || '';
+        }, error => {this.logger.error(error);});
+      } else{
         this.subscribers.confermaModificaSoggetto = this.anagraficaSoggettiService.confermaModificaSoggetto(this.soggettoToSave).subscribe(
           resp =>{
               console.log(resp);
@@ -475,6 +470,7 @@ private loaderProvinceDettAna: boolean;
           },err => {
             this.logger.error("errore salvataggio soggetto");
         });
+      }      
     }
     
      associaSoggSubmit() {
@@ -486,10 +482,7 @@ private loaderProvinceDettAna: boolean;
         this.subscribers.confermaAssociaSoggetto = this.anagraficaSoggettiService.confermaAssociaSoggetto(this.soggetto, this.soggettoSelezionato).subscribe(
           resp => {
           console.log(resp);
-          this.updateSoggetto = false;
-          // this.anagraficaSoggettiService.headerDichiarante.idAnag = this.soggettoSelezionato.idAnag;
-          // this.anagraficaSoggettiService.headerDichiarante.denominazione = this.soggettoSelezionato.denominazione;
-          // this.reInitSoggetto();
+          this.updateSoggetto = false;          
           this.router.navigateByUrl(Routing.ELENCO_CONSUMI);
           }, err => {
             this.logger.error("errore associazione soggetto");
@@ -567,7 +560,29 @@ private loaderProvinceDettAna: boolean;
 
     goExcelSoggetto() {
       this.loaderExcel = true;
-      this.subscribers.scarica = this.anagraficaSoggettiService.scaricaExcelSoggetto().subscribe(
+      var itemSoggettoReportList: Array<ItemSoggettoReport> = new Array<ItemSoggettoReport>();
+      this.consumiPr.forEach(itemSoggetto => {
+        itemSoggettoReportList.push(new ItemSoggettoReport(itemSoggetto.provincia_erogazione,
+                                                           itemSoggetto.totaleVersato,
+                                                           itemSoggetto.totaleDich,
+                                                           itemSoggetto.addizionale_liquidata));
+      });      
+      var prov = this.provinceModel.filter(item =>item.id === this.soggetto.idProvincia)[0];
+      var com = this.comuniModel.filter(item => item.id === this.soggetto.idComune)[0];
+      let request = new DownloadDettaglioSoggettoReport(this.soggetto.denominazione, 
+                                                        this.soggetto.codiceAzienda,
+                                                        this.soggetto.indirizzo,
+                                                        this.soggetto.iban,
+                                                        this.soggetto.telefono,
+                                                        this.soggetto.pec,
+                                                        this.soggetto.email,
+                                                        this.soggetto.note,
+                                                        this.copFid,
+                                                        this.impFid,
+                                                        com.denominazione,
+                                                        prov.sigla,
+                                                        itemSoggettoReportList);
+      this.subscribers.scarica = this.anagraficaSoggettiService.scaricaExcelSoggetto(request).subscribe(
           res => {
             this.loaderExcel = false;
             saveAs(res, "export_soggetto_" + this.anagraficaSoggettiService.headerDichiarante.denominazione + 

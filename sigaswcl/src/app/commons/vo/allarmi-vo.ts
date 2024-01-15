@@ -10,6 +10,8 @@ export class AllarmiVO {
         public rimb: boolean,
         public doc: boolean,
         public comp: boolean,
-        public vers: boolean
+        public vers: boolean,
+        public rimbscad: boolean,
+        public nuovo: boolean
     ) { }
 }

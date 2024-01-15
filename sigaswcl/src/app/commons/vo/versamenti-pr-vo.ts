@@ -1,6 +1,7 @@
 import { TipoVersamentiVO } from "../vo/tipo-versamenti-vo";
 import { ConsumiPrVO } from "../vo/consumi-pr-vo";
 import { AllarmiSoggettoVO } from "../vo/allarmi-soggetto-vo";
+import { Data } from "@angular/router";
 
 export class VersamentiPrVO {
     public interessiMora: number;
@@ -9,6 +10,9 @@ export class VersamentiPrVO {
     public allarme: AllarmiSoggettoVO;
     public importo_prec: number;
     public differenza: number;
+    public insDate: Date;
+    public codMese: number;
+   
 
     constructor(
         public idVersamento: number,
@@ -23,6 +27,8 @@ export class VersamentiPrVO {
         public importo: number,
         public note: string,
         public dataAccertamento: Date,
-        public importoComplessivo: number
+        public importoComplessivo: number,
+        public hasPagamentiVersamenti: boolean,
+        public pagamentiVersamenti: number[]
     ) { }
 }

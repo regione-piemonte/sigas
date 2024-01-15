@@ -3,12 +3,14 @@
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">
-        
+             
+            <!-- Header --> 
              <div class="modal-header">
-               <h4 class="modal-title">{{titolo}}</h4>
+               <span class="modal-title h5-font">{{titolo}}</span>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-        
+            
+            <!-- Body --> 
             <div class="modal-body">
                 <p>
                     <span *ngIf="testo!=null; else submessageElse">{{testo}}</span>
@@ -17,31 +19,14 @@
                     </span>
                 </p>
             </div>
+            <!-- Bottoni --> 
             <div class="modal-footer" *ngIf="!hideButton">
+                <!-- Close --> 
                 <button type="button" class="btn btn-default" (click)="closeS()">{{buttonAnnullaText}}</button>
+                <!-- Save --> 
                 <button type="button" class="btn btn-primary" (click)="saveS()">{{buttonConfirmText}}</button>
             </div>
         </div>
 
     </div>
 </div>
-
-<!--utilizza wiew child!-->
-<!--<div class="modal fade" #myModal2 role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" (click)="close()">&times;</button>
-                <h4 class="modal-title">{{titolo}}</h4>
-            </div>
-            <div class="modal-body">
-                <p>{{testo}}</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" (click)="close()">Close</button>
-                <button type="button" class="btn btn-primary">Salva</button>
-            </div>
-        </div>
-
-    </div>
-</div>-->

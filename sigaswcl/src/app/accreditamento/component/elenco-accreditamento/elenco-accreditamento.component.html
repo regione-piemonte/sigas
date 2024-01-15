@@ -1,19 +1,29 @@
-<div class="principal-div">
+<!-- DIV principlae -->
+<div class="principal-div" id="principal-div" name="principal-div">
+
   <div class="card card-primary center-default">
-    <div class="card-header text-white">
-      <strong>Gestione Accreditamento</strong> </div>
+    <div class="card-header text-white">       
+      <h1 class="h1-font"><strong>Gestione Accreditamento</strong></h1>
+    </div>
     <form #elencoAccreditamento="ngForm" (ngSubmit)="onSubmit()">
+
+      <!-- Gestione alert component -->
       <sigas-alert [message]="'Selezionare la pratica di accreditamento da lavorare'"
         [type]="'INFO'"></sigas-alert>
         
+
+
         <div class="form-group row col-lg-8">
-          <label for="codiceAzienda" class="col-lg-2 col-form-label">Stato:</label>
+          <label id="lblStatoRicerca" for="statoRicerca" class="col-lg-2 col-form-label">Stato:</label>
           <div class="col-lg-5 col-value">
 						                         <div>
+
+                                        <!-- Gestione stato -->
 						                            <select class="form-control" id="statoRicerca"
 		                                                     [(ngModel)]="statoRicerca"
 		                                                     name="statoRicerca"
 		                                                     (change)="onChangeStato()"
+                                                         aria-labelledby="lblStatoRicerca"
 		                                                     required>
 		                                                     <option>IN_LAVORAZIONE</option>
 		                                                     <option>ACCETTATA</option>
@@ -25,38 +35,57 @@
           <div class="col-lg-2"></div>
         </div>
         
-      <div class="panel-body">
+      <div class="panel-body" role="main">
         <div class=" form-group col-lg-12">
                             <div class="form-group col-lg-12">
                                 <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+
+                                <!-- Table -->
                                 <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-soggetti"
                                     class="row-border hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+
+                                    <!-- Table head -->
                                     <thead>
                                         <tr>
-                                        	<th> </th>
+                                        	<td></td>
                                         	<th [ngStyle]="{'display':  'none'}" >Data Richiesta</th>
                                         	<th> Data Richiesta</th>
                                        		<th >Id Pratica</th>
-                                            <th >Stato</th>
-                                            <th>Note</th>
-                                            <th>Società</th>
-                                            <th>Richiedente</th>
+                                          <th >Stato</th>
+                                          <th>Note</th>
+                                          <th>Società</th>
+                                          <th>Richiedente</th>
                                         </tr>
                                     </thead>
+
+
+                                    <!-- Table Body -->
                                     <tbody>
                                         <tr class="pointer" *ngFor="let el of elencoPratiche">
                                          <td>
-                                                <input type="radio" name="selection" (change)="checkRow(el.idUtenteProvv)">
+                                                <input aria-label="Seleziona utente provvissorio" type="radio" name="selection" (change)="checkRow(el.idUtenteProvv)">
                                             </td>
+
+                                            <!-- data -->
                                             <td>
                                                 <span style="display: none">{{ el.insDate | date:'yyyyMMdd' }}</span>
                                                 {{ el.insDate | date:'dd/MM/yyyy' }}
                                             </td>
-                                            <td   [ngStyle]="{'display':  'none'}">{{ el.insDate}}</td>   
+                                            <td   [ngStyle]="{'display':  'none'}">{{ el.insDate}}</td> 
+
+                                            <!-- ID pratica -->  
                                      		<td>{{ el.idPratica }}</td>
+
+                                            <!-- Stato -->  
                                             <td>{{ el.stato }}</td>
+
+                                            <!-- Note -->  
                                             <td>{{ el.note }}</td>
+
+                                            <!-- Denominazione dichiarante -->  
                                             <td>{{ el.dichiaranteVO.denominazione }}</td>
+
+                                            <!-- Dati operatore -->  
                                             <td>{{ el.operatoreVO.cognome }} {{ el.operatoreVO.nome }}</td>
                                         </tr>
                                     </tbody>
@@ -73,6 +102,8 @@
                                     <i class="fa fa-angle-left glyphicon glyphicon-chevron-left"></i>
                                     indietro</a>
                             </div>  -->
+
+                            <!-- Pulsante conferma -->  
                             <div class="btn-group">
                                 <button type="submit" [disabled]="!ricercaModel" class="btn btn-primary margin-icon btn-standard">
                                     <i class="fa fa-angle-right glyphicon glyphicon-ok"></i> Conferma</button>

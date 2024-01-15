@@ -179,7 +179,7 @@ export class DocumentazioneComponent implements OnInit {
      * dello stato del docuemnto.
      */
     public apriPopUpAggiornaStato() {
-        this.utilityService.getMessageByKey(MessageEnum.CONFERMA_AGGIORNA_STATO_DOC)
+	    this.utilityService.getMessageByKey((this.dataInvioPec != null && this.dataInvioPec != undefined)?MessageEnum.CONFERMA_AGGIORNA_INVIOPEC_DOC:MessageEnum.CONFERMA_AGGIORNA_STATO_DOC)
             .subscribe(msg => {
                 this.sharedDialog.testo = msg.message;
                 this.sharedDialog.open();
@@ -237,5 +237,9 @@ export class DocumentazioneComponent implements OnInit {
         this.dataInvioPecString = event.day + '/' + (event.month) + '/' + event.year;
 
 
+    }
+    
+    resetDataInvioPec() {
+        this.dataInvioPec = null;
     }
 }

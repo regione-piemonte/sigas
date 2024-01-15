@@ -1,10 +1,14 @@
+import { ItemVersamentiReport } from '../request/ItemVersamentiReport';
+
 export class DownloadVersamentiReport {
 
     constructor(
-        private id_anag: number,
-        private anno: string,
-        private id_provincia: number,
-        private id_tipo_versamento: number,
-        private mese: string
+        public id_anag: number,
+        public denominazioneAnag: string,
+        public anno: string,
+        public id_provincia: number,
+        public id_tipo_versamento: number,
+        public mese: string,
+        public itemVersamentiReportList: Array<ItemVersamentiReport>
     ) { }
 }

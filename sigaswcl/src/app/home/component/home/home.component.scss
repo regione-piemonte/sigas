@@ -1,4 +1,7 @@
+//Import di sistema
 @import '../../../color.scss';
+
+//Sezione dispositiva
 .home{
 background: url('/assets/gas-naturale-energia-risparmio.jpg');  
 padding: 70px 20% 450px 20%; 
@@ -9,6 +12,7 @@ background-repeat:no-repeat;
 background-size:cover; 
 background-position:center; text-align: center;} 
 
+//Testo
 .home h2{ 
   margin-top: 0;
   color: #fff;   

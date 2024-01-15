@@ -1,13 +1,17 @@
-<div class="principal-div">
+<!-- MAIN DIV -->
+<div class="principal-div" id="principal-div" name="principal-div">
+    <!-- CARD DIV -->
     <div class="card card-primary center-default">
-        <div class="card-header text-white">
-            <strong>TASSI DI INTERESSE</strong>
+        <div class="card-header text-white">            
+            <h1 class="h1-font"><strong>TASSI DI INTERESSE</strong></h1>
         </div>
      
         <div>
+            <!--alert component-->
             <sigas-alert [message]="'Per inserire un nuovo tasso selezionare il pulsante Nuovo'" *ngIf="!showSuccess && !showMessageError"  [type]="'INFO'"></sigas-alert>
             <sigas-alert [message]="messageSuccess" *ngIf="showSuccess" [type]="'SUCCESS'"></sigas-alert>
             <sigas-alert [message]="messageError" *ngIf="showMessageError" [type]="'DANGER'"></sigas-alert>
+            <!-- END ALERT -->
              <div class="card-body container">
                 <!--testata-->
                     <!--anno-->
@@ -20,9 +24,13 @@
                 <div class="form-group row">
                     <div class="col-lg-12">
                         <div class="form-group col-lg-12">
-                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+                                <!--spinner component-->
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>                                   
+                                   <!--table section-->
                                    <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-tassi"  class="row-border hover" 
                                     datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+
+                                    <!--table head -->
                                     <thead>
                                         <tr>
                                             <th class="dt-center">Tasso</th>
@@ -32,6 +40,8 @@
                                             <th></th>
                                         </tr>
                                     </thead>
+
+                                    <!--table body -->
                                     <tbody>
                                        <tr class ="pointer" *ngFor="let tasso of elencoTassi; let i = idx " >
                                          <ng-template [ngTemplateOutlet]="loadTemplate(tasso)"  [ngTemplateOutletContext]="{ $implicit: tasso, idx: i }"></ng-template>
@@ -44,9 +54,9 @@
              </div>
         </div> 
    </div>
-</div>      
-
-
+   <!--END  CARD DIV -->
+</div>
+<!-- template -->
 <ng-template #readOnlyTemplate let-tasso>
      <td class="dt-center">{{ tasso.valore/100 | percent:'1.3':'it'}}</td>
      <td class="dt-center">
@@ -55,14 +65,21 @@
            </div>
            </div>
       </td>
+      <!--tasso data start -->
      <td class="dt-center">{{ tasso.dataStart  | date: 'dd/MM/yyyy' }}</td>
+
+     <!--tasso data end -->
      <td class="dt-center">{{ tasso.dataEnd  | date: 'dd/MM/yyyy'}}</td>
+
     <td class="dt-center">
-        <div class="btn-group">                                                    
+        <!-- Pulsanti -->
+        <div class="btn-group">
+          <!-- modifica -->                                                    
           <button type="button" class="btn btn-primary"  (click)="modificaTasso(tasso)" [disabled]="disableButton" >
                 <i class="fas fa-edit"></i> Modifica</button>
         </div>                                                
        <div class="btn-group margin">
+            <!-- elimina -->
             <button type="button" (click)="eliminaTasso(tasso)" data-toggle="modal" data-target="#dialogConferma" class="btn btn-danger" [disabled]="disableButton" >
                 <i class="fa fa-times"></i> Cancella</button>
         </div>
@@ -77,6 +94,7 @@
           <input type="number" id="valore"  placeholder="Tasso"  maxlength="10" 
            [(ngModel)]="tassiModel.valore" name="valore" class="form-control"
             #valore="ngModel" required  >
+            <!-- check -->
             <div *ngIf="valore.invalid && (valore.dirty || valore.touched)" class="alert alert-danger">
                 <div *ngIf="valore.errors.required ">
                     Il Valore è richiesto.
@@ -85,8 +103,13 @@
       </div>
     </td>
     <td>
+        <!-- spinner component-->
         <sigas-spinner-form [diameter]="30" *ngIf="!loaderTipoTassi;  else elseTipoTassiCaricati"></sigas-spinner-form>
+        <!-- END SPINNER -->
+        <!-- TEMPLATE -->
         <ng-template #elseTipoTassiCaricati>
+
+            <!--Select per i tipi di tassi -->
            <select class="form-control" id="tipoTassi" [(ngModel)]="tassiModel.idTipoTasso" name="tipoTassi"  required>
                 <option *ngFor="let tipt of tipoTassiModel" [value]="tipt.idTipoTasso">{{tipt.nomeTasso}}</option>
            </select>
@@ -94,10 +117,6 @@
         
     </td>
     <td>
-    <!-- 
-       <input type="date" class="form-control col-lg-11" id="dataStart"
-            [(ngModel)]="tassiModel.dataStart" name="dataStart"
-            #dataStart="ngModel" required>  -->
             
             <div class="input-group">
                                                     
@@ -116,9 +135,11 @@
 				                                               required>
 				                                        <ng-template #footerTemplateDataStart>
 				                                            <hr class="my-0">
+                                                            <!-- BUTTON PULISCI -->
 				                                            <button (click)="dataInizio = null; dataStart.close();"
 				                                                    class="btn btn-primary btn-sm m-2 float-left">Pulisci
 				                                            </button>
+                                                            <!-- BUTTON CHIUDI -->
 				                                            <button (click)="dataStart.close();"
 				                                                    class="btn btn-secondary btn-sm m-2 float-right">Chiudi
 				                                            </button>
@@ -126,19 +147,18 @@
 				                                        <div class="input-group-append">
 				                                            <button (click)="dataStart.toggle()" class="btn btn-outline-secondary calendar"
 				                                                    type="button">
-				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" 
+                                                                focusable="false" data-prefix="far" data-icon="calendar-alt" 
+                                                                role="img" xmlns="http://www.w3.org/2000/svg" 
+                                                                viewBox="0 0 448 512" data-fa-i2svg="">
+                                                                <title>Calendario</title>
+                                                                <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
 				                                                <!--<i class="far fa-calendar-alt"></i>-->
 				                                            </button>
 				                                        </div>  
                                                     </div>
     </td>
-    <td>
-     <!-- 
-       <input type="date" class="form-control col-lg-11" id="dataEnd"
-            [(ngModel)]="tassiModel.dataEnd" name="dataEnd"
-            min="{{ tassiModel.dataStart }}"
-            #dataEnd="ngModel" required>  -->
-            
+    <td>            
                     <div class="input-group">
                                
                                        
@@ -156,9 +176,11 @@
                               required>
                        <ng-template #footerTemplateDataStart>
                            <hr class="my-0">
+                           <!-- PULISCI -->
                            <button (click)="dataFine = null; dataEnd.close();"
                                    class="btn btn-primary btn-sm m-2 float-left">Pulisci
                            </button>
+                           <!-- CHIUDI -->
                            <button (click)="dataEnd.close();"
                                    class="btn btn-secondary btn-sm m-2 float-right">Chiudi
                            </button>
@@ -166,47 +188,49 @@
                        <div class="input-group-append">
                            <button (click)="dataEnd.toggle()" class="btn btn-outline-secondary calendar"
                                    type="button">
-                               <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
-                               <!--<i class="far fa-calendar-alt"></i>-->
+                               <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" 
+                               data-prefix="far" data-icon="calendar-alt" role="img" 
+                               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                               <title>Calendario</title>
+                               <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>                               
                            </button>
                        </div>  
                   </div>
-    </td>
+    </td>    
     <td class="dt-center">
+      <!-- Pulsanti -->  
       <div class="btn-group">
+         <!-- save -->
          <button type="button"  class="btn btn-success" (click)="saveTasso()">
-            <i class="fas fa-angle-down"></i> Salva</button>
-        
+            <i class="fas fa-angle-down"></i> Salva</button>        
       </div>
-     <div class="btn-group margin">
+      <div class="btn-group margin">
+        <!-- annulla -->
         <input type="button" value="Annulla" (click)="annulla()" class="btn btn-warning" />
       </div>
-   </td>
- 
+   </td> 
 </ng-template>
-
-<!--  <sigas-dialog [titolo]="'Attenzione'" [testo]="messageDialog" [buttonConfirmText]="buttonConfirmText" [buttonAnnullaText]="buttonAnnullaText"></sigas-dialog>-->
-
+<!-- Dialog-->
 <div class="modal fade" id="dialogConferma" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
-        <div class="modal-content">
-        
+        <div class="modal-content">        
              <div class="modal-header">
-               <h4 class="modal-title">Attenzione</h4>
+               <span class="modal-title h5-font">Attenzione</span>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-        
+                    <!-- MODAL BODY -->
             <div class="modal-body">
                 <p>
                     <span *ngIf="messageDialog!=null">{{messageDialog}}</span>
                 </p>
             </div>
+            <!-- MODAL FOOTER -->
             <div class="modal-footer">
-               <button type="button" class="btn btn-default" data-dismiss="modal">{{buttonAnnullaText}}</button>
-               <button type="button" class="btn btn-primary" (click)="confermaEliminaTasso()">{{buttonConfirmText}}</button>
+               <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+               <button type="button" class="btn btn-primary" (click)="confermaEliminaTasso()">Conferma</button>
             </div>
         </div>
-
     </div>
+    <!-- END MODAL -->
 </div>

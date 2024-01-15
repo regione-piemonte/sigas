@@ -1,21 +1,25 @@
+//Import di sistema
 @import '../../../color.scss';
+
+//Sezione row
 .up-row-input {
     margin-left: 7%;
     display: inline-block;
 }
-
+//---------------
 .first-row-input{
   display: inline-block;
   margin-left: 3%;
 }
+//------------------
 
-
+//Sezione custom
 .note-textarea {
   width: 100%;
   overflow-y: scroll;
   resize: none;
 }
-
+//---------------
 
 .upload-btn-wrapper input[type=file] {
   font-size: 100px;
@@ -24,51 +28,54 @@
   top: 0;
   opacity: 0;
 }
+//----
 
-
+//Input
 .input-upload {
   margin-left: 6%;
 }
-
+//---------------
   
   input:checked + .slider-small {
-    background-color: #28a745;
+    background-color: #1e7e34;
   }
-  
+  //---------------
   input:focus + .slider-small {
-    box-shadow: 0 0 1px #28a745;
+    box-shadow: 0 0 1px #1e7e34;
   }
-  
+  //---------------
   input:checked + .slider-small:before {
     -webkit-transform: translateX(32px);
     -ms-transform: translateX(32px);
     transform: translateX(32px);
   }
-  
+  //--------  
 
-  
+  //Sezione switch
   .switch input, .switch-small input { 
     opacity: 0;
     width: 0;
     height: 0;
   }
-
+// -----------
   
-  
+  //Sezione input
   input:checked + .slider {
-    background-color: #28a745;
+    background-color: #1e7e34;
   }
-  
+  //---------------
   input:focus + .slider {
-    box-shadow: 0 0 1px #28a745;
+    box-shadow: 0 0 1px #1e7e34;
   }
-  
+  //---------------
   input:checked + .slider:before {
     -webkit-transform: translateX(36px);
     -ms-transform: translateX(36px);
     transform: translateX(36px);
   }
+  //------------
   
+  //Pulsanti
 .btn-sigas {
     display: inline-block;
     padding: 1px 5px 3px 3px;
@@ -96,7 +103,9 @@
       opacity: .65;
     }
   }
+  // ------------------
   
+  //hoover
   .button-green:hover {
     &:disabled {
       border-color: #0d8637 !important;
@@ -112,7 +121,9 @@
     color: #fff !important;
     border-radius: 2px !important;
 }
+// -------------------
 
+//normal
 .button-green {
     border-color: #0d8637 !important;
     color: #fff !important;
@@ -123,6 +134,7 @@
   .text-green-sigas {
     color: #0d8637;
 }
+// ---------------
 
 //allegato
 .button-red {
@@ -132,7 +144,10 @@
     border-color: #da330d !important;
     border-radius: 2px !important;
 }
-  
+// ----------------
+
+
+//red hoover
 .button-red:hover {
     &:disabled {
       border-color: #da330d !important;
@@ -148,10 +163,13 @@
     color: #ffffff !important;
     border-radius: 2px !important;
 }
+//--------------
 
+//---------------
 .text-red-sigas {
     color: #da330d;
 }
+//---------------
 
 .button-garnet {
     border-color: #790707 !important;
@@ -159,6 +177,7 @@
     background-color: #790707 !important;
     border-radius: 2px !important;
 }
+//---------------
   
 //danger
 .button-garnet:hover {
@@ -176,14 +195,27 @@
     color: #fff !important;
     border-radius: 2px !important;
 }
-  
+// ------------------
+
+
+//Testo
 .text-garnet-sigas {
     color: #790707;
 }
+//---------------
 
 .border-title{
   border-bottom: 2px solid #164ea7
 }
+// ------------------------
 
-  
+/*Gestione H1 font*/
+.h1-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
+}
+
+/*Gestione H2 font*/
+.h2-font {
+  font-size: 1.3em; /* 40px/16=2.5em */
+}  
 

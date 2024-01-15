@@ -1,7 +1,8 @@
-<div class="principal-div">
+<div class="principal-div" id="principal-div" name="principal-div">
   <div class="card card-primary center-default">
-    <div class="card-header text-white">
-      <strong>Elenco Richieste Accreditamento</strong> </div>
+    <div class="card-header text-white">      
+	  <h1 class="h1-font"><strong>Elenco Richieste Accreditamento</strong></h1>             
+	</div>
     <form #praticaAccreditamento="ngForm">
       <sigas-alert [message]="'Selezionare la pratica di accreditamento da lavorare'"
         [type]="'INFO'"></sigas-alert>
@@ -15,13 +16,12 @@
                                 <div id="accordion" *ngIf="!loaderDT">
 								  <div class="card">
 								    <div class="card-header" id="headingOne">
-								      <h5 class="mb-0">
+								      <span class="mb-0">
 								        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 								          Dati Operatore
 								        </button>
-								      </h5>
-								    </div>
-								
+									</span>
+								    </div>								
 								    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
 								      <div class="card-body">
 								        <div class="row">
@@ -59,9 +59,9 @@
 								               <!--Telefono-->
 					                            <div class="form-group col-lg-12">
 					                                <div class="col-lg-12">
-					                                    <label for="telefono" class="col-lg-5 col-form-label">Telefono:</label>
+					                                    <label id="lblTelefenoOperatore" for="telefonoOperatore" class="col-lg-5 col-form-label">Telefono:</label>
 					                                    <div class="col-lg-7">
-					                                        <input type="text" id="telefonoOperatore" placeholder="Telefono" maxlength="25" [(ngModel)]="accreditamento.operatore.telefono" name="telefonoOperatore"
+					                                        <input type="text" id="telefonoOperatore" aria-labelledby="lblTelefenoOperatore" placeholder="Telefono" maxlength="25" [(ngModel)]="accreditamento.operatore.telefono" name="telefonoOperatore"
 					                                        	[disabled]="accreditamento.utenteProvvisorio.stato == 'ANNULLATA'"       
 					                                            class="form-control" #telefonoOperatore="ngModel" maxlength="25" required pattern="^[0-9\-\+\s\(\)]*$">
 					                                        <div *ngIf="telefonoOperatore.invalid && (telefonoOperatore.dirty || telefonoOperatore.touched)" class="alert alert-danger">
@@ -79,9 +79,9 @@
 					                            <!--Email-->
 					                            <div class="form-group col-lg-12">
 					                                <div class="col-lg-12">
-					                                    <label for="email" class="col-lg-5 col-form-label">Email:</label>
+					                                    <label id="lblEmailOperatore" for="emailOperatore" class="col-lg-5 col-form-label">Email (NO PEC):</label>
 					                                    <div class="col-lg-7">
-					                                        <input type="text" id="emailOperatore" placeholder="Email" maxlength="150" [(ngModel)]="accreditamento.operatore.email" name="emailOperatore"
+					                                        <input type="text" id="emailOperatore" aria-labelledby="lblEmailOperatore" placeholder="Email" maxlength="150" [(ngModel)]="accreditamento.operatore.email" name="emailOperatore"
 					                                        	[disabled]="accreditamento.utenteProvvisorio.stato == 'ANNULLATA'"
 					                                            class="form-control" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" #emailOperatore="ngModel"
 					                                            required>
@@ -96,21 +96,19 @@
 					                                    </div>
 					                                </div>
 					                            </div>
-					                            <!--Email-->
-								              
-								            </div>
-								            
+					                            <!--Email-->								              
+								            </div>								            
 								        </div>
 								      </div>
 								    </div>
 								  </div>
 								  <div class="card">
 								    <div class="card-header" id="headingTwo">
-								      <h5 class="mb-0">
+								      <span class="mb-0">
 								        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
 								          Dati Società
 								        </button>
-								      </h5>
+									</span>
 								    </div>
 								    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
 								      <div class="card-body">				
@@ -125,10 +123,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--denominazione-->
-								                
-								                
-								                
+								                <!--denominazione-->								                
 								                <!--codice azienda-->
 								                <div class="form-group border-botton row ">
 								                    <label class="col-lg-5 offset-lg-1 col-form-label">Codice Azienda:</label>
@@ -138,21 +133,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--codice azienda-->
-								              								                
-								                
-								                <!--Regione-->
-								                <!--
-								                <div class="form-group border-botton row">
-								                    <label class="col-lg-6 offset-lg-1 col-form-label">Regione</label>
-								                    <div class="col-lg-5 col-value">
-								                        <div>
-								                            {{accreditamento.dichiarante.regione.denominazione}}
-								                        </div>
-								                    </div>
-								                </div>-->
-								                <!--Regione-->
-								                
+								                <!--codice azienda-->								                
 								                <!--Provincia-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">Provincia</label>
@@ -162,8 +143,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Provincia-->
-								                
+								                <!--Provincia-->								                
 								                <!--Comune-->
 								                <div class="form-group border-botton row ">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">Comune</label>
@@ -173,12 +153,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Comune-->
-								               
-								               
-								            
-								                
-								                
+								                <!--Comune-->								                
 								                <!--indirizzo-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">indirizzo:</label>
@@ -188,12 +163,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--indirizzo-->
-								                
-								                
-								            
-								                
-								                
+								                <!--indirizzo-->								                
 								                <!--iban-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">iban:</label>
@@ -203,8 +173,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--iban-->
-								                
+								                <!--iban-->								                
 								                <!--Telefono-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">Telefono:</label>
@@ -214,34 +183,8 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Telefono-->
-								            
-								            			<!-- 				                    
-							                    <div class="form-group col-lg-12">
-					                                <div class="col-lg-12">
-					                                    <label for="telefono" class="col-lg-5 col-form-label">Telefono:</label>
-					                                    <div class="col-lg-7">
-							                        <div>
-							                            <input type="text" class="form-control" id="telefonoDichiarante"
-							                                placeholder="Telefono" [(ngModel)]="accreditamento.dichiarante.telefonoDichiarante" name="v" pattern="^[0-9\-\+\s\(\)]*$"
-							                                #telefonoDichiarante="ngModel"  required maxlength="25"
-							                                [disabled]="accreditamento.utenteProvvisorio.stato != 'IN_LAVORAZIONE'">
-							                        </div>
-							                        <div *ngIf="telefonoDichiarante.invalid && (telefonoDichiarante.dirty || telefonoDichiarante.touched)" class="alert alert-danger">
-							                            <div *ngIf="telefonoDichiarante.errors.required ">
-							                                Telefono richiesto.
-							                            </div>
-							                            <div *ngIf="telefonoDichiarante.errors.pattern ">
-							                                    Formato telefono non corretto.
-							                                </div>
-							                        </div>
-							                    </div>
-							                    </div>
-							                </div>
-							                 -->
-							                
-							                
-							                <!--Pec-->
+								                <!--Telefono-->							                
+							                	<!--Pec-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">Pec:</label>
 								                    <div class="col-lg-5 col-value">
@@ -250,35 +193,8 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Pec-->
-								                
-								                <!--
-							                <div class="form-group col-lg-12">
-					                                <div class="col-lg-12">
-					                                    <label for="telefono" class="col-lg-5 col-form-label">Pec:</label>
-					                                    <div class="col-lg-7">
-							                        <div>
-							                            <input type="text" class="form-control" id="pecDichiarante"
-							                                placeholder="Pec" [(ngModel)]="accreditamento.dichiarante.pecDichiarante" name="pecDichiarante"  pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" 
-							                                #pecDichiarante="ngModel"  
-							                                [required]="accreditamento.dichiarante.emailDichiarante==null || accreditamento.dichiarante.emailDichiarante==''"  maxlength="150"
-							                                [disabled]="accreditamento.utenteProvvisorio.stato != 'IN_LAVORAZIONE'">
-							                        </div>
-							                        <div *ngIf="(pecDichiarante.invalid && (pecDichiarante.dirty || pecDichiarante.touched)) && (emailDichiarante.invalid && (email.dirty || emailDichiarante.touched))" class="alert alert-danger">
-							                            <div *ngIf="pecDichiarante.errors.required ">
-							                                Pec o email richiesta.
-							                            </div>
-							                            <div *ngIf="pec.errors.pattern">
-							                                    formato email pec: exemple@exemple.it
-							                                </div>
-							                        </div>
-							                    </div>
-							                    </div>
-							                </div>
-							                -->
-							                
-							                
-							                <!--Email-->
+								                <!--Pec-->							                
+							                	<!--Email-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-6 offset-lg-1 col-form-label">Email:</label>
 								                    <div class="col-lg-5 col-value">
@@ -287,33 +203,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Email-->
-								                
-								                <!--
-							                <div class="form-group col-lg-12">
-					                                <div class="col-lg-12">
-					                                    <label for="telefono" class="col-lg-5 col-form-label">Email:</label>
-					                                    <div class="col-lg-7">
-							                        <div>
-							                            <input type="text" class="form-control" id="emailDichiarante"
-							                                placeholder="Email" [(ngModel)]="accreditamento.dichiarante.emailDichiarante" name="email" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" 
-							                                #emailDichiarante="ngModel"  
-							                                [required]="accreditamento.dichiarante.pecDichiarante==null || accreditamento.dichiarante.pecDichiarante==''" maxlength="150"
-							                                [disabled]="accreditamento.utenteProvvisorio.stato != 'IN_LAVORAZIONE'">
-							                        </div>
-							                        <div *ngIf="(emailDichiarante.invalid && (emailDichiarante.dirty || emailDichiarante.touched)) && (pecDichiarante.invalid && (pecDichiarante.dirty || pecDichiarante.touched))" class="alert alert-danger">
-							                            <div *ngIf="emailDichiarante.errors.required ">
-							                                Email o pec richiesta.
-							                            </div>
-							                             <div *ngIf="emailDichiarante.errors.pattern">
-							                                    formato email: exemple@exemple.it
-							                                </div>
-							                        </div>
-							                    </div>
-							                    </div>
-							                </div>
-							                -->
-							                
+								                <!--Email-->							                
 								        </div>			      
 										</div>
 								      </div>
@@ -321,11 +211,11 @@
 								  </div>
 								  <div class="card">
 								    <div class="card-header" id="headingThree">
-								      <h5 class="mb-0">
+								      <span class="mb-0">
 								        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
 								          Dati Rappresentante Legale
 								        </button>
-								      </h5>
+									</span>
 								    </div>
 								    
 								    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
@@ -361,9 +251,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--codiceFiscale-->
-								                
-								                
+								                <!--codiceFiscale-->								                
 								                <!--Telefono-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-5 offset-lg-1 col-form-label">Telefono:</label>
@@ -373,27 +261,7 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Telefono-->
-								                
-								                 <!-- 
-								                <div class="form-group col-lg-12">
-					                                <div class="col-lg-12">
-					                                    <label for="telefono" class="col-lg-5 col-form-label">Telefono:</label>
-					                                    <div class="col-lg-7">
-								                            <input type="text" id="telefonoLegale" placeholder="Telefono" maxlength="25" [(ngModel)]="accreditamento.legaleRappresentante.telefono" name="telefonoLegale"
-								                                class="form-control" #telefonoLegale="ngModel" maxlength="25" pattern="^[0-9\-\+\s\(\)]*$"
-								                                [disabled]="accreditamento.utenteProvvisorio.stato != 'IN_LAVORAZIONE'">
-								                            <div *ngIf="telefonoLegale.invalid && (telefonoLegale.dirty || telefonoLegale.touched)" class="alert alert-danger">                                
-								                                <div *ngIf="telefonoLegale.errors.pattern ">
-								                                    Formato telefono non corretto.
-								                                </div>
-								                            </div>
-								                        </div>
-								                    </div>
-								                </div>
-								                -->
-								                
-								                
+								                <!--Telefono-->								                
 								                 <!--Email-->
 								                <div class="form-group border-botton row">
 								                    <label class="col-lg-5 offset-lg-1 col-form-label">Email:</label>
@@ -403,42 +271,20 @@
 								                        </div>
 								                    </div>
 								                </div>
-								                <!--Email-->
-								                
-								                
-								                <!--
-								                <div class="form-group col-lg-12">
-					                                <div class="col-lg-12">
-					                                    <label for="telefono" class="col-lg-5 col-form-label">Email:</label>
-					                                    <div class="col-lg-7">
-								                            <input type="text" id="emailLegale" placeholder="Email" maxlength="150" [(ngModel)]="accreditamento.legaleRappresentante.email" name="emailLegale" 
-								                            class="form-control minuscolo"
-								                                pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" #emailLegale="ngModel"
-								                                [disabled]="accreditamento.utenteProvvisorio.stato != 'IN_LAVORAZIONE'" >
-								                            <div *ngIf="emailLegale.invalid && emailLegale.touched" class="alert alert-danger">                               
-								                                <div *ngIf="emailLegale.errors.pattern">
-								                                    formato email: exemple@exemple.it
-								                                </div>
-								                            </div>
-								                        </div>
-								                    </div>
-								                </div>
-								                 Email -->
-								              
+								                <!--Email-->								              
 								            </div>
 								        </div>
 								      </div>
 								    </div>
 								  </div>
-								</div>
-								
+								</div>								
 								<div class="row">
 									<div class="col-lg-5 hight">
 										<div class="form-group ">
-						                    <label class="col-lg-6 offset-lg-1 col-form-label">Stato:</label>
+						                    <label id="lblStato" for="stato" class="col-lg-6 offset-lg-1 col-form-label">Stato:</label>
 						                    <div class="col-lg-5 col-value">
 						                         <div>
-						                            <select class="form-control" id="stato"
+						                            <select class="form-control" id="stato" aria-labelledby="lblStato"
 		                                                     [(ngModel)]="statoSelezionato"
 		                                                     name="stato"
 		                                                     [disabled]="accreditamento.utenteProvvisorio.stato == 'ACCETTATA' || accreditamento.utenteProvvisorio.stato == 'RIFIUTATA' || accreditamento.utenteProvvisorio.stato == 'ANNULLATA'" 
@@ -446,27 +292,23 @@
 		                                                     <option>IN_LAVORAZIONE</option>
 		                                                     <option>ACCETTATA</option>
 		                                                     <option>RIFIUTATA</option>
-		                                                     <option>ANNULLATA</option>
-		                                              			</select>
+			                                              			</select>
 						                        </div>
 						                    </div>
 						                </div>
-					                </div>
-					                
+					                </div>					                
 									<div class="col-lg-5 offset-lg-1 hight">
 										<div class="form-group ">
-						                    <label class="col-lg-3 offset-lg-1 col-form-label">Note:</label>
+						                    <label id="lblNote" for="note" class="col-lg-3 offset-lg-1 col-form-label">Note:</label>
 						                    <div class="col-lg-8 col-value">
-						                        <textarea class="note-textarea" rows="4" [(ngModel)]="accreditamento.utenteProvvisorio.note"				
+						                        <textarea class="note-textarea" id="note" aria-labelledby="lblNote" rows="4" [(ngModel)]="accreditamento.utenteProvvisorio.note"				
 						                        [disabled]="accreditamento.utenteProvvisorio.stato == 'ANNULLATA'"		                         
 						                        [ngModelOptions]="{standalone: true}">
 						                        </textarea>
 						                    </div>
 						                </div>
-									</div> 
-								
-                            	</div>
-                            	
+									</div>								
+                            	</div>                            	
                             </div>
                         </div>
       </div>

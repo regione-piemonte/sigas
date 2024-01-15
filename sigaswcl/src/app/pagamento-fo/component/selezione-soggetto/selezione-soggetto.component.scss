@@ -1,16 +1,25 @@
+//Import di sistema
 @import '../../../color.scss';
 
+//Dichiarazioni dispositive
 .row-spaced-top {
     margin-top: 20px;
 }
 
+//Radio section
 .radio-inline {
-    margin-left: 20px;
-    margin-right: 40px;
+    margin-left: 20px; //margin L
+    margin-right: 40px; //margin R
 }
 
+//Estensione
 .radio-inline input[type=radio] {
-    position: absolute;
+    position: absolute; //Tipologia posizione
     margin-top: 4px;
     margin-left: -20px;
+}
+
+/*Gestione H1 font*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

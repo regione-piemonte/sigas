@@ -1,20 +1,29 @@
+//Import di sistema
 @import '../../../color.scss';
 
+//Dichiarazioni dispositive
 .badge {
     min-width: 45px;
     padding-top: 5px;
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 10px;
+    font-size: 13px;
 }
 
+//Alert badge
 .alert-badge {
     display: inline-block;
     margin-right: 4px;
     margin-top: 0px;
 }
 
+//Colonne
 .col-form-label {
     min-width: 75px;
+}
+
+/*Gestione H1 font*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

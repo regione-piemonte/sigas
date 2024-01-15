@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { DOCUMENT } from '@angular/platform-browser';
+import { DOCUMENT } from '@angular/common';
 import { ProfilaturaVO } from '../../commons/vo/profilatura-vo';
 import { UserService } from '../../services/user.service';
 import { LoggerService } from '../../services/logger.service';
@@ -35,6 +35,13 @@ levelMessage:string;
     private router: Router,
     @Inject(DOCUMENT) private document: any
   ) { }
+
+  @HostListener('window:keydown.enter', ['$event'])
+  onKeydown(event: KeyboardEvent) {
+    console.log('>>>>>>MARTS>>>>>' + event.key);
+   // var marts =  document.getElementById("martsFocus");
+   //marts.focus();
+  }
 
   ngOnInit() { 
     this.profilaturaVO = new ProfilaturaVO([],"","","",false,false,false,false,false,false,false,"","",false,"");

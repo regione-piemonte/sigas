@@ -1,3 +1,4 @@
+//Sezione dispositiva
 .switch-small {
     position: relative;
     display: inline-block;
@@ -6,7 +7,9 @@
     margin-left: 20px;
     margin-top: 7px;
   }
+  // ----------------
   
+  //Slider
   .slider-small {
     position: absolute;
     cursor: pointer;
@@ -14,11 +17,11 @@
     left: 0;
     right: 0;
     bottom: 0px;
-    background-color: #ccc;
+    background-color: #686868;
     transition: .4s;
     font-size: 12px;
   }
-  
+  // ----------------
   .slider-small:before {
     position: absolute;
     content: "";
@@ -29,21 +32,25 @@
     background-color: white;
     transition: .4s;
   }
+  //------------------
   
+  //input
   input:checked + .slider-small {
     background-color: #2196F3;
   }
-  
+  // ----------------
   input:focus + .slider-small {
     box-shadow: 0 0 1px #2196F3;
   }
-  
+  // ----------------
   input:checked + .slider-small:before {
     -webkit-transform: translateX(32px);
     -ms-transform: translateX(32px);
     transform: translateX(32px);
   }
+  //----------------
   
+  //Switch
   .switch {
     position: relative;
     display: inline-block;
@@ -52,13 +59,15 @@
     margin-left: 20px;
     margin-top: 7px;
   }
-  
+  // ----------------
   .switch input, .switch-small input { 
     opacity: 0;
     width: 0;
     height: 0;
   }
+  //-----------------
   
+  //Slider
   .slider {
     position: absolute;
     cursor: pointer;
@@ -66,11 +75,11 @@
     left: 0;
     right: 0;
     bottom: 6px;
-    background-color: #ccc;
+    background-color: #686868;
     -webkit-transition: .4s;
     transition: .4s;
   }
-  
+  // ----------------
   .slider:before {
     position: absolute;
     content: "";
@@ -82,38 +91,43 @@
     -webkit-transition: .4s;
     transition: .4s;
   }
+  //------------------
   
+  // Input ----------------
   input:checked + .slider {
     background-color: #2196F3;
   }
-  
+  // ----------------
   input:focus + .slider {
     box-shadow: 0 0 1px #2196F3;
   }
-  
+  // ----------------
   input:checked + .slider:before {
     -webkit-transform: translateX(36px);
     -ms-transform: translateX(36px);
     transform: translateX(36px);
   }
+  // ----------------
   
   /* Rounded sliders */
   .slider.round {
     border-radius: 34px;
   }
-  
+  // ----------------
   .slider.round:before {
     border-radius: 50%;
   }
-  
+  // ----------------
   .slider-small.round {
     border-radius: 34px;
   }
-  
+ // ---------------- 
   .slider-small.round:before {
     border-radius: 50%;
   }
+  //---------------------
   
+  //Sezione switch
   .switch-on {
     color: white;
     font-weight: 700;
@@ -121,7 +135,7 @@
     top: 7px;
     left: 10px;
   }
-  
+  // ----------------
   .switch-on-small {
     color: white;
     font-weight: 700;
@@ -129,7 +143,7 @@
     top: 4px;
     left: 10px;
   }
-  
+  // ----------------
   .switch-off {
     color: white;
     font-weight: 700;
@@ -137,6 +151,7 @@
     top: 7px;
     left: 34px;
   }
+  // ----------------
   .switch-off-small {
     color: white;
     font-weight: 700;
@@ -144,22 +159,26 @@
     top: 4px;
     left: 30px;
   }
+  //-----------------------
   
+  // label 
   label {
     padding-top: 2px;
   }
-  
+  // ------------
+
+  //Sezione Note
   .note {
       padding-top: 18px;
   }
-  
+ // ---------------- 
   .note-textarea {
     width: 90%;
     margin-top: 12px;
     margin-left: 10px;
     resize: none;
   }
-  
+  // ----------------
   .note-textareaview {
     width: 90%;
     margin-top: 12px;
@@ -167,9 +186,11 @@
     resize: none;
     border: none;
   }
+  //--------------
   
-  
+    // Validazione 
   .validazione {
     padding-top: 12px;
   }
+    // ------------
   

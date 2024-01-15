@@ -1,19 +1,27 @@
+<!-- check modificaConsumi -->
 <div *ngIf="!modificaConsumi">
-    <div class="principal-div">
+    <!-- DIV principale -->
+    <div class="principal-div" id="principal-div" name="principal-div">
         <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
         <div class="table-90" *ngIf="!loaderPage">
+            <!-- TITOLO TABELLA -->
             <div class="form-group col-lg-12 text-center">
-                <h2 class="title">Dettagli Dichiarazione Consumi</h2>
+                <h3 class="title">Dettagli Dichiarazione Consumi</h3>
             </div>
             <div class="col-12 form-group">
                 <div class="left-fixed">
+                    <!-- Tabella -->
                     <table class="display nowrap row-border hover" [style.display]="!loaderDT ? '' : 'none' "
-                        id="elenco-comsumi-pr" datatable [dtOptions]="dtOptions">
+                        id="elenco-comsumi-pr-prov" datatable [dtOptions]="dtOptions">
+
+                        <!-- Tabella head -->
                         <thead>
                             <tr>
                                 <th>Provincia</th>
                             </tr>
                         </thead>
+
+                        <!-- Tabella body -->
                         <tbody>
                             <tr *ngFor="let el of consumiPr; let last = last;" [ngClass]="{'pointer' : !last}"
                             (click)="!last && modificaDichConsumi(el)">
@@ -23,21 +31,25 @@
                             </tr>
                         </tbody>
                     </table>
+                    <!-- fine Tabella -->
                 </div>
                 <div class="right-fixed">
+                    <!-- Table elenco consumi  -->
                     <table class="display nowrap row-border hover" [style.display]="!loaderDT ? '' : 'none' "
-                        id="elenco-comsumi-pr" datatable [dtOptions]="dtOptions">
+                        id="elenco-comsumi-pr-tot" datatable [dtOptions]="dtOptions">
                         <thead>
                             <tr>
                                 <th>Tot.</th>
-                                <th></th>
+                                <td></td>
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- Elementi tabella -->
                             <tr *ngFor="let el of consumiPr; let last = last; let idx = index" [ngClass]="{'pointer' : !last}"
                             (click)="!last && modificaDichConsumi(el)">
                                 <td *ngIf ="el.provincia_erogazione != null" class="dt-right" [ngClass]="{'boldRed':  el.totaleCalcolato < 0, 'last-row' : last}">
                                     {{ el.totaleCalcolato | currency:'EUR':'symbol' }}</td>
+                                    <!-- Provincia erogazione -->
                                 <td *ngIf ="el.provincia_erogazione != null" [ngClass]="{'last-row ' : last}">
                                     <div class="btn-group" *ngIf="!last">
                                         <div *ngIf="isModificato[idx]" style="width:23px;height:20px;padding: 2px 0px 0px 4px;" 
@@ -45,6 +57,7 @@
                                             <i class="fas fa-edit"></i>
                                         </div>
                                     </div>
+                                    <!-- button-group -->
                                     <div class="btn-group" *ngIf="!last">
                                         <div *ngIf="el.scarti">
                                             <div *ngIf="!el.concilia"
@@ -59,16 +72,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!--fine button-group -->
                                 </td>
+                                 <!--fine Provincia erogazione -->
                             </tr>
+                            <!--Fine Elementi tabella -->
                         </tbody>
                     </table>
+                    <!-- Fine Table elenco consumi  -->
                 </div>
                 <div>
                     <div class="scroll_table">
+                        <!-- Tabella consumi -->
                         <table class="display nowrap row-border hover" [style.display]="!loaderDT ? '' : 'none' "
-                            id="elenco-comsumi-pr" datatable [dtOptions]="dtOptions" 
+                            id="elenco-comsumi-pr-cons" datatable [dtOptions]="dtOptions" 
                             width="2500px">
+                            <!-- Tabella head -->
                             <thead>
                                 <tr>
                                     <th>Data</th>
@@ -88,63 +107,84 @@
                                     <th>Arr.</th>
                                 </tr>
                             </thead>
+                            <!-- fine Tabella head -->
+                            <!-- Tabella body -->
                             <tbody>
                                 <tr *ngFor="let el of consumiPr; let last = last;" [ngClass]="{'pointer' : !last}"
                                     (click)="!last && modificaDichConsumi(el)">
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-center" [ngClass]="{'last-row ' : last}">{{ el.data_presentazione }}
                                     </td>
                                     <!-- <td class="dt-center" [ngClass]="{'last-row ' : last}">{{ el.stato_dich }}</td> -->
+                                    <!-- Industriali 1200 -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_industriali_1200 < 0 , 'last-row ' : last}">
-                                        {{ el.usi_industriali_1200 }}</td>
+                                        {{ el.usi_industriali_1200 | currency:'EUR':'symbol' }}</td>
+                                    <!-- Industriali UP -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_industriali_up < 0, 'last-row ' : last}">
-                                        {{ el.usi_industriali_up }}</td>
+                                        {{ el.usi_industriali_up | currency:'EUR':'symbol' }}</td>
+                                    <!-- Industriali TOT -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.tot_industriali < 0, 'last-row ' : last}">
                                         {{ el.tot_industriali | currency:'EUR':'symbol' }}</td>
+                                    <!-- Civili 120 -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_120 < 0, 'last-row ' : last}">
-                                        {{ el.usi_civili_120 }}</td>
+                                        {{ el.usi_civili_120 | currency:'EUR':'symbol' }}</td>
+                                    <!-- Civili 480 -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_480 < 0, 'last-row ' : last}">
-                                        {{ el.usi_civili_480 }}</td>
+                                        {{ el.usi_civili_480 | currency:'EUR':'symbol' }}</td>
+                                    <!-- Civili 1560 -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_1560 < 0, 'last-row ' : last}">
-                                        {{ el.usi_civili_1560 }}</td>
+                                        {{ el.usi_civili_1560 | currency:'EUR':'symbol' }}</td>
+                                    <!-- Civili UP -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.usi_civili_up < 0, 'last-row ' : last}">
                                         {{ el.usi_civili_up }}</td>
+                                    <!-- Civili TOT -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.tot_civili < 0, 'last-row ' : last}">
                                         {{ el.tot_civili | currency:'EUR':'symbol' }}</td>
+                                    <!-- Tot nuovi allaciamenti -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.tot_nuovi_allacciamenti < 0, 'last-row ' : last}">
                                         {{ el.tot_nuovi_allacciamenti | currency:'EUR':'symbol' }}</td>
+                                    <!-- Conguaglio dichiarato -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.conguaglio_dich < 0, 'last-row ' : last}">
                                         {{ el.conguaglio_dich | currency:'EUR':'symbol' }}</td>
-                                    <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
+                                    <!-- Conguaglio calcolato -->
+                                    <td *ngIf ="el.provincia_erogazione != null && el.compensazionePrVO==null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.conguaglio_calc < 0, 'last-row ' : last}">
-                                        {{ el.conguaglio_calc | currency:'EUR':'symbol' }}</td>
+                                        {{ el.conguaglio_calc | currency:'EUR':'symbol' }}</td>                                    
+                                    <td *ngIf ="el.provincia_erogazione != null && el.compensazionePrVO!=null" class="dt-right"
+                                        [ngClass]="{'boldRed':  el.compensazionePrVO.conguaglio_compensato < 0, 'last-row ' : last}">
+                                        {{ el.compensazionePrVO.conguaglio_compensato | currency:'EUR':'symbol' }}</td>                                                                            
+                                    <!-- Rettifiche -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.rettifiche < 0, 'last-row ' : last}">
                                         {{ el.rettifiche | currency:'EUR':'symbol' }}</td>
+                                    <!-- Arrotondamenti -->
                                     <td *ngIf ="el.provincia_erogazione != null" class="dt-right"
                                         [ngClass]="{'boldRed':  el.arrotondamenti < 0, 'last-row ' : last}">
                                         {{ el.arrotondamenti | currency:'EUR':'symbol' }}</td>
                                 </tr>
                             </tbody>
+                            <!-- fine Tabella body -->
                         </table>
+                        <!-- fine Tabella consumi -->
                     </div>
                 </div>
             </div>
             <div class="col-12 form-group">
                 <div class="row">
+                    <!-- Validazione -->
                     <div class="col-3 validazione">
-                        <label class="col-form-label">Validazione:</label>
+                        <label id="lblValidazione" for="validazione" class="col-form-label">Validazione:</label>
                         <label class="switch">
-                            <input type="checkbox" [(ngModel)]="validazione" (click)="valida()" [disabled] = "this.consumiPr == null">
+                            <input id="validazione" aria-label="Validazione" type="checkbox" [(ngModel)]="validazione" (click)="valida()" [disabled] = "this.consumiPr == null">
                             <span class="slider round">
                                 <span *ngIf="validazione" class="switch-on">ON</span>
                                 <span *ngIf="!validazione" class="switch-off">OFF</span>
@@ -160,32 +200,41 @@
             </div>
         </div>
     </div>
+    <!-- fine DIV principale -->
+    <!-- Form scarica salva -->
     <div class="bs-example" data-example-id="single-button-dropdown">
         <div class="form-group row col-lg-12">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
     
                 <div class="btn-group btn-consumi">
+                    <!-- btn Indietro -->
                     <a class="btn btn-default pointer margin-icon" (click)="goBack()" role="button">
                         <i class="fa fa-angle-left"></i>
                         indietro</a>
-                    <button *ngIf="!modificaConsumi && !loaderExcel" class="btn btn-success pointer excel margin-icon" (click)="goExcel()"
+                    <!--fine btn Indietro -->
+                    <!-- Scarica Excel -->
+                    <button *ngIf="!modificaConsumi && !loaderExcel" class="btn btn-success btn-excel pointer excel margin-icon" (click)="goExcel()"
                         role="button" [disabled] = "this.consumiPr == null">
                         <i class="far fa-file-excel"></i>
                         Scarica in Excel</button>
                     <a *ngIf="!modificaConsumi && loaderExcel" class="btn btn-success pointer excel margin-icon">
                         <sigas-spinner-form [diameter]="20"></sigas-spinner-form>
                     </a>
-
+                     <!-- fine Scarica Excel -->
+                     <!-- btn Salva -->
                     <div id="salva" *ngIf="modificaConsumi" class="btn-group">
                         <button type="button" class="btn btn-primary margin-icon" (click)="salvaDichConsumi()">
                             <i class="fas fa-edit"></i> Salva</button>
                     </div>
+                     <!--fine btn Salva -->
                 </div>
             </div>
         </div>
     </div>
+    <!--fine Form scarica salva -->
 </div>
 
+<!-- Gestione modifica consumi -->
 <div *ngIf="modificaConsumi">
     <div class="principal-div">
         <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
@@ -211,37 +260,43 @@
                         <label id="textProvLabel" class="provLabelRow">{{ getProvincia(consumi.provincia_erogazione) }}</label>
                     </div>
                     <div class="form-width border-top row">
-                        <label class="offset-lg-1 col-form-label provLabelRow">Note:</label>
+                        <label id="lblNoteConsumi" for="noteConsumi" class="offset-lg-1 col-form-label provLabelRow">Note:</label>
                         <div class="col-lg-10 col-value">
-                            <textarea class="note-textarea2" rows="3" [(ngModel)]='consumi.note'></textarea>
+                            <textarea id="noteConsumi" aria-labelledby="lblNoteConsumi" class="note-textarea2" rows="3" [(ngModel)]='consumi.note'></textarea>
                         </div>
                     </div>
                 </div>
+                <!-- Table -->
                 <table id="modDichConsumiTable" [style.display]="!loaderDT ? '' : 'none' " >
+                    <!-- Table head -->
                     <thead>
                         <tr>
-                            <th></th>
+                            <td></td>
                             <th class="th-form">consumi</th>
                             <th class="th-form" id="cen-col">aliquota</th>
                             <th class="th-form" id="right-col">importi</th>
-                            <th></th>
+                            <td></td>
                         </tr>
                     </thead>
+                    <!-- Table body -->
                     <tbody>
                         <tr class="border-top border-tr">
                             <td class="td-group first-td">Usi industriali fino a 1200 Mc</td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="consumiIndusFino" placeholder="consumi" [(ngModel)]="consumi.usi_industriali_1200"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Usi industriali fino a 1200 Mc" 
+                                    id="consumiIndusFino" placeholder="consumi"                                     
+                                    [ngModel]="consumi.usi_industriali_1200 | number:'1.2-2'" 
+                                    (ngModelChange)="consumi.usi_industriali_1200=$event"
                                     #consumiIndusFino="ngModel">
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
-                                    id="aliquoteIndusFino" value="{{ getAliquota(5) }}" readonly>  
+                                    id="aliquoteIndusFino" aria-label="Aliquota" value="{{ getAliquota(5) }}" readonly>  
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
-                                    id="importiIndusFino" value="{{ consumi.usi_industriali_1200 * getAliquota(5) | currency:'EUR':'symbol' }}"
+                                    id="importiIndusFino" aria-label="Usi industriali 1200" value="{{ consumi.usi_industriali_1200 * getAliquota(5) | currency:'EUR':'symbol' }}"
                                     readonly>
                             </td>
                             <td class="right-td total-control">Totale Usi Industriali</td>
@@ -249,22 +304,24 @@
                         <tr class="last-border-tr border-top border-tr">
                             <td class="td-group first-td">Usi industriali oltre i 1200 Mc</td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="consumiIndusOltre" placeholder="consumi" [(ngModel)]="consumi.usi_industriali_up"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    id="consumiIndusOltre" placeholder="consumi" aria-label="Usi industriali oltre i 1200 Mc"                                   
+                                    [ngModel]="consumi.usi_industriali_up | number:'1.2-2'"
+                                    (ngModelChange)="consumi.usi_industriali_up=$event"
                                     #consumiIndusOltre="ngModel">
                             </td>
                             <td class="right-td">
-                                <input type="text" class="invalid input-form form-control col-lg-12"
+                                <input type="text" aria-label="Aliquota oltre"  class="invalid input-form form-control col-lg-12"
                                     id="aliquoteIndusOltre" value="{{ getAliquota(6) }}" readonly>
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control"
-                                    id="importiIndusOltre" value="{{ consumi.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol' }}"
+                                    id="importiIndusOltre" aria-label="Importi oltre"  value="{{ consumi.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol' }}"
                                     readonly>
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid last-input-form input-form form-control col-lg-11"
-                                    id="totaleUsiIndus" value="{{ consumi.usi_industriali_1200 * getAliquota(5) + 
+                                    id="totaleUsiIndus" aria-label="totale usi industriali"  value="{{ consumi.usi_industriali_1200 * getAliquota(5) + 
                                                                   consumi.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol'}}"
                                     readonly>
                             </td>
@@ -272,17 +329,22 @@
                         <tr class="border-top border-tr">
                             <td class="td-group first-td">Usi civili fino a 120 Mc</td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="consumiCiviliFino120" placeholder="consumi" [(ngModel)]="consumi.usi_civili_120"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Consumi civili fino a 120" 
+                                    id="consumiCiviliFino120" placeholder="consumi"                                     
+                                    [ngModel]="consumi.usi_civili_120 | number:'1.2-2'" 
+                                    (ngModelChange)="consumi.usi_civili_120=$event"                                   
                                     #consumiCiviliFino120="ngModel">
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Quote civili fino a 120" 
                                     id="aliquoteCiviliFino120" value="{{ getAliquota(1) }}"
                                     readonly>
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Importi civili fino a 120" 
                                     id="importiCiviliFino120" value="{{ consumi.usi_civili_120 * getAliquota(1) | currency:'EUR':'symbol' }}"
                                     readonly>
                             </td>
@@ -291,17 +353,22 @@
                         <tr class="border-top border-tr">
                             <td class="td-group first-td">Usi civili fino a 480 Mc</td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="consumiCiviliFino480" placeholder="consumi" [(ngModel)]="consumi.usi_civili_480"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Usi civili fino a 480" 
+                                    id="consumiCiviliFino480" placeholder="consumi"                                     
+                                    [ngModel]="consumi.usi_civili_480 | number:'1.2-2'"
+                                    (ngModelChange)="consumi.usi_civili_480=$event"
                                     #consumiCiviliFino480="ngModel">
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Aliquote civili fino a 480"    
                                     id="aliquoteCiviliFino480" value="{{ getAliquota(2) }}"
                                     readonly>
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Importi civili fino a 480"
                                     id="importiCiviliFino480" value="{{ consumi.usi_civili_480 * getAliquota(2) | currency:'EUR':'symbol' }}"
                                     readonly>
                             </td>
@@ -310,17 +377,22 @@
                         <tr class="border-top border-tr">
                             <td class="td-group first-td">Usi civili fino a 1560 Mc</td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="consumiCiviliFino1560" placeholder="consumi" [(ngModel)]="consumi.usi_civili_1560"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Consumi civili fino a 1560"
+                                    id="consumiCiviliFino1560" placeholder="consumi"                                     
+                                    [ngModel]="consumi.usi_civili_1560 | number:'1.2-2'"
+                                    (ngModelChange)="consumi.usi_civili_1560=$event"
                                     #consumiCiviliFino1560="ngModel">
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Aliquote civili fino a 1560"
                                     id="aliquoteCiviliFino1560" value="{{ getAliquota(3) }}"
                                     readonly>
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Importi civili fino a 1560"
                                     id="importiCiviliFino1560" 
                                     value="{{ consumi.usi_civili_1560 * getAliquota(3) | currency:'EUR':'symbol' }}" readonly>
                             </td>
@@ -329,18 +401,24 @@
                         <tr class="border-top border-tr">
                             <td class="td-group first-td">Usi civili oltre i 1560 Mc</td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="consumiCiviliOltre" placeholder="consumi" [(ngModel)]="consumi.usi_civili_up"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Consumi civili oltre i 1560"
+                                    id="consumiCiviliOltre" placeholder="consumi"                                     
+                                    [ngModel]="consumi.usi_civili_up | number:'1.2-2'"
+                                    (ngModelChange)="consumi.usi_civili_up=$event"
                                     #consumiCiviliOltre="ngModel">
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Aliquote civili oltre i 1560"
                                     id="aliquoteCiviliOltre" value="{{ getAliquota(4) }}"
                                     readonly>
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
-                                    id="importiCiviliOltre" value="{{ consumi.usi_civili_up * getAliquota(4) | currency:'EUR':'symbol' }}" 
+                                    aria-label="Importi civili oltre i 1560"
+                                    id="importiCiviliOltre"
+                                    value="{{ consumi.usi_civili_up * getAliquota(4) | currency:'EUR':'symbol' }}" 
                                     readonly>
                             </td>
                             <td class="right-td total-control">Totale Usi Civili</td>
@@ -352,12 +430,16 @@
                                 <button type="button" class="btn btn-warning margin-icon"  data-toggle="modal" data-target="#dettaglioNuoviAllacciamenti">Dettaglio</button>
                             </td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="allacciamenti" placeholder="importi" [(ngModel)]="consumi.tot_nuovi_allacciamenti"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Allacciamenti"
+                                    id="allacciamenti" placeholder="importi"                                     
+                                    [ngModel]="consumi.tot_nuovi_allacciamenti | number:'1.2-2'"
+                                    (ngModelChange)="consumi.tot_nuovi_allacciamenti=$event"
                                     #allacciamenti="ngModel">
                             </td>
                             <td class="right-td">
                                     <input type="text" class="invalid last-input-form input-form form-control col-lg-11"
+                                    aria-label="Totale civili"
                                     id="totCivili" placeholder="totale usi civili" value="{{ 
                                         consumi.usi_civili_120 * getAliquota(1) +
                                         consumi.usi_civili_480 * getAliquota(2) +
@@ -370,29 +452,34 @@
                         <tr class="border-top border-tr" *ngFor="let el of listaScarti; let idx = index">
                             <td class="td-group first-td">Scarto <b>({{el.descUsoScarto}})</b></td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="scartoCons" placeholder="consumi" [(ngModel)]="el.consumi"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="el.descUsoScarto"
+                                    id="scartoCons" placeholder="consumi"                                     
+                                    [ngModel]="el.consumi | number:'1.2-2'"
+                                    (ngModelChange)="el.consumi=$event"
                                     #scartoCons="ngModel" [readonly]="el.conciliato">
                             </td>
                             <td class="right-td">
                                 <input type="number" class="valid input-form form-control col-lg-12"
+                                    aria-label="Scarto aliquote"
                                     id="scartoAliq" placeholder="aliquota" [(ngModel)]="el.aliquota"
                                     #scartoAliq="ngModel" [readonly]="el.conciliato" >
                             </td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Scarto importo"
                                     id="scartoImpor" value="{{ el.consumi * el.aliquota | currency:'EUR':'symbol'}}"
                                     readonly>
                             </td>
                             <td class="right-td concilia">
                                 <label class="switch-small margin-icon">
-                                    <input type="checkbox"  [(ngModel)]="el.conciliato" (click)="conciliaScarto(el, idx)">
+                                    <input type="checkbox" id="conciliaScarto" aria-labelledby="lblConciliaScarto"  [(ngModel)]="el.conciliato" (click)="conciliaScarto(el, idx)">
                                     <span class="slider-small round">
                                         <span *ngIf="el.conciliato" class="switch-on-small">ON</span>
                                         <span *ngIf="!el.conciliato" class="switch-off-small">OFF</span>
                                     </span>
                                 </label>
-                                <label>concilia scarto</label>
+                                <label id="lblConciliaScarto" for="conciliaScarto" >concilia scarto</label>
                             </td>
                         </tr>
                         <tr class="last-border-tr-up border-top border-tr">
@@ -400,8 +487,11 @@
                             <td class="right-td"></td>
                             <td class="right-td"></td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="rettifiche" placeholder="importi" [(ngModel)]="consumi.rettifiche"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Rettifiche"
+                                    id="rettifiche" placeholder="importi"                                     
+                                    [ngModel]="consumi.rettifiche | number:'1.2-2'"
+                                    (ngModelChange)="consumi.rettifiche=$event"
                                     #rettifiche="ngModel">
                             </td>
                             <td class="right-td total-control"></td>
@@ -411,8 +501,10 @@
                             <td class="right-td"></td>
                             <td class="right-td"></td>
                             <td class="right-td">
-                                <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="arrotondamenti" placeholder="importi" [(ngModel)]="consumi.arrotondamenti"
+                                <input type="text" class="valid input-form form-control col-lg-12"
+                                    aria-label="Arrotondamenti"
+                                    id="arrotondamenti" placeholder="importi" 
+                                    [(ngModel)]="consumi.arrotondamenti"
                                     #arrotondamenti="ngModel">
                             </td>
                             <td class="right-td"></td>
@@ -423,6 +515,7 @@
                             <td class="right-td label-in-table">Totale</td>
                             <td class="right-td">
                                 <input type="text" class="invalid input-form form-control col-lg-12"
+                                    aria-label="Totale"
                                     id="totale" placeholder="totale importi"
                                     value="{{ consumi.usi_civili_120 * getAliquota(1) +
                                                 consumi.usi_civili_480 * getAliquota(2) +
@@ -433,39 +526,44 @@
                                                 consumi.arrotondamenti + consumi.rettifiche +
                                                 consumi.tot_nuovi_allacciamenti + sommaScarti
                                                 | currency:'EUR':'symbol'}}"
-                                    readonly>
+                                readonly>                               
                             </td>
                             <td class="right-td total-control"></td>
                         </tr>
                         <tr class="border-top border-tr">
                             <td class="td-group first-td">
-                                <label class="last-row-label">Conguaglio dichiarato</label>
+                                <label id="lblConguaglioDichiarato" for="conguaglioDich" class="last-row-label">Conguaglio dichiarato</label>
                             </td>
                             <!-- <td class="right-td">dichiarato</td> -->
                             <td class="right-td">
                                 <input type="number" class="valid input-form form-control col-lg-12"
-                                    id="conguaglioDich" placeholder="dichiarato" [(ngModel)]="consumi.conguaglio_dich"
+                                    id="conguaglioDich" aria-labelledby="lblConguaglioDichiarato" placeholder="dichiarato" [(ngModel)]="consumi.conguaglio_dich"
                                     #conguaglioDich="ngModel">
                             </td>
-                            <td class="right-td label-in-table">calcolato</td>
-                            <td class="right-td">
-                                <input type="text" class="invalid input-form form-control col-lg-12"
-                                    id="conguaglioCalc" placeholder="calcolato" 
-                                    value="{{ consumi.conguaglio_calc+consumi.usi_civili_120 * getAliquota(1) +
-                                                consumi.usi_civili_480 * getAliquota(2) +
-                                                consumi.usi_civili_1560 * getAliquota(3) +
-                                                consumi.usi_civili_up * getAliquota(4) + 
-                                                consumi.usi_industriali_1200 * getAliquota(5) + 
-                                                consumi.usi_industriali_up * getAliquota(6) +
-                                                consumi.arrotondamenti + consumi.rettifiche +
-                                                consumi.tot_nuovi_allacciamenti + sommaScarti - consumi.totaleCalcolato
-                                                | currency:'EUR':'symbol'}}"
-                                    readonly>
+                            <td class="right-td label-in-table">
+                                calcolato                                
+                            </td>
+                            <td class="right-td">                                
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderCalcolato"></sigas-spinner-form>
+                                <input *ngIf="!loaderCalcolato" 
+                                    type="text" 
+                                    class="invalid input-form form-control col-lg-12"
+                                    id="conguaglioCalc"
+                                    aria-label="Congualglio calcolato"                                    
+                                    value="{{ conguaglioCalcolatoAnnoSelezionato | currency:'EUR':'symbol' }}"
+                                readonly>
+                                <!--Lasciato in caso di test                                  
+                                <label> Totale versato: {{ totaleVersato | currency:'EUR':'symbol' }} </label>                                                               
+                                -->                                
+                                <span class="comp-font" 
+                                      id="idRicalcolatoPerCompensazioneSpan" 
+                                      *ngIf="consumi.compensazionePrVO!=null&&consumi.compensazionePrVO!=undefined">Ricalcolato per compensazione
+                                </span>
                             </td>
                             <td class="right-td col-lg-11">
-                                <button type="button" class="btn btn-warning col-lg-12" data-toggle="modal" data-target="#compensazione">
+                                <button type="button" class="btn btn-warning col-lg-12" data-toggle="modal" data-target="#compensazione" (click)="setupModalCompensazione()" >
                                     Compensazione crediti
-                                </button>
+                                </button>                                
                             </td>
                         </tr>
                     </tbody>
@@ -498,21 +596,21 @@
         </div>
     </div>
 </div>
-
+<!-- fine  Gestione modifica consumi -->
 
 <!-- Modal Storico -->
-<div class="modal fade" id="storicoMdifiche" tabindex="-1" role="dialog" aria-labelledby="storicoMdifiche" aria-hidden="true">
+<div class="modal fade" id="storicoMdifiche" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="storicoModificheTitle"><b>Storico Modifiche Dichiarazioni</b></h5>
+                <span class="modal-title h5-font" id="storicoModificheTitle"><b>Storico Modifiche Dichiarazioni</b></span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <sigas-spinner *ngIf="loaderPageStorico"></sigas-spinner>
             <div *ngIf="!loaderPageStorico" class="modal-body">
-                <h5 class="form-group row storico-title col-lg-12">{{this.anagraficaSoggettiService.headerDichiarante!= undefined ? anagraficaSoggettiService.headerDichiarante.denominazione: ""}} - ANNO {{this.anno}} - Provincia {{consumi != undefined ? consumi.provincia_erogazione:""}}</h5>
+                <span class="form-group row storico-title col-lg-12">{{this.anagraficaSoggettiService.headerDichiarante!= undefined ? anagraficaSoggettiService.headerDichiarante.denominazione: ""}} - ANNO {{this.anno}} - Provincia {{consumi != undefined ? consumi.provincia_erogazione:""}}</span>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -520,7 +618,7 @@
                             <th width="30%" class="no-border-top" scope="col">utente</th>
                             <th width="10%" class="no-border-top" scope="col">data</th>
                             <th width="40%" class="no-border-top" scope="col">note</th>
-                            <th width="10%" class="no-border-top" scope="col"></th>
+                            <td width="10%" class="no-border-top" scope="col"></td>
                         </tr>
                     </thead>
                     <tbody *ngIf="storicoModificheList!=null && storicoModificheList.length != 0; else noData">
@@ -554,15 +652,14 @@
         </div>
     </div>
 </div>
-
-
+<!-- fine Modal Storico -->
 
 <!-- Modal vuovi allacciamenti -->
-<div class="modal fade" id="dettaglioNuoviAllacciamenti" tabindex="-1" role="dialog" aria-labelledby="nuoviAllacciamenti" aria-hidden="true">
+<div class="modal fade" id="dettaglioNuoviAllacciamenti" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="storicoModificheTitle"><b>Dettagli nuovi allacciamenti</b></h5>
+                <span class="modal-title h5-font" id="storicoModificheTitle"><b>Dettagli nuovi allacciamenti</b></span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -581,16 +678,16 @@
                     <tbody *ngIf="consumi!= null && consumi.nuoviAllacciamenti!=null && consumi.nuoviAllacciamenti.length != 0; else noDataNuoviAllacciamenti">
                         <tr *ngFor="let el of consumi.nuoviAllacciamenti; let last = last;">
                             <td *ngIf="!last">
-                                <input type="text" class="invalid input-form form-control col-lg-12"
+                                <input aria-label="nuovi allacciamenti consumo" type="text" class="invalid input-form form-control col-lg-12"
                                     id="consumo" value="{{el.consumo}}" readonly>
                             </td>
                             <td *ngIf="!last">
-                                <input type="text" class="invalid input-form form-control col-lg-12"
+                                <input aria-label="nuovi allacciamenti aliquota" type="text" class="invalid input-form form-control col-lg-12"
                                     id="aliquota" value="{{el.aliquota}}" readonly>
                             </td>
                             <td colspan="2" style="text-align: right;" *ngIf="last"><b>Totale nuovi allacciamenti</b></td>
                             <td>
-                                <input type="text" class="invalid input-form form-control col-lg-12"
+                                <input aria-label="nuovi allacciamenti importo" type="text" class="invalid input-form form-control col-lg-12"
                                     id="importo" value="{{el.importo | currency:'EUR':'symbol'}}" readonly>
                             </td>
                             <td>{{el.descrizione}}</td>
@@ -613,42 +710,81 @@
         </div>
     </div>
 </div>
+<!--fine  Modal vuovi allacciamenti -->
 
-<!-- Modal compenasione -->
-<div class="modal fade" id="compensazione" tabindex="-1" role="dialog" aria-labelledby="compensazione" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+<!-- Modal compensazione -->
+<div class="modal fade" id="compensazione" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="compensazione" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">        
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="compensazioneTitle"><b>Compensazione Crediti/Debiti</b></h5>
+            <div class="modal-header">                
+                <span class="modal-title h5-font" id="compensazioneTitle"><b>Compensazione Crediti/Debiti</b></span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-                </button>
+                </button>                
             </div>
-            <sigas-alert [message]="'Selezionare il Soggetto per consultare i dettagli dei consumi e degli allarmi'" [type]="'INFO'"></sigas-alert>
+            <!--<sigas-alert [message]="'Selezionare il Soggetto per consultare i dettagli dei consumi e degli allarmi'" [type]="'INFO'"></sigas-alert>-->
             <sigas-spinner *ngIf="loaderPageCompensazione"></sigas-spinner>
-            <div *ngIf="!loaderPageCompensazione" class="modal-body">
-                <table class="table table-striped">
+            <div *ngIf="!loaderPageCompensazione" class="modal-body overflow-x-scroll">                
+                <sigas-alert class="inlinea" [message]="messageWarningModCompensazione" *ngIf="showMessageWarningModCompensazione" [type]="'INFO'"></sigas-alert>                
+                <sigas-alert class="inlinea" [message]="messageSuccessModCompensazione" *ngIf="showMessageSuccessModCompensazione" [type]="'SUCCESS'"></sigas-alert>
+                <sigas-alert class="inlinea" [message]="messageErrorModCompensazione" *ngIf="showMessageErrorModCompensazione" [type]="'DANGER'"></sigas-alert>
+                <table class="display responsive table-striped"                       
+                       id="tblCompensazione"
+                       width="100%">
                     <thead>
                         <tr class="compensazione-header">
-                            <th width="20%" scope="col">Provincia</th>
-                            <th width="20%" class="align-center" scope="col">Credito/Debito</th>
-                            <th width="25%" class="align-center" scope="col">Compensazione</th>
-                            <th width="25%" class="align-center" scope="col">Risultato</th>
+                            <th class="align-left" scope="col">Provincia</th>
+                            <th class="align-right padding-right-15" scope="col">Credito/Debito</th>
+                            <th class="align-right padding-right-15" scope="col">Compensazione</th>
+                            <th class="align-right padding-right-15" scope="col">Conguaglio calc. con compensazione</th>                            
+                            <th class="align-right padding-right-15" scope="col">Ultima compensazione</th>                            
+                            <th class="align-right padding-right-15" scope="col">Congualglio calc. senza compensazione</th>
+                            <td class="align-right"></td>                            
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let el of consumiPr; let last = last;">
-                            <td class="compensazione-align-middle" *ngIf= "!last" >{{ getProvincia(el.provincia_erogazione) }}</td>
-                            <td class="compensazione-align-middle align-right" [ngClass]="{'boldRed':  el.conguaglio_dich < 0}" *ngIf= "!last">{{ el.conguaglio_dich | currency:'EUR':'symbol' }}</td>
-                            <td class="align-center" *ngIf= "!last">
-                                <input type="number" class="valid input-form form-control col-lg-12" [(ngModel)]="el.compensazione"
-                                id="conguaglioCalc">
+                            <td class="compensazione-align-left" *ngIf= "!last" >{{ getProvincia(el.provincia_erogazione) }}</td>
+                            <td class="compensazione-align-right padding-right-15" [ngClass]="{'boldRed':  el.conguaglio_calc < 0}" *ngIf= "!last">                                
+                                <span  *ngIf= "el.compensazionePrVO==null">{{ el.conguaglio_calc | currency:'EUR':'symbol' }}</span>
+                                <span  *ngIf= "el.compensazionePrVO!=null">{{ el.compensazionePrVO.conguaglio_compensato | currency:'EUR':'symbol' }}</span>
                             </td>
-                            <td class="align-center" *ngIf= "!last">
-                                <input type="text" class="invalid input-form form-control col-lg-12"
-                                id="conguaglioCalc" value="{{ el.conguaglio_dich + el.compensazione | currency:'EUR':'symbol'}}"
+                            <td class="compensazione-align-right padding-right-15" *ngIf= "!last"> 
+                                <!--Si utilizza la property compensazione presente in consumi-pr-vo solo come appoggio-->                              
+                                <input aria-label="compensazione" 
+                                       type="number" 
+                                       class="valid input-form form-control" 
+                                       [(ngModel)]="el.compensazione"
+                                id="compensazioneValue">
+                            </td>
+                            <td class="compensazione-align-right padding-right-15" *ngIf= "!last">
+                                <span *ngIf="el.compensazionePrVO==null">{{ el.conguaglio_calc + el.compensazione  | currency:'EUR':'symbol'}}</span>
+                                <span *ngIf="el.compensazionePrVO!=null">{{ el.compensazionePrVO.conguaglio_compensato + el.compensazione | currency:'EUR':'symbol'}}</span>
+                                <!--                                
+                                <input *ngIf="el.compensazionePrVO==null" 
+                                        type="text" class="invalid input-form form-control col-lg-12"
+                                        aria-label="Conguaglio dopo compensazione"
+                                        id="conguaglioCalcPostCompensazione" 
+                                        value="{{ el.conguaglio_calc - el.compensazione  | currency:'EUR':'symbol'}}"
                                 readonly>
+                                <input *ngIf="el.compensazionePrVO!=null" 
+                                        type="text" class="invalid input-form form-control col-lg-12"
+                                        aria-label="Conguaglio dopo compensazione"
+                                        id="conguaglioCalcPostCompensazioneSuccessiva" 
+                                        value="{{ el.compensazionePrVO.conguaglio_compensato - el.compensazione | currency:'EUR':'symbol'}}"
+                                readonly>
+                                -->
+                            </td>                            
+                            <td class="compensazione-align-right padding-right-15" *ngIf= "!last">
+                                <span  *ngIf= "el.compensazionePrVO!=null">{{ el.compensazionePrVO.compensazione | currency:'EUR':'symbol' }}</span>
+                            </td>                            
+                            <td class="compensazione-align-right padding-right-15" *ngIf= "!last">
+                                {{ el.conguaglio_calc | currency:'EUR':'symbol' }}
                             </td>
+                            <td class="compensazione-align-right" *ngIf= "!last">
+                                <img *ngIf="!checkCompensazioneValue(el)" class="table-buttons-custom" alt="Per attivare l'operazione di aggiornamneto compensazione è necessario indicare un valore di compensazione" title="salva compensazione disabilitato. Indicare un valore di compensazione" src="assets/save-disable.png">
+                                <img *ngIf="checkCompensazioneValue(el)" class="table-buttons-custom cursor-pointer" alt="Salva compensazione" title="salva compensazione" src="assets/save.png" (click)="salvaCompensazione(el)">
+                            </td>                            
                         </tr>
                     </tbody>
                     <ng-template #noData>
@@ -663,8 +799,9 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" (click)="chiudiModalCompensazione()">Close</button>
             </div>
         </div>
     </div>
 </div>
+<!--fine  Modal compenasione -->

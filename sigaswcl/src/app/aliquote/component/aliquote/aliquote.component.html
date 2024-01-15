@@ -1,16 +1,25 @@
-<div class=" principal-div">
+<!-- DIV principale -->
+<div class=" principal-div" id="principal-div" name="principal-div">
+    <!-- SPINNER -->
     <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
+    <!-- CHECK LOAD PAGE -->
     <div *ngIf="!loaderPage">
+        <!-- CARD PRIMARY DIV -->
         <div class="card card-primary center-default">
-            <div class="card-header text-white">
-                <strong>ALIQUOTE</strong>
+            <div class="card-header text-white">                
+                <h1 class="h1-font"><strong>ALIQUOTE</strong></h1>
             </div>
             <div [ngStyle]="{'display': !updateAliquota && !nuovaAliquota ? 'block' : 'none'}" >
+
+
+                <!-- Gestione alert message -->
                 <sigas-alert  *ngIf="!errorShow" [message]="'Per inserire un nuova Aliquota selezionare il pulsante \'Nuova\' '"
                     [type]="'INFO'">
-                </sigas-alert>
+                </sigas-alert>                
                 <sigas-alert [message]="errorMsg" [type]="'DANGER'" *ngIf="errorShow" ></sigas-alert>
                 <sigas-alert [message]="messageSuccess" [type]="'SUCCESS'" *ngIf="showSuccess" ></sigas-alert>
+                <!-- Gestione alert message FINE -->
+                <!-- CARD BODY CONTAINER -->
                 <div class="card-body container mainDiv" style="padding-top: 0;">
                     <div class="form-group col-lg-12 border-bottom newButton">
                         <div class="btn-group">
@@ -21,10 +30,15 @@
                     <div class="form-group row">
                         <div class="col-lg-12">
                             <div class="form-group col-lg-12">
+                                <!-- spinner -->
                                 <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+
+                                <!-- Table -->
                                 <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-aliquote"
                                     class="row-border hover table" datatable [dtOptions]="dtOptions"
                                     [dtTrigger]="dtTrigger" width="100%">
+
+                                    <!-- Table head -->
                                     <thead>
                                         <tr>
                                             <th class="dt-center first-th">Aliquota</th>
@@ -33,24 +47,35 @@
                                             <th class="dt-center valid-th">Validità dal</th>
                                             <th class="dt-center valid-th">Validità al</th>
                                             <th class="dt-center progRigo-th">ProgRigo</th>
-                                            <th class="last-button-col dt-center"></th>
+                                            <td class="last-button-col dt-center"></td>
                                         </tr>
                                     </thead>
+
+                                    <!-- Table body -->
                                     <tbody>
                                         <tr class="pointer" *ngFor="let el of elencoAliquote; let i = index">
+                                            <!-- ALIQUOTA -->
                                             <td class="dt-center">{{ el.aliquota }}</td>
+                                            <!-- TIPO ALIQUOTA -->
                                             <td class="dt-center">{{ el.tipoAliquote.nomeAliquota }}</td>
+                                            <!-- DESCRIZIONE -->
                                             <td class="dt-center">{{ el.tipoAliquote.descrizione }}</td>
+                                            <!-- VALIDITA DAL -->
                                             <td class="dt-center">{{ el.validitaStart | date : 'dd/MM/yyyy' }}</td>
+                                            <!-- VALIDITA AL -->
                                             <td class="dt-center">{{ el.validitaEnd | date : 'dd/MM/yyyy' }}</td>
+                                            <!-- PROGRIGO -->
                                             <td class="dt-center">{{ el.progRigo }}</td>
                                             <td class="dt-center">
-                                            
+                                                
+                                                <!-- Pulsante modifica Aliquota gia modificata -->
                                                 <div class="btn-group" *ngIf="!el.modificabile" >
                                                     <button type="button" class="btn btn-primary margin-icon"
                                                         (click)="editRow(el)" disabled title="Aliquota già utilizzata">
                                                         <i class="fas fa-edit"></i> Modifica</button>
                                                 </div>
+
+                                                <!-- Pulsante modifica -->
                                                 <div class="btn-group" *ngIf="el.modificabile">
                                                     <button type="button" class="btn btn-primary margin-icon"
                                                         (click)="editRow(el)" >
@@ -61,11 +86,15 @@
                                                         class="btn btn-danger">
                                                         <i class="fa fa-times"></i> Cancella</button>
                                                 </div>-->
+
+                                                <!-- Pulsante cancella Aliquota gia modificata -->
                                                 <div class="btn-group margin" *ngIf="!el.modificabile" >
                                                     <button type="button" (click)="deleteRow(el)" data-toggle="modal" data-target="#dialogConferma" 
                                                     class="btn btn-danger"  disabled title="Aliquota già utilizzata">
                                                         <i class="fa fa-times"></i> Cancella</button>
                                                 </div>
+
+                                                <!-- Pulsante cancella aliquota -->
                                                 <div class="btn-group margin" *ngIf="el.modificabile">
                                                     <button type="button" (click)="deleteRow(el)" data-toggle="modal" data-target="#dialogConferma" 
                                                     class="btn btn-danger"  >
@@ -79,28 +108,34 @@
                         </div>
                     </div>
                 </div>
+                <!--END CARD BODY CONTAINER -->
             </div>
+
+            <!-- Gestione modifca / nuova aliquota -->
             <div [ngStyle]="{'display': updateAliquota || nuovaAliquota ? 'block' : 'none'}" >
                 <sigas-alert [message]="errorMsg" [type]="'DANGER'" *ngIf="errorShow" ></sigas-alert>
                 <div class="principal-div">
                     <sigas-spinner *ngIf="loaderModPage"></sigas-spinner>
+
+                    <!-- Gestione NUOVA -->
                     <div *ngIf="!loaderModPage">
+                        <!-- INIZIO FORM DATI -->
                         <form #insNuovaAliquota="ngForm" (ngSubmit)="onSubmitSalva()">
                             <div class="contains">
                                 <div class="col-lg-12 hight">
                                     <div class="form-group row">
                                         <div class="form-group col-lg-12 text-center">
-                                            <h4 *ngIf="updateAliquota" class="title">Modifica aliquota</h4>
-                                            <h4 *ngIf="nuovaAliquota" class="title">Nuova aliquota</h4>
+                                            <span *ngIf="updateAliquota" class="title h4-font">Modifica aliquota</span>
+                                            <span *ngIf="nuovaAliquota" class="title h4-font">Nuova aliquota</span>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-5 hight">
                                             <div class="form-group row">
-                                                <label class="col-lg-4 offset-lg-1 col-form-label">Tipo Aliquota</label>
+                                                <label id="lblTipoAliquotaSelect" for="tipoAliquotaSelect" class="col-lg-4 offset-lg-1 col-form-label">Tipo Aliquota</label>
                                                 <div class="col-lg-6 col-value">
                                                     <div>
-                                                        <select class="form-control" id="tipoAliquotaSelect"
+                                                        <select class="form-control" id="tipoAliquotaSelect" aria-labelledby="lblTipoAliquotaSelect"
                                                             [(ngModel)]="aliquotaToSave.tipoAliquote.tipo"
                                                             name="tipoAliquotaSelect"
                                                             (change)="ricercaDescrizioni(aliquotaToSave.tipoAliquote.tipo)"
@@ -117,35 +152,40 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="col-lg-4 offset-lg-1 col-form-label">Aliquota</label>
+                                                <!-- ALIQUOTA -->
+                                                <label id="lblAliquota" for="aliquota" class="col-lg-4 offset-lg-1 col-form-label">Aliquota</label>
                                                 <div class="col-lg-6 col-value">
                                                     <div>
-                                                        <input type="number" class="form-control col-lg-7" id="aliquota"
+                                                        <input type="number" class="form-control col-lg-7" id="aliquota" aria-labelledby="lblAliquota"
                                                             placeholder="Aliquota" [(ngModel)]="aliquotaToSave.aliquota"
                                                             name="aliquota" #aliquota="ngModel" min="0" required
                                                              (change)="limiteNumber(aliquotaToSave.aliquota)">
                                                     </div>
                                                 </div>
+                                                <!-- END ALIQUOTA -->
                                             </div>
                                             <div class="form-group row">
-                                                <label class="col-lg-4 offset-lg-1 col-form-label">ProgRigo</label>
+                                                <!-- PROGRIGO -->
+                                                <label id="lblProgRigo" for="progRigo" class="col-lg-4 offset-lg-1 col-form-label">ProgRigo</label>
                                                 <div class="col-lg-6 col-value">
                                                     <div>
-                                                        <input type="number" class="form-control col-lg-7" id="progRigo"
+                                                        <input type="number" class="form-control col-lg-7" id="progRigo" aria-labelledby="lblProgRigo"
                                                             placeholder="progRigo" min="0"
                                                             [(ngModel)]="aliquotaToSave.progRigo" name="progRigo"
                                                             #progRigo="ngModel" required>
                                                     </div>
                                                 </div>
+                                                <!--END PROGRIGO -->
                                             </div>
                                         </div>
                                         <div class="col-lg-5 hight">
                                             <div class="form-group row">
-                                                <label class="col-lg-5 col-form-label">
+                                                <!-- DESCRIZIONE ALIQUOTA -->
+                                                <label id="lblDescAliquotaSelect" for="descAliquotaSelect" class="col-lg-5 col-form-label">
                                                     Descrizione Aliquota:</label>
                                                 <div class="col-lg-7 col-value">
                                                     <div>
-                                                        <select class="form-control" id="descAliquotaSelect"
+                                                        <select class="form-control" id="descAliquotaSelect" aria-labelledby="lblDescAliquotaSelect"
                                                             (change)="setTipoAliquota($event.target.value)"
                                                             [(ngModel)]="aliquotaToSave.tipoAliquote.idTipoAliquota"
                                                             name="descAliquotaSelect" required>
@@ -159,7 +199,8 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="col-lg-5 col-form-label">Validità dal</label>
+                                                <!-- VALIDITA DAL -->
+                                                <label id="lblValidDal" for="validDal" class="col-lg-5 col-form-label">Validità dal</label>
                                                 <div class="col-lg-6 col-value">
                                                     <div class="input-group">
                                                     <!-- 
@@ -177,6 +218,7 @@
 				                                               class="form-control"
 				                                               name="validDal"
 				                                               id="validDal"
+                                                               aria-labelledby="lblValidDal"
 				                                               ngbDatepicker
 				                                               placeholder="gg/mm/aaaa"
 				                                               readonly>
@@ -192,7 +234,12 @@
 				                                        <div class="input-group-append">
 				                                            <button (click)="validDal.toggle()" class="btn btn-outline-secondary calendar"
 				                                                    type="button">
-				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" 
+                                                                     aria-hidden="true" 
+                                                                     focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" 
+                                                                     viewBox="0 0 448 512" data-fa-i2svg="">                                                                     
+                                                                     <title>Calendar</title>
+                                                                     <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
 				                                                <!--<i class="far fa-calendar-alt"></i>-->
 				                                            </button>
 				                                        </div>  
@@ -200,7 +247,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="col-lg-5 col-form-label">Validità al</label>
+                                                <label id="lblValidAl" for="validAl" class="col-lg-5 col-form-label">Validità al</label>
                                                 <div class="col-lg-6 col-value">
                                                     <div class="input-group">
                                                     <!-- 
@@ -218,6 +265,7 @@
 			                                               class="form-control"
 			                                               name="validAl"
 			                                               id="validAl"
+                                                           aria-labelledby="lblValidAl"
 			                                               ngbDatepicker
 			                                               placeholder="gg/mm/aaaa"
 			                                               readonly>
@@ -233,7 +281,12 @@
 				                                        <div class="input-group-append">
 				                                            <button (click)="validAl.toggle()" class="btn btn-outline-secondary calendar"
 				                                                    type="button">
-				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14"
+                                                                 aria-hidden="true" focusable="false" data-prefix="far" 
+                                                                 data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" 
+                                                                 viewBox="0 0 448 512" data-fa-i2svg="">
+                                                                 <title>Calendar</title>
+                                                                 <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
 				                                                <!--<i class="far fa-calendar-alt"></i>-->
 				                                            </button>
 				                                        </div>
@@ -265,11 +318,15 @@
                                 </div>
                             </div>
                         </form>
+                         <!-- END FORM DATI -->
                     </div>
+                     <!--END Gestione NUOVA -->
                 </div>
             </div>
         </div>
+         <!--END CARD PRIMARY DIV -->
     </div>
+     <!--END CHECK LOAD PAGE -->
 </div>
 
 <div class="modal fade" id="dialogConferma" role="dialog">
@@ -278,18 +335,22 @@
         <div class="modal-content">
         
              <div class="modal-header">
-               <h4 class="modal-title">Attenzione</h4>
+               <span class="modal-title h5-font">Attenzione</span>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-        
+            
+            <!-- Gestione messaggio -->
             <div class="modal-body">
                 <p>
                     <span *ngIf="messageDialog!=null">{{messageDialog}}</span>
                 </p>
             </div>
+
+
+            <!-- Gestione pulsanti -->
             <div class="modal-footer">
-               <button type="button" class="btn btn-default" data-dismiss="modal">{{buttonAnnullaText}}</button>
-               <button type="button" class="btn btn-primary" (click)="confermaEliminaAliquota()">{{buttonConfirmText}}</button>
+               <button type="button" class="btn btn-default" data-dismiss="modal">Annulla</button>
+               <button type="button" class="btn btn-primary" (click)="confermaEliminaAliquota()">Conferma</button>
             </div>
         </div>
 

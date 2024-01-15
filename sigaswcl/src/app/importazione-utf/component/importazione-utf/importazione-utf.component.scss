@@ -1,5 +1,8 @@
+//import di sistema
 @import '../../../color.scss';
 
+//Sezione dispositiva
+//Pulsanti
 .upload-btn-wrapper {
     position: relative;
     overflow: hidden;
@@ -14,6 +17,7 @@
     opacity: 0;
   }
 
+  //Padding
   .padding-error {
     padding-top: 15px;
   }
@@ -21,4 +25,11 @@
   .padding-reload {
     margin-top: 23px;
   }
+
+  /*Gestione H1 font*/
+  .h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
+  }
+
+  
   

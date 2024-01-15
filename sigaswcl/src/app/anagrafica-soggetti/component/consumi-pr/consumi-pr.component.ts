@@ -16,6 +16,8 @@ import { StoricoConsumiVO } from '../../../commons/vo/storico-consumi-vo';
 import { NuovoAllacciamentoVO } from '../../../commons/vo/nuovo-allacciamento-vo';
 import { DataTableDirective } from 'angular-datatables';
 import { MessaggiVO } from '../../../commons/vo/messaggi-vo';
+import { CompensazioniPrVO } from 'src/app/commons/vo/compensazioni-pr-vo';
+import { SalvaCompensazioneRequest } from 'src/app/commons/request/salva-compensazione-request';
 
 @Component({
   selector: 'app-consumi-pr',
@@ -26,13 +28,13 @@ import { MessaggiVO } from '../../../commons/vo/messaggi-vo';
 @DestroySubscribers()
 export class ConsumiPrComponent implements OnInit {
     
-    @ViewChild(DataTableDirective) dtElement: DataTableDirective;
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective;
   private listaAliquote: Array<AliquotaVO>;
   private modificaConsumi: boolean;
   private aliquota: number;
   private sommaScarti: number;
   private listaScarti: Array<ScartoVO>;
-    private listaMessaggiCtrlImporti: Array<MessaggiVO>;
+  private listaMessaggiCtrlImporti: Array<MessaggiVO>;
   private scarto: ScartoVO;
   private consumi: ConsumiPrVO;
   private loaderPage: boolean;
@@ -48,9 +50,30 @@ export class ConsumiPrComponent implements OnInit {
   private loaderExcel: boolean;
   private validazione: boolean;
   private loaderPageCompensazione: boolean;
-    public loaderDT: boolean;
+  public loaderDT: boolean;
 
   public subscribers: any = {};
+
+  //Evolutiva 202107-01
+  private loaderCalcolato: boolean;  
+
+  private versamentiPr: any;
+  private versamentiPrAnnoPrec: any;
+
+  private totaleVersato: any;
+  private conguaglioCalcolatoAnnoSelezionato: any; 
+  //-----------------------
+
+  private compensazioneAssociataAllaProvinciaSelezionata: CompensazioniPrVO;
+  public showMessageSuccessModCompensazione: boolean = false;
+  public showMessageErrorModCompensazione: boolean = false;
+  public showMessageWarningModCompensazione: boolean = true;
+  public messageSuccessModCompensazione: String = "Compensazione salvata con successo.";
+  public messageErrorModCompensazione: String = "Si è verificato un errore in fase di esecuzione dell'operazione.";
+  public messageWarningModCompensazione: String = "Attenzione eventuali modifiche non confermate verrano perse alla chiusura."  
+  public consumiCompensatiList: number[]=[];
+  private dtOptionsCompensazione: any;
+  private dtTriggerCompensazione: Subject<any> = new Subject();
 
   constructor(
     private router: Router,
@@ -62,13 +85,33 @@ export class ConsumiPrComponent implements OnInit {
      // Move on top
      window.scrollTo(0, 0);
 
+     this.validazione = this.anagraficaSoggettiService.valida;
+
      this.isModificato = new Array<boolean>();
      this.hasScarti = new Array<boolean>();
      this.sommaScarti = 0;
 
-     this.dtOptions = {
+     this.dtOptionsCompensazione = {
       searching: false,
       paging: false,
+      responsive: {
+        details: false
+      },
+      info: false,
+      language: DataTableIt.language,
+      ordering: false,
+      columnDefs: [
+        //{ targets: '_all', className: 'dt-nowrap' },
+        //{ targets: '_all', className: 'align-center' },
+        { responsivePriority: 1,  targets: 1 },
+        { responsivePriority: 1,  targets: 2 },
+        { responsivePriority: 1,  targets: 3 }
+      ]
+     },
+
+     this.dtOptions = {
+      searching: false,
+      paging: false,      
       info: false,
       language: DataTableIt.language,
       ordering: false,
@@ -91,7 +134,47 @@ export class ConsumiPrComponent implements OnInit {
     }, err => {
       this.logger.error(err);
     });
+
+    //Evolutiva 202107-01
+    this.anagraficaSoggettiService.versamentiPr.subscribe(data => {
+      this.versamentiPr = data;
+    });
+
+    this.anagraficaSoggettiService.versamentiPrAnnoPrec.subscribe(data => {
+      this.versamentiPrAnnoPrec = data;
+    });
+    
+    this.loaderCalcolato=true;
+    //---------------------------
+
+    this.showMessageWarningModCompensazione = true;
+    this.showMessageErrorModCompensazione = false;
+    this.showMessageSuccessModCompensazione = false;
   }
+
+  private totataleDichiarazioneAnno: any;
+  private sommaVersamentiAnnoSelezionato: any;
+  private sommaVersamentiAnnoPrecedente: any;
+  private valoreVisualizzato: any;
+  private conguaglioCalcolatoPerTotaleVersato: any;  
+
+  //Evolutiva 202107-01  
+  determinaTotaleVersatoEConguaglioCalcolato(provincia: string){
+      this.anagraficaSoggettiService.ricercaConsumiForProvinceAndAnnualita(+this.anagraficaSoggettiService.annoDichiarazione, provincia).subscribe(consumiPrVO=>{
+        this.totaleVersato = consumiPrVO.totaleVersato;
+        this.conguaglioCalcolatoAnnoSelezionato = consumiPrVO.conguaglio_calc;
+        this.compensazioneAssociataAllaProvinciaSelezionata = consumiPrVO.compensazionePrVO;
+        if(consumiPrVO.compensazionePrVO!=null&&consumiPrVO.compensazionePrVO!=undefined){
+          this.conguaglioCalcolatoAnnoSelezionato=consumiPrVO.compensazionePrVO.conguaglio_compensato
+        }
+        setTimeout(() => {
+          this.loaderCalcolato = false;
+        }, 1000)        
+      }, err => {
+          this.logger.error("errore ");        
+      });
+  }   
+  //
 
   getProvincia(provincia: string): string {
    
@@ -104,15 +187,16 @@ export class ConsumiPrComponent implements OnInit {
   }
   
   reInit(){
+        this.consumiPr = null;
 //      if(this.consumi !=null && this.consumi!=undefined){
-          
+          this.loaderCalcolato = true;
           this.loaderPage = true;
           console.log('Eseguo re init');
           
           this.anagraficaSoggettiService.ricercaConsumiForProvince()
           .subscribe(res => {
            if (res.length!=0 && res[0].provincia_erogazione !=null) {
-             this.consumiPr = res;
+             this.consumiPr = res;             
              let idconsumi = 0;
              let totInd1200 = 0;
              let totIndUp = 0;
@@ -133,6 +217,7 @@ export class ConsumiPrComponent implements OnInit {
              let totaleDichOrigine = 0;
              let conguaglioDichPrec = 0;
              let rateoDichPrec = 0;
+             let totaleVersato = 0;             
              res.map((elem, idx) => {
                idconsumi = elem.id_consumi;
                totInd1200 += elem.usi_industriali_1200;
@@ -148,10 +233,12 @@ export class ConsumiPrComponent implements OnInit {
                arr += elem.arrotondamenti;
                rateoDich += elem.rateo_dich;
                congDich += elem.conguaglio_dich;
-               congCalc += elem.conguaglio_calc;
+               congCalc += (elem.compensazionePrVO==null)?elem.conguaglio_calc:elem.compensazionePrVO.conguaglio_compensato;
                totCalc += elem.totaleCalcolato;
                totaleDich += elem.totaleDich;    
-               totaleDichOrigine += elem.totaleDichOrigine;    
+               totaleDichOrigine += elem.totaleDichOrigine;
+               //Marts aggiornare la ricerca globale
+               totaleVersato = 0;    
                this.anagraficaSoggettiService.storicoConsumi( elem.id_consumi)
                .subscribe( ret => {
                  
@@ -163,7 +250,7 @@ export class ConsumiPrComponent implements OnInit {
 
                }, err => {
                  this.logger.error("errore ");
-               });
+               });              
 
                this.anagraficaSoggettiService.idConsumiScarti =  elem.id_consumi;
 
@@ -176,6 +263,7 @@ export class ConsumiPrComponent implements OnInit {
                    this.sommaScarti = 0;
                    this.listaScarti.forEach((scarto, index) => {
                      // elem.concilia[index] = scarto.conciliato;
+                     scarto.consumi=this.aggiornaFormatoNumero( scarto.consumi)
                      if (scarto.conciliato) {
                        contaConciliati++;
                        this.sommaScarti += scarto.aliquota * scarto.consumi;
@@ -204,7 +292,8 @@ export class ConsumiPrComponent implements OnInit {
 
              });
 
-            this.loaderPage = false;
+            this.loaderPage = false;           
+
             // Add total row
             let consumoPr: ConsumiPrVO = {
                id_consumi: idconsumi,
@@ -237,21 +326,29 @@ export class ConsumiPrComponent implements OnInit {
                note: '',
                compensazione: 0,
                conguaglio_dich_prec: conguaglioDichPrec,
-               rateo_dich_prec: rateoDichPrec
+               rateo_dich_prec: rateoDichPrec,
+               totaleVersato,
+               compensazionePrVO: null,
             };
             this.consumiPr.push(consumoPr);
+
+            setTimeout(() => {                             
+              console.log('Eseguite tutte le chiamate ');                
+            }, 3000);
 
             // Calling the DT trigger to manually render the table
            for (var index = 0; index < this.consumiPr.length; index++) {
                if(this.consumiPr[index].provincia_erogazione===this.consumi.provincia_erogazione){
-                   this.consumi = this.consumiPr[index];
+                   this.consumi = this.consumiPr[index];                   
                }
            }
            
-        // Calling the DT trigger to manually render the table
+          // Calling the DT trigger to manually render the table
            setTimeout(() => {
-             this.dtTrigger.next();    
-           });
+             this.dtTrigger.next();             
+             this.loaderCalcolato = false;
+             
+           });           
            
            } else {
              this.loaderPage = false;
@@ -267,7 +364,7 @@ export class ConsumiPrComponent implements OnInit {
 
   reInitSoggetto() {
     this.sommaScarti = 0;
-
+    this.consumiPr = null;
     this.anagraficaSoggettiService.ricercaConsumiForProvince()
        .subscribe(res => {
         if (res.length!=0 && res[0].provincia_erogazione !=null) {
@@ -292,6 +389,7 @@ export class ConsumiPrComponent implements OnInit {
           let totaleDichOrigine = 0;
           let conguaglioDichPrec = 0;
           let rateoDichPrec = 0;
+          let totaleVersato = 0;          
           res.map((elem, idx) => {
             idconsumi = elem.id_consumi;
             totInd1200 += elem.usi_industriali_1200;
@@ -307,10 +405,12 @@ export class ConsumiPrComponent implements OnInit {
             arr += elem.arrotondamenti;
             rateoDich += elem.rateo_dich;
             congDich += elem.conguaglio_dich;
-            congCalc += elem.conguaglio_calc;
+            congCalc += (elem.compensazionePrVO==null)?elem.conguaglio_calc:elem.compensazionePrVO.conguaglio_compensato;
             totCalc += elem.totaleCalcolato;
             totaleDich += elem.totaleDich;      
-            totaleDichOrigine += elem.totaleDichOrigine;      
+            totaleDichOrigine += elem.totaleDichOrigine;
+            //Marts aggiornare la ricerca globale
+            totaleVersato = 0;      
             this.anagraficaSoggettiService.storicoConsumi( elem.id_consumi)
             .subscribe( ret => {
               
@@ -335,6 +435,7 @@ export class ConsumiPrComponent implements OnInit {
                 this.sommaScarti = 0;
                 this.listaScarti.forEach((scarto, index) => {
                   // elem.concilia[index] = scarto.conciliato;
+                  scarto.consumi=this.aggiornaFormatoNumero( scarto.consumi)
                   if (scarto.conciliato) {
                     contaConciliati++;
                     this.sommaScarti += scarto.aliquota * scarto.consumi;
@@ -360,7 +461,6 @@ export class ConsumiPrComponent implements OnInit {
               let nuovoAllacciamentoVO: NuovoAllacciamentoVO = new NuovoAllacciamentoVO(0,0, totNuoviAllacciamenti,'');
               elem.nuoviAllacciamenti.push(nuovoAllacciamentoVO);
             }
-
           });
 
          this.loaderPage = false;
@@ -396,7 +496,9 @@ export class ConsumiPrComponent implements OnInit {
             note: '',
             compensazione: 0,
             conguaglio_dich_prec: conguaglioDichPrec,
-            rateo_dich_prec: rateoDichPrec
+            rateo_dich_prec: rateoDichPrec,
+            totaleVersato: totaleVersato,
+            compensazionePrVO: null,
          };
          this.consumiPr.push(consumoPr);
 
@@ -419,7 +521,7 @@ export class ConsumiPrComponent implements OnInit {
 
   goBackModifica() {
     this.modificaConsumi = false;
-    this.reInitSoggetto();
+    this.reInitSoggetto();    
   }
 
   goExcel() {
@@ -451,16 +553,8 @@ export class ConsumiPrComponent implements OnInit {
       this.logger.error(err);
     });
     
-    
-//    this.anagraficaSoggettiService.controlloImportiConsumi()
-//    .subscribe(resp => {
-//      this.listaMessaggiCtrlImporti= resp;
-//    }, err => {
-//      this.logger.error(err);
-//    });
-    
-    
-
+    //Evolutiva 202107-01   
+    this.determinaTotaleVersatoEConguaglioCalcolato(el.provincia_erogazione);
   }
 
   getAliquota(id: number) {
@@ -476,6 +570,7 @@ export class ConsumiPrComponent implements OnInit {
 
   conciliaScarto(scarto: ScartoVO, idx: number) {
     console.log(idx);
+    scarto.consumi=this.aggiornaFormatoNumero(scarto.consumi)
     let importo = scarto.aliquota * scarto.consumi;  
     
     scarto.conciliato = !scarto.conciliato;
@@ -487,8 +582,68 @@ export class ConsumiPrComponent implements OnInit {
 
 }
 
+aggiornaFormatoNumero(value){
+  if(value===undefined || value===null || value===NaN ||value===0){
+    return 0;
+  }
+  if(typeof value === 'string' || value instanceof String){
+    if(Number(value)===NaN){
+      return 0;
+    }
+    var lclVal = value.replace(".","");
+    lclVal = lclVal.replace(",",".");
+    return +lclVal;
+  }
+  return value;  
+}
+
+onChangeConsumiScarti(value,el){
+  el.consumi=this.aggiornaFormatoNumero(value);
+}
+
+onChangeRettifiche(value){
+  this.consumi.rettifiche = this.aggiornaFormatoNumero(value);
+}
+
+onChangeTotNuoviAllacciamenti(value){
+  this.consumi.tot_nuovi_allacciamenti = this.aggiornaFormatoNumero(value);
+}
+
+onChangeUsiCivili_UP(value){
+  this.consumi.usi_civili_up = this.aggiornaFormatoNumero(value);
+}
+
+onChangeUsiCivili_1560(value){
+  this.consumi.usi_civili_1560 = this.aggiornaFormatoNumero(value);
+}
+
+onChangeUsiCivili_480(value){
+  this.consumi.usi_civili_480 = this.aggiornaFormatoNumero(value);
+}
+
+onChangeUsiIndustriali_UP(value){
+  this.consumi.usi_industriali_up = this.aggiornaFormatoNumero(value);
+}
+
+onChangeUsiIndustriali_1200(value){
+  this.consumi.usi_industriali_1200 = this.aggiornaFormatoNumero(value);
+}
+
+onChangeUsiCivili120(value){   
+  this.consumi.usi_civili_120 = this.aggiornaFormatoNumero(value);
+}
+
   salvaDichConsumi() {
-    this.loaderPage = true;
+    this.loaderPage = true;   
+
+    this.consumi.usi_industriali_1200=this.aggiornaFormatoNumero(this.consumi.usi_industriali_1200);
+    this.consumi.usi_industriali_up=this.aggiornaFormatoNumero(this.consumi.usi_industriali_up);
+    this.consumi.usi_civili_120=this.aggiornaFormatoNumero(this.consumi.usi_civili_120);
+    this.consumi.usi_civili_480=this.aggiornaFormatoNumero(this.consumi.usi_civili_480);
+    this.consumi.usi_civili_1560=this.aggiornaFormatoNumero(this.consumi.usi_civili_1560);
+    this.consumi.usi_civili_up=this.aggiornaFormatoNumero(this.consumi.usi_civili_up);
+    this.consumi.tot_nuovi_allacciamenti=this.aggiornaFormatoNumero(this.consumi.tot_nuovi_allacciamenti);
+    this.consumi.rettifiche=this.aggiornaFormatoNumero(this.consumi.rettifiche);
 
     this.consumi.tot_civili = this.consumi.usi_civili_120 * this.getAliquota(1) +
                               this.consumi.usi_civili_480 * this.getAliquota(2) +
@@ -496,7 +651,7 @@ export class ConsumiPrComponent implements OnInit {
                               this.consumi.usi_civili_up * this.getAliquota(4);
 
     this.consumi.tot_industriali = this.consumi.usi_industriali_1200 * this.getAliquota(5) + 
-                                  this.consumi.usi_industriali_up * this.getAliquota(6);
+                                   this.consumi.usi_industriali_up * this.getAliquota(6);
     
     this.consumi.conguaglio_calc = this.consumi.conguaglio_calc + this.consumi.tot_civili + this.consumi.tot_industriali + 
                                     this.consumi.tot_nuovi_allacciamenti + this.consumi.arrotondamenti + 
@@ -513,6 +668,8 @@ export class ConsumiPrComponent implements OnInit {
           console.log(resp);
           this.modificaConsumi = false;
           this.goBackModifica();
+          this.determinaTotaleVersatoEConguaglioCalcolato(this.consumi.provincia_erogazione);
+          /*
           this.consumiPr.forEach(consumo => {
             if (consumo.id_consumi != this.consumi.id_consumi) {
               this.anagraficaSoggettiService.updateCompensazioneConsumi(consumo).subscribe(
@@ -523,6 +680,7 @@ export class ConsumiPrComponent implements OnInit {
               });
             }
           });
+          */
       }, err => {
         this.logger.error("errore salvataggio consumi");
     });
@@ -567,4 +725,73 @@ export class ConsumiPrComponent implements OnInit {
     });
   }
 
+  chiudiModalCompensazione(){
+    this.showMessageSuccessModCompensazione = false;
+    this.showMessageErrorModCompensazione = false;
+    this.cleanCompensazioni();
+  }
+
+  salvaCompensazione(consumo: ConsumiPrVO){
+    this.loaderPageCompensazione=true;   
+    let compensazionePrVO = <CompensazioniPrVO>{};
+    compensazionePrVO.compensazione = consumo.compensazione;
+    if(consumo.compensazionePrVO!=null && consumo.compensazionePrVO!=undefined){
+      compensazionePrVO.conguaglio_compensato = consumo.compensazionePrVO.conguaglio_compensato + consumo.compensazione;
+      compensazionePrVO.conguaglio_di_riferimento = consumo.compensazionePrVO.conguaglio_compensato; 
+    } else {
+      compensazionePrVO.conguaglio_compensato = consumo.conguaglio_calc + consumo.compensazione;
+      compensazionePrVO.conguaglio_di_riferimento = consumo.conguaglio_calc;
+    }    
+    compensazionePrVO.id_consumi = consumo.id_consumi;
+    this.anagraficaSoggettiService.salvaCompensazione(compensazionePrVO).subscribe(
+      resp => {
+          this.loaderPageCompensazione=false;
+          console.log(resp);
+          this.showMessageSuccessModCompensazione = true;
+          this.showMessageErrorModCompensazione = false;
+          this.showMessageWarningModCompensazione = false;
+          consumo.compensazione = 0;
+          consumo.compensazionePrVO = compensazionePrVO;          
+          if(this.consumi.id_consumi == compensazionePrVO.id_consumi){
+            this.conguaglioCalcolatoAnnoSelezionato =  compensazionePrVO.conguaglio_compensato;
+            this.consumi.compensazionePrVO = compensazionePrVO;         
+          }          
+      }, err => {
+        this.showMessageSuccessModCompensazione = false;
+        this.showMessageErrorModCompensazione = true;
+        this.showMessageWarningModCompensazione = false;
+    });    
+  }
+
+  checkCompensazioneValue(consumoPr: ConsumiPrVO){
+    if(consumoPr.compensazione===undefined || 
+       consumoPr.compensazione===null ||
+       consumoPr.compensazione===0)
+    { 
+      //this.showMessageWarningModCompensazione = this.checkVariazioneCompensazione();           
+      return false;
+    }
+    //this.showMessageWarningModCompensazione = this.checkVariazioneCompensazione();         
+    return true;  
+  }  
+
+  checkVariazioneCompensazione(): boolean {
+    var outputCheck: boolean = false;    
+    this.consumiPr.forEach(consumoPr =>{
+      if( consumoPr.compensazione!=0){        
+        outputCheck = true;
+      }
+    })
+    return outputCheck;    
+  }
+
+  cleanCompensazioni(){
+    this.consumiPr.forEach(consumoPr =>{
+      consumoPr.compensazione = 0;
+    })
+  }
+
+  setupModalCompensazione(){
+    this.showMessageWarningModCompensazione = true;
+  }  
 }

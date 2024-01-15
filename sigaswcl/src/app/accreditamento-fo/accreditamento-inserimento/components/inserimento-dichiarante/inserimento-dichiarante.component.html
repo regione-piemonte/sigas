@@ -1,45 +1,73 @@
-<div class="principal-div">
+<!--DIV Main-->
+<div class="principal-div" id="principal-div" name="principal-div">
+<!-- Gestione spinner -->
 <sigas-spinner *ngIf="!loaderDichiarante"></sigas-spinner>
+<!-- CARD PRIMARY -->
     <div class="card card-primary center-default" *ngIf="loaderDichiarante">
-        <div class="card-header text-white">
-            <strong>Accreditamento</strong> - Dati Società</div>
+        <!-- ACCREDITAMENTO -->
+        <div class="card-header text-white">            
+            <h1 class="h1-font"><strong>Accreditamento</strong> - Dati Società</h1>
+        </div>
        
         <div  [ngStyle]="{'display': !loaderInsNuovoDichiarante ? 'block' : 'none'}" >
          <form #ricercaDichiarante="ngForm" >
+
+      <!-- Gestione alert -->
       <sigas-alert [message]="'Inserire Denominazione e Codice Azienda per ricercare la società'"
         [type]="'INFO'"></sigas-alert>
          <sigas-alert *ngIf="showMessageInfo" [message]="messageInfo" [type]="'INFO'"></sigas-alert>
         <sigas-alert *ngIf="showMessage" [message]="message" [type]="tipoMessaggio"></sigas-alert>
-      <div class="panel-body">
-        <div class="form-group row col-lg-12">
-          <div class="col-lg-2"></div>
-          <label for="denominazione" class="col-lg-3 col-form-label">Denominazione:</label>
-          <div class="col-lg-5">
-            <input type="text" class="form-control col-lg-6 col-form-label" id="denominazione" [(ngModel)]="ricercaModel.denominazione"
-              name="denominazione" [required]="ricercaModel.codiceAzienda==null || ricercaModel.codiceAzienda==''"
-              maxlength="150">
-          </div>
-          <div class="col-lg-2"></div>
-        </div>
-        <div class="form-group row col-lg-12">
-          <div class="col-lg-2"></div>
-          <label for="codiceAzienda" class="col-lg-3 col-form-label">Codice Azienda:</label>
-          <div class="col-lg-5">
-            <input type="text" [(ngModel)]="ricercaModel.codiceAzienda" name="codiceAzienda" class="form-control maiuscolo col-lg-6 col-form-label"
-              id="codiceAzienda" [required]="ricercaModel.denominazione==null || ricercaModel.denominazione==''"maxlength="150">
-          </div>
-          <div class="col-lg-2"></div>
-        </div>
+      <!-- Gestione alert FINE -->
 
+      <!-- START PANEL BODY -->
+      <div class="panel-body" role="main">
+        <div class="form-group row col-lg-12">
+          <!-- Denominazione -->  
+          <div class="col-lg-2"></div>
+          <label for="denominazioneSocieta" 
+                 id="lblDenominazioneSocieta"
+                 class="col-lg-3 col-form-label">Denominazione:</label>
+          <div class="col-lg-5">
+            <input aria-labelledby="lblDenominazioneSocieta" 
+                   type="text" 
+                   class="form-control col-lg-6 col-form-label" 
+                   id="denominazioneSocieta" 
+                   [(ngModel)]="ricercaModel.denominazione"
+                   name="denominazione" [required]="ricercaModel.codiceAzienda==null || ricercaModel.codiceAzienda==''"
+                   maxlength="150">
+          </div>
+          <div class="col-lg-2"></div>
+        </div>
+        <!-- END denominazione -->
+        <!-- Codice azienda -->
+        <div class="form-group row col-lg-12">
+          <div class="col-lg-2"></div>
+          <label id="lblCodiceAzienda"
+                 for="codiceAzienda"                  
+                 class="col-lg-3 col-form-label">Codice Azienda:</label>
+          <div class="col-lg-5">
+            <input type="text" 
+                   [(ngModel)]="ricercaModel.codiceAzienda" 
+                   name="codiceAzienda" 
+                   class="form-control maiuscolo col-lg-6 col-form-label"
+                   id="codiceAzienda"
+                   aria-labelledby="lblCodiceAzienda"  
+                   [required]="ricercaModel.denominazione==null || ricercaModel.denominazione==''"maxlength="150">
+          </div>
+          <div class="col-lg-2"></div>
+        </div>
+        <!-- end azienda -->
         <!--pulsanti-->
         <div class="bs-example" data-example-id="single-button-dropdown">
           <div class="form-group row col-lg-12">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+              <!-- Indietro -->  
               <div class="btn-group">
                 <a class="btn btn-default margin-icon btn-standard" href="#" role="button">
                   <i class="fa fa-angle-left glyphicon glyphicon-chevron-left"></i>
                   indietro</a>
               </div>
+              <!-- Cancella -->
               <div class="btn-group">
                 <button type="button" (click)="cancellaCampiRicerca()" class="btn btn-primary margin-icon btn-standard">
                   <i class="fas fa-times"></i>
@@ -52,26 +80,36 @@
             </div>
           </div>
         </div>
-         <!--pulsanti-->
-         
+         <!--pulsanti-->    
+              <!-- form  -->
         <div class=" form-group col-lg-12">
                             <div class="form-group col-lg-12">
+                                <!-- spinner -->
                                 <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+
+                                <!-- Tabella -->
                                 <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-soggetti"
                                     class="row-border hover" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+
+                                    <!-- Tabella head -->
                                     <thead>
                                         <tr>
-                                            <th></th>
+                                            <td></td>
                                             <th>Dichiarante</th>
                                             <th>Codice Azienda</th>
                                         </tr>
                                     </thead>
+
+                                    <!-- Tabella body -->
                                     <tbody>
                                         <tr class="pointer" *ngFor="let el of dichiaranteModelList">
                                      		<td>
-                                                <input type="radio"  name="selection" (click)="associaDichiarante(el)">
-                                            </td> 
+                                                <input aria-label="Seleziona dichiarante" type="radio"  name="selection" (click)="associaDichiarante(el)">
+                                            </td>
+                                            <!-- Denominazione --> 
                                             <td>{{ el.denominazione }}</td>
+
+                                            <!-- Codice azienda -->
                                             <td>{{ el.codiceAzienda }}</td>
                                         </tr>
                                     </tbody>
@@ -85,11 +123,13 @@
           <div class="form-group row col-lg-12">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
               
+              <!-- Conferma -->  
               <div class="btn-group" *ngIf="dichiaranteModelList">
                 <button type="button" [disabled]="!inserisciAccreditamentoService.confermaDichiarante" class="btn btn-primary margin-icon btn-standard"  (click)="confermaInsDichiarante()">
                   <i class="fa fa-angle-right glyphicon glyphicon-search"></i> Conferma</button>
               </div>
               
+              <!-- Nuovo -->
               <div class="btn-group" *ngIf="primaRicercaSenzaRisultati">
                 <button type="button"  class="btn btn-primary margin-icon btn-standard"  (click)="nuovoDichiarante()">
                   <i class="fa fa-angle-right glyphicon glyphicon-search"></i> Nuovo</button>
@@ -101,24 +141,35 @@
          <!--pulsanti-->
       
       </div>
+      <!-- END PANEL BODY -->
      
     </form>
     </div>
+
+    <!-- Gestione NUOVO DICHIARANTE -->
     <div  [ngStyle]="{'display': loaderInsNuovoDichiarante ? 'block' : 'none'}" >
         <form #insDichiarante="ngForm" >
+            <!-- gestione Alert -->
         <sigas-alert [message]="'Inserire i dati per la nuova società'"
         [type]="'INFO'"></sigas-alert>
          <sigas-alert *ngIf="showMessageInfo" [message]="messageInfo" [type]="'INFO'"></sigas-alert>
         <sigas-alert *ngIf="showMessage" [message]="message" [type]="tipoMessaggio"></sigas-alert>
-            <div class="panel-body">
+        <!-- end alert -->
+            <div class="panel-body" role="complementary">
+                <!-- Denominazione -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1"></div>
-                    <label for="denominazione" class="col-lg-3 col-form-label">Denominazione:</label>
+                    <label id="lblDenominazione"
+                           for="denominazione" 
+                           class="col-lg-3 col-form-label">Denominazione:</label>
                     <div class="col-lg-4">
                         <div>
-                            <input type="text" class="form-control col-lg-6 col-form-label" id="denominazione"
-                                placeholder="Denominazione" [(ngModel)]="dichiaranteModel.denominazione" name="denominazione"
-                                #denominazione="ngModel" required maxlength="150">
+                            <input type="text" 
+                                   class="form-control col-lg-6 col-form-label" 
+                                   id="denominazione"
+                                   aria-labelledby="lblDenominazione"
+                                   placeholder="Denominazione" [(ngModel)]="dichiaranteModel.denominazione" name="denominazione"
+                                   #denominazione="ngModel" required maxlength="150">
                         </div>
                         <div *ngIf="denominazione.invalid && (denominazione.dirty || denominazione.touched)" class="alert alert-danger">
                             <div *ngIf="denominazione.errors.required ">
@@ -128,15 +179,19 @@
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
-                
+                <!-- Denominazione fine-->
+
+                <!-- Codice azienda -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1"></div>
-                    <label for="codiceAzienda" class="col-lg-3 col-form-label">Codice Azienda:</label>
+                    <label id="lblCodiceAziendaNuovoDichiarante"
+                    for="codiceAziendaNuovoDichiarante" 
+                    class="col-lg-3 col-form-label">Codice Azienda:</label>
                     <div class="col-lg-4">
                         <div>
-                            <input type="text" class="form-control col-lg-6 col-form-label" id="codiceAzienda"
+                            <input type="text" class="form-control col-lg-6 col-form-label" id="codiceAziendaNuovoDichiarante"
                                 placeholder="codiceAzienda" [(ngModel)]="dichiaranteModel.codiceAzienda" name="codiceAzienda"
-                                #codiceAzienda="ngModel" required maxlength="150">
+                                #codiceAzienda="ngModel" required maxlength="150" aria-labelledby="lblCodiceAziendaNuovoDichiarante">
                         </div>
                         <div *ngIf="codiceAzienda.invalid && (codiceAzienda.dirty || codiceAzienda.touched)" class="alert alert-danger">
                             <div *ngIf="codiceAzienda.errors.required ">
@@ -146,102 +201,85 @@
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
-                <!-- 
+                <!-- Codice azienda fine -->
+                
+                <!-- Provincia -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1 "></div>
-                    <label for="regione " class="col-lg-3 col-form-label ">Regione:</label>
-                    <div class="col-lg-4 ">
-                        <sigas-spinner-form [diameter]="30" *ngIf="!loaderRegioni;  else elseRegioniCaricate"></sigas-spinner-form>
-                        <ng-template #elseRegioniCaricate>
-                            <select class="form-control" id="regione" [(ngModel)]="dichiaranteModel.regione.id" name="regione"
-                                (change)="loadProvince(dichiaranteModel.regione.id)">
-                                <option *ngFor="let reg of regioniModel" [value]="reg.id">{{reg.denominazione}}</option>
-                            </select>
-                        </ng-template>
-                    </div>
-                    <div class="col-lg-1 "></div>
-                </div>
-                 -->
-                
-                
-                
-                <div class="form-group row col-lg-12">
-                    <div class="col-lg-1 "></div>
-                    <label for="provincia " class="col-lg-3 col-form-label ">Provincia:</label>
+                    <label id="lblProvincia"
+                           for="provincia" 
+                           class="col-lg-3 col-form-label ">Provincia:</label>
                     <div class="col-lg-4 ">
                         <sigas-spinner-form [diameter]="30" *ngIf="!loaderProvince;  else elseProvinciaCaricate"></sigas-spinner-form>
                         <ng-template #elseProvinciaCaricate>
-                            <select class="form-control" id="provincia" [(ngModel)]="dichiaranteModel.provincia.id"
-                                name="provincia" (change)="loadComuni(dichiaranteModel.provincia.id)">
+                            <select class="form-control" 
+                                    id="provincia"
+                                    aria-labelledby="lblProvincia" 
+                                    [(ngModel)]="dichiaranteModel.provincia.id"
+                                    name="provincia" 
+                                    (change)="loadComuni(dichiaranteModel.provincia.id)">
                                 <option *ngFor="let prov of provinciaModel" [value]="prov.id">{{prov.denominazione}}</option>
                             </select>
                         </ng-template>
                     </div>
                     <div class="col-lg-1 "></div>
                 </div>
+                <!-- Provincia fine-->
+
+                <!-- Comune -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1 "></div>
-                    <label for="comune " class="col-lg-3 col-form-label ">Comune:</label>
+                    <label id="lblComune"
+                    for="comune" 
+                    class="col-lg-3 col-form-label ">Comune:</label>
                     <div class="col-lg-4 ">
                         <sigas-spinner-form [diameter]="30" *ngIf="!loaderComuni;  else elseComuniCaricati"></sigas-spinner-form>
                         <ng-template #elseComuniCaricati>
                             <select class="form-control" id="comune" [(ngModel)]="dichiaranteModel.comune.id" name="comune"                                
-                                [disabled]="dichiaranteModel.provincia.id==null">
+                                [disabled]="dichiaranteModel.provincia.id==null" aria-labelledby="lblComune">
                                 <option *ngFor="let com of comuniModel" [value]="com.id">{{com.denominazione}}</option>
                             </select>
                         </ng-template>
                     </div>
                     <div class="col-lg-1 "></div>
                 </div>
-                <!-- 
-                <div class="form-group row col-lg-12">
-                    <div class="col-lg-1 "></div>
-                    <label for="indirizzi " class="col-lg-3 col-form-label ">Indirizzo:</label>
-                    <div class="col-lg-4 ">
-                        <sigas-spinner-form [diameter]="30" *ngIf="!loaderIndirizzo"></sigas-spinner-form>
-                        <input list="indirizzi" *ngIf="loaderIndirizzo" [disabled]="disableIndirizzo()" maxlength="250"
-                            [required]="dichiaranteModel.indirizzoNonTrovato==null || dichiaranteModel.indirizzoNonTrovato== ''"
-                            [(ngModel)]="dichiaranteModel.indirizzo" (ngModelChange)="indirizzoChange($event)" name="indirizzo"
-                            class="form-control"   #ind="ngModel">
-                        <datalist id="indirizzi">
-                            <option *ngFor="let indirizzo of elencoIndirizzi" [value]="indirizzo">{{indirizzo}}</option>
-                        </datalist>
-                    </div>
-                </div>
+                <!-- Comune fine -->
                 
- -->
- 
+                <!-- Indirizzo -->
  				<div class="form-group row col-lg-12">
                     <div class="col-lg-1 "></div>
-                    <label for="indirizzi " class="col-lg-3 col-form-label ">Indirizzo:</label>
+                    <label id="lblIndirizzi" for="indirizzi" class="col-lg-3 col-form-label ">Indirizzo:</label>
                     <div class="col-lg-4 ">
                         <sigas-spinner-form [diameter]="30" *ngIf="!loaderIndirizzo"></sigas-spinner-form>
                         <input list="indirizzi" *ngIf="loaderIndirizzo"  maxlength="250"
-                            [(ngModel)]="dichiaranteModel.indirizzo" name="indirizzo"
+                            [(ngModel)]="dichiaranteModel.indirizzo" name="indirizzo" id="indirizzi" aria-labelledby="lblIndirizzi"
                             class="form-control"   #ind="ngModel">
                         
                     </div>
                 </div>
-                
+                <!-- Indirizzo fine -->   
+                <!--  Iban  -->
 				<div class="form-group row col-lg-12">
                     <div class="col-lg-1"></div>
-                    <label for="iban" class="col-lg-3 col-form-label">Iban:</label>
+                    <label id="lblIban" for="iban" class="col-lg-3 col-form-label">Iban:</label>
                     <div class="col-lg-4">
                         <div>
-                            <input type="text" class="form-control col-lg-6 col-form-label" id="iban"
+                            <input type="text" class="form-control col-lg-6 col-form-label" id="iban" aria-labelledby="lblIban"
                                 placeholder="Iban" [(ngModel)]="dichiaranteModel.iban" name="iban"
                                 #iban="ngModel"  maxlength="150">
                         </div>
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
+                <!--  Iban fine -->
                 
+                <!-- Telefono -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1"></div>
-                    <label for="telefono" class="col-lg-3 col-form-label">Telefono:</label>
+                    <label id="lblTelefono" for="telefono" class="col-lg-3 col-form-label">Telefono:</label>
                     <div class="col-lg-4">
                         <div>
-                            <input type="text" class="form-control col-lg-6 col-form-label" id="telefono"
+                            <input type="text" class="form-control col-lg-6 col-form-label" id="telefono" aria-labelledby="lblTelefono"
                                 placeholder="Telefono" [(ngModel)]="dichiaranteModel.telefonoDichiarante" name="telefono" pattern="^[0-9\-\+\s\(\)]*$"
                                 #telefono="ngModel"  required maxlength="25">
                         </div>
@@ -256,14 +294,14 @@
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
-                
-                
+                <!-- Telefono fine-->
+                <!-- PEC -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1"></div>
-                    <label for="pec" class="col-lg-3 col-form-label">Pec:</label>
+                    <label id="lblPec" for="pec" class="col-lg-3 col-form-label">Pec:</label>
                     <div class="col-lg-4">
                         <div>
-                            <input type="text" class="form-control col-lg-6 col-form-label" id="pec"
+                            <input type="text" class="form-control col-lg-6 col-form-label" id="pec" aria-labelledby="lblPec"
                                 placeholder="Pec" [(ngModel)]="dichiaranteModel.pecDichiarante" name="pec"  pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" 
                                 #pec="ngModel"  [required]="dichiaranteModel.emailDichiarante==null || dichiaranteModel.emailDichiarante==''"  maxlength="150">
                         </div>
@@ -278,14 +316,15 @@
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
+                <!-- PEC fine -->
                 
-                
+                <!-- EMAIL -->
                 <div class="form-group row col-lg-12">
                     <div class="col-lg-1"></div>
-                    <label for="email" class="col-lg-3 col-form-label">Email:</label>
+                    <label id="lblEmail" for="email" class="col-lg-3 col-form-label">Email:</label>
                     <div class="col-lg-4">
                         <div>
-                            <input type="text" class="form-control col-lg-6 col-form-label" id="email"
+                            <input type="text" class="form-control col-lg-6 col-form-label" id="email" aria-labelledby="lblEmail"
                                 placeholder="Email" [(ngModel)]="dichiaranteModel.emailDichiarante" name="email" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" 
                                 #email="ngModel"  [required]="dichiaranteModel.pecDichiarante==null || dichiaranteModel.pecDichiarante==''" maxlength="150">
                         </div>
@@ -300,39 +339,25 @@
                     </div>
                     <div class="col-lg-4"></div>
                 </div>
-                
-                
-                <!-- 
-                <div class="form-group row col-lg-12">
-                    <div class="col-lg-1"></div>
-                    <label for="email" class="col-lg-3 col-form-label">Note:</label>
-                    <div class="col-lg-4">
-                        <textarea class="note-textarea" rows="4" [(ngModel)]="dichiaranteModel.note" id="note" 
-                         [ngModelOptions]="{standalone: true}">
-                        </textarea>
-                       
-                    </div>
-                    <div class="col-lg-4"></div>
-                </div>
-                 -->
-                
-
-
+                <!-- EMAIL fine-->
 
                 <!--pulsanti-->
                 <div class="bs-example" data-example-id="single-button-dropdown">
                     <div class="form-group row col-lg-12">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <!-- Indietro -->
                             <div class="btn-group">
                                 <a class="btn btn-default margin-icon btn-standard" (click)="annullaInsDichiarante()" role="button">
                                     <i class="fa fa-angle-left glyphicon glyphicon-chevron-left"></i>
                                     indietro</a>
                             </div>
+                            <!-- Cancella -->
                             <div class="btn-group">
                                 <button type="button" (click)="cancellaInsDichiarante()" class="btn btn-primary margin-icon btn-standard">
                                     <i class="fa fa-angle-left glyphicon glyphicon-remove"></i>
                                     Cancella</button>
                             </div>
+                            <!-- Conferma -->
                             <div class="btn-group">
                                 <button type="button" [disabled]="!insDichiarante.form.valid" class="btn btn-primary margin-icon btn-standard" (click)="inserisciDichiarante()">
                                     <i class="fa fa-angle-right glyphicon glyphicon-ok"></i> Conferma</button>
@@ -344,7 +369,7 @@
             </div>
         </form>
 		</div>
-    </div>
-    
- 
+    </div> 
+    <!--FINE  CARD PRIMARY -->
 </div>
+<!-- end div Main -->

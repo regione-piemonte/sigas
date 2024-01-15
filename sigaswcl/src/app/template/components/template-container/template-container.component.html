@@ -1,14 +1,21 @@
 <div class="container-fluid">
-    <div class="principal-div col-xs-12 col-sm-12 col-md-1 col-lg-1"></div>
+    <div class="principal-div col-xs-12 col-sm-12 col-md-1 col-lg-1" id="principal-div" name="principal-div"></div>
+    <!-- Gestione spinner -->
     <sigas-spinner *ngIf="!loaded"></sigas-spinner>
+
     <div class="principal-div col-xs-12 col-sm-12 col-md-10 col-lg-10" *ngIf="loaded" style="padding-top: 30px">
         <div class="panel-primary-sigas panel-sigas ">
+
+            <!-- Form intestazione -->
             <form #intestazione="ngForm">
                 <div class="panel-body panel-body-background" style="background-color: #ffffff">
                     <shared-template-intestazione></shared-template-intestazione>
 
+                    <!-- Gestione switch -->
                     <div [ngSwitch]="id">
                         <div >
+
+                            <!-- Gestione template lettera di risposta -->
                             <template-lettera-risposta></template-lettera-risposta>
                         </div>
                         

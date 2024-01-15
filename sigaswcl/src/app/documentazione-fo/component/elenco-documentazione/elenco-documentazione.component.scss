@@ -1,47 +1,102 @@
+//Import di sistema
 @import '../../../color.scss';
 
-
+//Sezione accordion
 .accordion-toggle:after 						{font-family:'Glyphicons Halflings'; content:"▼"; float:right; color:grey;}
 .accordion-toggle.collapsed:after 			{content:"▲";}
 
 
+// ------------------------------
 /* Styling of the collapsible row */
+// -----------------------------
 td.collapse-row {
     border-style: none;
     padding: 0;
 }
-
-
+// -------------------------
+//Sezione Table ----------
+// -------------------------
 .dettagli-subTable-td {
     width: 30% !important
 }
+// -------------------------
 
-
+// -------------------------
 td.trunk20 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 200px;
 }
+// -------------------------
 
+// -------------------------
 td.trunk30 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 300px;
 }
-
+//---------------------------
+//Sezione badge  -----------
+// -------------------------
 .badge {
     min-width: 45px;
     padding-top: 5px;
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 10px;
+    font-size: 13px;
 }
-
+// -------------------------
 .alert-badge {
     display: inline-block;
     margin-right: 4px;
     margin-top: 0px;
+}
+// -------------------------
+table.marts tbody tr td{  
+  padding-left: 1.3rem;
+}
+// -------------------------
+.dt-w-10 {
+  width: 10%;
+}
+// -------------------------
+.dt-center {
+  text-align: center;  
+}
+// -------------------------
+.dt-left {
+  text-align: left;  
+}
+// -------------------------
+//Sezione trunk del testo
+// -------------------------
+.trunk20 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 20px;
+}
+// -------------------------
+
+.btn-ok {
+  background-color: #1e7e34;
+  border-color: #1e7e34;
+  //width:20px; 
+  //height:20px
+}
+
+.sr-only{
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+
+.h1-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
 }

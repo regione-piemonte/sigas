@@ -1,20 +1,28 @@
+/*Import di classe*/
 @import '../../../color.scss';
 
+/* selettori */
 .badge {
     min-width: 45px;
-    padding-top: 5px;
-    display: inline-block;
-    margin-right: 4px;
-    margin-top: 2px;
-    font-size: 10px;
+    padding-top: 5px;   //padding
+    display: inline-block; //Tipologia display
+    margin-right: 4px; //Margin R
+    margin-top: 2px;   //Margin Top
+    font-size: 13px;
 }
 
+//Alert
 .alert-badge {
-    display: inline-block;
-    margin-right: 4px;
-    margin-top: 0px;
+    display: inline-block; //Tipologia display
+    margin-right: 4px;  //Margin R
+    margin-top: 0px;    //Margin Top
 }
 
 .col-form-label {
     min-width: 75px;
 }
+
+/*Gestione H1*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
+ }

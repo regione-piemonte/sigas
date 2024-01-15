@@ -1,59 +1,89 @@
-<div class="principal-div">
+<div class="principal-div" id="principal-div" name="principal-div">
     <div class="card card-primary center-default">
-        <div class="card-header text-white">
-            <strong>Gestione Pagamenti / Soggetto Dichiarante {{ordinativiService.soggettoAssociato.denominazione}}</strong>
+        <div class="card-header text-white">            
+            <h3 class="h1-font"><strong>Gestione Pagamenti / Soggetto Dichiarante {{ordinativiService.soggettoAssociato.denominazione}}</strong></h3>
         </div>
         <div>
             <sigas-alert [message]="'Inserire i dati dei versamento conciliati, Se l\'importo del pagamento è suddiviso su più versamenti il sistema ripresenterà una nuova finestra riguardante lo stesso pagamento.
             						Se si è selezionato per errore il pagamento o non si hanno sufficienti informazioni per conciliarlo, selezionare il pulsante Annulla Assoc. per passare al pagamento successivo.'" [type]="'INFO'"></sigas-alert>
             <div class="card-body container">
-            
+
+                <!--Gestione alert-->
    				<sigas-alert [message]="messageSuccess" *ngIf="showSuccess" [type]="'SUCCESS'"></sigas-alert>
       			<sigas-alert [message]="messageError" *ngIf="showMessageError" [type]="'DANGER'"></sigas-alert>
+                <!--Gestione alert FINE-->
+
             <div class="form-group row">
 		          <div class="col-lg-12">
-            <div class="form-group col-lg-12 text-left">
-		        <label class="title"><b>Pagamento {{indexPagamento+1}} di {{ordinativiService.listaOrdinativiIncassoSelezionati.length}}</b></label>
-		      </div>
+            
+                <!--Pagamento-->
+                <div class="form-group col-lg-12 text-left">               
+		            <label class="title"><b>Pagamento {{indexPagamento+1}} di {{ordinativiService.listaOrdinativiIncassoSelezionati.length}}</b></label>
+		        </div>
       
+                <!--Descrizione ordine-->
                <div class="row">
                	Descrizione Ordine Incasso: <b> {{pagamentoCorrente.descOrdInc }}</b>
                </div>
+
+               <!--Data emissione-->
                <div class="row">
                	Data emissione: <b>{{ pagamentoCorrente.dataEmissione | date : 'dd/MM/yyyy'}} </b>
                </div>
+
+               <!--Anno-->
                <div class="row">
                	Anno: <b> {{ pagamentoCorrente.annoOrdInc }} </b>
                </div>
+
+               <!--Numero ordine-->
                <div class="row">
                	Numero Ordine Incrementale: <b> {{ pagamentoCorrente.numOrdInc }}</b>
                </div>
+
+               <!--Descrzione distinta-->
                <div class="row">
                	Descr. Distinta: <b> {{ pagamentoCorrente.descDistinta }}</b>
                </div>
+
+               <!--Id Soggetto-->
                <div class="row">
                	Soggetto Id: <b> {{ pagamentoCorrente.soggettoId }}</b>
                </div>
+
+               <!--Cod Soggetto-->
                <div class="row">
                	Cod. Soggetto: <b> {{ pagamentoCorrente.codSoggetto }}</b>
                </div>
+
+               <!--Descrizione soggetto-->
                <div class="row">
                	Descr. Soggetto: <b>{{ pagamentoCorrente.descSoggetto }}</b>
                </div>
+
+               <!--Codice Fiscale soggetto-->
                <div class="row">
                	C. Fisc. Soggetto: <b>{{ pagamentoCorrente.cfSoggetto }} </b>
                </div>
+
+               <!--Partita IVA-->
                <div class="row">
                	P.Iva: <b>{{ pagamentoCorrente.pIvaSoggetto }} </b>
                </div>
+
+               <!--Tipo atto-->
                <div class="row">
                	Tipo Atto amm.: <b> {{ pagamentoCorrente.descTipoAttoAmministrativo }}</b>
                </div>
+
+               <!--Oggetto Atto-->
                <div class="row">
                	Oggetto Atto Amministrativo: <b> {{ pagamentoCorrente.oggettoAttoAmministrativo }}</b>
                </div>
                <div class="row">               	
                </div>
+
+               <!--Importo-->
                <div class="row">
                	Importo: <b> {{pagamentoCorrente.importoAttuale  | currency:'EUR':'symbol'  }}</b> &nbsp;&nbsp;&nbsp;&nbsp;
                	
@@ -73,13 +103,18 @@
 				          <div class="col-lg-12">
 				          	<!--testata-->
 					    <div class="form-group col-lg-12 text-center">
-					      <h5 class="title">Prospetto versamenti conciliati</h5>
+					      <h2 class="title h5-font">Prospetto versamenti conciliati</h2>
 					    </div>
 				              <div class="form-group col-lg-12">
 				                  <div class="form-group col-lg-12">
 				                  <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+
+
+                                      <!--Tabella-->
 				                      <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-versamenti"  class="row-border hover" 
 				                          datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+
+                                          <!--Tabella head-->
 				                          <thead>
 				                              <tr>
 				                                  <th>Anno</th>
@@ -89,12 +124,24 @@
 				                                  <th>importo </th>
 				                              </tr>
 				                          </thead>
+
+                                          <!--Tabella body-->
 				                          <tbody>
 				                              <tr class ="pointer" *ngFor="let el of pagamentoCorrente.sigasPagamentiVersamentis" >
+
+                                                  <!--Annualita-->
 				                                  <td>{{ el.fkVersamento.annualita }}</td>
+
+                                                  <!--Mese-->
 				                                  <td>{{ el.fkVersamento.mese }}</td>
+
+                                                  <!--Provincia-->
 				                                  <td>{{ el.fkVersamento.provincia }}</td>
+
+                                                  <!--Denominazione-->
 				                                  <td>{{ el.fkVersamento.tipo.denominazione }}</td>
+
+                                                  <!--Importo-->
 				                                  <td>{{ el.fkVersamento.importo | currency:'EUR':'symbol' }}</td>
 				                              </tr>
 				                          </tbody>
@@ -112,18 +159,18 @@
                           <div class="col-lg-12 hight">
                               <div class="form-group row">
                                   <div class="form-group col-lg-12 text-center">
-                                      <h4 *ngIf="updateVersamento" class="title">Modifica versamento</h4>
-                                      <h4 *ngIf="nuovoVersamento" class="title">Nuovo versamento</h4>
+                                      <span *ngIf="updateVersamento" class="title h4-font">Modifica versamento</span>
+                                      <span *ngIf="nuovoVersamento" class="title h4-font">Nuovo versamento</span>
                                   </div>
                               </div>
                               
                               <div class="row">
                                   <div class="col-lg-3 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-6 col-form-label">Anno</label>
+                                          <label id="lblAnno" for="anno" class="col-lg-6 col-form-label">Anno</label>
                                           <div class="col-lg-6 col-value">
                                              <div>
-                                                 <select class="form-control" id="anno" [(ngModel)]="versamentoToSave.annualita" name="anno" required>
+                                                 <select class="form-control" id="anno" aria-labelledby="lblAnno" [(ngModel)]="versamentoToSave.annualita" name="anno" required>
                                                       <option *ngFor="let anno of listaAnni" [ngValue]="anno">{{anno}}</option>
                                                  </select>
                                              </div> 
@@ -132,11 +179,11 @@
                                   </div>
                                   <div class="col-lg-3 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-6 col-form-label">
+                                          <label id="lblMese" for="mese" class="col-lg-6 col-form-label">
                                               Mese:</label>
                                           <div class="col-lg-6 col-value">
                                               <div>
-                                              <select class="form-control" id="mese"
+                                              <select class="form-control" id="mese" aria-labelledby="lblMese"
                                                       [(ngModel)]="versamentoToSave.mese"
                                                       name="mese"
                                                       required>
@@ -159,7 +206,7 @@
                                   </div>
                                   <div class="col-lg-3 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-6 col-form-label">
+                                          <label id="lblProvincia" for="provincia" class="col-lg-6 col-form-label">
                                               Provincia:</label>
                                           <div class="col-lg-5 col-value">
                                               <div>
@@ -170,7 +217,7 @@
                                                           <option *ngFor="let consumo of consumiPr" [value]="consumo.id_consumi">{{consumo.provincia_erogazione}}</option>
                                                       </select>
                                                 </ng-template>-->
-                                                <select class="form-control" id="provincia"
+                                                <select class="form-control" id="provincia" aria-labelledby="lblProvincia"
                                                       [(ngModel)]="versamentoToSave.provincia"
                                                       name="provincia" 
                                                       required>
@@ -190,13 +237,13 @@
                                   
                                   <div class="col-lg-3 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-6 col-form-label">
+                                          <label id="lblTipoVersamento" for="tipoVersamento" class="col-lg-6 col-form-label">
                                               Tipo:</label>
                                           <div class="col-lg-6 col-value">
                                               <div>
                                                <sigas-spinner-form [diameter]="30" *ngIf="loaderTipoVersamenti;  else elseTipoVersamenti"></sigas-spinner-form>
                                                <ng-template #elseTipoVersamenti>
-                                                    <select class="form-control" id="tipoVersamento" [(ngModel)]="versamentoToSave.tipo.idTipoVersamento" name="tipoVersamento" required>
+                                                    <select class="form-control" id="tipoVersamento" aria-labelledby="lblTipoVersamento" [(ngModel)]="versamentoToSave.tipo.idTipoVersamento" name="tipoVersamento" required>
                                                           <option *ngFor="let tipoVersamento of tipoVersamentiModel" [value]="tipoVersamento.idTipoVersamento">{{tipoVersamento.denominazione}}</option>
                                                     </select>
                                               </ng-template>
@@ -209,7 +256,7 @@
                               <div class="row">
                                 <div class="col-lg-4 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-6 col-form-label">
+                                          <label id="lblDataVers" for="dataVers" class="col-lg-6 col-form-label">
                                               Data versamento:</label>
                                           <div class="col-lg-6 col-value">
                                               <div>
@@ -231,6 +278,7 @@
 				                                               class="form-control"
 				                                               name="dataVers"
 				                                               id="dataVers"
+                                                               aria-labelledby="lblDataVers"
 				                                               ngbDatepicker
 				                                               placeholder="gg/mm/aaaa"
 				                                               readonly
@@ -245,9 +293,13 @@
 				                                            </button>
 				                                        </ng-template>
 				                                        <div class="input-group-append">
-				                                            <button (click)="dataVers.toggle()" class="btn btn-outline-secondary calendar" 
+				                                            <button aria-label="Seleziona data" (click)="dataVers.toggle()" class="btn btn-outline-secondary calendar" 
 				                                                    type="button">
-				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" 
+                                                                focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" 
+                                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                                                                <title>Calendario</title>
+                                                                <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
 				                                                <!--<i class="far fa-calendar-alt"></i>-->
 				                                            </button>
 				                                        </div>  
@@ -259,10 +311,10 @@
                                   </div>  
                                   <div class="col-lg-4 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-5 col-form-label">
+                                          <label id="lblImporto" for="importo" class="col-lg-5 col-form-label">
                                               Importo versato:</label>
                                           <div class="col-lg-7 col-value">
-                                              <input type="number" class="form-control col-lg-7" id="importo" 
+                                              <input type="number" class="form-control col-lg-7" id="importo" aria-labelledby="lblImporto" 
                                                   placeholder="Importo" [(ngModel)]="versamentoToSave.importo"
                                                   name="importo" #importo="ngModel" min="0" required>
                                           </div>
@@ -271,10 +323,10 @@
                                   </div>  
                                   <div class="col-lg-4 hight">
                                       <div class="form-group row">
-                                          <label class="col-lg-3 col-form-label">
+                                          <label id="lblNote" for="note" class="col-lg-3 col-form-label">
                                               Note:</label>
                                           <div class="col-lg-9 col-value">
-                                               <textarea class="note-textarea" rows="4" [(ngModel)]="versamentoToSave.note" id="note" 
+                                               <textarea class="note-textarea" rows="4" [(ngModel)]="versamentoToSave.note" id="note" aria-labelledby="lblNote"
                                                       [ngModelOptions]="{standalone: true}">
                                               </textarea>
                                           </div>

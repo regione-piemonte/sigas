@@ -1,3 +1,4 @@
+import { CompensazioniPrVO } from './compensazioni-pr-vo';
 import { NuovoAllacciamentoVO } from './nuovo-allacciamento-vo';
 
 export class ConsumiPrVO {
@@ -5,6 +6,7 @@ export class ConsumiPrVO {
     public scarti: boolean;
     public conguaglio_dich_prec: number;
     public rateo_dich_prec: number;
+    public compensazionePrVO: CompensazioniPrVO;       
 
     constructor(
         public id_consumi: number,
@@ -33,7 +35,7 @@ export class ConsumiPrVO {
         public totaleDichOrigine: number,
         public note: string,        
         public nuoviAllacciamenti: Array<NuovoAllacciamentoVO>,
-        public compensazione: number
-       
+        public compensazione: number,
+        public totaleVersato: number,        
     ) { }
 }

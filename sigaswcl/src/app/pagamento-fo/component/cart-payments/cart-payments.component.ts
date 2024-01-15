@@ -172,6 +172,13 @@ export class CartPaymentComponent implements OnInit, OnDestroy {
     private paymentStartError: boolean = false;
     private paymentStartedOk: boolean = false;
     payCart() {
+        //-----------------------
+        //SOLO PER BYPASS
+        //-----------------------
+        //this.router.navigateByUrl("home/start-ppay");
+        //this.paymentStartedOk = true;
+        //-----------------------
+       
         this.paymentStartError = this.paymentStartedOk = false;
         this.foPayService.startCartPayment().subscribe(
             res => {
@@ -183,6 +190,8 @@ export class CartPaymentComponent implements OnInit, OnDestroy {
                 this.logger.error("errore " + err); 
             });
         this.pageLoadingInProgress = false;
+        
+        
     }
 
     downloadExcelCart() {

@@ -63,7 +63,8 @@ export class DocumentazioneComponent implements OnInit {
     
     public eliminaM : boolean = true;
     public confermaM : boolean = true;
-    public maxSize: number = 5242880;
+    //public maxSize: number = 5242880;
+    public maxSize: number = 20971520;
     public maxAllegati: number = 20;
     public sizeAlert: boolean = false;
     public descAllegatoAlert: boolean = false;
@@ -71,7 +72,7 @@ export class DocumentazioneComponent implements OnInit {
     public numAllegatiAlert: boolean = false;
     public typeAlert: boolean = false;
     public nuovoAllegato: SalvaAllegatoRequest;
-    public nomeAllegatoTmp: string;
+    public nomeAllegatoTmp: string;     
     
     allowedFilesType = ["pdf","tiff","jpg","jpeg","p7m"];
     allowedFilesTypeMessage : string;
@@ -233,7 +234,13 @@ export class DocumentazioneComponent implements OnInit {
                 this.fileToUpload = files.item(0);
                 console.log(this.fileToUpload);
                 this.fileCaricato = true;
-                this.documentoToSave.nomeFile = this.fileToUpload.name;
+                //this.documentoToSave.nomeFile = this.fileToUpload.name;
+                if(array.length > 1){
+                    this.documentoToSave.nomeFile = array[array.length-1]
+                    type = array[array.length-1];
+                }else{
+
+                } 
             }
         }
         

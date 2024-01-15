@@ -4877,7 +4877,9 @@ body .page__header #navbar-top .region-top-header {
     height: 1px;
     margin: -1px;
     overflow: hidden;
-    padding: 0;
+    /* padding: 0; */
+    padding-left: 0;
+    padding-right: 0;
     position: absolute;
     width: 1px;
 }

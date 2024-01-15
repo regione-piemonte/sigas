@@ -107,7 +107,7 @@ export class AssociaOrdincVersamentoComponent implements OnInit {
               };
         
         
-        this.versamentoToSave = new VersamentiPrVO(null, null, null, null,'', '' ,new TipoVersamentiVO(null,'',''),null,null,null,'',null,0);
+        this.versamentoToSave = new VersamentiPrVO(null, null, null, null,'', '' ,new TipoVersamentiVO(null,'',''),null,null,null,'',null,0,false,null);
         this.indexPagamento = 0;
         this.totaleVersato = 0;
         this.importoConciliato = 0;
@@ -153,7 +153,7 @@ export class AssociaOrdincVersamentoComponent implements OnInit {
     }
     
     clearAll() {
-        this.versamentoToSave = new VersamentiPrVO(null, null, null, null,'', '' ,new TipoVersamentiVO(null,'',''),null,null,null,'',null,0);   
+        this.versamentoToSave = new VersamentiPrVO(null, null, null, null,'', '' ,new TipoVersamentiVO(null,'',''),null,null,null,'',null,0,false,null);   
         //console.log(this.versamentoToSave);
       }
 

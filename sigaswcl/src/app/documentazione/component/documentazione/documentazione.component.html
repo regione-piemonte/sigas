@@ -1,27 +1,38 @@
-<div class="principal-div">
+<!-- MAIN CONTAINER -->
+<div class="principal-div" id="principal-div" name="principal-div">
     <div class="card card-primary center-default">
-        <div class="card-header text-white">
-            <strong>Gestione Documento</strong></div>
+        <div class="card-header text-white">            
+            <h1 class="h1-font"><strong>Gestione Documento</strong></h1>
+        </div>
         <form #praticaAccreditamento="ngForm">
+            <!-- SESSION ALERT -->
             <sigas-alert [message]="'Gestione documentazione '"
                          [type]="'INFO'">
             </sigas-alert>
+            <!-- FINE SESSION ALERT -->
+
+            <!-- CARD CONATAINER -->
             <div class="card-body container">
+                <!-- SHOW ALERT MESSAGES -->
                 <sigas-alert *ngIf="showMessage" [message]="message" [type]="levelMessage"></sigas-alert>
                 <sigas-alert *ngIf="showMessageError" [message]="messageError" [type]="'DANGER'"></sigas-alert>
+                <!--END SHOW ALERT MESSAGES -->
 
+                <!-- FORM CONTAINER -->
                 <div class=" form-group col-lg-12">
                     <div class="form-group col-lg-12">
                         <sigas-spinner-form *ngIf="loaderDT" [diameter]="30"></sigas-spinner-form>
                         <div *ngIf="!loaderDT" id="accordion">
                             <div class="card">
                                 <div class="card-header" id="headingOne">
-                                    <h5 class="mb-0">
+                                    <span class="mb-0">
+                                        <!-- COLLAPSE BUTTON -->
                                         <button aria-controls="collapseOne" aria-expanded="true" class="btn btn-link"
                                                 data-target="#collapseOne" data-toggle="collapse">
                                             Dati Documento Principale
                                         </button>
-                                    </h5>
+                                        <!--END COLLAPSE BUTTON -->
+                                    </span>
                                 </div>
 
 								<!-- DATI DOCUMENTO -->
@@ -61,6 +72,7 @@
                                                 </div>
                                                 <!--codiceFiscale-->
 
+                                                <!--  protocollo  -->
                                                 <div class="form-group border-botton row">
                                                     <label class="col-lg-5 offset-lg-1 col-form-label">Protocollo:</label>
                                                     <div class="col-lg-6 col-value">
@@ -69,7 +81,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!--  fine protocollo -->
 
+                                                <!--  protocollo  di riferimento-->
                                                 <div class="form-group border-botton row">
                                                     <label class="col-lg-5 offset-lg-1 col-form-label">Protocollo di
                                                         riferimento:</label>
@@ -79,7 +93,9 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!--  fine protocollo  di riferimento-->
 
+                                                <!-- SAVE DOCUMENT  -->
                                                 <div class="form-group border-botton row">
                                                     <label class="col-lg-3 offset-lg-1 col-form-label">Nome
                                                         File:</label>
@@ -95,16 +111,20 @@
                                                            style="width: 100px;height: 30px;">Scarica </a>
                                                     </div>
                                                 </div>
+                                                <!-- FINE SAVE DOCUMENT  -->
+                                                <!--FORM NOTE SAVE-->
                                                 <div class="form-group row">
                                                     <div class="col-lg-7 offset-lg-1 hight">
                                                         <div class="form-group ">
-                                                            <label class="col-lg-4 offset-lg-1 col-form-label">Note:</label>
+                                                            <!-- NOTE -->
+                                                            <label id="lblNote" for="note" class="col-lg-4 offset-lg-1 col-form-label">Note:</label>
                                                             <div class="col-lg-12 col-value">
 									                        <textarea [(ngModel)]="documentoToSave.note" [ngModelOptions]="{standalone: true}"
-                                                                      class="note-textarea" disabled="true"
+                                                                      class="note-textarea" disabled="true" aria-labelledby="lblNote" id="note"
                                                                       rows="4">
 									                        </textarea>
                                                             </div>
+                                                            <!--FINE  NOTE -->
                                                         </div>
                                                     </div>
 
@@ -132,13 +152,13 @@
 								<!-- ACCORDION ALLEGATI -->
 								<div class="card">
                                     <div class="card-header" id="headingTwo">
-                                        <h5 class="mb-0">
+                                        <span class="mb-0">
                                             <button aria-controls="collapseTwo" aria-expanded="false"
                                                     class="btn btn-link collapsed" data-target="#collapseTwo"
                                                     data-toggle="collapse">
                                                 Allegati
                                             </button>
-                                        </h5>
+                                        </span>
                                     </div>
                                     <div aria-labelledby="headingTwo" class="collapse" data-parent="#accordion"
                                          id="collapseTwo">
@@ -151,8 +171,7 @@
 
                                                     <div class="col-lg-4 hight">
                                                         <div class="form-group row">
-                                                            <label class="col-lg-6 col-form-label"
-                                                                   for="codiceFiscalePIva">Descrizione:</label>
+                                                            <label class="col-lg-6 col-form-label">Descrizione:</label>
                                                             <div class="col-lg-6">
                                                                 {{al.descrizione}}
                                                             </div>
@@ -161,7 +180,7 @@
 
                                                     <div class="col-lg-8 hight">
                                                         <div class="form-group row">
-                                                            <label class="col-lg-4 col-form-label" for="anno">Nome
+                                                            <label class="col-lg-4 col-form-label">Nome
                                                                 File</label>
                                                             <div class="col-lg-8 trunk30">
                                                                 {{al.nomeFile}}
@@ -190,11 +209,12 @@
                                 <!-- STATI -->
                                 <div class="col-lg-3 hight">
                                     <div class="form-group row">
-                                        <label class="col-lg-3 col-form-label">Stato</label>
+                                        <label id="lblStatoDocumento" for="statoDocumento" class="col-lg-3 col-form-label">Stato</label>
                                         <div class="col-lg-8">
                                             <select [(ngModel)]="documentoToSave.statoDocumentoVO.idStatoDocumento" [disabled]="documentoToSave.statoDocumentoVO.codiceStato == 'ACC' || documentoToSave.statoDocumentoVO.codiceStato == 'RIF'|| documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP' "
                                                     class="form-control"
                                                     id="statoDocumento"
+                                                    aria-labelledby="lblStatoDocumento"
                                                     name="statoDocumento"
                                                     required>
                                                 <option *ngFor="let statoDocumento of listaStatoDocumento"
@@ -205,27 +225,31 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- fine STATI -->
 
 								<!-- NOTE -->
                                 <div class="col-lg-5 offset-lg-1 hight">
                                     <div class="form-group ">
-                                        <label class="col-lg-3 offset-lg-1 col-form-label">Note BO:</label>
+                                        <label id="lblNoteBO" for="noteBO" class="col-lg-3 offset-lg-1 col-form-label">Note BO:</label>
                                         <div class="col-lg-10 col-value">
 						                        <textarea [(ngModel)]="documentoToSave.noteBo" [disabled]="documentoToSave.statoDocumentoVO.codiceStato == 'ACC' || documentoToSave.statoDocumentoVO.codiceStato == 'RIF' || documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP'"
                                                           [ngModelOptions]="{standalone: true}"
                                                           class="note-textarea"
+                                                          id="noteBO"
+                                                          aria-labelledby="lblNoteBO"
                                                           rows="4">
 						                        </textarea>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <!-- FINE LISTA STATI / NOTA -->
 
 							<!-- DATA INVIO PEC -->
                             <div class="row">
                                 <div *ngIf="documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP' || isPecEnabled" class="col-lg-4 hight">
                                     <div class="form-group row">
-                                        <label class="col-lg-5 col-form-label" for="anno">Data Invio Pec</label>
+                                        <label id="lblDataPec" class="col-lg-5 col-form-label" for="dataPec">Data Invio Pec</label>
                                         <div class="col-lg-7 col-value">
                                             <div class="input-group">
                                                 <input #dataPec="ngbDatepicker"
@@ -237,13 +261,14 @@
                                                        class="form-control"
                                                        id="dataPec"
                                                        name="dataPec"
+                                                       aria-labelledby="lblDataPec"
                                                        ngbDatepicker
                                                        placeholder="gg/mm/aaaa"
                                                        required
                                                        readonly>
                                                 <ng-template #footerTemplatePec>
                                                     <hr class="my-0">
-                                                    <button (click)="resetDataInvioPec(); incassoDa.close();"
+                                                    <button (click)="resetDataInvioPec(); dataPec.close();"
                                                             class="btn btn-primary btn-sm m-2 float-left">Pulisci
                                                     </button>
                                                     <button (click)="dataPec.close()"
@@ -260,6 +285,7 @@
                                                              data-prefix="far" focusable="false"
                                                              role="img" viewBox="0 0 448 512"
                                                              xmlns="http://www.w3.org/2000/svg">
+                                                             <title>Calendario</title>
                                                             <path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"
                                                                   fill="currentColor"></path>
                                                         </svg>
@@ -274,6 +300,7 @@
                         </div>
                     </div>
                 </div>
+                <!--END  FORM CONTAINER -->
 
 				<!-- INDIETRO / CONFERMA -->
                 <div class="bs-example" data-example-id="single-button-dropdown">
@@ -289,6 +316,7 @@
                                     indietro
 								</a>
                             </div>
+                            <!-- FINE INDIETRO -->
 
 							<sigas-spinner-form *ngIf="!loaded" [diameter]="30"></sigas-spinner-form>
 
@@ -303,21 +331,24 @@
 									Conferma
                                 </button>
                             </div>
+                            <!-- FINE CONFERMA -->
                         </div>
                     </div>
                 </div>
             </div>
+            <!-- FINE CARD CONATAINER -->
         </form>
     </div>
 </div>
+<!-- FINE MAIN CONTAINER -->
+<sigas-dialog [titolo]="'Conferma'" [buttonConfirmText]="'Si'" [buttonAnnullaText]="'No'"></sigas-dialog>
 
-<sigas-dialog [titolo]="'Indietro'" [buttonConfirmText]="'Si'" [buttonAnnullaText]="'No'"></sigas-dialog>
-
+<!-- MODAL DIALOG BOX -->
 <div class="modal fade" id="dialogBox" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Lettera di Risposta</h4>
+                <span class="modal-title h5-font">Lettera di Risposta</span>
                 <button class="close" data-dismiss="modal" type="button">&times;</button>
             </div>
             <div class="modal-body">
@@ -337,3 +368,4 @@
         </div>
     </div>
 </div>
+<!-- END MODAL DIALOG BOX -->

@@ -369,5 +369,10 @@ public retrievePaymentTypes() {
       });
   }
 
+  public getPaymentPagoPaRedirectCheck(url: string) {
+    //return this.http.post(url, null);
+    return this.http.get(url, {params: new HttpParams().append('Access-Control-Allow-Origin','*')});
+  }
+
 
 }

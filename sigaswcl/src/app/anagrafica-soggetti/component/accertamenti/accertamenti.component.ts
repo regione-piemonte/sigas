@@ -8,6 +8,8 @@ import { DataTableDirective } from 'angular-datatables';
 import { RicercaVersamentiRequest } from '../../../commons/request/ricerca-versamenti-request';
 import { VersamentiPrVO } from '../../../commons/vo/versamenti-pr-vo';
 import { ISubscription } from 'rxjs/Subscription';
+import { AllarmiSoggettoVO } from 'src/app/commons/vo/allarmi-soggetto-vo';
+import { UpdateAllarmeAccertamentoRequest } from '../../../commons/request/update-allarme-accertamento-request';
 
 
 @Component({
@@ -75,7 +77,8 @@ export class AccertamentiComponent implements OnInit , OnDestroy {
     if (this.anagraficaService.headerDichiarante != null && this.anagraficaService.headerDichiarante.idAnag != null) {
       const subs = this.anagraficaService.ricercaAnniVersamenti()
       .subscribe(res => {
-          this.anniAccertamenti = res;
+          //this.anniAccertamenti = res;
+          this.anniAccertamenti = res.lista_annualita;
           this.loaderYear = false;
       });
       this.loaderProvince = true;
@@ -102,6 +105,7 @@ export class AccertamentiComponent implements OnInit , OnDestroy {
 
   reInit() {
     if (this.anagraficaService.headerDichiarante) {
+      this.sommaDaAccertare = 0;
       console.log('header', this.anagraficaService.headerDichiarante )
       this.loaderDT = true;
         this.subscribers.Accertamenti = this.anagraficaService.ricercaAccertamenti(this.annoSelezionato, this.provinciaSelezionata)
@@ -126,8 +130,8 @@ export class AccertamentiComponent implements OnInit , OnDestroy {
       let elemento: VersamentiPrVO =  this.elencoAccertamenti[i];
       if (event.target.checked === true ) {
           if (elemento.importoComplessivo === 0 ) {
-            this.accertamentiDaCalcolare.push(elemento);
-            this.sommaDaAccertare += this.elencoAccertamenti[i].importo;
+            this.accertamentiDaCalcolare.push(elemento);            
+            this.sommaDaAccertare = this.sommaDaAccertare + this.elencoAccertamenti[i].importo;
           }
           if (elemento.importoComplessivo > 0) {
             
@@ -135,16 +139,13 @@ export class AccertamentiComponent implements OnInit , OnDestroy {
             console.log('non validi checkede ', this.nonValidi);
           }
       }
-      if (event.target.checked === false) {
-        let x = this.accertamentiDaCalcolare.indexOf(this.elencoAccertamenti[i]);
-        console.log('unchecked X',x);
-        if (x > -1) {
-          this.sommaDaAccertare -= this.elencoAccertamenti[x].importo;
-          this.accertamentiDaCalcolare = this.accertamentiDaCalcolare
-        .filter(item => item !== this.accertamentiDaCalcolare[x]);
-        console.log('Accertamenti da calcolare dopo', this.accertamentiDaCalcolare);
-        }
-        if(x === -1) {
+      if (event.target.checked === false) {        
+        var accertamentoTrovato = this.accertamentiDaCalcolare.filter(item => item.idVersamento === this.elencoAccertamenti[i].idVersamento);        
+        if (accertamentoTrovato!==undefined && accertamentoTrovato!==null && this.elencoAccertamenti[i].importoComplessivo === 0 ) {          
+          this.sommaDaAccertare = this.sommaDaAccertare - this.elencoAccertamenti[i].importo;
+          this.accertamentiDaCalcolare = this.accertamentiDaCalcolare.filter(item => item.idVersamento !== this.elencoAccertamenti[i].idVersamento);
+          console.log('Accertamenti da calcolare dopo', this.accertamentiDaCalcolare);
+        } else {
           this.nonValidi--;
           console.log('non validi unchecked ',this.nonValidi);
         }
@@ -196,4 +197,14 @@ export class AccertamentiComponent implements OnInit , OnDestroy {
  //this.subscribers.unsubscribe();
  }
 
+ aggiornaStatoAllarme(allarme: AllarmiSoggettoVO) {
+  console.log('header', this.anagraficaService.headerDichiarante )
+  allarme.status = (allarme.status==1) ? 0 : 1;
+  var updateAllarmeAccertamentoRequest = new UpdateAllarmeAccertamentoRequest(allarme.idAllarme,allarme.status)
+  this.loaderDT = true;
+    this.subscribers.Accertamenti = this.anagraficaService.aggiornaAllarmeAccertamento(updateAllarmeAccertamentoRequest)
+    .subscribe(res => {      
+      this.reInit()    
+    });
+  }
 }

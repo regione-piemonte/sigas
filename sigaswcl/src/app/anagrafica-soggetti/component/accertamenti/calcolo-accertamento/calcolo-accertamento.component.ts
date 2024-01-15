@@ -86,9 +86,10 @@ export class CalcoloAccertamentoComponent implements OnInit {
       this.errorDateEmpy = true;
 
     } else{
-      let dataAccertamento = new Date(data);
+      //let dataAccertamento = new Date(data);      
+      var dataAccertamentoSel = new Date(data.year, data.month - 1, data.day);
       this.errorDateEmpy = false;
-    this.showAccertementiCalcolati = this.checkDateAccertamenti(dataAccertamento);
+    this.showAccertementiCalcolati = this.checkDateAccertamenti(dataAccertamentoSel);
     if (this.showAccertementiCalcolati === false){
       this.showError = true;
     } else {
@@ -96,20 +97,28 @@ export class CalcoloAccertamentoComponent implements OnInit {
     }
 
     this.showSuccess = false;
-//    this.dataAccertamento = data;    
+    //this.dataAccertamento = data;
+    
+    /*
     const _dataAccertamento = moment(data);
     this.dataAccertamento = {
             year:  _dataAccertamento.year(),
             month: Number( _dataAccertamento.format('MM')),
             day: Number( _dataAccertamento.format('DD'))
-        };
+     };
+     */
+    this.dataAccertamento = {
+      year:  data.year,
+      month: data.month,
+      day: data.day
+    };        
     this.totaleAccertamenti = 0;
     this.subscribers = this.accertamenti.map(accertamento => {
      accertamento.interessiMora = accertamento.importo * 0.06;
      accertamento.sanzioni = accertamento.importo * 0.30;
      accertamento.interessi = this.calcolaInteressi(accertamento);
      accertamento.importoComplessivo = this.calcolaImportoComplessivo(accertamento);
-     accertamento.dataAccertamento = new Date(this.dataAccertamento.year, this.dataAccertamento.month - 1, this.dataAccertamento.day);
+     accertamento.dataAccertamento = new Date(this.dataAccertamento.year, this.dataAccertamento.month - 1, this.dataAccertamento.day);     
      this.totaleAccertamenti += accertamento.importoComplessivo;
       this.allarmeVersamento = this.checkAllarmiAttivi(accertamento.allarme.status);
     }, error => this.logger.error('errore'));

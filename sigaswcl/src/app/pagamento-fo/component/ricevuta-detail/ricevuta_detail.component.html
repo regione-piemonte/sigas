@@ -1,54 +1,50 @@
 
-<div class="principal-div">
+<div class="principal-div" id="principal-div" name="principal-div">
 	<div class="card card-primary center-default">
         <div class="col-lg-12">
             <div class="row row-spaced-top">
-                <div class="col-lg-6 center-all"><img src="assets/ragionepiemonte.png"></div><div class="col-lg-6 center-all"><img src="assets/logo_pagpPA.jpeg"></div>
+                <!--Immagini-->
+                <div class="col-lg-6 center-all" alt="Regione Piemonte immagine"><img src="assets/ragionepiemonte.png"></div>
+                <div class="col-lg-6 center-all" alt="Logo pagoPA"><img src="assets/logo_pagpPA.jpeg"></div>
             </div>
         </div>
+
+        <!--Card header-->
 		<div class="card-header text-white">
-            <div class="card-header text-white">
-                <strong>Pagamento on-line SIGAS</strong>
+            <div class="card-header text-white">                
+                <h1 class="h1-font"><strong>Pagamento on-line SIGAS</strong></h1>
             </div>
         </div>
 		<div>
+            <!--Card Body-->
 			<div class="card-body container">
 				<div class="form-group row">
 					<div class="col-lg-12">
 
 						<div class="form-group col-lg-12">
-									<div class="panel-body">
-
+									<div class="panel-body" role="main">
 										<div class="form-group col-lg-12">
-
+                                            <!--Codice pagamento-->
                                             <div class="row row-spaced-top">
                                                 <div class="col-lg-4 col-form-label">Codice pagamento: {{rtInfo.paymentCode}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Id. Transazione: {{rtInfo.transactionCode}}</div>
                                             </div>
-                                        
+                                            <!--IUV-->                                        
                                             <div class="row row-spaced-top">
                                                 <div class="col-lg-4 col-form-label">IUV: {{rtInfo.iuv}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Id. Riscossione: {{rtInfo.idOriginPay}}</div>
                                             </div>
-                                            <!-- 
-                                            <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">Mese e Anno Competenza: {{rtInfo.months}} / {{rtInfo.year}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Data Versamento: {{rtInfo.payDate}}</div>
-                                            </div> -->
+                                            <!--Denominazione dichiarazione-->                                            
                                             <div class="row row-spaced-top">
                                                 <div class="col-lg-4 col-form-label">Denominazione Dichiarazione: {{rtInfo.subjectName}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Regione Beneficiaria: {{rtInfo.receivingEntity}}</div>
                                             </div>
+                                            <!--Codice fiscale-->
                                             <div class="row row-spaced-top">
                                                 <div class="col-lg-4 col-form-label">Codice Fiscale/P.Iva Dichiarante: {{rtInfo.taxCode}} {{rtInfo.vatCode}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Codice Fiscale Regione Beneficiaria: {{rtInfo.entityCode}}</div>
                                             </div>
-                                            <!-- 
-                                            <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">Codice Fiscale Dichiarante: {{rtInfo.taxCode}}</div><div class="col-lg-8">&nbsp;</div>
-                                            </div>
-                                             -->
+                                            <!--Totale-->                                            
                                             <div class="row row-spaced-top">
                                                 <div class="col-lg-4 col-form-label">Totale: {{rtInfo.totalAmount}}<div class="col-lg-8">&nbsp;</div></div>
-                                            </div>
-                                        
+                                            </div>                                        
 										</div>
-
 									</div>
 						</div>
 					</div>

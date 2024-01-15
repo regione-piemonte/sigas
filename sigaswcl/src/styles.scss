@@ -1,7 +1,9 @@
+//Import di sistema
 @import '~bootstrap/dist/css/bootstrap.min.css';
 @import '~@fortawesome/fontawesome-free/css/fontawesome.min.css';
 @import 'app/color.scss';
 
+//Gestione NG
 .ng-valid[required], .ng-valid.required  {
     border-left: 5px solid #42A948; /* green */
 }
@@ -9,7 +11,9 @@
 .ng-invalid:not(form)  {
     border-left: 5px solid #a94442; /* red */
 }
+//------------------
 
+//card
 .card-primary>.card-header{
     background-color: $bgDefault;
 }
@@ -17,7 +21,9 @@
     border-color: $bgDefault;
     font-size: 14px;
 }
+//---------------------
 
+//Gestione pulsanti
 .btn {
     font-size: 14px;
 }
@@ -45,7 +51,7 @@
     border-color: #14233A;
 }
 
-
+//Default
 .btn-default, .btn-default.focus, .btn-default:focus {
     border-color: #ccc;
 }
@@ -58,16 +64,16 @@
 .btn-default.active, .btn-default:active, .open>.dropdown-toggle.btn-default {
     border-color: #ccc;
 }
+//------------------
 
-
-
+//Gestione custom
 .form-control{
     font-size: 14px;
 }
 .pointer{
     &:hover{
       cursor: pointer;
-    }
+    }      
 }
 
 .principal-div{
@@ -78,8 +84,9 @@
 .margin-icon{
     margin-right: 5px;
 }
+//-------------
 
-
+//Gestione FONT
 @font-face {
     font-family: 'open_sansregular';
     src: url('assets/fonts/opensans_regular/OpenSans-Regular-webfont.eot');/* IE9 Compat Modes */
@@ -91,10 +98,12 @@
     font-weight: normal;
     font-style: normal;
 }
+//--------------------
 
 
 body{  font-family: open_sansregular, Fallback, sans-serif; font-size: 14px;} 
 
+//Gestione center
 .center-search {
     margin: auto;
     width: 60%;
@@ -109,6 +118,7 @@ body{  font-family: open_sansregular, Fallback, sans-serif; font-size: 14px;}
     margin: auto;
     width: 95%;
 }
+//-----------
 
 .maiuscolo{
     text-transform: uppercase;
@@ -128,7 +138,8 @@ body{  font-family: open_sansregular, Fallback, sans-serif; font-size: 14px;}
 
 .title{
     color: #0153A9; 
-    text-transform: uppercase; 
+    text-transform: uppercase;
+    font-size: 1.6em; 
 }
 
 .col-form-label {
@@ -193,3 +204,8 @@ display: table;
 .padding-checkbox{
   padding: 20px 20px;
 }
+
+//Gestione sostituzione h5
+.h5-font {
+    font-size: 1.5em; /* 40px/16=2.5em */
+ }

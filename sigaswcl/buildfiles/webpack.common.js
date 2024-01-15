@@ -92,13 +92,14 @@ module.exports = {
       "script-loader!./node_modules/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js",
       "script-loader!./node_modules/datatables.net/js/jquery.dataTables.js",
       "script-loader!./node_modules/datatables.net-responsive/js/dataTables.responsive.js",
-      "script-loader!./node_modules/@fortawesome/fontawesome-free/js/all.min.js"
+      "script-loader!./node_modules/@fortawesome/fontawesome-free/js/all.min.js",
+      "script-loader!./node_modules/jszip/dist/jszip.js"
     ],
     "styles": [
       "./node_modules/bootstrap/dist/css/bootstrap.min.css",
       "./node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css",
       "./node_modules/datatables.net-dt/css/jquery.dataTables.css",
-      "./node_modules/datatables.net-responsive-dt/css/responsive.dataTables.css",
+      "./node_modules/datatables.net-responsive-dt/css/responsive.dataTables.css",      
       "./node_modules/@fortawesome/fontawesome-free/css/all.min.css",
       "./src/styles.scss"
     ]

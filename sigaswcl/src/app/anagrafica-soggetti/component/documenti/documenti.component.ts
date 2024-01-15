@@ -1,4 +1,5 @@
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef,Inject} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import {Routing} from '../../../commons/routing';
 import {Router} from '@angular/router';
 import {DatatableComponent} from '@swimlane/ngx-datatable';
@@ -19,6 +20,9 @@ import * as moment from 'moment';
 import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import {NgbDateCustomParserFormatter} from '../../../commons/class/dateformat';
 import {SigasDialogComponent} from '../../../shared/component/sigas-dialog/sigas-dialog.component';
+import { AllegatoVO } from 'src/app/commons/vo/allegato-vo';
+
+import {DocumentiVO} from '../../../commons/vo/documenti-vo';
 
 @Component({
     selector: 'app-documenti',
@@ -72,14 +76,103 @@ export class DocumentiComponent implements OnInit {
     private message: string;
     private showMsg: boolean;
     private levelMessage: string;
+    private documentCount: number;
+
+    private dialogBoxType: string;
+    private dialogBoxTitle: string;
+    private dialogBoxMessage: string;
+    private dialogBoxIdDocToDelete: number;
+    
+    
+    private btnClickedMap : Map<String, boolean>; 
 
     constructor(private router: Router,
                 private logger: LoggerService,
-                private anagraficaSoggettiService: AnagraficaSoggettiService) {
+                private anagraficaSoggettiService: AnagraficaSoggettiService,
+                @Inject(DOCUMENT) private document: Document) {
         this.urlDownloadDoc = this.anagraficaSoggettiService.getUrlScaricaDocumento();
+    }
+    
+    calculateClasses(nprotocollo:string){        
+        if(this.btnClickedMap.get(nprotocollo)){                        
+            return "btn btn-danger btn-sm";
+        }                
+        return "btn btn-success btn-ok btn-sm";
+    }
+
+    calculateArialLabel(nprotocollo:string){        
+        if(this.btnClickedMap.get(nprotocollo)){                        
+            return "chiusura dettaglio degli allegati";
+        }                
+        return "apertura dettaglio degli allegati";
+    }
+
+    calculateDetails(nprotocollo:string, anaComunicazioni: AnaComunicazioniVO, index){ 
+        var isBTNGreen: boolean = true;
+        if(this.btnClickedMap.get(nprotocollo)){
+            isBTNGreen = false;
+        }       
+        var rowChildVisible = this.viewDetails(anaComunicazioni,index);
+        console.log("lunghezza: " + this.btnClickedMap.size)
+        this.btnClickedMap.forEach((key,value) => {
+            console.log("marts key: " + key + " value:" + value);
+        });
+        if(this.btnClickedMap.get(nprotocollo)==null||this.btnClickedMap.get(nprotocollo)==undefined){
+            document.getElementById(nprotocollo).innerHTML = "-";            
+            this.btnClickedMap.set(nprotocollo,true);            
+        }else if(this.btnClickedMap.get(nprotocollo)){
+            document.getElementById(nprotocollo).innerHTML = "+";            
+            this.btnClickedMap.set(nprotocollo,false);            
+        }else if (rowChildVisible){
+            document.getElementById(nprotocollo).innerHTML = "-";            
+            this.btnClickedMap.set(nprotocollo,true);
+        }        
+    }        
+    
+    viewDetails(anaComunicazioni: AnaComunicazioniVO, index): boolean{        
+        var row =  $('#elencoDocumentiTBL').DataTable().row(index);
+        var data = $('#elencoDocumentiTBL').DataTable().row(index).data();         
+        if ( row.child.isShown() ) {            
+            row.child.hide();
+            return false;
+        }
+        else {            
+            this.settingROW(anaComunicazioni, row);
+            return true;            
+        }
+        
+    }
+    
+
+    prepareRowHTMLTemplateReduce(d, element){
+        var rowHTML = '<tr style="background-color:#F9F9F4">' +                        
+                            '<td colspan="8">'+ element.fileName + '</td>' +                                                
+                      '</tr>';                    
+        return rowHTML;        
+    }
+
+    settingROW(d, row){
+        if(d.allegati!=null && d.allegati != undefined){
+            var rowHTML = '<table style="width:80%;">';
+            var rowHeaderAllegatiHTML = '<tr style="background-color:#F9F9F4"><td colspan="8" style="font-size: x-small;"><strong>Allegati</strong></td></tr>';
+            rowHTML = rowHTML + rowHeaderAllegatiHTML;            
+            d.allegati.forEach(element => {
+                rowHTML = rowHTML + this.prepareRowHTMLTemplateReduce(d, element);
+            });
+            rowHTML = rowHTML + '</table>'
+            row.child(rowHTML).show();
+        }                
+    }   
+    
+    gestioneClasse(listaAllegati: Array<AllegatoVO>): String{
+        if(listaAllegati!=null){
+            return "dt-control";
+        }
+        return "short-td";
     }
 
     ngOnInit() {
+        this.btnClickedMap  = new Map<String, boolean>();    
         this.documento = new AnaComunicazioniVO(0, new AnagraficaSoggettoVO(0, 0, '', '', '', '', '', '', 0, '', '', '', 0, false, 0, '', '', 0, 0, null), null,
             new TipoComunicazioniVO(null, '', ''), null, '', '', '', '', '', false, null, null, null);
         this.documentoToSave = Object.assign({}, this.documento);
@@ -111,18 +204,47 @@ export class DocumentiComponent implements OnInit {
             processing: true,
             searching: false,
             language: DataTableIt.language,
-            responsive: true,
+            responsive: {
+                details: false
+            },                    
             order: [],
+            //SIGAS-227
+            /* OLD CODE
             columnDefs: [{
                 'targets': 'no-sort'
             }]
-        };
+            */
+            columnDefs: [
+                {targets: 0, orderData: 9},
+                {targets: 3, orderData: 8},
+                {targets: 4, orderable: false},
+                {targets: 5, orderable: false},
+                {targets: 6, orderable: false},
+                {targets: 7, orderable: false},
+                {targets: 8, visible: false},
+                {targets: 9, visible: false}
+            ],
+            bInfo: false,            
+            "rowCallback": function( row, data, index) {
+                this.rowMarts = row;
+                /*
+                if(this.listaDocumenti[index+1].allegati == null || this.listaDocumenti[index+1].allegati == undefined ){
+                    $('td:eq(10)', row).removeClass('dt-control');
+                }
+                */
+                /*
+                if ( data[4] == "A" ) {
+                  $('td:eq(4)', row).html( '<b>A</b>' );
+                }
+                */
+            }
+        };        
         this.ricercaAnaComunicazioniRequest = new RicercaAnaComunicazioniRequest(0, 'Tutti', 'Tutte');
         this.tipologia = 'Tutte';
         this.annoDocumento = 'Tutti';
         this.anagraficaSoggettiService.ricercaAnaComunicazioniReq = this.ricercaAnaComunicazioniRequest;
-        this.loaderDT = true;
-        this.reinit();
+        this.loaderDT = true;        
+        this.reinit();        
         this.loaderPage = true;
         this.subscribers.allTipoConsumo = this.anagraficaSoggettiService.getAllTipoComunicazioni()
             .subscribe(res => {
@@ -152,12 +274,18 @@ export class DocumentiComponent implements OnInit {
                     });
                     this.loaderPage = false;
                     this.loaderDT = false;
-                    this.rerender();
+                    if(this.listaDocumenti!=null){
+                        this.documentCount = this.listaDocumenti.length;                                                                  
+                    }else{
+                        this.documentCount = 0;
+                    }                    
+                    this.rerender();                   
+                    
                 }, err => {
                     this.logger.error('errore ');
                 });
         }
-    }
+    }   
 
     calcolaAnniRecenti() {
         this.listaAnni = [];
@@ -328,10 +456,19 @@ export class DocumentiComponent implements OnInit {
                                 }
                             });
                     });
+                    if(this.listaDocumenti!=null){
+                        this.documentCount = this.listaDocumenti.length;
+                    }else{
+                        this.documentCount = 0;
+                    }                    
                     this.rerender();
+                    //var table = $('#elenco-documenti').DataTable();                      
+                    //table.page.len(25).draw();
+                    
                 }, err => {
                     this.logger.error('errore ');
                 });
+                this.btnClickedMap  = new Map<String, boolean>();
         }
     }
 
@@ -473,13 +610,43 @@ export class DocumentiComponent implements OnInit {
 
     scaricaDocumento(idComunicazione) {
         return this.anagraficaSoggettiService.getUrlScaricaDocumento() + idComunicazione;
+    }    
+
+    dialogBoxShowDeleteDocument(idAnaComunicazione: number) { 
+        this.dialogBoxIdDocToDelete = idAnaComunicazione;               
+        this.dialogBoxTitle = 'Cancella documento';
+        this.dialogBoxMessage = 'Sei sicuro di voler eliminare il documento?';
+    }
+
+    dialogBoxConfirmButton(){
+        this.subscribers.cancellaDocumento = this.anagraficaSoggettiService.eliminaDocumento(this.dialogBoxIdDocToDelete)
+                .subscribe((response) => {
+                    this.logger.info('Documento cancellato correttamente!');
+                    this.message = 'Documento eliminato correttamente';
+                    this.showMsg = true;
+                    this.levelMessage = 'SUCCESS';
+                    this.loaderDT = true;                    
+                    setTimeout(() => {
+                        this.clearMsg();
+                        this.reinit();                        
+                    }, 10000);
+
+                }, error => {
+                    this.logger.error('ERRORE: ' + error);
+                    this.message = 'Si è verificato un errore';
+                    this.showMsg = true;
+                    this.levelMessage = 'ERROR';
+                });
+    }
+
+    dialogBoxDismissButton() {
     }
 
     confermaEliminaDocumento(idAnaComunicazione: number) {
 
         this.buttonConfirmText = 'Conferma';
         this.buttonAnnullaText = 'Annulla';
-        this.messageDialog = 'Sei sicuro di voler eliminare il documento?';
+        this.messageDialog = 'Sei sicuro di voler eliminare il documento?';                
         this.sigasDialog.open();
 
         this.subscribers.save = this.sigasDialog.salvaAction.subscribe(data => {

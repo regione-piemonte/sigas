@@ -1,36 +1,46 @@
+
+//Import sistema
 @import '../../../color.scss';
 
+// -------------------------
+//Dichiarazioni dispositive
+// -------------------------
 .badge {
     min-width: 45px;
     padding-top: 5px;
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 10px;
+    font-size: 13px;
 }
-
+// -------------------------
+//alert badge
+// -------------------------
 .alert-badge {
     display: inline-block;
     margin-right: 4px;
     margin-top: 0px;
 }
-
+// -------------------------
 .col-form-label {
     min-width: 75px;
 }
-
-
+// -------------------------
+//Dichiarazioni dettaglio
+// -------------------------
 .detailCell {
     border-bottom:1pt solid grey;
     padding-left: 50px;
     padding-top: 30px;    
     padding-bottom: 10px;    
 }
-
+// -------------------------
+//Sezione label
+// -------------------------
 .detailCellLabel {
     text-align:right;
 }
-
+// -------------------------
 .payLabel {
     text-align: center;
     margin-top: 40px;
@@ -38,19 +48,25 @@
     color: blue;
     font-size: 20px;
 }
-
+// -------------------------
 .subjectLabel {
-    text-align: center; margin-bottom: 10px;;
+    text-align: center; margin-bottom: 10px;
 }
-
+// -------------------------
 .payDiv {
     margin-left: 20%;
     margin-bottom: 20px;
 }
-
+// -------------------------
 .totalLabel {
     text-align: right;
     color: black;
     font-weight: bold;
     margin-right: 50px;
+}
+//----------------------------
+
+/*Gestione H1 font*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

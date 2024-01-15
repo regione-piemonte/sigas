@@ -1,10 +1,17 @@
+//Import di sistema
 @import '../../../color.scss';
 
+//Sezione dispositiva
 .badge {
     min-width: 45px;
     padding-top: 5px;
     display: inline-block;
     margin-right: 4px;
     margin-top: 2px;
-    font-size: 14px;
+    font-size: 13px;
+}
+
+/*Gestione H1 font*/
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
 }

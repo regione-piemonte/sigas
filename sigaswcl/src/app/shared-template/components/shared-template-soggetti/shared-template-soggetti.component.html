@@ -9,7 +9,9 @@
 		   style="display: inline-block; width: 40%"
 		   type="text">
 </div>
+<!--END DENOMINAZIONE-->
 
+ <!--DIV INDIRIZZO-COMUNE  -->
 <div>
 	<!-- INDIRIZZO -->
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-15">
@@ -24,10 +26,14 @@
 			   style="display: inline-block; width: 40%"
 			   type="text">
     </div>
+    <!--FINE INDIRIZZO -->
 
+    <!-- COMUNE -->
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 padding-top-15">
         <div>
 
+
+            <!-- Gestione spinner -->
             <sigas-spinner-form *ngIf="loadCmnProv" [diameter]="30"></sigas-spinner-form>
             <div *ngIf="!loadCmnProv">
                 <span *ngIf="isAnteprima || isStampa"
@@ -42,4 +48,6 @@
             </div>
         </div>
     </div>
-</div> 
+     <!--FINE COMUNE -->
+</div>
+ <!--FINE DIV INDIRIZZO-COMUNE  -->
