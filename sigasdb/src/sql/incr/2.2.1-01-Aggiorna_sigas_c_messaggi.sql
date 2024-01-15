@@ -1,0 +1,2 @@
+INSERT INTO sigas_c_messaggi (id_messaggio, desc_chiave_messaggio, valore_messaggio, livello_messaggio)
+VALUES ((select max(id_messaggio)+1 from sigas_c_messaggi), 'confermaAggiornaInvioPecDoc', 'Si desidera aggiornare la data di invio PEC?', 'INFO');

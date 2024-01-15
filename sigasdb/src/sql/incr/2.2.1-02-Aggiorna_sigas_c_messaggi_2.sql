@@ -1,0 +1,2 @@
+  INSERT INTO sigas_c_messaggi (id_messaggio, desc_chiave_messaggio, valore_messaggio, livello_messaggio)
+VALUES ((select max(id_messaggio)+1 from sigas_c_messaggi), 'sizeNote', 'Attenzione, il testo inserito nel campo ''Note'' supera i 255 caratteri', 'INFO');
