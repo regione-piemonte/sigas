@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { Routing } from '../../../commons/routing'
@@ -16,27 +16,29 @@ import { SubjectVO } from "../../commons/vo/subject-vo";
 })
 
 @DestroySubscribers()
-export class RicercaPagamentoComponent implements OnInit {
+export class RicercaPagamentoComponent implements OnInit, AfterViewInit {
         
   public subscribers: any = {};
-
   private listSubject: Array<SubjectVO> = [];
+  private yearsLoaded: boolean = false;
+  private yearsList: Array<string>;  
+  private paymentTypes: Array<TipoVersamentiVO>;
+  private isBoSeach: boolean = false;
+  private noSubjectsFoundforSelectedYear: boolean = false;
+  private loadingPageFlag: boolean = false;
 
   constructor(
     private router: Router,
     private logger: LoggerService,
     private foPayService: PaymentFoService,
-    private userService: UserService) {
-  }
-  
-  private yearsLoaded: boolean = false;
-  private yearsList: Array<string>;
-  
-  private paymentTypes: Array<TipoVersamentiVO>;
+    private userService: UserService,
+    private renderer: Renderer2)
+  { }
 
-  private isBoSeach: boolean = false;
-  private noSubjectsFoundforSelectedYear: boolean = false;
-  private loadingPageFlag: boolean = false;
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }  
 
   ngOnInit() {
       this.resetForm();
@@ -52,10 +54,7 @@ export class RicercaPagamentoComponent implements OnInit {
     this.foPayService.retrievePaymentTypes().subscribe(resp => { 
         this.paymentTypes = resp; 
       },
-      err => { this.logger.error(err); });
-
-    
-    
+      err => { this.logger.error(err); });   
     
   }
 

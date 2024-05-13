@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { Routing } from "../../../commons/routing";
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
@@ -17,7 +17,7 @@ import { ConsumiPrComponent } from '../consumi-pr/consumi-pr.component';
 })
 
 @DestroySubscribers()
-export class DettaglioSoggettoComponent implements OnInit {
+export class DettaglioSoggettoComponent implements OnInit, AfterViewInit {
 
   @ViewChild(RimborsiComponent) rimborsi:RimborsiComponent;
   @ViewChild(AccertamentiComponent) accertamenti:AccertamentiComponent;
@@ -34,8 +34,14 @@ export class DettaglioSoggettoComponent implements OnInit {
   constructor(
     private router: Router,
     private logger: LoggerService,
-    private anagraficaSoggettiService: AnagraficaSoggettiService
+    private anagraficaSoggettiService: AnagraficaSoggettiService,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
    

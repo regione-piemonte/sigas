@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, Inject} from '@angular/core';
+import {Component, OnInit, ViewChild, Inject, AfterViewInit, Renderer2} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {DestroySubscribers} from '../../../core/commons/decorator/destroy-unsubscribers';
 import {DocumentazioneService} from '../../service/documentazione.service';
@@ -52,7 +52,7 @@ interface iElencoDoc {
 })
 
 @DestroySubscribers()
-export class ElencoDocumentazioneComponent implements OnInit {
+export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
     tableData: iElencoDoc[] = [];
 
     elencoDoc: Array<DocumentiVO>;
@@ -83,8 +83,15 @@ export class ElencoDocumentazioneComponent implements OnInit {
         private documentazioneService: DocumentazioneService,
         private router: Router,
         private sharedCache: SharedCacheService,
-        @Inject(DOCUMENT) private document: Document
+        @Inject(DOCUMENT) private document: Document,
+        private renderer: Renderer2
+
     ) {
+    }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
     }
 
     calculateArialLabel(nprotocollo:string){        

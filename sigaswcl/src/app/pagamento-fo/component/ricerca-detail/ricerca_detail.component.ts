@@ -1,5 +1,5 @@
 import { Observable, Subscription } from 'rxjs';
-import { Component, OnInit, OnDestroy, Inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, Inject, AfterViewInit, Renderer2 } from "@angular/core";
 import { LoggerService } from "../../../core/services/logger.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Location } from '@angular/common';
@@ -18,27 +18,20 @@ declare var $: any;
     styleUrls: ['./ricerca_detail.component.scss']
 })
 @DestroySubscribers()
-export class SearchDetailComponent implements OnInit, OnDestroy {
+export class SearchDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private dialogBoxType: string;
     private dialogBoxTitle: string;
     private dialogBoxMessage: string;
-
     private pageLoadingInProgress: boolean;
-
     confermaEmailModel: string;
-    paymentMethods: Array<PaymentMethodVO>;
-    
+    paymentMethods: Array<PaymentMethodVO>;    
     tipoPagamentoLoader: boolean;
     flgCartSaved: boolean = false;
-
     msgAlertSuccess: string;
     causale: string;
-
     public subscribers: any = {};
-
     private subject: SubjectVO;
-
     private amountDetail: any = { 'totalToPay': 833.06, 'adjustment': 137 };
 
     constructor(
@@ -46,16 +39,19 @@ export class SearchDetailComponent implements OnInit, OnDestroy {
         private foPayService: PaymentFoService,
         private router: Router,
         private activatedRoute: ActivatedRoute,
-        private location: Location
+        private location: Location,
+        private renderer: Renderer2
     ) { }
 
-    ngOnInit(): void {
-//if(true){ this.foPayService.searchReq = {"year":"2021","subjectName":"19 novembre - 11111111111","area":null,"subjectCode":null,"subjectId":"7298","dateFrom":null,"dateTo":null,"monthFrom":1,"monthTo":12,"operatorFO":null,"vatCode":null,"payType":null,"iuv":null} };
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }
 
+    ngOnInit(): void {
         this.foPayService.searchPaidCartItems(this.foPayService.searchReq.year, this.foPayService.searchReq.subjectName, null, this.foPayService.searchReq.id).subscribe(
             res => {
                 this.foPayService.loadCartList(res);
-
                 if(res && res.length)
                     this.foPayService.cartReq.paymentCode = res[0].paymentCode;
             },

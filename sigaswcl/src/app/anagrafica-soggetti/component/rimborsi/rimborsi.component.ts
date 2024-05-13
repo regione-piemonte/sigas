@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { Router } from "@angular/router";
 import { Routing } from "../../../commons/routing";
@@ -26,7 +26,7 @@ import {DataTableDirective} from 'angular-datatables';
 })
 
 @DestroySubscribers()
-export class RimborsiComponent implements OnInit {
+export class RimborsiComponent implements OnInit, AfterViewInit {
 
     @ViewChild(DataTableDirective)
     dtElement: DataTableDirective;
@@ -56,8 +56,14 @@ export class RimborsiComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private anagraficaSoggettiService: AnagraficaSoggettiService,
-    private tassiService: TassiService
+    private tassiService: TassiService,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
 

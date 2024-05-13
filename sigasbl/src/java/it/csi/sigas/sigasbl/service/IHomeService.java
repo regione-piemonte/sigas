@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
+import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
@@ -49,7 +50,7 @@ public interface IHomeService {
 	
 	void insertSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user);
 	
-	AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user);
+	AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) throws BusinessException;
 
 	AnagraficaSoggettoVO associateSoggetto(AssociaSoggettoRequest associaSoggettoRequest, String user);
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Renderer2, AfterViewInit } from '@angular/core';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router } from '@angular/router';
 import { InserisciAccreditamentoService } from '../../service/inserisci-accreditamento.service';
@@ -18,7 +18,7 @@ import { RicercaAccreditamentoRequest } from '../../../../commons/request/ricerc
   templateUrl: './elenco-pratiche.component.html',
   styleUrls: ['./elenco-pratiche.component.scss']
 })
-export class ElencoPraticheComponent implements OnInit {
+export class ElencoPraticheComponent implements OnInit, AfterViewInit {
 
     ricercaModel: RicercaDichiaranteRequest;
     ricercaModelAcc: RicercaAccreditamentoRequest;
@@ -29,31 +29,22 @@ export class ElencoPraticheComponent implements OnInit {
     private dtTrigger: Subject<any> = new Subject();
     
     private dtOptions: any;
+
   constructor(
     private logger: LoggerService,
     private inserisciAccreditamentoService: InserisciAccreditamentoService,
     private router: Router,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit(): void {
     this.logger.info("init Ricerca Pratiche Component");
-//    this.dtOptions = {
-//            head: 20,
-//            pagingType: 'full_numbers',
-//            pageLength: 10,
-//            processing: true,
-//            language: DataTableIt.language,
-//            responsive: true,
-//            order: [],
-//            columnDefs: [
-//              { className: 'dt-center', 'targets': [0, 1, 2, 3] },
-//              { width: '5%', targets: 0, orderable: false },
-//              { width: '30%', targets: 1 },
-//              { width: '10%', targets: 2 },
-//              { width: '10%', targets: 3 }
-//            ]
-//          };
-    
+
     this.dtOptions = {
             searching: true,
             pagingType: 'full_numbers',
@@ -78,14 +69,6 @@ export class ElencoPraticheComponent implements OnInit {
     });
     this.initRicercaModel();
   }
-
-//  onSubmit() {
-//    this.logger.info("submit init");
-//    this.inserisciAccreditamentoService.clean();
-//    this.inserisciAccreditamentoService.RicercaDichiarante = this.ricercaModel;
-//    this.router.navigate([RoutingAccreditamentoFO.INSERIMENTO_DICHIARANTE]);
-//
-//  }
 
   cancella() {
     this.initRicercaModel();

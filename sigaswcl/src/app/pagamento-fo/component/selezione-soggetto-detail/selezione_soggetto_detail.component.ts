@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { DataTableDirective } from 'angular-datatables';
@@ -14,7 +14,7 @@ import { SubjectVO } from "../../commons/vo/subject-vo";
 })
 
 @DestroySubscribers()
-export class SelezioneSoggettoDetailComponent implements OnInit {
+export class SelezioneSoggettoDetailComponent implements OnInit, AfterViewInit {
 
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
 
@@ -27,8 +27,14 @@ export class SelezioneSoggettoDetailComponent implements OnInit {
   constructor(
     private router: Router,
     private logger: LoggerService,
-    private foPayService: PaymentFoService
+    private foPayService: PaymentFoService,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
     window.scrollTo(0, 0);

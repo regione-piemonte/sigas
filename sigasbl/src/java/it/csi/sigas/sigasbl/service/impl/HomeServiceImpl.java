@@ -31,6 +31,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -139,6 +140,7 @@ import it.csi.sigas.sigasbl.security.UserDetails;
 import it.csi.sigas.sigasbl.service.IHomeService;
 import it.csi.sigas.sigasbl.util.ActaUtils;
 import it.csi.sigas.sigasbl.util.CsiLogUtils;
+import it.csi.sigas.sigasbl.validator.InputValidator;
 import it.doqui.acta.acaris.relationshipsservice.AcarisException;
 import it.doqui.index.ecmengine.client.webservices.dto.Node;
 import it.doqui.index.ecmengine.client.webservices.dto.OperationContext;
@@ -259,12 +261,15 @@ public class HomeServiceImpl implements IHomeService {
 	@Autowired
 	private SigasCMessaggiRepository sigasCMessaggiRepository;
 
-
 	@Autowired
 	private SigasPagamentiVersamentiRepository sigasPagamentiVersamentiRepository;
 	
 	@Autowired
 	private DoquiServiceFactory acarisServiceFactory;
+	
+	@Autowired
+	@Qualifier("codiceFiscalePartitaIvaValidator")
+	protected InputValidator codiceFiscalePartitaIvaValidator;
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	    
@@ -524,8 +529,15 @@ public class HomeServiceImpl implements IHomeService {
 	
 	@Override
 	@Transactional
-	public AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) {
+	public AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) throws BusinessException {
 		SigasAnagraficaSoggetti sigasAnagraficaSoggettiUpdate = anagraficaSoggettiEntityMapper.mapVOtoEntity(confermaSoggettoRequest.getSoggetto());
+		
+		try {
+			codiceFiscalePartitaIvaValidator.validate("codice fiscale / partita IVA", sigasAnagraficaSoggettiUpdate.getCfPiva());
+		} catch (Exception e) {
+			throw new BusinessException("C.F / P.IVA formato non valido.", ErrorCodes.BUSSINESS_EXCEPTION);
+		}
+		
 		sigasAnagraficaSoggettiUpdate.setModUser(user);
 		sigasAnagraficaSoggettiUpdate.setModDate(new Date());
 		

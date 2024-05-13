@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy, Component } from "@angular/core";
+import { OnInit, OnDestroy, Component, AfterViewInit, Renderer2 } from "@angular/core";
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router } from "@angular/router";
 import { DatePipe } from "@angular/common";
@@ -25,7 +25,7 @@ declare var $: any;
     styleUrls: ['./inserimento-legale-rappresentante.component.scss']
 })
 @DestroySubscribers()
-export class InserimentoLegaleRappresentante implements OnInit {
+export class InserimentoLegaleRappresentante implements OnInit, AfterViewInit {
 
 
     rappresentanteModel: LegaleRappresentanteVO;
@@ -48,38 +48,15 @@ export class InserimentoLegaleRappresentante implements OnInit {
 
     public subscribers: any = {};
 
-
     ngOnInit(): void {
         this.loaderLegaleRappresentante = true;
         //TORNO ALL'INZIO
         let ricercaRequest = this.inserisciAccreditamentoService.RicercaDichiarante;
         let confermaDichiarante = this.inserisciAccreditamentoService.confermaDichiarante;
-//        if (ricercaRequest == null || confermaDichiarante == null)
-//            this.router.navigateByUrl(RoutingAccreditamento.RICERCA_DICHIARANTE);
-//        else {
-            //SE CONFERMA EFFETTUATA RICARICO DAL SERVICE
-//            let confermaLegaleRappresentante = this.inserisciAccreditamentoService.confermaLegaleRappresentante;
-//            if (confermaLegaleRappresentante == null) {
-//                if (confermaDichiarante.flagCensito != null && confermaDichiarante.flagCensito) {
-//                    this.recuperaDaTableIrba(confermaDichiarante);
-//                }
-//                else {
-                    this.rappresentanteModel = new LegaleRappresentanteVO("", "", "", "", "", "", -1, null, null, "");
-                    this.loaderLegaleRappresentante = true;
-//                }
-//            }
-//            else {
-//                this.rappresentanteModel = confermaLegaleRappresentante;
-//                this.loaderLegaleRappresentante = true;
-//                if (this.rappresentanteModel.idProvincia != null && this.rappresentanteModel.idProvincia != -1)
-//                    this.loadComuni(this.rappresentanteModel.idProvincia);
-//            }
-
-            this.loadProvince();
-//            this.loadStatiEsteri();
-            this.loaderComuni = true;
-//        }
-
+        this.rappresentanteModel = new LegaleRappresentanteVO("", "", "", "", "", "", -1, null, null, "");
+        this.loaderLegaleRappresentante = true;
+        this.loadProvince();
+        this.loaderComuni = true;
     }
 
     ngAfterViewChecked() {
@@ -92,32 +69,6 @@ export class InserimentoLegaleRappresentante implements OnInit {
         }
 
     }
-
-
-
-
-//    recuperaDaTableIrba(dichiarante: DichiaranteVO): any {
-//        this.subscribers.legaleRappr = this.inserisciAccreditamentoService.recuperaLegaleRappresentanteByCfdichiaranteAndPi(dichiarante.codiceFiscale, dichiarante.partitaIva).subscribe(data => {
-//            if (data == null)
-//                data = new LegaleRappresentanteVO("", "", "", "", "", "", -1, null, null, "");
-//            this.rappresentanteModel = data;
-//            this.loaderLegaleRappresentante = true;
-//            if (data.idProvincia != -1 && data.idProvincia != null)
-//                this.loadComuni(data.idProvincia);
-//            else {
-//                this.loadProvince();
-//                this.loadStatiEsteri();
-//            }
-//        }, (err) => {
-//            //NEL CASO DI ERRORE MOSTRO IL FORM
-//            this.rappresentanteModel = new LegaleRappresentanteVO("", "", "", "", "", "", -1, null, null, "");
-//            this.loaderLegaleRappresentante = true;
-//            this.loadProvince();
-//            this.loadStatiEsteri();
-//            this.loaderComuni = true;
-//
-//        });
-//    }
 
     loadProvince() {
         this.logger.info("carico le province")
@@ -231,6 +182,12 @@ export class InserimentoLegaleRappresentante implements OnInit {
         private logger: LoggerService,
         private inserisciAccreditamentoService: InserisciAccreditamentoService,
         private luoghiService: LuoghiService,
-        private router: Router
+        private router: Router,
+        private renderer: Renderer2
     ) { }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }
 }

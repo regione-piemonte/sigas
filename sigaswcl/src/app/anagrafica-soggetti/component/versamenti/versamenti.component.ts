@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Renderer2 } from '@angular/core';
 import { Router } from "@angular/router";
 import { Routing } from "../../../commons/routing";
 import { Subject } from "rxjs";
@@ -28,6 +28,10 @@ import { AngularFileUploaderComponent } from 'angular-file-uploader';
 
 import { ItemVersamentiReport } from '../../../commons/request/ItemVersamentiReport';
 
+import { v4 as uuidv4 } from 'uuid';
+
+declare var jquery: any;
+declare var $: any;
 
 @Component({
   selector: 'app-versamenti',
@@ -122,16 +126,26 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
   //----------------------------
 
   //Evolutiva conguaglio calcolato
-  private visualizzaSpanConguaglioCalcolato: boolean = false;
+  private visualizzaSpanConguaglioCalcolato: boolean = false; 
+
+  //Evolitiva versamenti simulati in funzione di conguaglio calcolato a credito => valore negativo
+  private codiceVersamentoSimulato: number = 99;
+  private descrizioneVersamentoSimulato: string = "Rateo simulato";
+  private denominazioneVersamentoSimulato: string = "Simulato";
+  private lowerBoundImportoVersamentoSimulato: number = -9999999;
+  private applicaControlloVersamentoSimulato: boolean = false; 
+  private disabilitaGenerazioneVersamenti: boolean = true;
+  private versamentoDaCancellare: number;
+  //--------------------------
 
   constructor(
     private router: Router,
     private logger: LoggerService,
     private anagraficaSoggettiService: AnagraficaSoggettiService,
     private luoghiService:LuoghiService,
-    private utilityService: UtilityService
-  ) { }
-  
+    private utilityService: UtilityService, 
+    private renderer: Renderer2
+  ) { }  
 
   ngOnInit() {
     window.scrollTo(0, 0);
@@ -153,9 +167,11 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
               { width: '10%', targets: 2 },
               { width: '10%', targets: 3 },
               { width: '10%', targets: 4 },
-              { width: '15%', targets: 5 },
-              { width: '15%', targets: 6 },
-              { width: '20%', targets: 7 }
+              { width: '10%', targets: 5 },
+              { width: '10%', targets: 6 },
+              { width: '10%', targets: 7 },
+              { width: '5%', targets: 8 },
+              { width: '15%', targets: 9 }
             ],
             dom: 'Bfrtip'            
           };
@@ -220,7 +236,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
         this.idAnagSogg = this.anagraficaSoggettiService.headerDichiarante.idAnag;
     }
     this.ricercaVersamentiRequest = new RicercaVersamentiRequest(null,null,'',null,null);
-    this.initVersamentiSoggetto();  
+    //this.initVersamentiSoggetto();  
     this.loadAnniVersamento();
     this.loadAnniVersamentoPerRicerca();
 
@@ -230,14 +246,19 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
         this.versamentiPr = data;
     });    
     */
-    //----------------------
+    //---------------------- 
+    
+    this.versamentoDaCancellare = 0;
     
   } 
   
   ngAfterViewInit(){
+      const element = this.renderer.selectRootElement('#idDivToContPrin');
+       setTimeout(() => element.focus(), 0);
+
       //Define datatable 
       this.dtTrigger.next();
-    }
+  }
   
   loadAnniVersamento(){
       this.logger.info("carico gli anni versamento")
@@ -274,7 +295,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                 .subscribe(
                     res => {
                         this.anniVersamentiPerRicerca = res;
-                                               
+                        this.loaderYear = false;                       
                     }, 
                     err => {
                         this.logger.error("errore ");
@@ -371,18 +392,47 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                         this.ultimoMese = this.mesiAnnuali[i].valore;
                         versamento.codMese = this.mesiAnnuali[i].valore;
                     }
-                }        
+                }
+
+                /* OLD CODE        
                 if(versamento.idVersamento==versamentoCal.idVersamento){
                     console.log("travaso id: " + versamento.idVersamento + "versamentoCal.idVersamento " + versamentoCal.idVersamento + " importo_prec " + versamentoCal.importo_prec  )                                                                                                            
                     versamento.importo_prec = versamentoCal.importo_prec;
                     versamento.differenza = versamentoCal.differenza;                                                
                     //versamento.note = moment(versamentoCal.insDate).format("DD-MM-YYYY");
-                }                                            
-            }                                        
+                } 
+                */
+                
+                
+                /* */ 
+                if(versamento.idVersamento==versamentoCal.idVersamento){
+                    if(versamento.tipo.idTipoVersamento!=this.codiceVersamentoSimulato 
+                       || this._verificaInserimentoVersamentoSimulato(versamentoCal, this.applicaControlloVersamentoSimulato)
+                       ){
+                        console.log("travaso id: " + versamento.idVersamento + "versamentoCal.idVersamento " + versamentoCal.idVersamento + " importo_prec " + versamentoCal.importo_prec  )                                                                                                            
+                        versamento.importo_prec = versamentoCal.importo_prec;
+                        versamento.differenza = versamentoCal.differenza;
+                        
+                        //this.versato += versamento.importo;
+                        //console.log(this.versato);
+                    } else {
+                        //Versamento simulato da NON considerare
+                        console.log("travaso VERSAMENTO SIMULATO da ESCLUDERE id: " + versamento.idVersamento )                                                                                                            
+                        versamento.importo_prec = this.lowerBoundImportoVersamentoSimulato;
+                        versamento.differenza = this.lowerBoundImportoVersamentoSimulato;                          
+                    }                    
+                }
+                
+            }
+            /*OLD CODE */          
             this.versato += versamento.importo;
             console.log(this.versato);
+            
+            
+            
         });                
     });
+
     this.elencoVersamenti.sort((a,b) => {                                                        
         if(a.codMese == b.codMese){                                             
             return  a.idVersamento - b.idVersamento;
@@ -391,10 +441,21 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
             return a.codMese - b.codMese;
         }        
     });
+
+    /*OLD CODE
     this.elencoVersamentiFinal = this.elencoVersamenti.map(verItem => Object.assign({},verItem));
+    */
+    
+    this.elencoVersamentiFinal = this.elencoVersamenti.filter(versamento => versamento.differenza != this.lowerBoundImportoVersamentoSimulato )
+                                                      .map(verItem =>Object.assign({},verItem));
+
     console.log("elencoVersamentiFinal", this.elencoVersamentiFinal);
-    this.rerender();    
-  }
+    this.rerender();
+
+    //Visualizzazione loader
+    this.loaderDatiRias = false;
+    this.loaderDT = false;    
+  } 
 
   gestioneRicercaConsumiForProvinceAndAnnualita(): void{
     this.subscribers.ricercaConsumiForProvince =
@@ -470,20 +531,141 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                                                                                         }
                                                                                     }                                                                                    
                                                                                     });
+                                                                                    
+                                                                                    if(this.applicaControlloVersamentoSimulato){
+                                                                                        this.elencoVersamenti = this._simulaInserimentoVersamentiImportoZERO(
+                                                                                                                        this.rateo_calc, 
+                                                                                                                        this.selConguaglioCalcolato, 
+                                                                                                                        this.elencoVersamenti);
 
-                                                                                    this.elencoVersamentiCalcolati.sort((a,b) => {                                                        
+                                                                                        this.elencoVersamentiCalcolati = this._simulaInserimentoVersamentiImportoZERO(
+                                                                                                                            this.rateo_calc, 
+                                                                                                                            this.selConguaglioCalcolato, 
+                                                                                                                            this.elencoVersamentiCalcolati);
+                                                                                    }
+                                                                                    
+
+                                                                                    this.elencoVersamenti = this.elencoVersamenti.sort((a,b) => {                                                                                                                                                
+                                                                                        if(a.codMese == b.codMese){                                             
+                                                                                            return  a.idVersamento - b.idVersamento;
+                                                                                        }                                                        
+                                                                                        else{
+                                                                                            return a.codMese - b.codMese;
+                                                                                        }
+                                                                                    });
+
+                                                                                    this.elencoVersamentiCalcolati = this.elencoVersamentiCalcolati.sort((a,b) => {                                                        
                                                                                         if(a.codMese == b.codMese){                                             
                                                                                             return  a.idVersamento - b.idVersamento;
                                                                                         }                                                        
                                                                                         else{
                                                                                             return a.codMese - b.codMese;
                                                                                         }                                                        
-                                                                                    });
+                                                                                    });                                                                                    
 
-                                                                                    this.gestioneRicercaVersamentiCalcoli();});                           
+                                                                                    this.gestioneRicercaVersamentiCalcoli();
+                                                                                });                           
                         
                         
                 });
+  }
+
+  _storicizzaListaVersamentiSimulati(){
+    let versamentiSimulati = this.elencoVersamenti.filter(versamento => versamento.tipo.idTipoVersamento == this.codiceVersamentoSimulato)
+                                                  .map(verItem =>{verItem.idVersamento = null; 
+                                                                  verItem.differenza = null;
+                                                                  verItem.importo_prec = null;
+                                                                  verItem.dataVersamento = new Date();
+                                                                  verItem.tipo.idTipoVersamento = 1;
+                                                                  verItem.tipo.denominazione = 'Rateo';
+                                                                  verItem.tipo.descrizione = 'Rateo mensile versato dal Soggetto';  
+                                                                  return verItem;});
+
+    //CHIAMATA SERVIZIO INSERIMENTO VERSAMENTI SIMULATI
+    if(versamentiSimulati!=null && versamentiSimulati != undefined && versamentiSimulati.length > 0)
+    {
+        this.loaderDT = true;
+        this.loaderDatiRias = true;
+        this.subscribers.inseroceElencoVersamentiSimulati = 
+                this.anagraficaSoggettiService.inserisciElencoVersamenti(versamentiSimulati)
+                                              .subscribe( resp => {
+                                                    this.changeFilter()
+                                                    }, err => {
+                                                        this.logger.error( 'errore ' );
+                                                        this.showMessageError = true;
+                                                        this.messageError = err.message;
+                                                        this.loaderDT = false;
+                                                        this.loaderDatiRias = false;
+                                                        this.showSuccessModRateo = false;
+                                                        this.showMessageErrorModRateo = false;
+                                              });
+
+    }                       
+  }
+
+  _verificaInserimentoVersamentoSimulato(versamento: VersamentiPrVO, applicaControllo: boolean): boolean{
+    if(applicaControllo){
+        //if(versamento.differenza <= 0 && versamento.tipo.idTipoVersamento == this.codiceVersamentoSimulato)
+        if(versamento.tipo.idTipoVersamento == this.codiceVersamentoSimulato)
+        {
+            return true;
+        }
+    }       
+    return false;
+  }
+
+  _simulaInserimentoVersamentiImportoZERO(rateoCalcolato: number, conguaglioCalcolato:number, 
+                                          versamenteRealiArray: VersamentiPrVO[]) 
+    {
+    
+    /*if(versamenteRealiArray != null && 
+    versamenteRealiArray != undefined && 
+    conguaglioCalcolato < 0 )*/
+    if(versamenteRealiArray != null && 
+       versamenteRealiArray != undefined)
+    {
+        let versamentiFittizi: VersamentiPrVO[]=[];
+        for (var i = 0 ; i <= 11; i++) {            
+            if(versamenteRealiArray.filter(versamento => versamento.mese == this.mesiAnnuali[i].descrizione).length == 0){
+                versamentiFittizi.push(this._creaVersamentoImportoZEROPerMese(this.idAnagSogg, +this.anno, this.provinciaConsumo.sigla, 
+                                                                              this.mesiAnnuali[i].descrizione, this.mesiAnnuali[i].valore));
+            }           
+        }
+        if(versamentiFittizi.length > 0){
+            versamenteRealiArray = [...versamenteRealiArray, ...versamentiFittizi];
+        }
+        versamenteRealiArray.sort((a,b) => {                                                        
+            if(a.codMese == b.codMese){                                             
+                return  a.idVersamento - b.idVersamento;
+            }                                                        
+            else{
+                return a.codMese - b.codMese;
+            }                                                        
+        });       
+    }
+    return versamenteRealiArray
+  }
+
+  //Wrapper qualora fosse necessario generare un UUID
+  //come per esempio utilizzando uuidv4()
+  //new VersamentiPrVO(uuidv4(),.....
+  _generaIdVersamento(mese: string): number{
+    return this.mesiAnnuali.filter(meseAnn => meseAnn.descrizione == mese)[0].valore;
+  }
+
+  _creaVersamentoImportoZEROPerMese(idAnagrafica: number, annualita: number, provincia: string, mese: string, codMese: number){    
+    let versamentoFittizio: VersamentiPrVO = new VersamentiPrVO(this._generaIdVersamento(mese), null, idAnagrafica, 
+                                                                annualita, mese, provincia, null, 
+                                                                null, null, null, null, 
+                                                                null, null, null, null);
+    versamentoFittizio.importo = 0;
+    versamentoFittizio.codMese = codMese;
+    //versamentoFittizio.note = "Versamento simulato";
+    versamentoFittizio.tipo = new TipoVersamentiVO(this.codiceVersamentoSimulato,
+                                                   this.denominazioneVersamentoSimulato, 
+                                                   this.descrizioneVersamentoSimulato);
+
+    return versamentoFittizio;
   }
 
   //Ricerca versamenti
@@ -492,12 +674,20 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       this.showSuccessModRateo = false;
       this.messageErrorModRateo = "";
       this.messageSuccessModRateo = ""; 
-      this.visualizzaSpanConguaglioCalcolato = false;     
+      this.visualizzaSpanConguaglioCalcolato = false;             
+
       if ( this.anno != null ) {
           this.loadMesiVersamento();          
           this.loadProvinceVersamenti()          
           this.loadTipoVersamenti();
           if ( this.anno && this.mese && this.provinciaConsumo && this.idTipoVersamento ) {
+              this.disabilitaGenerazioneVersamenti = false;
+                            
+              if(this.provinciaConsumo.id==0 || this.mese!="Tutti" || this.idTipoVersamento!=0){
+                this.disabilitaGenerazioneVersamenti = true;
+                this.applicaControlloVersamentoSimulato = false;
+              }
+              
               this.loaderEvolutiva202107 = true;
               this.filterDisabled = true;
               this.loaderDT = true;
@@ -524,21 +714,24 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                                     }                      
                                     this.gestioneRicercaConsumiForProvinceAndAnnualita();                                                                       
                                     
+                                    /*
                                     setTimeout(() => {
-                                        this.loaderDT = false;                                                       
+                                        this.loaderDT = false;
+                                        this.loaderDatiRias = false;
                                     }, 1000)
-                                    
+                                    */
+
                                     this.filterDisabled = false;
-                                    this.rerender();
+                                    //this.rerender();
+                                    
+                                   
                             }, 
                             err => {this.logger.error( err );
                                     this.loaderDT = false;
                             } );
           }
       }
-    }
-  
- 
+  }  
   
   onChangeRateoCalc(rateoCalc: number){
       console.log('onChangeRateoCalc');
@@ -635,8 +828,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
 
       this.elencoVersamentiFinal = this.elencoVersamenti.map(verItem => Object.assign({},verItem));
       console.log("elencoVersamentiFinal", this.elencoVersamentiFinal);
-      this.rerender();
-      
+      this.rerender();      
   }
 
   loadAllarmi(idConsumo: string) {
@@ -651,8 +843,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       } );
   }
 
-  gestisciAllarme(){
-      
+  gestisciAllarme(){      
       if(this.elencoVersamenti.length > 0) {                
         this.subscribers.allarmeSoggetto = this.anagraficaSoggettiService.allarmeSoggetto(!this.allarmeVersamento, this.consumi.id_consumi)
         .subscribe(
@@ -678,7 +869,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       } catch (err) {
         console.log(err);
       }
-    }
+  }
   
   initVersamentiSoggetto() {
       this.versato = 0;
@@ -696,26 +887,24 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                   this.subscribers.ricercaConsumiForProvince =
                       this.anagraficaSoggettiService.ricercaConsumiForProvinceAndAnnualita( +this.anno-1, this.provinciaConsumo.sigla )
                           .subscribe( res => {
-                              this.consumi = res;
-                              if ( this.consumi != null ) {
-                                  this.loadAllarmi( this.consumi.id_consumi.toString() );
-                              }
-                              
-                              this.differenza = 0;
-                              if(this.consumi!=null){
-                                  this.rateo_calc = Math.round((this.consumi.totaleDich/12) * 100)/100;
-                              }
-                              var importoMesePrecedente = 0;                             
-                              
+                            this.consumi = res;
+                            if ( this.consumi != null ) {
+                                this.loadAllarmi( this.consumi.id_consumi.toString() );
+                            }
+                            
+                            this.differenza = 0;
+                            if(this.consumi!=null){
+                                this.rateo_calc = Math.round((this.consumi.totaleDich/12) * 100)/100;
+                            }
+                            var importoMesePrecedente = 0;                              
                               
                             var ricVerCalReq: RicercaVersamentiRequest = new RicercaVersamentiRequest(this.idAnagSogg, this.anno, 
-                                                                                                  "Tutti", this.provinciaConsumo.id, 
-                                                                                                  this.idTipoVersamento );
-                            this.subscribers.ricercaVersamenti = 
-                            this.anagraficaSoggettiService.ricercaVersamentiCalcoli(ricVerCalReq)
+                                                                                                      "Tutti", this.provinciaConsumo.id, 
+                                                                                                      this.idTipoVersamento );
+                            this.subscribers.ricercaVersamenti = this.anagraficaSoggettiService.ricercaVersamentiCalcoli(ricVerCalReq)
                             .subscribe(respCalcoli => {this.elencoVersamentiCalcolati = respCalcoli;} , 
-                                err => {this.logger.error( "errore " );}, 
-                                () => {
+                            err => {this.logger.error( "errore " );}, 
+                            () => {
                                         this.elencoVersamentiCalcolati.forEach(versamento => {
                                         if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
                                             for (var i = 0 ; i <= 11; i++) {
@@ -767,7 +956,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
               this.loaderDT = false;
               });
           }
-    }
+  }
   
   reInitVersamentiSoggetto() {
     this.versato = 0;
@@ -873,31 +1062,39 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       this.anagraficaSoggettiService.updateTotaleDichConsumi(this.consumi).subscribe(
               resp => {
                   console.log(resp);
-                  this.messageSuccessModRateo = "Modifica avvenuta con successo";
+                  this.messageSuccessModRateo = "Modifica avvenuta con successo.";
                   this.showSuccessModRateo = true;
+                  //this.loaderDatiRias = false;
+                  this._storicizzaListaVersamentiSimulati();
+                  this.loaderDT = false;
                   this.loaderDatiRias = false;
-              }, err => {
-                this.logger.error("errore salvataggio salvaModificaRateo");
-                this.messageErrorModRateo = "Si è verificato un errore in fase di salvataggio";
+                  this.disabilitaGenerazioneVersamenti = true;
+                  this.applicaControlloVersamentoSimulato = false;
+              }, err => {                
+                this.messageErrorModRateo = "Si è verificato un errore in fase di salvataggio Rateo";
                 this.showMessageErrorModRateo = true;
                 this.loaderDatiRias = false;
+                this.loaderDT = false;                  
+                this.logger.error("errore salvataggio salvaModificaRateo");
             });
   }
   
   editVersamento(versamento: VersamentiPrVO ) {
-      this.showMessageError = false;
-      this.versamentoToSave = versamento;
-      this.updateVersamento = true;
-      this.versamentoToSave.idAnag= this.idAnagSogg;
-      
-      const _dataVersamento = moment(versamento.dataVersamento);
-      this.dataVersamento = {
-              year: _dataVersamento.year(),
-              month: Number(_dataVersamento.format('MM')),
-              day: Number(_dataVersamento.format('DD'))
-          };
-      this.calcolaAnniRecenti();
-    }
+      if(versamento.tipo.idTipoVersamento!=this.codiceVersamentoSimulato){
+        this.showMessageError = false;
+        this.versamentoToSave = versamento;
+        this.updateVersamento = true;
+        this.versamentoToSave.idAnag= this.idAnagSogg;
+        
+        const _dataVersamento = moment(versamento.dataVersamento);
+        this.dataVersamento = {
+                year: _dataVersamento.year(),
+                month: Number(_dataVersamento.format('MM')),
+                day: Number(_dataVersamento.format('DD'))
+            };
+        this.calcolaAnniRecenti();
+      }        
+  }
   
   calcolaAnniRecenti() {
       this.listaAnni = new Array();
@@ -906,7 +1103,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
         this.listaAnni[i] = current;
         current--;
       }
-   }
+  }
     
   loadConsumoPerProvince(){
      console.log(this.versamentoToSave.annualita);
@@ -926,41 +1123,40 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
   
   clearAll() {
       this.versamentoToSave = new VersamentiPrVO(null, null, null, null,'', '' ,new TipoVersamentiVO(null,'',''),null,null,null,'',null,0,false,null);   
-      this.tipoVersamentiModel = null;
-      //console.log(this.versamentoToSave);
-    }
+      this.tipoVersamentiModel = null;      
+  }
   
   onSubmitSalva() {
       if (this.versamentoToSave.note.length > 255) {
         	this.utilityService.getMessageByKey(MessageEnum.SIZENOTE)
-            	.subscribe(msg => {
-				   this.showMessageError = true;
-                   this.messageError = msg.message || '';
-                        }, error => {
-                            this.logger.error(error);
-                        });
+                                .subscribe(msg => {
+                                    this.showMessageError = true;
+                                    this.messageError = msg.message || '';
+                                }, 
+                                error => {
+                                    this.logger.error(error);
+                                });
         } else {
               this.isSaveDisabled = true;
               this.versamentoToSave.dataVersamento =  new Date(this.dataVersamento.year, this.dataVersamento.month - 1, this.dataVersamento.day);
+              //this.versamentoToSave.annualita = this.dataVersamento.year;
               this.subscribers.confermaInserimentoVersamento = this.anagraficaSoggettiService.confermaInserimentoVersamento( this.versamentoToSave )
-              .subscribe( resp => {
-                    this.loadAnniVersamento();
+              .subscribe( resp => {                    
                     this.subscribers.provinciaBySigla = this.luoghiService.provinciaBySigla( this.versamentoToSave.provincia ).
                         subscribe( resp => {
                             console.log( resp );
                             this.provinciaTrovata = resp;
-                            this.provinciaConsumo = this.provinciaTrovata;
-                            this.anno = this.versamentoToSave.annualita.toString();
-                            //this.anagraficaSoggettiService.annoDichiarazione = this.versamentoToSave.annualita.toString();
-                            this.mese = this.versamentoToSave.mese;
-                            this.loadMesiVersamento();
-                            this.loadAnniVersamento();                    
+                            this.provinciaConsumo = this.provinciaTrovata;                            
+                            this.loadMesiVersamento();                                                
                             this.loadAnniVersamentoPerRicerca();
                             this.loadProvinceVersamenti();
-                            this.idTipoVersamento = this.versamentoToSave.tipo.idTipoVersamento;
-                            this.ricercaVersamentiRequest = new RicercaVersamentiRequest( this.idAnagSogg, this.versamentoToSave.annualita.toString(),
-                                this.versamentoToSave.mese, this.provinciaConsumo.id, this.versamentoToSave.tipo.idTipoVersamento );
-                            //this.reInitVersamentiSoggetto();
+                            
+                            this.anno = this.versamentoToSave.annualita.toString();                            
+                            this.mese = this.versamentoToSave.mese;
+                            this.idTipoVersamento = this.versamentoToSave.tipo.idTipoVersamento;                            
+                            this.versamentoToSave = new VersamentiPrVO(null, null, null, null,'', '' ,
+                                                                       new TipoVersamentiVO(null,'',''),null,null,null,'',
+                                                                       null,0,false,null);                            
                             this.changeFilter()
                             this.nuovoVersamento = false;
                             this.updateVersamento = false;
@@ -985,14 +1181,14 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
   }
   
   onClickModifica() {    
-    if (this.versamentoToSave.note.length > 255) {
+    if (this.versamentoToSave.note != null && this.versamentoToSave.note != undefined && this.versamentoToSave.note.length > 255) {
         this.utilityService.getMessageByKey(MessageEnum.SIZENOTE)
             .subscribe(msg => {
                this.showMessageError = true;
                this.messageError = msg.message || '';
-                    }, error => {
-                        this.logger.error(error);
-                    });
+            }, error => {
+                this.logger.error(error);
+            });
     }else{
         this.versamentoToSave.dataVersamento =  new Date(this.dataVersamento.year, this.dataVersamento.month - 1, this.dataVersamento.day);      
         this.subscribers.confermaModificaVersamento = this.anagraficaSoggettiService.confermaModificaVersamento( this.versamentoToSave )
@@ -1001,19 +1197,18 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                 subscribe( resp => {
                     this.provinciaTrovata = resp;
                     this.provinciaConsumo = this.provinciaTrovata;                  
-                    this.anno = this.versamentoToSave.annualita.toString();
-                    //this.anagraficaSoggettiService.annoDichiarazione = this.versamentoToSave.annualita.toString();
+                    this.anno = this.versamentoToSave.annualita.toString();                    
                     this.mese = this.versamentoToSave.mese;
                     this.loadAnniVersamento();                    
                     this.loadAnniVersamentoPerRicerca();
                     this.loadMesiVersamento();
                     this.loadProvinceVersamenti();
-                    this.ricercaVersamentiRequest = new RicercaVersamentiRequest( this.idAnagSogg, this.versamentoToSave.annualita.toString(),
-                            this.versamentoToSave.mese, this.provinciaConsumo.id, this.versamentoToSave.tipo.idTipoVersamento );
+                    this.ricercaVersamentiRequest = new RicercaVersamentiRequest(this.idAnagSogg, this.versamentoToSave.annualita.toString(),
+                                                                                 this.versamentoToSave.mese, this.provinciaConsumo.id, 
+                                                                                 this.versamentoToSave.tipo.idTipoVersamento );
                     console.log('Anno '+this.anno);
                     this.nuovoVersamento = false;
-                    this.updateVersamento = false;
-                    //this.reInitVersamentiSoggetto();
+                    this.updateVersamento = false;                    
                     this.changeFilter();
                     this.isSaveDisabled = false;
                 }, err => {
@@ -1032,11 +1227,11 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                 this.isSaveDisabled = false;
            
             } );
-
     }
+  }
 
-     
-
+  onClickPulsanteElimina(){    
+    this.visualizzaDialogBoxConfernmaCancellazione(this.versamentoToSave)
   }
   
   goBackVersamenti() {
@@ -1044,15 +1239,13 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       this.nuovoVersamento = false;
       this.versamentoToSave = new VersamentiPrVO(null, null, null, null, '', '' ,new TipoVersamentiVO(0,'',''),null,null,null,'',null,0,false,null); 
       this.loadAnniVersamento();
-      this.loadAnniVersamentoPerRicerca();
-      //this.reInitVersamentiSoggetto();
+      this.loadAnniVersamentoPerRicerca();      
       this.changeFilter();
-    }
+  }
   
   goExcel(){   
     console.log('Scarica Excel');
-    this.loaderExcel = true;
-    //this.anagraficaSoggettiService.annoDichiarazione = this.anno;
+    this.loaderExcel = true;    
     var itemVersamentiReportList: Array<ItemVersamentiReport> = new Array<ItemVersamentiReport>();
     this.elencoVersamentiFinal.forEach(versamento => {
         itemVersamentiReportList.push(new ItemVersamentiReport(this.anno,versamento.mese,
@@ -1076,6 +1269,42 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
   
   compareFn(c1: any, c2:any): boolean {     
       return c1 && c2 ? c1.id === c2.id : c1 === c2; 
- }
+  }
+
+  visualizzaDialogBoxConfernmaCancellazione(versamento: VersamentiPrVO){
+    this.versamentoDaCancellare = versamento.idVersamento;
+    $('#dialogBox').modal('show');
+  }
+
+  cancellaVersamento(){
+    if(this.versamentoDaCancellare!=0){
+        this.messageErrorModRateo = "";
+        this.showMessageErrorModRateo = false;
+        this.subscribers.cancellaVersamento = this.anagraficaSoggettiService.eliminaVersamento(this.versamentoDaCancellare)
+        .subscribe(resp=>{
+            this.nuovoVersamento = false;
+            this.updateVersamento = false;                    
+            this.isSaveDisabled = false;
+
+            this.versamentoDaCancellare=0;
+
+            this.disabilitaGenerazioneVersamenti = true;
+            this.applicaControlloVersamentoSimulato = false;
+            
+            this.changeFilter();            
+        },
+        err => {
+            this.logger.error( err );
+            this.messageErrorModRateo = "Si è verificato un errore in fase di elminazione versamento";
+            this.showMessageErrorModRateo = true;
+            this.versamentoDaCancellare=0;
+            this.loaderDT = false;            
+        });
+    }    
+  }
+
+  annullaCancellaVersamento(){
+    this.versamentoDaCancellare=0;
+  }
 
 }

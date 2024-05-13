@@ -6,6 +6,9 @@ package it.csi.sigas.sigasbl.rest.api.impl;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -194,6 +197,28 @@ public class VersamentiApiImpl extends SpringSupportedResource implements IVersa
     	logger.info("END: salvaElencoVersamenti");
 		
     	return Response.ok().entity(file).build();
+	}
+
+	@Override
+	public Response insertElencoVersamenti(List<ConfermaVersamentoRequest> confermaVersamentoRequestList) {
+		logger.info("START: insertElencoVersamenti");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+		this.versamentiDispatcher.insertElencoVersamenti(confermaVersamentoRequestList,  utente.getUsername(), utente.getIdentita().getCodFiscale());
+		logger.info("END: insertElencoVersamenti");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();		
+	}
+	
+	@Override
+	public Response deleteVersamento(Long idVersamento) {
+		logger.info("START: deleteVersamento");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+		this.versamentiDispatcher.deleteVersamento(idVersamento, utente.getUsername(), utente.getIdentita().getCodFiscale());
+		logger.info("END: deleteVersamento");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
 	}
 	
 }

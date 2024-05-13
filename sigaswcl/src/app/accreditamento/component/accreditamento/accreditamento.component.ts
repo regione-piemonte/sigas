@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2 } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { AccreditamentoService } from '../../service/accreditamento.service';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -35,7 +35,7 @@ declare var $: any;
 })
 
 @DestroySubscribers()
-export class AccreditamentoComponent implements OnInit {
+export class AccreditamentoComponent implements OnInit, AfterViewInit {
 
 
     accreditamento: AccreditamentoVO;
@@ -50,15 +50,21 @@ export class AccreditamentoComponent implements OnInit {
     private showSuccess: boolean;
     private messageSuccess: string;
     private messageError: string;
-statoSelezionato: string;
+    statoSelezionato: string;
 
     confermaPraticaAccreditamentoRequest: ConfermaPraticaAccreditamentoRequest;
 
   constructor(
-    private logger: LoggerService,
-    private accreditamentoService: AccreditamentoService,
-    private router: Router
-  ) { }
+        private logger: LoggerService,
+        private accreditamentoService: AccreditamentoService,
+        private router: Router,
+        private renderer: Renderer2
+    ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   @ViewChild(SigasDialogComponent) sigasDialog: SigasDialogComponent;
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;

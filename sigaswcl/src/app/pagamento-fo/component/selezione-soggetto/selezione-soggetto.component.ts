@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from "@angular/router";
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { Routing } from '../../../commons/routing'
@@ -15,32 +15,26 @@ declare var $: any;
   styleUrls: ['./selezione-soggetto.component.scss']
 })
 @DestroySubscribers()
-export class SelezioneSoggetto implements OnInit {
+export class SelezioneSoggetto implements OnInit, AfterViewInit {
   
   private cartOption: number;
-
   private loaderInserimentoSoggettoPage: boolean;
-
   private yearDisabled: boolean;
   private subjectDisabled: boolean;
-
   public subscribers: any = {};
-
-
-    paymentSuccess: boolean;
-    showErrorMessage: string = null;
-    
-    url_chiamante_esterno: string;
-    idPagamento: string;
-    digest: string;
-    codEsito: string;
-
+  paymentSuccess: boolean;
+  showErrorMessage: string = null;  
+  url_chiamante_esterno: string;
+  idPagamento: string;
+  digest: string;
+  codEsito: string;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private logger: LoggerService,
-    private foPayService: PaymentFoService
+    private foPayService: PaymentFoService,
+    private renderer: Renderer2
   ) { 
       if(this.route.queryParams) {
           //url_chiamante_esterno?idPagamento={identificativoPagamento}&digest={digest}&codEsito=[000|100]
@@ -51,6 +45,11 @@ export class SelezioneSoggetto implements OnInit {
               this.codEsito = params['codEsito'];
           });
       }
+  }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
   }
 
   private yearsList: Array<string>;

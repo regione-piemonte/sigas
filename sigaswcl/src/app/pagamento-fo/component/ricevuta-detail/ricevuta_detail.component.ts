@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {LoggerService} from '../../../core/services/logger.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
@@ -15,7 +15,7 @@ import {SelezioneRicevutaComponent} from '../seleziona-ricevuta/seleziona-ricevu
     styleUrls: ['./ricevuta_detail.component.scss']
 })
 @DestroySubscribers()
-export class RicevutaDetailComponent implements OnInit, OnDestroy {
+export class RicevutaDetailComponent implements OnInit, OnDestroy, AfterViewInit {
 
     rtInfo: PaymentRTInfoVO;
 
@@ -25,8 +25,14 @@ export class RicevutaDetailComponent implements OnInit, OnDestroy {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private location: Location,
-        private sharedCacheService: SharedCacheService
+        private sharedCacheService: SharedCacheService,
+        private renderer: Renderer2
     ) {
+    }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
     }
 
     ngOnInit(): void {

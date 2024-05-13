@@ -98,6 +98,7 @@ public class AnagraficaSoggettoEntityMapperImpl implements AnagraficaSoggettiEnt
 		dto.setModUser(vo.getModUser());
 		dto.setInsDate(vo.getInsDate());
 		dto.setInsUser(vo.getInsUser());
+		dto.setCfPiva(vo.getCfPiva());
 		return dto;
 	}
 

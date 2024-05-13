@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy, Component, EventEmitter, Output, ViewChild, AfterViewInit, ViewChildren } from "@angular/core";
+import { OnInit, OnDestroy, Component, EventEmitter, Output, ViewChild, AfterViewInit, ViewChildren, Renderer2 } from "@angular/core";
 import { Router } from "@angular/router";
 import { ExceptionVO } from "../../../../core/commons/vo/exceptionVO"; 
 import { Observable } from "rxjs/Observable";
@@ -27,7 +27,7 @@ import { VerificaDichiaranteRequest } from "../../../../commons/request/verifica
     styleUrls: ['./inserimento-dichiarante.component.scss']
 })
 @DestroySubscribers()
-export class InserimentoDichiaranteComponent implements OnInit, OnDestroy {
+export class InserimentoDichiaranteComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild(DataTableDirective) dtElement: DataTableDirective;
     dichiaranteModel: DichiaranteVO;
     dichiaranteModelList: Array<AnagraficaSoggettoVO>;
@@ -116,27 +116,9 @@ private dtOptions: any;
       }
     
     ngAfterViewInit() {
-        }
-    
-    
-
-    
-//    initAccrDichiaranteConfermato(confermaEffettuata: DichiaranteVO) {
-//        this.dichiaranteModel = confermaEffettuata;
-//        this.loaderDichiarante = true;
-//        if (confermaEffettuata.regione == null || confermaEffettuata.provincia == null) {
-//            this.loaderComuni = true;
-//            this.loaderProvince = true;
-//            confermaEffettuata.regione = new RegioniVO(-1, null);
-//            confermaEffettuata.provincia = null;
-//            confermaEffettuata.comune = null;
-//        }
-//        else {
-//            this.loaderStatiEsteri = true;
-//            this.loadProvince(confermaEffettuata.regione.id);
-//            this.loadComuni(confermaEffettuata.provincia.id);
-//        }
-//    }
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }
 
     initAccrDichiaranteOSCAR() {
         this.loaderDichiarante = false;
@@ -162,37 +144,7 @@ private dtOptions: any;
             this.dichiaranteModel.provincia = new ProvinceVO(null, null, null);
             this.dichiaranteModel.comune = new ComuniVO(null, null);
         });
-    }
-
-
-//    loadProvince(id: number) {
-//        this.logger.info("carico le province della regione con id:" + id);
-//        if (id != null && id != -1) {
-//            this.loaderProvince = false; 
-//            this.subscribers.provinceByRegione = this.luoghiService.getProvinceByIdRegione(id).subscribe(data => {
-//                this.provinciaModel = data;
-//                let prov = this.provinciaModel.find(x => x.id == this.dichiaranteModel.provincia.id);
-//                if (!prov) {
-//                    this.dichiaranteModel.provincia = new ProvinceVO(null, null, null);
-//                    this.loadComuni(null);
-//                    this.dichiaranteModel.indirizzo = null;
-//                }
-//                this.loaderProvince = true;
-//            }, err => {
-//                this.logger.error(err);
-//            });
-//        }
-//        else {
-//            this.provinciaModel = new Array<ProvinceVO>();
-//            this.comuniModel = new Array<ComuniVO>();
-//            this.dichiaranteModel.comune = new ComuniVO(null, null);
-//            this.dichiaranteModel.provincia = new ProvinceVO(null, null, null);
-//            this.dichiaranteModel.indirizzo = null;
-//            this.loaderProvince = true;
-//        }
-//
-//    }
-    
+    }    
     
     loadProvince() {
         this.logger.info("carico le province")
@@ -282,22 +234,7 @@ private dtOptions: any;
         });
     }
      
-    associaDichiarante(dich: AnagraficaSoggettoVO) {
-//        
-//        public idDichiarante?: number,
-//                public denominazione?: string,
-//                public codiceAzienda? : string,
-//                public regione?: RegioniVO,
-//                public provincia?: ProvinceVO,
-//                public comune?: ComuniVO,
-//                public indirizzo?: string,
-//                public emailDichiarante?: string,
-//                public iban?: string,
-//                public note?: string,
-//                public pecDichiarante?: string,
-//                public telefonoDichiarante?: number,
-//                public flagCensito?: boolean
-     
+    associaDichiarante(dich: AnagraficaSoggettoVO) {     
             
             this.dichiaranteCensito = new DichiaranteVO(null,dich.denominazione, dich.codiceAzienda, new RegioniVO(null, ''), new ProvinceVO(dich.idProvincia, '',''),new ComuniVO(dich.idComune, ''), dich.indirizzo, '', dich.iban, dich.note, '', null,true);
         
@@ -415,6 +352,7 @@ private dtOptions: any;
         private logger: LoggerService,
         private inserisciAccreditamentoService: InserisciAccreditamentoService,
         private luoghiService: LuoghiService,
-        private router: Router
+        private router: Router,
+        private renderer: Renderer2
     ) { }
 }

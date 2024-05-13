@@ -4,12 +4,16 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.rest.api;
 
+import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -70,6 +74,7 @@ public interface IVersamentiApi {
     @POST
     @Path("/salvaElencoVersamenti")
 	Response salvaElencoVersamenti(DownloadVersamentiReport downloadVersamentReport);
+    
     @POST
     @Path("/insertVersamento")
     Response insertVersamento(@Valid @NotNull(message = "ConfermaVersamentoRequest non deve essere vuota") ConfermaVersamentoRequest confermaVersamentoRequest);
@@ -79,9 +84,15 @@ public interface IVersamentiApi {
     Response insertVersamentoContabilia(@Valid @NotNull(message = "ConfermaVersamentoContabiliaRequest non deve essere vuota") ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest);
     
     @POST
+    @Path("/insertElencoVersamenti")
+    Response insertElencoVersamenti(@Valid @NotNull(message = "ConfermaVersamentoRequest non deve essere vuota") List<ConfermaVersamentoRequest> confermaVersamentoRequestList);
+    
+    @POST
     @Path("/updateVersamento")
     Response updateVersamento(@Valid @NotNull(message = "ConfermaVersamentoRequest non deve essere vuota") ConfermaVersamentoRequest confermaVersamentoRequest);
-
     
+    @DELETE
+    @Path("/delete/{idVersamento}")
+    Response deleteVersamento(@Valid @PathParam("idVersamento") @NotNull(message = "idVersamento non deve essere null") Long idVersamento);    
     
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild ,TemplateRef} from '@angular/core';
+import { Component, OnInit, ViewChild ,TemplateRef, AfterViewInit, Renderer2} from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { TassiVO } from '../../../commons/vo/tassi-vo';
 import { TipoTassiVO } from '../../../commons/vo/tipo-tassi-vo';
@@ -30,7 +30,7 @@ declare var $: any;
 })
 
 @DestroySubscribers()
-export class TassiComponent implements OnInit {
+export class TassiComponent implements OnInit, AfterViewInit {
  
   private dtOptions: any;
   private elencoTassi: Array<TassiVO>;  
@@ -60,8 +60,14 @@ export class TassiComponent implements OnInit {
 
   constructor(
           private logger: LoggerService,
-          private tassiService: TassiService
+          private tassiService: TassiService,
+          private renderer: Renderer2
         ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
       window.scrollTo(0, 0);

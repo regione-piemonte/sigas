@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { DataTableDirective } from 'angular-datatables';
@@ -30,7 +30,7 @@ import {NgbDateCustomParserFormatter} from '../../../commons/class/dateformat';
 })
 
 @DestroySubscribers()
-export class OrdinativiIncassoComponent implements OnInit {
+export class OrdinativiIncassoComponent implements OnInit, AfterViewInit {
 
 
   @ViewChild(DataTableDirective)
@@ -84,8 +84,14 @@ export class OrdinativiIncassoComponent implements OnInit {
   constructor(
     private router: Router,
     private logger: LoggerService,
-    private ordinativiService: OrdinativiService
+    private ordinativiService: OrdinativiService,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
     // Move on top

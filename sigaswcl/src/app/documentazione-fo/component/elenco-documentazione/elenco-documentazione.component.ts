@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef, Inject} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, Inject, AfterViewInit} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {DestroySubscribers} from '../../../core/commons/decorator/destroy-unsubscribers';
 import {DocumentazioneService} from '../../service/documentazione.service';
@@ -19,6 +19,8 @@ import {TipoDocumentoVO} from '../../../commons/vo/tipo-documento-vo';
 
 import { AllegatoDocumentazioneVO } from '../../../commons/vo/allegato-documentazione-vo';
 
+import { Renderer2 } from '@angular/core';
+
 
 declare var jquery: any;
 declare var $: any;
@@ -33,7 +35,7 @@ declare var $: any;
 })
 
 @DestroySubscribers()
-export class ElencoDocumentazioneComponent implements OnInit {
+export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
 
     elencoDoc: Array<DocumentiVO>;
     public subscribers: any = {};
@@ -53,28 +55,20 @@ export class ElencoDocumentazioneComponent implements OnInit {
     private documentCount: number;
     public elencoLettereRisposta: Array<DocumentiVO>;
 
-    private btnClickedMap : Map<String, boolean>;    
+    private btnClickedMap : Map<String, boolean>;   
 
     constructor(
         private logger: LoggerService,
         private documentazioneService: DocumentazioneService,
         private router: Router,
-        @Inject(DOCUMENT) private document: Document
+        @Inject(DOCUMENT) private document: Document,
+        private renderer: Renderer2
     ) {
     }
-
-    /*
-    getDataProtocollazioneByNumeroProtocolloRif(protocolloRif: String, dataProtocollazioneDefault: Date): Date {
-        if(protocolloRif != null || protocolloRif != undefined || protocolloRif != ''){
-            var docPadre = this.elencoDoc.find(item=>item.nprotocollo===protocolloRif);
-            if(docPadre != null || docPadre != undefined){
-                return docPadre.dataProtocollazione;
-            }
-        }        
-        return dataProtocollazioneDefault;       
-        //return new Date();
-    }
-    */
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }    
 
     getDataProtocollazioneByNumeroProtocolloRif(protocolloRif: String, dataProtocollazioneDefault: Date): Date {
         if(dataProtocollazioneDefault === null || dataProtocollazioneDefault === undefined){            
@@ -307,7 +301,8 @@ export class ElencoDocumentazioneComponent implements OnInit {
         }        
     }
 
-    ngOnInit(): void {
+    ngOnInit(): void {        
+       
         this.btnClickedMap  = new Map<String, boolean>();    
         this.logger.info('init Ricerca Pratiche Component');
         this.dtOptions = {
@@ -419,7 +414,7 @@ export class ElencoDocumentazioneComponent implements OnInit {
         this.calcolaAnniRecenti();
         setTimeout(() => {
             this.dtTrigger.next();
-        });
+        });        
     }
 
     calcolaAnniRecenti() {

@@ -1,7 +1,15 @@
+<!--div check soggetto -->
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
 <!-- Gestione sigas alert -->
 <sigas-alert *ngIf="erroreCaricamento" [message]="erroreUpload" [type]="'DANGER'"></sigas-alert>
 <!-- DIV principale -->
-<div class="principal-div">
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
     <!-- Gestione sigas spinner -->
     <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
     <div *ngIf="!loaderPage">

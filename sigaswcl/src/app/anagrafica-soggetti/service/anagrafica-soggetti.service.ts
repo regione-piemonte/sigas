@@ -826,6 +826,22 @@ export class AnagraficaSoggettiService {
     public eliminaDocumento(idDocumento: number) {
         const url = this.config.getBEServer() + '/rest/home/delete/' + idDocumento;
         return this.http.delete(url, {});
-    }   
+    }
+
+    /**
+     * Consente di eliminare un versamento.
+     *
+     * @param idVersamento
+     */    
+    public eliminaVersamento(idVersamento: number) {
+      var url: string = this.config.getBEServer() + '/rest/versamenti/delete/' + idVersamento;      
+      return this.http.delete(url, {});
+    }
     
+    public inserisciElencoVersamenti(versamentoList: Array<VersamentiPrVO>) {
+      var url: string = this.config.getBEServer() + '/rest/versamenti/insertElencoVersamenti';
+
+      const body = versamentoList.map(versamento => new ConfermaVersamentoRequest(versamento));
+      return this.http.post<Array<VersamentiPrVO>>(url, body);
+    }
 }

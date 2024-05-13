@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {LoggerService} from '../../../../core/services/logger.service';
 import {ModificaAccreditamentoService} from '../../service/modifica-accreditamento.service';
 import {Router} from '@angular/router';
@@ -19,7 +19,7 @@ import {AnnullaAccreditamentoRequest} from '../../../../commons/request/annulla-
     styleUrls: ['./modifica-pratica-accreditamento.component.scss']
 })
 @DestroySubscribers()
-export class ModificaPraticaAccreditamentoComponent implements OnInit, OnDestroy {
+export class ModificaPraticaAccreditamentoComponent implements OnInit, OnDestroy, AfterViewInit {
 
     modificaDichiaranteModel: DichiaranteVO;
     accreditamento: AccreditamentoVO;
@@ -35,8 +35,13 @@ export class ModificaPraticaAccreditamentoComponent implements OnInit, OnDestroy
         private modificaAccreditamentoService: ModificaAccreditamentoService,
         private luoghiService: LuoghiService,
         private userService: UserService,
-        private router: Router
+        private router: Router,
+        private renderer: Renderer2
     ) {
+    }
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
     }
 
     ngOnInit(): void {

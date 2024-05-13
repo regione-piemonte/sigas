@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {DestroySubscribers} from '../../../core/commons/decorator/destroy-unsubscribers';
 import {DocumentazioneService} from '../../service/documentazione.service';
 import {LoggerService} from '../../../core/services/logger.service';
@@ -28,7 +28,7 @@ const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
     ]
 })
 @DestroySubscribers()
-export class DocumentazioneComponent implements OnInit {
+export class DocumentazioneComponent implements OnInit, AfterViewInit {
     @ViewChild(SigasDialogComponent) sharedDialog: SigasDialogComponent;
     public subscribers: any = {};
     allowedFilesType = ['pdf', 'tiff', 'jpg', 'jpeg', 'p7m'];
@@ -60,8 +60,14 @@ export class DocumentazioneComponent implements OnInit {
         private documentazioneService: DocumentazioneService,
         private router: Router,
         private utilityService: UtilityService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private renderer: Renderer2
     ) {
+    }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
     }
 
     ngOnInit(): void {

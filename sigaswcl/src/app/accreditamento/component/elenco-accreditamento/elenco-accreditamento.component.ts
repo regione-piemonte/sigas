@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { AccreditamentoService } from '../../service/accreditamento.service';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -33,7 +33,7 @@ declare var $: any;
 })
 
 @DestroySubscribers()
-export class ElencoAccreditamentoComponent implements OnInit {
+export class ElencoAccreditamentoComponent implements OnInit, AfterViewInit {
 
 
     elencoPratiche: Array<UtenteProvvisorioVO>
@@ -51,8 +51,14 @@ export class ElencoAccreditamentoComponent implements OnInit {
   constructor(
     private logger: LoggerService,
     private accreditamentoService: AccreditamentoService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   @ViewChild(SigasDialogComponent) sigasDialog: SigasDialogComponent;
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;

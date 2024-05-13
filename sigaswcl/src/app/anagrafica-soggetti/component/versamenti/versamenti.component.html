@@ -1,3 +1,10 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
 <div [ngStyle]="{'display': !updateVersamento && !nuovoVersamento ? 'block' : 'none'}">
     <div class="card-body container">
       <!--testata-->
@@ -6,11 +13,11 @@
       </div>
       <sigas-alert [message]="messageSuccessModRateo" *ngIf="showSuccessModRateo" [type]="'SUCCESS'"></sigas-alert>
       <sigas-alert [message]="messageErrorModRateo" *ngIf="showMessageErrorModRateo" [type]="'DANGER'"></sigas-alert>
-      <div class="form-group row padding-search">
-          <div class="form-group col-lg-12">
+      <div class="form-group row padding-search" id="principal-div-id" name="principal-div-id">
+          <div class="form-group-lg col-lg-12">
               <div class="row">
                   <!--Anno-->
-                  <label id="lblAnnoRifVersamenti" for="annoVersamenti" class="col-form-label">Anno di riferimento:</label>
+                  <label id="lblAnnoRifVersamenti" for="annoVersamenti" class="col-form-label">Anno:</label>
                   <sigas-spinner-form [diameter]="30" *ngIf="loaderYear;  else elseAnnoCaricato"></sigas-spinner-form>
                    <ng-template #elseAnnoCaricato>
                      <div class="col-lg-2">
@@ -30,7 +37,13 @@
                   <sigas-spinner-form [diameter]="30" *ngIf="loaderMonth;  else elseMeseCaricato"></sigas-spinner-form>
                    <ng-template #elseMeseCaricato>
                      <div class="col-lg-2">
-                          <select class="form-control" id="mese" aria-labelledby="lblMese" [(ngModel)]="mese" name="mese" required (change)="changeFilter()"  [disabled]="filterDisabled" >
+                          <select class="form-control" 
+                                  id="mese" 
+                                  aria-labelledby="lblMese" 
+                                  [(ngModel)]="mese" 
+                                  name="mese" required 
+                                  (change)="changeFilter()"  
+                                  [disabled]="filterDisabled" >
                               <option *ngFor="let mese of mesiVersamenti" [value]="mese">{{mese}}</option>
                           </select>
                       </div>
@@ -58,9 +71,25 @@
                         <option [value]=0 > Tutti </option> 
                               <option *ngFor="let tipoVersamento of tipoVersamentiModel" [value]="tipoVersamento.idTipoVersamento">{{tipoVersamento.denominazione}}</option>
                         </select>
-                      </div>
+                      </div>                      
                   </ng-template>
-              </div>
+                  <!--Includi versamenti simulati-->
+                  <div *ngIf="!disabilitaGenerazioneVersamenti">
+                    <label id="lblVersamentiSimulati" for="chkVersamentiSimulati" class="col-form-label">Genera Vers.:</label>
+                    <label class="switch">                                                
+                            <input id="chkVersamentiSimulati" 
+                                    type="checkbox" 
+                                    [(ngModel)]="applicaControlloVersamentoSimulato" 
+                                    aria-label="Includi versamenti simulati"
+                                    (click)="changeFilter()"
+                                    [disabled]="disabilitaGenerazioneVersamenti">
+                            <span class="slider round">
+                                <span *ngIf="applicaControlloVersamentoSimulato" class="switch-on">ON</span>
+                                <span *ngIf="!applicaControlloVersamentoSimulato" class="switch-off">OFF</span>
+                            </span>
+                    </label>
+                  </div>                                    
+              </div>              
           </div>
       </div>
       
@@ -137,7 +166,7 @@
 
                       <!--Tabella-->
                       <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-versamenti"  class="row-border hover" 
-                          datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+                             datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
 
                           <!--Table head-->
                           <thead>
@@ -150,13 +179,14 @@
                                   <th>Importo Calcolato</th>
                                   <th>Differenza</th>
                                   <th>Note</th>
-                                  <th>Modalità Pagamento</th>
+                                  <th>Mod. Pag.</th>
+                                  <th>Azioni</th>
                               </tr>
                           </thead>
 
                           <!--Table body-->
                           <tbody>
-                              <tr class ="pointer" *ngFor="let el of elencoVersamentiFinal; let i = index " (click) = "editVersamento(el)">
+                              <tr class ="pointer" *ngFor="let el of elencoVersamentiFinal; let i = index ">
                                   <!--annualita-->
                                   <td>{{ el.annualita }}</td>
                                   <!--mese-->
@@ -174,8 +204,14 @@
                                   <td> <textarea aria-label="Note" class="note-textareaview" rows="2" [(ngModel)]="el.note" readonly>
                                       </textarea></td>
                                   <td>
-                                    <img *ngIf="!el.hasPagamentiVersamenti" style="width:23px; height:23px;" alt="versamento" title="versamento" src="assets/tipologia_versamento_1.png">
-                                    <img *ngIf="el.hasPagamentiVersamenti" style="width:23px; height:23px;" alt="pagamento" title="pagamento" src="assets/tipologia_versamento_2.png">
+                                    <img *ngIf="!el.hasPagamentiVersamenti" style="width:25px; height:25px;" alt="versamento" title="versamento" src="assets/tipologia_versamento_1.png">
+                                    <img *ngIf="el.hasPagamentiVersamenti" style="width:25px; height:25px;" alt="pagamento" title="pagamento" src="assets/tipologia_versamento_2.png">
+                                  </td>
+                                  <td>
+                                    <img *ngIf="el.tipo.idTipoVersamento!=99" style="width:25px; height:25px;" alt="Modifica versamento" title="Modifica versamento" src="assets/pencil-solid-fa-ok.png" (click)="editVersamento(el)">
+                                    <img *ngIf="el.tipo.idTipoVersamento==99" style="width:25px; height:25px;" alt="Impossibile modificare versamento" title="Impossibile modificare versamento" src="assets/pencil-solid fa.png">                                    
+                                    <img *ngIf="!el.hasPagamentiVersamenti && el.tipo.idTipoVersamento!=99" style="width:25px; height:25px;" alt="Cancella versamento" title="Cancella versamento" src="assets/trash_blu.png" (click)="visualizzaDialogBoxConfernmaCancellazione(el)">                                    
+                                    <img *ngIf="el.hasPagamentiVersamenti || el.tipo.idTipoVersamento==99" style="width:25px; height:25px;" alt="Impossibile cancellare pagamento" title="Impossibile cancellare versamento" src="assets/trash_nera.png">
                                   </td> 
                               </tr>
                           </tbody>
@@ -432,12 +468,22 @@
                                                   indietro</a>
                                           </div>
                                           <div class="btn-group">
-                                              <button *ngIf="nuovoVersamento" type="submit" [disabled]="!insNuovoVersamento.form.valid || isSaveDisabled"
-                                                  class="btn btn-primary margin-icon btn-standard">
-                                                  <i class="fas fa-angle-down"></i> Salva versamento</button>
-                                              <button *ngIf="updateVersamento" type="button" [disabled]="!insNuovoVersamento.form.valid"
-                                                  class="btn btn-primary margin-icon btn-standard" (click)="onClickModifica()">
-                                                  <i class="fas fa-angle-down"></i> Modifica versamento</button>
+                                              <button *ngIf="nuovoVersamento" 
+                                                      type="submit" 
+                                                      [disabled]="!insNuovoVersamento.form.valid || isSaveDisabled"
+                                                      class="btn btn-primary margin-icon btn-standard">
+                                                      <i class="fas fa-angle-down"></i> Salva versamento</button>
+                                              <button *ngIf="updateVersamento" 
+                                                      type="button" 
+                                                      [disabled]="!insNuovoVersamento.form.valid"
+                                                      class="btn btn-primary margin-icon btn-standard" 
+                                                      (click)="onClickModifica()">
+                                                      <i class="fas fa-angle-down"></i> Modifica versamento</button>
+                                              <button *ngIf="updateVersamento" 
+                                                      type="button"                                                       
+                                                      class="btn btn-primary margin-icon btn-standard" 
+                                                      (click)="onClickPulsanteElimina()">
+                                                      <i class="fas fa-angle-down"></i> Elimina versamento</button>
                                           </div>
                                       </div>
                                   </div>
@@ -447,3 +493,27 @@
                   </form>
           </div>
     </div>
+    <!-- DIALOG BOX -->
+    <div class="modal fade" id="dialogBox" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Carrello -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Gestione Versamenti</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <span>L'operazione prevede la cancellazione del versamento selezionato. Si desidera continuare?</span>
+                    </p>
+                </div>
+                <!-- Buttons -->
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="annullaCancellaVersamento()">No</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" (click)="cancellaVersamento()">S&igrave;</button>                
+                </div>
+                <!-- end Buttons -->
+            </div>
+        </div>
+    </div>
+    <!--FINE DIALOG BOX -->

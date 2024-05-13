@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2 } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { ImportazioneUTFService } from '../../service/importazione-utf.service';
 import { ImportazioneUTFRequest } from '../../../commons/request/importazione-utf-request';
@@ -13,7 +13,7 @@ import { AnnualitaUTFVO } from '../../../commons/vo/annualita-utf-vo';
 })
 
 @DestroySubscribers()
-export class ImportazioneUTFComponent implements OnInit {
+export class ImportazioneUTFComponent implements OnInit, AfterViewInit {
 
   @ViewChild('utfFileRef')
   utfFileRef: ElementRef;
@@ -37,8 +37,14 @@ export class ImportazioneUTFComponent implements OnInit {
 
   constructor(
     private logger: LoggerService,
-    private importazioneUTFService: ImportazioneUTFService
-    ) { }
+    private importazioneUTFService: ImportazioneUTFService,
+    private renderer: Renderer2
+  ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
 

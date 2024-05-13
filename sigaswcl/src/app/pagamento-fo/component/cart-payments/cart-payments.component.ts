@@ -1,5 +1,5 @@
 import { Observable, Subscription } from 'rxjs';
-import { Component, OnInit, OnDestroy, Inject } from "@angular/core";
+import { Component, OnInit, OnDestroy, Inject, AfterViewInit, Renderer2 } from "@angular/core";
 //import { RiepilogoPagamentoVO } from "../../commons/vo/riepilogo-pagamento-vo";
 import { LoggerService } from "../../../core/services/logger.service";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -22,7 +22,7 @@ declare var $: any;
     styleUrls: ['./cart-payments.component.scss']
 })
 @DestroySubscribers()
-export class CartPaymentComponent implements OnInit, OnDestroy {
+export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private dialogBoxType: string;
     private dialogBoxTitle: string;
@@ -55,7 +55,13 @@ export class CartPaymentComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private location: Location,
         //@Inject(DOCUMENT) private document: any
+        private renderer: Renderer2
     ) { }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }
 
     ngOnInit(): void {
         if(!this.foPayService.cartReq.year || !this.foPayService.cartReq.subjectName)

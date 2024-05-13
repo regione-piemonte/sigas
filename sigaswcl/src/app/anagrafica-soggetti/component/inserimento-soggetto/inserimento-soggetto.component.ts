@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { Subject } from "rxjs";
@@ -18,7 +18,7 @@ import { RicercaConsumiRequest } from '../../../commons/request/ricerca-consumi-
 })
 
 @DestroySubscribers()
-export class InserimentoSoggettoComponent implements OnInit {
+export class InserimentoSoggettoComponent implements OnInit, AfterViewInit {
     
   private soggettoToSave: AnagraficaSoggettoVO;
   private ricercaConsumiRequest: RicercaConsumiRequest;
@@ -31,9 +31,14 @@ export class InserimentoSoggettoComponent implements OnInit {
   constructor(
     private router: Router,
     private logger: LoggerService,
-    private anagraficaSoggettiService: AnagraficaSoggettiService
+    private anagraficaSoggettiService: AnagraficaSoggettiService,
+    private renderer: Renderer2
   ) { }
 
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
   
   ngOnInit() {
      console.log("INIZIO");

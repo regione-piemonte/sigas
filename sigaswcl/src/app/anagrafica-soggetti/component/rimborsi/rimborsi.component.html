@@ -1,3 +1,10 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
 <!-- <div *ngIf="!calcolaRimborsoView"> -->
  <div [ngStyle]="{'display': !calcolaRimborsoView ? 'block' : 'none'}" class="contains">
   <sigas-alert *ngIf = "!errorMsg" [message]="'Selezionare dall\'elenco l\'istanza di Rimborso per la quale si vuole calcolare il rimborso'" [type]="'INFO'"></sigas-alert>
@@ -9,7 +16,7 @@
     <div class="form-group row">
         <div class="col-lg-12">
             <div class="form-group col-lg-12">
-                <div class="form-group col-lg-12">
+                <div class="form-group col-lg-12" id="principal-div-id" name="principal-div-id">
                     <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
                     <!-- Table -->
                     <table [style.display]="!loaderDT ? '' : 'none' "  class="row-border hover" 

@@ -87,6 +87,16 @@ public class VersamentiDispatcherImpl implements IVersamentiDispatcher {
 	public void updateVersamento(ConfermaVersamentoRequest confermaVersamentoRequest, String user, String codFiscale) {
 		versamentiService.updateVersamento(confermaVersamentoRequest,user, codFiscale);		
 	}
+
+	@Override
+	public void insertElencoVersamenti(List<ConfermaVersamentoRequest> confermaVersamentoRequestList, String user, String codFiscale) {
+		versamentiService.insertVersamentoList(confermaVersamentoRequestList, user, codFiscale);		
+	}
+	
+	@Override
+	public boolean deleteVersamento(Long idVersamento, String user, String codFiscale) {
+		return versamentiService.deleteVersamento(idVersamento, user, codFiscale);		
+	}
 	
 
 }

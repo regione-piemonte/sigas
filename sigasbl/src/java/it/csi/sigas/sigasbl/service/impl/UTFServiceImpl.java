@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -509,10 +510,7 @@ public class UTFServiceImpl implements IUTFService {
 			    			sigasAnagraficaSoggetti.setCodiceAzienda(sigasFrontespizio.getCodiceDitta());
 			    			sigasAnagraficaSoggetti.setDenominazione(sigasFrontespizio.getDenominazione());
 			    			sigasAnagraficaSoggetti.setIndirizzo(sigasFrontespizio.getIndirizzoSede());
-			    			sigasAnagraficaSoggetti.setTipo(sigasFrontespizio.getTipoSoggetto());
-			    			
-			    			//sigasAnagraficaSoggetti.setProvincia(sigasFrontespizio.getProvinciaSede());
-			    			//sigasAnagraficaSoggetti.setComune(sigasFrontespizio.getComuneSede());
+			    			sigasAnagraficaSoggetti.setTipo(sigasFrontespizio.getTipoSoggetto());			    			
 			    			
 			    			// Fk Provincia	
 			    			SigasProvincia sigasProvincia = sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(sigasFrontespizio.getProvinciaSede());
@@ -542,7 +540,9 @@ public class UTFServiceImpl implements IUTFService {
 		    		
 		    		// Recupera dati QUADRO M per codice azienda, provincia 
 		    		List<SigasQuadroM> sigasQuadroMList = sigasQuadroMRepository.findByCodiceDittaAndProvinciaAndImportUTF(sigasFrontespizio.getCodiceDitta(), 
-		    				sigasFrontespizio.getProvincia(), sigasFrontespizio.getSigasImport(), sigasFrontespizio.getAnno());
+		    																											   sigasFrontespizio.getProvincia(), 
+		    																											   sigasFrontespizio.getSigasImport(), 
+		    																											   sigasFrontespizio.getAnno());
 		    		
 		    		// Calcola i consumi
 		    		int usiIndustrialiUp = 0;
@@ -561,7 +561,9 @@ public class UTFServiceImpl implements IUTFService {
 		    			
 		    			if (sigasQuadroM.getAliquota() != 0) {
 		    				// Cerca tipo consumo per aliquota e prog_rigo
-			    			SigasAliquote sigasAliquote = sigasAliquoteRepository.findByAliquotaAndProgRigo(sigasQuadroM.getAliquota(),sigasQuadroM.getProgRigo(), Integer.parseInt(sigasFrontespizio.getAnno()) );
+			    			SigasAliquote sigasAliquote = sigasAliquoteRepository.findByAliquotaAndProgRigo(sigasQuadroM.getAliquota(),
+			    																							sigasQuadroM.getProgRigo(), 
+			    																							Integer.parseInt(sigasFrontespizio.getAnno()));
 			    			
 			    			GregorianCalendar aliquotaStartDate = null;
 			    			GregorianCalendar aliquotaEndDate = null;
@@ -578,51 +580,42 @@ public class UTFServiceImpl implements IUTFService {
 			    			
 			    				switch(sigasAliquote.getSigasTipoAliquote().getSigasTipoConsumo().getCampoDichConsumo()) {
 			    					case "usi_industriali_up":
-			    						usiIndustrialiUp += sigasQuadroM.getConsumi();
-			    						//totIIndustrialiUp += sigasQuadroM.getImposta();
+			    						usiIndustrialiUp += sigasQuadroM.getConsumi();			    						
 			    						totIIndustrialiUp += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
 			    						break;
 			    					case "usi_industriali_1200":
-			    						usiIndustriali1200 += sigasQuadroM.getConsumi();
-			    						//totIIndustriali1200 += sigasQuadroM.getImposta();
+			    						usiIndustriali1200 += sigasQuadroM.getConsumi();			    						
 			    						totIIndustriali1200 += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
 			    						break;
 			    					case "usi_civili_120":
-			    						usiCivili120 += sigasQuadroM.getConsumi();
-			    						//totCivili120 += sigasQuadroM.getImposta();
+			    						usiCivili120 += sigasQuadroM.getConsumi();			    						
 			    						totCivili120 += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
 			    						break;
 			    					case "usi_civili_480":
-			    						usiCivili480 += sigasQuadroM.getConsumi();
-			    						//totCivili480 += sigasQuadroM.getImposta();
+			    						usiCivili480 += sigasQuadroM.getConsumi();			    						
 			    						totCivili480 += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
 			    						break;
 			    					case "usi_civili_1560":
-			    						usiCivili1560 += sigasQuadroM.getConsumi();
-			    						//totCivili1560 += sigasQuadroM.getImposta();
+			    						usiCivili1560 += sigasQuadroM.getConsumi();			    						
 			    						totCivili1560 += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
 			    						break;
 			    					case "usi_civili_up":
 			    						usiCiviliUp += sigasQuadroM.getConsumi();
-			    						//totCiviliUp += sigasQuadroM.getImposta();
 			    						totCiviliUp += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
 			    						break;
 			    					case "tot_nuovi_allacciamenti":
 			    						totNuoviAllacciamenti += sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota();
-			    						break;
-			    						
+			    						break;			    						
 			    				}
 			    			} else { 
 			    				// Salva lo scarto in DB
 			    				SigasDichScarti sigasDichScarti = new SigasDichScarti();
 			    				
 			    				sigasDichScarti.setAliquota(sigasQuadroM.getAliquota());
-			    				sigasDichScarti.setConsumi(sigasQuadroM.getConsumi());
-			    				//sigasDichScarti.setImposta(sigasQuadroM.getImposta());
+			    				sigasDichScarti.setConsumi(sigasQuadroM.getConsumi());			    				
 			    				sigasDichScarti.setImposta(sigasQuadroM.getConsumi() * sigasQuadroM.getAliquota());
 			    				sigasDichScarti.setProvincia(sigasQuadroM.getProvincia());
-			    				sigasDichScarti.setSigasDichConsumi(sigasDichConsumi);
-			    				
+			    				sigasDichScarti.setSigasDichConsumi(sigasDichConsumi);			    				
 			    				
 		    					List<SigasAliquote> listAliquote = sigasAliquoteRepository.findByProgRigoAndAnno(sigasQuadroM.getProgRigo(), Integer.parseInt(sigasFrontespizio.getAnno()) );
 		    					
@@ -631,11 +624,9 @@ public class UTFServiceImpl implements IUTFService {
 		    						if(!descUso.contains(aliquota.getSigasTipoAliquote().getSigasTipoConsumo().getDescrizione()))
 		    							descUso.add(aliquota.getSigasTipoAliquote().getSigasTipoConsumo().getDescrizione());
 								}
-		    					sigasDichScarti.setDescUsoScarto(StringUtils.join(descUso," - "));
-			    				
+		    					sigasDichScarti.setDescUsoScarto(StringUtils.join(descUso," - "));			    				
 		
-			    				sigasDichScartiList.add(sigasDichScarti);
-			    				
+			    				sigasDichScartiList.add(sigasDichScarti);			    				
 			    			}
 		    			}
 		    			if(2018<=Integer.parseInt(sigasFrontespizio.getAnno())) {
@@ -658,7 +649,10 @@ public class UTFServiceImpl implements IUTFService {
 		    		
 		    		// Recupera dati QUADRO M per codice azienda, provincia
 		    		List<SigasQuadroN> sigasQuadroNList = sigasQuadroNRepository.findByImportOrderByCodiceDitta(sigasFrontespizio.getCodiceDitta(), 
-		    				sigasFrontespizio.getProvincia(), sigasFrontespizio.getSigasImport());
+		    																									sigasFrontespizio.getProvincia(), 
+		    																									sigasFrontespizio.getSigasImport());
+		    		
+		    		boolean anomaliaImpostaProgRig3eProgRig4 = verificaAnomaliaQuadroNProgRigo3ProgRigo4(sigasQuadroNList);
 		    		
 		    		double conguaglioDich = 0;
 		    		double adLiquidata = 0;
@@ -667,11 +661,22 @@ public class UTFServiceImpl implements IUTFService {
 		    			for(SigasQuadroN sigasQuadroN : sigasQuadroNList) {
 			    			if ( sigasQuadroN.getProgRigo().equals("1"))
 			    				adLiquidata = sigasQuadroN.getImposta();
-			    			else if ( sigasQuadroN.getProgRigo().equals("3"))
-			    				conguaglioDich = +sigasQuadroN.getImposta();
-			    			else if ( sigasQuadroN.getProgRigo().equals("4"))
-			    				conguaglioDich = -sigasQuadroN.getImposta();
-			    			else if (sigasQuadroN.getProgRigo().equals("912"))
+			    			else if ( sigasQuadroN.getProgRigo().equals("3")) {
+			    				//conguaglioDich = +sigasQuadroN.getImposta();
+			    				if(anomaliaImpostaProgRig3eProgRig4) {
+			    					conguaglioDich = 0;
+			    				} else if(sigasQuadroN.getImposta()!=0) {
+			    					conguaglioDich = +sigasQuadroN.getImposta();
+			    				}			    				
+			    			} else if ( sigasQuadroN.getProgRigo().equals("4")) {
+			    				//conguaglioDich = -sigasQuadroN.getImposta();
+			    				if(anomaliaImpostaProgRig3eProgRig4) {
+			    					conguaglioDich = 0;
+			    				} else if(sigasQuadroN.getImposta()!=0) {
+			    					conguaglioDich = -sigasQuadroN.getImposta();
+			    				}
+			    				
+			    			} else if (sigasQuadroN.getProgRigo().equals("912"))
 			    				rateo = sigasQuadroN.getImposta();
 		    			}
 		    		}
@@ -680,18 +685,14 @@ public class UTFServiceImpl implements IUTFService {
 		    		double versamenti = 0;
 		    		try {
 		    			versamenti = sigasDichVersamentiRepository.sumByAnnoAndProvinciaAndSoggetto(sigasFrontespizio.getAnno(), 
-		    					sigasFrontespizio.getProvincia(), sigasAnagraficaSoggetti);
+		    																						sigasFrontespizio.getProvincia(), 
+		    																						sigasAnagraficaSoggetti);
 		    		} catch(Exception e) {
 		    			logger.debug("Nessun Versamento trovato per il Soggetto '" + sigasAnagraficaSoggetti.getCodiceAzienda() + 
-		    					" nell'anno " + sigasFrontespizio.getAnno() + " e per la provincia '" + sigasFrontespizio.getProvincia());
-		    		}
+		    					 	 " nell'anno " + sigasFrontespizio.getAnno() + 
+		    					 	 " e per la provincia '" + sigasFrontespizio.getProvincia());
+		    		} 		
 		    		
-		    		
-		    		// Come totale industriale viene preso l'imposta piu' alta
-//		    		if (totIIndustrialiUp > totIIndustriali1200) 
-//		    			totIIndustriali = totIIndustrialiUp;
-//		    		else
-//		    			totIIndustriali =totIIndustriali1200;
 		    		
 		    		// SIGAS 57 - totale industriale come somma delle imposte
 		    		totIIndustriali = totIIndustrialiUp + totIIndustriali1200;
@@ -742,10 +743,24 @@ public class UTFServiceImpl implements IUTFService {
 						// Controllo coerenza
 						checkCoerenza(sigasDichConsumi);
 		    		} else {
+		    			/*
 			    		sigasDichConsumi.setSigasAnagraficaSoggetti(sigasAnagraficaSoggetti);
 			    		sigasDichConsumi.setSigasImport(sigasFrontespizio.getSigasImport());
 			    		sigasDichConsumi.setAnnualita(sigasFrontespizio.getAnno());
 			    		sigasDichConsumi.setProvinciaErogazione(null);
+			    		
+			    		sigasDichConsumi = sigasDichConsumiRepository.save(sigasDichConsumi);
+			    		*/
+		    			
+		    			sigasDichConsumi.setSigasAnagraficaSoggetti(sigasAnagraficaSoggetti);
+			    		sigasDichConsumi.setSigasImport(sigasFrontespizio.getSigasImport());
+			    		sigasDichConsumi.setAnnualita(sigasFrontespizio.getAnno());
+			    		sigasDichConsumi.setProvinciaErogazione(sigasFrontespizio.getProvincia());
+			    		sigasDichConsumi.setDataPresentazione(sigasFrontespizio.getDataPresentazione());
+			    		sigasDichConsumi.setConguaglioDich(conguaglioDich);
+			    		sigasDichConsumi.setRateoDich(rateo);
+			    		sigasDichConsumi.setAddizionaleLiquidata(adLiquidata);		    		
+			    		
 			    		
 			    		sigasDichConsumi = sigasDichConsumiRepository.save(sigasDichConsumi);
 			    	}
@@ -764,6 +779,39 @@ public class UTFServiceImpl implements IUTFService {
     	} else {
         	logger.warn("Non e' possibile calcolare i consumi perche' l'import e' in fase '" + sigasImport.getEsito() + "'");
         }
+    }
+    
+    private Double quadroNCercaImpostaByRigo(List<SigasQuadroN> sigasQuadroNList, String valoreRigo) {
+    	Double output = null;
+    	
+    	if (sigasQuadroNList == null || sigasQuadroNList.isEmpty() || valoreRigo == null ) {
+    		return output;    		
+    	}    	
+    	Iterator<SigasQuadroN> iter = sigasQuadroNList.iterator();
+    	while(iter.hasNext()){
+    		SigasQuadroN item = iter.next();
+    		if(item.getProgRigo()!=null && item.getProgRigo().equalsIgnoreCase(valoreRigo)) {
+    			output = item.getImposta();
+    		}
+    	}    	
+    	return output;
+    }
+    
+    private boolean verificaAnomaliaQuadroNProgRigo3ProgRigo4(List<SigasQuadroN> sigasQuadroNList) {
+    	boolean rigo3DiversoDaZero = false;
+    	boolean rigo4DiversoDaZero = false;
+    	
+    	Double impostaRigo3 = quadroNCercaImpostaByRigo(sigasQuadroNList, "3");
+    	if(impostaRigo3 != null && impostaRigo3 != 0) {
+    		rigo3DiversoDaZero = true;
+    	}
+    	
+    	Double impostaRigo4 = quadroNCercaImpostaByRigo(sigasQuadroNList, "4");
+    	if(impostaRigo4 != null && impostaRigo4 != 0) {
+    		rigo4DiversoDaZero = true;
+    	}
+    	
+    	return rigo3DiversoDaZero && rigo4DiversoDaZero;    	
     }
     
     @Transactional

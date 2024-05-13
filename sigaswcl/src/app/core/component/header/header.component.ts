@@ -59,6 +59,7 @@ levelMessage:string;
   logOut() {
     this.userService.logOut().subscribe(data => {
       this.logger.info("logout success");
+      sessionStorage.clear();
       this.document.location.href = this.config.getSSOLogoutURL(location.hostname);
     },
       err => {

@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +36,7 @@ import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.common.utils.Utilities;
 import it.csi.sigas.sigasbl.model.entity.CsiLogAudit;
 import it.csi.sigas.sigasbl.model.entity.SigasAllarmi;
+import it.csi.sigas.sigasbl.model.entity.SigasAnaComunicazioni;
 import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasDichConsumi;
 import it.csi.sigas.sigasbl.model.entity.SigasDichVersamenti;
@@ -71,6 +74,7 @@ import it.csi.sigas.sigasbl.request.home.AllarmeRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoContabiliaRequest;
 import it.csi.sigas.sigasbl.request.home.ConfermaVersamentoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaVersamentiRequest;
+import it.csi.sigas.sigasbl.security.UserDetails;
 import it.csi.sigas.sigasbl.service.IVersamentiService;
 import it.csi.sigas.sigasbl.util.CsiLogUtils;
 
@@ -121,9 +125,6 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	
 	@Autowired
 	private SigasCParametroRepository sigasCParametroRepository;
-	
-//	@Autowired
-//	private SigasPagamentiRepository sigasPagamentiRepository;
 	
 	@Autowired
 	private SigasPagamentiCrudRepository sigasPagamentiCrudRepository;
@@ -177,10 +178,7 @@ public class VersamentiServiceImpl implements IVersamentiService {
     	if(annualitaVersamentiList!=null & !annualitaVersamentiList.isEmpty()) {
     		output.setAnno_ultimo_versamento(annualitaVersamentiList.get(0));
     	}    	
-    	return output; 	
-    	
-    	    	
-		//return sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
+    	return output;		
     }
 
 	@Override
@@ -285,97 +283,111 @@ public class VersamentiServiceImpl implements IVersamentiService {
 
 			if (ricercaVersamentiRequest.getProvincia() != null && ricercaVersamentiRequest.getProvincia() == 0) {
 				dichVersamentiListDB = sigasDichVersamentiRepository
-						.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaOrderByDataVersamentoAsc(
-								ricercaVersamentiRequest.getIdAnag(), ricercaVersamentiRequest.getAnno());
+									   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaOrderByDataVersamentoAsc(ricercaVersamentiRequest.getIdAnag(), 
+											   																	ricercaVersamentiRequest.getAnno());
 			} else {
 				dichVersamentiListDB = sigasDichVersamentiRepository
-						.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasProvinciaIdProvinciaOrderByDataVersamentoAsc(
-								ricercaVersamentiRequest.getIdAnag(), ricercaVersamentiRequest.getAnno(),
-								ricercaVersamentiRequest.getProvincia());
+									   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasProvinciaIdProvinciaOrderByDataVersamentoAsc(ricercaVersamentiRequest.getIdAnag(), 
+											   																								ricercaVersamentiRequest.getAnno(),
+											   																								ricercaVersamentiRequest.getProvincia());
 			}
 				
-				if (dichVersamentiListDB.size() > 0) {
-					logger.debug("Trovati " + dichVersamentiListDB.size() + " versamenti");
-					versamentiVOList = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDB);
+			if (dichVersamentiListDB.size() > 0) {
+				logger.debug("Trovati " + dichVersamentiListDB.size() + " versamenti");
+				versamentiVOList = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDB);
+			}
+			
+			Map<VersamentiPrVO, Integer> map = new HashMap<>();
+			
+			for (VersamentiPrVO versamento : versamentiVOList) {
+				switch (StringUtils.upperCase(versamento.getMese())) {
+					case "GENNAIO":
+						versamento.setCodMese(1);
+						map.put(versamento,1);
+						break;
+					case "FEBBRAIO": 
+						versamento.setCodMese(2);
+						map.put(versamento,2);
+						break;
+					case "MARZO": 
+						versamento.setCodMese(3);
+						map.put(versamento,3);
+						break;
+					case "APRILE":
+						versamento.setCodMese(4);
+						map.put(versamento,4);
+						break;
+					case "MAGGIO": 
+						versamento.setCodMese(5);
+						map.put(versamento,5);
+						break;
+					case "GIUGNO": 
+						versamento.setCodMese(6);
+						map.put(versamento,6);
+						break;
+					case "LUGLIO":
+						versamento.setCodMese(7);
+						map.put(versamento,7);
+						break;
+					case "AGOSTO": 
+						versamento.setCodMese(8);
+						map.put(versamento,8);
+						break;
+					case "SETTEMBRE":
+						versamento.setCodMese(9);
+						map.put(versamento,9);
+						break;
+					case "OTTOBRE":
+						versamento.setCodMese(10);
+						map.put(versamento,10);
+						break;
+					case "NOVEMBRE": 
+						versamento.setCodMese(11);
+						map.put(versamento,11);
+						break;
+					case "DICEMBRE":
+						versamento.setCodMese(12);
+						map.put(versamento,12);
+						break;
 				}
-				
-				Map<VersamentiPrVO, Integer> map = new HashMap<>();
-				
-				for (VersamentiPrVO versamento : versamentiVOList) {
-					switch (StringUtils.upperCase(versamento.getMese())) {
-						case "GENNAIO": 
-							map.put(versamento,1);
-							break;
-						case "FEBBRAIO": 
-							map.put(versamento,2);
-							break;
-						case "MARZO": 
-							map.put(versamento,3);
-							break;
-						case "APRILE": 
-							map.put(versamento,4);
-							break;
-						case "MAGGIO": 
-							map.put(versamento,5);
-							break;
-						case "GIUGNO": 
-							map.put(versamento,6);
-							break;
-						case "LUGLIO": 
-							map.put(versamento,7);
-							break;
-						case "AGOSTO": 
-							map.put(versamento,8);
-							break;
-						case "SETTEMBRE": 
-							map.put(versamento,9);
-							break;
-						case "OTTOBRE": 
-							map.put(versamento,10);
-							break;
-						case "NOVEMBRE": 
-							map.put(versamento,11);
-							break;
-						case "DICEMBRE": 
-							map.put(versamento,12);
-							break;
-					}
-				}
-				
-				List<Map.Entry<VersamentiPrVO, Integer> > list = 
-			               new LinkedList<Map.Entry<VersamentiPrVO, Integer> >(map.entrySet()); 
-				
-				// Sort the list 
-		        Collections.sort(list, new Comparator<Map.Entry<VersamentiPrVO, Integer> >() { 
-		            public int compare(Map.Entry<VersamentiPrVO, Integer> o1,  
-		                               Map.Entry<VersamentiPrVO, Integer> o2) 
-		            { 
-		                return (o1.getValue()).compareTo(o2.getValue()); 
-		            } 
-		        }); 
-		        
-		        HashMap<VersamentiPrVO, Integer> temp = new LinkedHashMap<VersamentiPrVO, Integer>(); 
-		        for (Map.Entry<VersamentiPrVO, Integer> aa : list) { 
-		            temp.put(aa.getKey(), aa.getValue()); 
-		        } 
-		        
-		        
-		        List<String> listKeyOper = new ArrayList<String>();
-		        if(ricercaVersamentiRequest.getIdAnag()!=null) {
-		        	listKeyOper.add(ricercaVersamentiRequest.getIdAnag().toString());
-		        }
-		        
-				for (SigasDichVersamenti dichVersamentiTmp : dichVersamentiListDB) {
-		    		listKeyOper.add(String.valueOf(dichVersamentiTmp.getIdVersamento()) );
-				}
-				
-		    	
-		        CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaVersamenti", "sigas_dich_versamenti", String.join("_", listKeyOper));
-//				csiLogAuditRepository.save(csiLogAudit);
-				csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-						csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+			}
+			
+			List<Map.Entry<VersamentiPrVO, Integer> > list = new LinkedList<Map.Entry<VersamentiPrVO, Integer> >(map.entrySet()); 
+			
+			// Sort the list 
+	        Collections.sort(list, new Comparator<Map.Entry<VersamentiPrVO, Integer> >() { 
+	            public int compare(Map.Entry<VersamentiPrVO, Integer> o1,  
+	                               Map.Entry<VersamentiPrVO, Integer> o2) 
+	            { 
+	                return (o1.getValue()).compareTo(o2.getValue()); 
+	            } 
+	        }); 
+	        
+	        HashMap<VersamentiPrVO, Integer> temp = new LinkedHashMap<VersamentiPrVO, Integer>(); 
+	        for (Map.Entry<VersamentiPrVO, Integer> aa : list) { 
+	            temp.put(aa.getKey(), aa.getValue()); 
+	        }	        
+	        
+	        List<String> listKeyOper = new ArrayList<String>();
+	        if(ricercaVersamentiRequest.getIdAnag()!=null) {
+	        	listKeyOper.add(ricercaVersamentiRequest.getIdAnag().toString());
+	        }
+	        
+			for (SigasDichVersamenti dichVersamentiTmp : dichVersamentiListDB) {
+	    		listKeyOper.add(String.valueOf(dichVersamentiTmp.getIdVersamento()) );
+			}			
+	    	
+	        CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+	        													 "READ - ricercaVersamenti", 
+	        													 "sigas_dich_versamenti", 
+	        													 String.join("_", listKeyOper));
+	        
+			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), 
+											   csiLogAudit.getIdAddress(), csiLogAudit.getId().getUtente(), 
+											   csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+											   csiLogAudit.getId().getKeyOper());	
 
-				return new ArrayList<VersamentiPrVO>(temp.keySet());
+			return new ArrayList<VersamentiPrVO>(temp.keySet());
 	 }
 	 
 	@Override
@@ -434,6 +446,8 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	@Override
 	@Transactional
 	public void insertVersamento(ConfermaVersamentoRequest confermaVersamentoRequest,String user, String codFiscale) {
+		this._insertVersamento(confermaVersamentoRequest, user, codFiscale);
+		/*
 		SigasAllarmi sigasAllarmi;
 		List<String> listKeyOper = new ArrayList<String>();
 		String oggOper ="";
@@ -459,12 +473,13 @@ public class VersamentiServiceImpl implements IVersamentiService {
 						throw new BusinessException("Il versamento a conguaglio va effettuato entro marzo dell'anno successivo a quello cui si riferisce la dichiarazione");
 		}
 
-		if (confermaVersamentoRequest.getVersamento().getConsumo() == null
-				&& (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())
-						|| tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName()))) {
-			// errore
-			throw new BusinessException(
-					"Il versamento di tipo "+ tipoVersamento.getDenominazione() +" deve essere relativo ad un consumo");
+		if (confermaVersamentoRequest.getVersamento().getConsumo() == null && 
+			(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName()) || 
+			 tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName()))) 
+		{			
+			throw new BusinessException("Il versamento di tipo " + 
+										tipoVersamento.getDenominazione() + 
+										" deve essere relativo ad un consumo");
 
 		} else {
 
@@ -490,10 +505,9 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		}
 		
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertVersamento", oggOper,String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
-		
+		*/
 	}
 	
 	
@@ -514,34 +528,14 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		
 		if(versamento != null  && !confermaVersamentoContabiliaRequest.isConfermaInserimento()) {
 			throw new BusinessException("Versamento gia' presente", "VGP");
-		}else if(versamento !=null && confermaVersamentoContabiliaRequest.isConfermaInserimento()){
+		}else if(versamento !=null && confermaVersamentoContabiliaRequest.isConfermaInserimento()) {
 			SigasPagamentiVersamenti sigasPagamentiVersamentiToDelete = sigasPagamentiVersamentiRepository.findBySigasDichVersamentiIdVersamento(versamento.getIdVersamento());
 			if(sigasPagamentiVersamentiToDelete!=null) {
 				sigasPagamentiVersamentiRepository.delete(sigasPagamentiVersamentiToDelete);
-			}
-			
+			}			
 			
 			sigasDichVersamentiRepository.save(versamento);
-		}
-		
-		//Inserito per contabilia
-//		List<SigasDichVersamenti> versamentoList = sigasDichVersamentiRepository.findBySigasAnagraficaSoggettiIdAnagAndSigasTipoVersamentoIdTipoVersamentoAndAnnualitaAndSigasProvinciaIdProvincia(
-//				confermaVersamentoContabiliaRequest.getVersamento().getIdAnag(),
-//				confermaVersamentoContabiliaRequest.getVersamento().getTipo().getIdTipoVersamento(),
-//				String.valueOf(confermaVersamentoContabiliaRequest.getVersamento().getAnnualita()),
-//				provVersamento.getIdProvincia());
-//		
-//		Double totaleVersato = new Double(0D);
-//		for (SigasDichVersamenti sigasDichVersamentiTmp : versamentoList) {
-//			totaleVersato = Double.sum(totaleVersato, sigasDichVersamentiTmp.getImporto());
-//		}
-//		 
-//		totaleVersato = Double.sum(totaleVersato, confermaVersamentoContabiliaRequest.getVersamento().getImporto());
-//		if(totaleVersato.compareTo(confermaVersamentoContabiliaRequest.getPagamento().getImportoAttuale().doubleValue())==1) {
-//			throw new BusinessException("La somma dei versamenti è superiore all'importo del pagamento");
-//		}
-		 
-		//Fine inserimento per contabilia 
+		}		
 		
 		SigasTipoVersamento tipoVersamento = sigasTipoVersamentoRepository.findOne(confermaVersamentoContabiliaRequest.getVersamento().getTipo().getIdTipoVersamento());
 		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.CONGUAGLIO.getName())){
@@ -553,28 +547,27 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		}
 
 		SigasPagamentiVersamenti sigasPagamentiVersamenti=null;
-		if (confermaVersamentoContabiliaRequest.getVersamento().getConsumo() == null
-				&& (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())
-						|| tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName()))) {
-			// errore
-			throw new BusinessException(
-					"Il versamento di tipo "+ tipoVersamento.getDenominazione() +" deve essere relativo ad un consumo");
+		if (confermaVersamentoContabiliaRequest.getVersamento().getConsumo() == null && 
+			(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName()) || 
+			 tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName()))) 
+		{			
+			throw new BusinessException("Il versamento di tipo " + 
+										tipoVersamento.getDenominazione() + 
+										" deve essere relativo ad un consumo");
 
 		} else {
 
 			SigasDichVersamenti sigasVersamento = dichVersamentiEntityMapper
-					.mapVOtoEntity(confermaVersamentoContabiliaRequest.getVersamento());
+												  .mapVOtoEntity(confermaVersamentoContabiliaRequest.getVersamento());
 			sigasVersamento.setInsDate(new Date());
 			sigasVersamento.setInsUser(codFiscale);
 			SigasDichVersamenti versamentoSavedDB = sigasDichVersamentiRepository.save(sigasVersamento);
-			VersamentiPrVO versamentoVO = dichVersamentiEntityMapper.mapEntityToVO(versamentoSavedDB);
-			
+			VersamentiPrVO versamentoVO = dichVersamentiEntityMapper.mapEntityToVO(versamentoSavedDB);			
 			
 			//Inserito per contabilia   
 			PagamentiVersamentiVO pagamentiVersamenti = new PagamentiVersamentiVO();
 			pagamentiVersamenti.setFkPagamento(confermaVersamentoContabiliaRequest.getPagamento().getIdPagamento());
 			pagamentiVersamenti.setFkAnag(anagraficaSoggettiEntityMapper.mapEntityToVO(sigasAnagraficaSoggettiRepository.findByIdAnag(confermaVersamentoContabiliaRequest.getVersamento().getIdAnag())) );
-//			pagamentiVersamenti.setFkVersamento(Long.valueOf(versamentoSavedDB.getIdVersamento()).intValue() );
 			pagamentiVersamenti.setFkVersamento(dichVersamentiEntityMapper.mapEntityToVO(versamentoSavedDB));
 			pagamentiVersamenti.setAnno(Integer.valueOf(confermaVersamentoContabiliaRequest.getVersamento().getAnnualita()).toString());
 			pagamentiVersamenti.setDataVersamento(new Timestamp(confermaVersamentoContabiliaRequest.getVersamento().getDataVersamento().getTime()));
@@ -585,8 +578,7 @@ public class VersamentiServiceImpl implements IVersamentiService {
 			pagamentiVersamenti.setMese(confermaVersamentoContabiliaRequest.getVersamento().getMese());
 			
 			SigasPagamentiVersamenti sigasPagamentiVers = pagamentiVersamentiEntityMapper.mapVOtoEntity(pagamentiVersamenti);
-			sigasPagamentiVersamenti = sigasPagamentiVersamentiRepository.save(sigasPagamentiVers);
-			
+			sigasPagamentiVersamenti = sigasPagamentiVersamentiRepository.save(sigasPagamentiVers);			
 			//Fine inserimento per contabilia
 
 			oggOper += "sigas_dich_versamenti ";
@@ -625,13 +617,10 @@ public class VersamentiServiceImpl implements IVersamentiService {
 					csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 		}
 		
-//		List<SigasPagamentiVersamenti> listPagamentiVersamenti = sigasPagamentiVersamentiRepository.findBySigasAnagraficaSoggettiIdAnagAndSigasPagamentiIdPagamento(confermaVersamentoContabiliaRequest.getVersamento().getIdAnag(), confermaVersamentoContabiliaRequest.getPagamento().getIdPagamento());
 		SigasPagamenti sigasPagamenti = sigasPagamentiCrudRepository.findOne(confermaVersamentoContabiliaRequest.getPagamento().getIdPagamento());
 		if(sigasPagamentiVersamenti!=null && sigasPagamenti!=null && sigasPagamenti.getSigasPagamentiVersamentis()!=null) {
 			sigasPagamenti.getSigasPagamentiVersamentis().add(sigasPagamentiVersamenti);
 		}
-		
-//		return pagamentiVersamentiEntityMapper.mapListEntityToListVO(listPagamentiVersamenti);
 		
 		return pagamentiVersamentiEntityMapper.mapListEntityToListVO(sigasPagamenti.getSigasPagamentiVersamentis());
 		
@@ -683,7 +672,6 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		}
 		
 		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - updateVersamento", oggOper, String.join("_", listKeyOper));
-//		csiLogAuditRepository.save(csiLogAudit);
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
 	}
@@ -703,11 +691,127 @@ public class VersamentiServiceImpl implements IVersamentiService {
 			sigasAllarmi.setSigasDichConsumi(consumo != null ? consumo : null);
 			sigasAllarmi.setAnnualita(String.valueOf(versamento.getAnnualita()));
 			sigasAllarmi.setUtente(user);
-			sigasAllarmi.setNota("Allarme "+ tipoAllarme + " per id versamento - " + versamento.getIdVersamento());
-			//sigasAllarmi.setStatus(StatusAllarme.ATTIVO.getName());
+			sigasAllarmi.setNota("Allarme "+ tipoAllarme + " per id versamento - " + versamento.getIdVersamento());			
 			sigasAllarmi.setStatus(statusAllarme);
 			sigasAllarmi.setSigasDichVersamenti(sigasDichVersamentiRepository.findOne(versamento.getIdVersamento()));
 			
 		return sigasAllarmi;
 	}
+
+	private void _insertVersamento(ConfermaVersamentoRequest confermaVersamentoRequest,String user, String codFiscale){
+		SigasAllarmi sigasAllarmi;
+		List<String> listKeyOper = new ArrayList<String>();
+		String oggOper ="";
+		SigasProvincia provVersamento = sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(confermaVersamentoRequest.getVersamento().getProvincia());
+		//Controllo esistenza
+		SigasDichVersamenti versamento = sigasDichVersamentiRepository.findBySigasAnagraficaSoggettiIdAnagAndMeseAndSigasTipoVersamentoIdTipoVersamentoAndAnnualitaAndSigasProvinciaIdProvincia(
+				confermaVersamentoRequest.getVersamento().getIdAnag(),
+				confermaVersamentoRequest.getVersamento().getMese(),
+				confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento(),
+				String.valueOf(confermaVersamentoRequest.getVersamento().getAnnualita()),
+				provVersamento.getIdProvincia());
+		
+		if(versamento != null) {
+			throw new BusinessException("Versamento gia' presente");
+		}
+		
+		SigasTipoVersamento tipoVersamento = sigasTipoVersamentoRepository.findOne(confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento());
+		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.CONGUAGLIO.getName())){
+			//Il versamento a conquaglio deve essere effettuato entro il mese di Marzo dell'anno successivo
+			//a quello cui si riferisce la dichiarazione
+			Date dataVersamentoAConguaglio = Utilities.dataVersamentoConguaglio(confermaVersamentoRequest.getVersamento().getAnnualita());
+			if(dataVersamentoAConguaglio.before(Utilities.azzeraOraMinuti(confermaVersamentoRequest.getVersamento().getDataVersamento())))
+						throw new BusinessException("Il versamento a conguaglio va effettuato entro marzo dell'anno successivo a quello cui si riferisce la dichiarazione");
+		}
+
+		if (confermaVersamentoRequest.getVersamento().getConsumo() == null && 
+			(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName()) || 
+			 tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName()))) 
+		{			
+			throw new BusinessException("Il versamento di tipo " + 
+										tipoVersamento.getDenominazione() + 
+										" deve essere relativo ad un consumo");
+
+		} else {
+
+			SigasDichVersamenti sigasVersamento = dichVersamentiEntityMapper
+					.mapVOtoEntity(confermaVersamentoRequest.getVersamento());
+			sigasVersamento.setInsDate(new Date());
+			sigasVersamento.setInsUser(codFiscale);
+			SigasDichVersamenti versamentoSavedDB = sigasDichVersamentiRepository.save(sigasVersamento);
+			VersamentiPrVO versamentoVO = dichVersamentiEntityMapper.mapEntityToVO(versamentoSavedDB);
+
+			oggOper += "sigas_dich_versamenti ";
+			listKeyOper.add(String.valueOf(versamentoSavedDB.getIdVersamento()) );
+			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())) {
+				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.ACCERTAMENTO.getName(), user, StatusAllarme.NON_ATTIVO.getName()));
+				oggOper += "sigas_allarmi ";
+				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
+			}
+			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName())) {
+				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.RAVVEDIMENTO.getName(), user, StatusAllarme.ATTIVO.getName()));
+				oggOper += "sigas_allarmi ";
+				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
+			} 
+		}
+		
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertVersamento", oggOper,String.join("_", listKeyOper));
+		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
+		
+	}
+	
+	
+	@Override
+	@Transactional
+	public void insertVersamentoList(List<ConfermaVersamentoRequest> confermaVersamentoRequestList,String user, String codFiscale) {		
+		List<String> listKeyOper = new ArrayList<>();
+		String oggOper ="";
+		
+		if(confermaVersamentoRequestList == null || confermaVersamentoRequestList.isEmpty()) {
+			throw new BusinessException("Elenco versamenti vuoto");
+		}
+		
+		Iterator<ConfermaVersamentoRequest> iterator = confermaVersamentoRequestList.iterator();
+		while(iterator.hasNext()) {
+			ConfermaVersamentoRequest confermaVersamentoRequest = iterator.next();
+			this._insertVersamento(confermaVersamentoRequest, user, codFiscale);
+		}				
+		
+		oggOper += "sigas_dich_versamenti ";
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertVersamentoList", oggOper, String.join("_", listKeyOper));
+		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
+		
+	}
+	
+	@Override
+	@Transactional
+	public boolean deleteVersamento(Long idVersamento,String user, String codFiscale) {
+		
+		 try {
+	            SigasDichVersamenti versamentoToDelete= this.sigasDichVersamentiRepository.findById(idVersamento);
+	            if (versamentoToDelete == null) {
+	                throw new BusinessException("Nessun versamento trovato per l'ID: " + idVersamento);
+	            }	            
+	            
+	            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    		Object principal = auth.getPrincipal();
+	    		UserDetails utente = (UserDetails) principal;	            
+	            
+	            this.sigasDichVersamentiRepository.delete(idVersamento);			
+	            CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"CANCELLAZIONE VERSAMENTO", "sigas_dich_versamenti",String.valueOf(idVersamento));
+				csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+												   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+												   csiLogAudit.getId().getKeyOper());			
+				
+	            return true;
+	        } catch (Exception e) {
+	            this.logger.error("deleteVersamento: {}", e.getMessage());
+	            return false;
+	        }
+		
+	}
+	
 }

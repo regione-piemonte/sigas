@@ -59,5 +59,10 @@ public interface IVersamentiDispatcher {
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<PagamentiVersamentiVO> insertVersamentoContabilia(ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest, String username, String codFiscale);
 	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	void insertElencoVersamenti(List<ConfermaVersamentoRequest> confermaVersamentoRequestList, String username, String codFiscale);
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME +" OR "+ AuthorizationRoles.UTENTE)
+	boolean deleteVersamento(Long idVersamento, String username, String codFiscale);	
 
 }

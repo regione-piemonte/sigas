@@ -12,6 +12,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.dispatcher.IHomeDispatcher;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
@@ -93,7 +94,7 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	}
 
 	@Override
-	public AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) {
+	public AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) throws BusinessException {
 		return HomeService.updateSoggetto(confermaSoggettoRequest, user);
 	}
 	

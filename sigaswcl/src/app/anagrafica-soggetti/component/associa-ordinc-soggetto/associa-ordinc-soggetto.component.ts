@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { DataTableDirective } from 'angular-datatables';
@@ -21,7 +21,7 @@ import { OrdinativiService } from '../../service/ordinativi.service';
 })
 
 @DestroySubscribers()
-export class AssociaOrdincSoggettoComponent implements OnInit {
+export class AssociaOrdincSoggettoComponent implements OnInit, AfterViewInit {
 
 
     @ViewChild(DataTableDirective)
@@ -57,8 +57,14 @@ export class AssociaOrdincSoggettoComponent implements OnInit {
       private router: Router,
       private logger: LoggerService,
       private anagraficaSoggettiService: AnagraficaSoggettiService,
-      private ordinativiService: OrdinativiService
+      private ordinativiService: OrdinativiService,
+      private renderer: Renderer2
     ) { }
+
+    ngAfterViewInit(): void {
+      const element = this.renderer.selectRootElement('#idDivToContPrin');
+      setTimeout(() => element.focus(), 0);
+    }
 
     ngOnInit() {
         this.clearMsg();

@@ -1,16 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { LoggerService } from "../../../core/services/logger.service";
 import { TipoVersamentiVO } from "../../../commons/vo/tipo-versamenti-vo";
-
 import { PaymentFoService } from '../../service/pagamento-fo.service';
-
-//import { AnagraficaSoggettiService } from '../../service/anagrafica-soggetti.service';
-
-//import { AnagraficaSoggettoVO } from '../../../commons/vo/soggetti-vo';
-//import { RicercaConsumiRequest } from '../../../commons/request/ricerca-consumi-request';
-
 import { RicercaVersamentiRequest } from '../../../commons/request/ricerca-versamenti-request';
 import { AnagraficaSoggettiService } from '../../../anagrafica-soggetti/service/anagrafica-soggetti.service';
 import { LuoghiService } from './../../../shared/service/luoghi-service';
@@ -26,32 +19,37 @@ declare var $: any;
 })
 
 @DestroySubscribers()
-export class PagamentoFoImporto implements OnInit {
+export class PagamentoFoImporto implements OnInit, AfterViewInit {
   
   private showErrorMessage: string = null;
   private paymentTypes: Array<TipoVersamentiVO>;
-  private pageLoadingInProgress: boolean;
-  //private userAmountsForPrevYear: { [key: string]: string } = {};
+  private pageLoadingInProgress: boolean;  
   private userAmountForPrevYear: string = null;
-    private ricercaVersamentiRequest: RicercaVersamentiRequest;
-    private provinciaSelezionata: ProvinceVO;
-    private tipoVersamentoSelezionato: TipoVersamentiVO;
+  private ricercaVersamentiRequest: RicercaVersamentiRequest;
+  private provinciaSelezionata: ProvinceVO;
+  private tipoVersamentoSelezionato: TipoVersamentiVO;
 
-    private message: string;
-    private showMsg: boolean=false;
-    private levelMessage: string;
-private loadingCrtVersamentoEsistente:boolean=false;
-private mesiAnnuali: Array<any>;
-private meseSelDescrizione: string;
-private elencoVersamenti:  Array<VersamentiPrVO>;
+  private message: string;
+  private showMsg: boolean=false;
+  private levelMessage: string;
+  private loadingCrtVersamentoEsistente:boolean=false;
+  private mesiAnnuali: Array<any>;
+  private meseSelDescrizione: string;
+  private elencoVersamenti:  Array<VersamentiPrVO>;
     
   constructor(
     private router: Router,
     private logger: LoggerService,
     private foPayService: PaymentFoService,
     private anagraficaSoggettiService: AnagraficaSoggettiService,
-    private luoghiService: LuoghiService
+    private luoghiService: LuoghiService,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
     window.scrollTo(0, 0);

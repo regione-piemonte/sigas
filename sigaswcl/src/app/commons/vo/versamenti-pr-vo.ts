@@ -19,7 +19,7 @@ export class VersamentiPrVO {
         public idConsumi: number,
         public idAnag: number,
         public annualita: number,
-        public mese: string,
+        public mese: string,        
         public provincia: string,
         public tipo: TipoVersamentiVO,
         public consumo: ConsumiPrVO,

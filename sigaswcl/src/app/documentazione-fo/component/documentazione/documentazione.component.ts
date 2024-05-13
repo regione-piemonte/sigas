@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, Renderer2 } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { DocumentazioneService } from '../../service/documentazione.service';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -37,7 +37,7 @@ const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
 })
 
 @DestroySubscribers()
-export class DocumentazioneComponent implements OnInit {
+export class DocumentazioneComponent implements OnInit, AfterViewInit {
     @ViewChild(SigasDialogComponent) sharedDialog: SigasDialogComponent;
 
     public riferimentoProtocolloRegex = Constants.REGEX_PROTOCOLLO_ANNO;
@@ -99,8 +99,14 @@ export class DocumentazioneComponent implements OnInit {
     private logger: LoggerService,
     private documentazioneService: DocumentazioneService,
     private utilityService: UtilityService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2
   ) { }
+  
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
 

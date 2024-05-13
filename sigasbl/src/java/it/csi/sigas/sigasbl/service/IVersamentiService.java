@@ -42,5 +42,9 @@ public interface IVersamentiService {
 	void updateVersamento(ConfermaVersamentoRequest confermaVersamentoRequest, String user, String codFiscale);
 
 	List<PagamentiVersamentiVO> insertVersamentoContabilia(ConfermaVersamentoContabiliaRequest confermaVersamentoContabiliaRequest, String user, String codFiscale);
+	
+	void insertVersamentoList(List<ConfermaVersamentoRequest> confermaVersamentoRequestList, String user, String codFiscale);
+	
+	boolean deleteVersamento(Long idVersamento, String user, String codFiscale);
 
 }

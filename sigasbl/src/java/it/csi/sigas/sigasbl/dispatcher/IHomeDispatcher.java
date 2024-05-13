@@ -12,6 +12,7 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import it.csi.sigas.sigasbl.common.AuthorizationRoles;
+import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
@@ -70,7 +71,7 @@ public interface IHomeDispatcher {
 	void insertSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
-	AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user);
+	AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) throws BusinessException;
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	AnagraficaSoggettoVO fusioneSoggetto(FusioneSoggettoRequest fusioneSoggettoRequest, String user);

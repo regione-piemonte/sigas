@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, Renderer2 } from '@angular/core';
 import { Subject } from "rxjs";
 import { Router } from "@angular/router";
 import { Routing } from "../../../commons/routing";
@@ -26,7 +26,7 @@ import { SalvaCompensazioneRequest } from 'src/app/commons/request/salva-compens
 })
 
 @DestroySubscribers()
-export class ConsumiPrComponent implements OnInit {
+export class ConsumiPrComponent implements OnInit, AfterViewInit {
     
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
   private listaAliquote: Array<AliquotaVO>;
@@ -79,7 +79,13 @@ export class ConsumiPrComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private anagraficaSoggettiService: AnagraficaSoggettiService,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
      // Move on top

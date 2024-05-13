@@ -750,7 +750,7 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 	}
 	
 	 @Override
-	    public Response deleteDocumento(Long idDocumento) {
+	 public Response deleteDocumento(Long idDocumento) {
 	        logger.info("START: deleteDocumento");
 	        return Response.ok().entity(this.homeDispatcher.deleteDocumento(idDocumento)).build();
 	}

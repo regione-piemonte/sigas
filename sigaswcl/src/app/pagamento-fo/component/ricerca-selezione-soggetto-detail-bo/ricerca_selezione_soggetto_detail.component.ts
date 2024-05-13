@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { Router } from "@angular/router";
 import { Subject } from "rxjs";
 import { DataTableDirective } from 'angular-datatables';
@@ -15,7 +15,7 @@ import { Location } from '@angular/common';
 })
 
 @DestroySubscribers()
-export class SearchSubjectSelectBOComponent implements OnInit {
+export class SearchSubjectSelectBOComponent implements OnInit, AfterViewInit {
 
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
 
@@ -29,8 +29,14 @@ export class SearchSubjectSelectBOComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private foPayService: PaymentFoService,
-    private location: Location
+    private location: Location,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   ngOnInit() {
 //if(true){this.foPayService.searchReq.year='2019';}

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, Renderer2} from '@angular/core';
 import {Router} from '@angular/router';
 import {DestroySubscribers} from '../../../core/commons/decorator/destroy-unsubscribers';
 import {Routing} from '../../../commons/routing';
@@ -13,13 +13,22 @@ import {SharedCacheService} from '../../../core/services/shared-cache/shared-cac
 })
 
 @DestroySubscribers()
-export class SelezioneRicevutaComponent implements OnInit {
+export class SelezioneRicevutaComponent implements OnInit, AfterViewInit {
     public static RICEVUTA_PAG_KEY = 'RICEVUTA_PAGAMENTO';
     private loaderInserimentoSoggettoPage: boolean;
     private noIUVFound: boolean = false;
 
     constructor(private router: Router, private logger: LoggerService,
-                private foPayService: PaymentFoService, private sharedCacheService: SharedCacheService) {}
+                private foPayService: PaymentFoService, 
+                private sharedCacheService: SharedCacheService,
+                private renderer: Renderer2
+                ) 
+    {}
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }
 
     ngOnInit() {
         this.loaderInserimentoSoggettoPage = true;

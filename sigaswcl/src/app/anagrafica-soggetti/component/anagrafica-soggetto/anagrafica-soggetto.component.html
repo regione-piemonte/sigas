@@ -1,6 +1,13 @@
 <!--div check soggetto -->
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
 <div *ngIf="!updateSoggetto && !fusioneSoggetto && !associateSoggetto">
-<div class="principal-div" id="principal-div" name="principal-div">
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
     <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
     <div *ngIf="!loaderPage">
         <div class="contains">
@@ -173,6 +180,14 @@
                     <div class="col-lg-8 col-value">
                         <textarea id="note" class="note-textarea" rows="4" [(ngModel)]="soggetto.note" readonly>
                         </textarea>
+                    </div>
+                </div>
+                <!--note-->
+                <!--CF / PIVA-->
+                <div class="form-group border-botton row">
+                    <label class="col-lg-3 offset-lg-1 col-form-label" for="note">Codice Fiscale / P.IVA:</label>
+                    <div class="col-lg-8 col-value">
+                        {{ soggetto.cfPiva }}                        
                     </div>
                 </div>
                 <!--note-->
@@ -470,7 +485,19 @@
                        
                     </div>
                 </div>
-            </div>
+                <div class="form-group border-botton row ">
+                    <label id="lblCFPiva" for="cfpiva" class="col-lg-3 offset-lg-1 col-form-label">Codice Fiscale / P.IVA</label>
+                    <div class="col-lg-8 col-value">                    
+                        <input type="text" 
+                               id="inpCfPiva"
+                               name="inpCfPiva" 
+                               class="form-control col-lg-12 col-form-label" 
+                               aria-labelledby="lblCFPiva"
+                               placeholder="CF / P.IVA" 
+                               [(ngModel)]="soggettoToSave.cfPiva">                                 
+                    </div>
+                </div>
+            </div>            
         </div>
         <!--pulsanti-->
         <div class="bs-example" data-example-id="single-button-dropdown">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild, Renderer2, AfterViewInit } from "@angular/core";
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router } from "@angular/router";
 import { ExceptionVO } from "../../../../core/commons/vo/exceptionVO";
@@ -29,19 +29,15 @@ import { InserisciAccreditamentoService } from "../../service/inserisci-accredit
     styleUrls: ['./visualizza-pratica-accreditamento.component.scss']
 })
 @DestroySubscribers()
-export class VisualizzaPraticaAccreditamentoComponent implements OnInit, OnDestroy {
+export class VisualizzaPraticaAccreditamentoComponent implements OnInit, OnDestroy, AfterViewInit {
 
     modificaDichiaranteModel: DichiaranteVO;
     accreditamento: AccreditamentoVO;
     private loaderDT: boolean;
-
     messageError: string;
     showMessageError: boolean;
-
     messageSuccess: string;
     showSuccess: boolean;
-
-
     public subscribers: any = {};
 
     ngOnInit(): void {
@@ -50,36 +46,26 @@ export class VisualizzaPraticaAccreditamentoComponent implements OnInit, OnDestr
         this.accreditamento = new AccreditamentoVO(new DichiaranteVO(null,""),new LegaleRappresentanteVO("","","","","","",0,0,0,""),new OperatoreVO("","","","","","",0,0,0,"",null),new UtenteProvvisorioVO(0,"",0,0,0,"",0,"",null,"",null,"",null,null,null))
         this.loaderDT = true;
         this.subscribers.accreditamento = this.inserisciAccreditamentoService.ricercaPraticaAccreditamento().subscribe(data => {
-            this.accreditamento = data;
-//            console.log(this.accreditamento);
-            
+            this.accreditamento = data;            
             setTimeout(() => {
                 this.loaderDT = false;
               });
         }, err => {
             this.logger.error(err);        
         });
-    }
-
-   
+    }   
 
     cancella() {
         
     }
 
-
     onSubmit() {
 
     }
-    
-
 
     goBack(){
         this.router.navigate([RoutingAccreditamentoFO.ELENCO_PRATICHE]);
-    }
-    
-
-    
+    }    
 
     ngOnDestroy(): void {
 
@@ -87,10 +73,15 @@ export class VisualizzaPraticaAccreditamentoComponent implements OnInit, OnDestr
 
     constructor(
         private logger: LoggerService,
-//        private modificaAccreditamentoService: ModificaAccreditamentoService,
         private inserisciAccreditamentoService: InserisciAccreditamentoService,
         private luoghiService: LuoghiService,
         private userService: UserService,
-        private router: Router
+        private router: Router,
+        private renderer: Renderer2
     ) { }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
+    }
 }

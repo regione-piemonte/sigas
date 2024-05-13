@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Inject, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject, AfterViewInit, AfterViewChecked, Renderer2 } from '@angular/core';
 import { Router } from "@angular/router";
 import { formatDate } from "@angular/common";
 import { Routing } from "../../../commons/routing";
@@ -41,7 +41,7 @@ import { DOCUMENT } from '@angular/common';
 })
 
 @DestroySubscribers()
-export class AnagraficaSoggettoComponent implements OnInit {
+export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
 
   private loaderModPage: boolean;
   private loaderPage: boolean;
@@ -96,8 +96,14 @@ export class AnagraficaSoggettoComponent implements OnInit {
     private anagraficaSoggettiService: AnagraficaSoggettiService,
     private luoghiService: LuoghiService,
     private utilityService: UtilityService,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
+    private renderer: Renderer2
   ) { }
+
+  ngAfterViewInit(): void {
+    const element = this.renderer.selectRootElement('#idDivToContPrin');
+    setTimeout(() => element.focus(), 0);
+  }
 
   inviaTotaleDichiarato(totaleDichiarato: any){
     this.anagraficaSoggettiService.emitTotaleDichiarazione(totaleDichiarato);
@@ -463,11 +469,14 @@ export class AnagraficaSoggettoComponent implements OnInit {
       } else{
         this.subscribers.confermaModificaSoggetto = this.anagraficaSoggettiService.confermaModificaSoggetto(this.soggettoToSave).subscribe(
           resp =>{
+              this.showMessageError = false;
               console.log(resp);
               this.updateSoggetto = false;
               this.loaderPage = true;
               this.reInitSoggetto();
           },err => {
+            this.showMessageError = true;
+            this.messageError = err.message || '';
             this.logger.error("errore salvataggio soggetto");
         });
       }      

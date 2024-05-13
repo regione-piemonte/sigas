@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef,Inject} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef,Inject, AfterViewInit, Renderer2} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {Routing} from '../../../commons/routing';
 import {Router} from '@angular/router';
@@ -33,7 +33,7 @@ import {DocumentiVO} from '../../../commons/vo/documenti-vo';
     ]
 })
 @DestroySubscribers()
-export class DocumentiComponent implements OnInit {
+export class DocumentiComponent implements OnInit, AfterViewInit {
     @ViewChild(DataTableDirective)
     dtElement: DataTableDirective;
     @ViewChild('table') table: DatatableComponent;
@@ -89,8 +89,16 @@ export class DocumentiComponent implements OnInit {
     constructor(private router: Router,
                 private logger: LoggerService,
                 private anagraficaSoggettiService: AnagraficaSoggettiService,
-                @Inject(DOCUMENT) private document: Document) {
+                @Inject(DOCUMENT) private document: Document,
+                private renderer: Renderer2
+                ) 
+    {
         this.urlDownloadDoc = this.anagraficaSoggettiService.getUrlScaricaDocumento();
+    }
+
+    ngAfterViewInit(): void {
+        const element = this.renderer.selectRootElement('#idDivToContPrin');
+        setTimeout(() => element.focus(), 0);
     }
     
     calculateClasses(nprotocollo:string){        
