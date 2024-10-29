@@ -1,0 +1,161 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
+    <div class="card card-primary center-default">
+        <div class="card-header text-white">            
+            <h3 class="h1-font"><strong>Elenco</strong></h3>
+        </div>
+        <div>
+            <sigas-alert [message]="'Selezionare il Soggetto per consultare i dettagli dei consumi e degli allarmi'" [type]="'INFO'"></sigas-alert>
+            <div class="card-body container">
+                <!--testata-->
+                <div class="form-group row padding-search">
+                    <!--anno-->
+                    <div class="form-group col-lg-10">
+                        <div class="row">
+                            <label id="lblAnno" for="anno" class="col-lg-3 col-form-label">Annualità dichiarazione:</label>
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderYear;  else elseAnnoCaricato"></sigas-spinner-form>
+                            <ng-template #elseAnnoCaricato>
+                                <div class="col-lg-3">
+                                    <select class="form-control" id="anno" aria-labelledby="lblAnno" [(ngModel)]="anno" name="anno" required (change)="changeFilter()"  [disabled]="filterDisabled || validato === 'NUOVI'" >
+                                        <option *ngFor="let anno of reportAnno" [value]="anno">{{anno}}</option>
+                                    </select>
+                                </div>
+                            </ng-template>
+                            <label id="lblValidazione" for="validazione" class="col-lg-1 col-form-label offset-lg-1">Filtro:</label>
+                            <div class="col-lg-3">
+                                <select class="form-control" id="validazione" aria-labelledby="lblValidazione" [(ngModel)]="validato" name="validazione" required (change)="changeFilter()" [disabled]="filterDisabled"> 
+                                    <option *ngFor="let validato of validati" [value]="validato.valore">{{validato.descrizione}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <div class="form-group col-lg-12">
+                            <div class="form-group col-lg-12">
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+
+                                <!-- Table -->
+                                <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-consumi"  class="row-border hover" 
+                                    datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+
+                                    <!-- Table head-->
+                                    <thead>
+                                        <tr>
+                                            <!-- <th></th> -->
+                                            <th>Dichiarante</th>
+                                            <th>Province</th>
+                                            <th>Tot. Versato</th>
+                                            <th>Tot. Calcolato</th>
+                                            <th>Validazione</th>
+                                            <th>Allarmi</th>
+                                             <!--Per ordinamento tot versato-->
+                                             <th></th>
+                                             <!--Per ordinamento su tot calcolato-->
+                                             <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <!-- Table body -->
+                                    <tbody>
+
+                                        <!-- Ciclo elenco consumi -->
+                                        <tr class ="pointer" *ngFor="let el of elencoConsumi; let i = index " (click) = "dettaglioSoggetto(el)">                                            
+                                            <!-- Denominazione -->
+                                            <td>{{ el.denominazione }}</td>
+
+                                            <!-- Province -->
+                                            <td>{{ el.nProvince }}</td>
+
+                                            <!-- Totale versato -->
+                                            <td>{{ el.totVersato | currency:'EUR':'symbol' }}</td>
+
+                                            <!-- Totale calcolato -->
+                                            <td>{{ el.totCalcolato | currency:'EUR':'symbol' }}</td>
+                                            <td><span class="badge" [ngClass]="{ 'badge-success': el.validato == 'VALIDATO', 'badge-danger': el.validato == 'NON_VALIDATO', 'badge-secondary': el.validato == null }" >{{ el.validato == 'VALIDATO' ? "OK" : ( el.validato == 'NON_VALIDATO' ? "NOK" : "OFF") }}</span> </td>
+                                            <td>
+                                                <!-- Allarmi -->
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.ravv" class="alert-badge"><img src="/sigas/assets/ravvedimento_neg.png" alt="ravvedimenti" title="ravvedimenti"  width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.scarti" class="alert-badge"><img src="/sigas/assets/scarti_neg.png" alt="scarti" title="scarti" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.acc" class="alert-badge"><img src="/sigas/assets/accertamento_neg.png" alt="accertamento" title="accertamento" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.note" class="alert-badge"><img src="/sigas/assets/note_neg.png" alt="note" title="note" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.rimb" class="alert-badge"><img src="/sigas/assets/rimborsi_neg.png" alt="rimborsi" title="rimborsi" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.doc" class="alert-badge"><img src="/sigas/assets/documentale_neg.png" alt="documentale" title="documentale" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.vers" class="alert-badge"><img src="/sigas/assets/versamenti_neg.png" alt="versamenti" title="versamenti" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.coerenza" class="alert-badge"><img src="/sigas/assets/incoerenza_neg.png" alt="incoerenza" title="incoerenza" width="25px"></span>
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.nuovo" class="alert-badge"><img src="/sigas/assets/nuoviSoggetti_neg.png" alt="nuovo soggetto" title="nuovo soggetto" width="25px"></span>
+                                                
+                                                <!--
+                                                <span *ngIf="el.allarmi!=null && el.allarmi.rimbscad" class="alert-badge"><img src="/sigas/assets/rimborsi_scad_neg.png" alt="rimborsi scaduti" title="Rimborsi Scaduti" width="25px"></span>
+                                                -->
+                                                <!-- Allarmi FINE -->
+                                            </td>
+                                            <!--Per ordinamento tot versato-->
+                                            <td>{{ el.totVersato }}</td>
+                                            <!--Per ordinamento su tot calcolato-->
+                                            <td>{{ el.totCalcolato }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--tabella-->
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <div class="form-group col-lg-12">
+                            <div class="form-group col-lg-12">
+                                <!--Legenda Allarmi-->                                
+                                <strong>Legenda allarmi</strong>
+                                <br/>
+                                <br/>                                
+                                <span style="margin-right: 8px"><img src="/sigas/assets/ravvedimento_neg.png" alt="ravvedimenti" title="ravvedimenti"  width="25px"> Ravvedimenti</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/scarti_neg.png" alt="scarti" title="scarti" width="25px"> Scarti</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/accertamento_neg.png" alt="accertamento" title="accertamento" width="25px"> Accertamento</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/note_neg.png" alt="note" title="note" width="25px"> Note</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/rimborsi_neg.png" alt="rimborsi" title="rimborsi" width="25px"> Rimborsi</span>
+                                <!--
+                                <span style="margin-right: 8px"><img src="/sigas/assets/rimborsi_scad_neg.png" alt="rimborsi scaduti" title="Rimborsi Scaduti" width="25px">Rimborsi Scaduti</span>
+                                -->
+                                <span style="margin-right: 8px"><img src="/sigas/assets/documentale_neg.png" alt="documentale" title="documentale" width="25px"> Documentale</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/versamenti_neg.png" alt="versamenti" title="versamenti" width="25px"> Versamenti</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/incoerenza_neg.png" alt="incoerenza" title="incoerenza" width="25px"> Incoerenza</span>
+                                <span style="margin-right: 8px"><img src="/sigas/assets/nuoviSoggetti_neg.png" alt="nuovo soggetto" title="nuovo soggetto" width="25px"> Nuovo soggetto</span>                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--pulsanti-->
+                <div class="bs-example" data-example-id="single-button-dropdown">
+                    <div class="form-group row col-lg-12">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <!-- Nuovop Soggetto -->                            
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary margin-icon" (click)="goInserimentoSoggetto()">
+                                    <i class="fas fa-check"></i> Nuovo Soggetto</button>
+                            </div>
+
+                            <!-- Scarica file -->
+                            <div class="btn-group">
+                                <button type="button" *ngIf="!loaderExcel" [disabled]="(anno == null || anno == '') && validato != 'NUOVI' " class="btn btn-success btn-excel margin-icon pointer" (click)="goExcel()">
+                                    <i class="far fa-file-excel"></i> Scarica in Excel</button>
+                                <button type="button" *ngIf="loaderExcel" class="btn btn-success btn-excel">
+                                    <sigas-spinner-form [diameter]="20"></sigas-spinner-form>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--pulsanti-->               
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,563 @@
+<!--div check soggetto -->
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<!-- Gestione sigas alert -->
+<sigas-alert *ngIf="erroreCaricamento" [message]="erroreUpload" [type]="'DANGER'"></sigas-alert>
+<!-- DIV principale -->
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
+    <!-- Gestione sigas spinner -->
+    <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
+    <div *ngIf="!loaderPage">
+        <div [ngStyle]="{'display': !nuovoDocumento && !updateDocumento ? 'block' : 'none'}" class="contains">
+
+            <div class="d-flex justify-content-center">
+                <h3 class="title">Documentazione soggetto</h3>
+            </div>
+
+            <!-- Gestione messaggi -->
+            <sigas-alert *ngIf="showMsg" [message]="message" [type]="levelMessage"></sigas-alert>
+            <sigas-dialog *ngIf="showMsg" [buttonAnnullaText]="buttonAnnullaText" [buttonConfirmText]="buttonConfirmText"
+                          [testo]="messageDialog"
+                          [titolo]="'Attenzione'"></sigas-dialog>
+
+            <div class="container main-div">
+                <div class="up-div">
+                    <div class="row p-4 ">
+                        <!-- Select Tipo -->                                                   
+                        <label id="lblTipologia" class="col-form-label" for="tipologia">Tipo:</label>
+                        <div class="col-lg-4">
+                            <select (change)="changeFilter()" [(ngModel)]="tipologia"
+                                    class="form-control up-row-input col-lg-8"
+                                    name="tipologia"
+                                    id="tipologia"
+                                    aria-labelledby="lblTipologia"
+                                    required>
+                                <option>Tutte</option>
+                                <option *ngFor="let tipo of listaTipologie" [ngValue]="tipo.idTipoComunicazione">
+                                    {{tipo.denominazione}}</option>
+                            </select>
+                        </div>
+                        <!-- Select Anno -->
+                        <label id="lblAnnoDocumento" class="col-form-label" for="annoDocumento">Anno di riferimento dichiarazione:</label>
+                        <div class="col-lg-4">                            
+                            <select (change)="changeFilter()" [(ngModel)]="annoDocumento"
+                                    class="form-control up-row-input col-lg-4"
+                                    name="annoDocumento" id="annoDocumento" aria-labelledby="lblAnnoDocumento" required>
+                                <option>Tutti</option>
+                                <option *ngFor="let anno of listaAnni" [value]="anno">
+                                    {{ anno }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <div class="form-group col-lg-12">
+                            <div class="form-group col-lg-12">
+                                <!-- LOADER -->
+                                <sigas-spinner-form *ngIf="loaderDT" [diameter]="30"></sigas-spinner-form>
+                                <!-- TABELLA DOCUMENTI -->
+                                <table [dtOptions]="dtOptions"
+                                       [dtTrigger]="dtTrigger"
+                                       [style.display]="!loaderDT ? '' : 'none' "
+                                       class="row-border hover"
+                                       datatable id="elenco-documenti"
+                                       id="elencoDocumentiTBL"
+                                       width="100%">
+                                    <caption><strong>Numero totale di documenti ritrovati: {{documentCount}}</strong></caption>
+                                    <!-- TABELLA HEAD -->
+                                    <thead>
+                                        <tr>
+                                            <th class="dt-center">Data</th>
+                                            <th>Tipologia</th>
+                                            <th class="dt-left">Anno</th>
+                                            <th>Dati riassuntivi</th>
+                                            <td></td>
+                                            <th>Download</th>
+                                            <th>Allarme</th>
+                                            <td></td>
+                                            <!--Per ordinamento su descrizione-->
+                                            <td></td>
+                                            <!--Per ordinamento su data documento-->
+                                            <td></td>                                                                                        
+                                        </tr>
+                                    </thead>
+                                    
+                                    <!-- TABELLA BODY -->
+                                    <tbody>
+                                        <ng-container *ngFor="let el of listaDocumenti; index as i">
+
+                                            <!-- COLONNE DI DEFAULT -->
+                                            <tr class="pointer">
+                                                <!-- Data documento -->
+                                                <td (click)="dettaglioDocumento(el)" class="dt-center">{{ el.dataDocumento | date :'dd/MM/yyy'}}</td>
+
+                                                <!-- Denominazione -->
+                                                <td (click)="dettaglioDocumento(el)" class="dt-left">{{ el.tipoComunicazioneVO.denominazione }}</td>
+
+                                                <!-- Annualita -->
+                                                <td (click)="dettaglioDocumento(el)" class="dt-left">{{ el.annualita }}</td>
+
+                                                <!-- Dati riassuntivi -->
+                                                <td (click)="dettaglioDocumento(el)" class="dt-left">{{ el.datiRiassuntivi}}</td>
+                                                
+                                                <!-- Gestione allegati -->
+                                                <td class="dt-center">                                                    
+                                                    <button *ngIf="el.allegati && el.allegati.length > 0"
+                                                        (click)="calculateDetails(el.nprotocollo, el, i)"
+                                                        [ngClass]="calculateClasses(el.nprotocollo)"
+                                                        [id]=el.nprotocollo
+                                                        [attr.aria-label]="calculateArialLabel(el.nprotocollo)"
+                                                        type="button">+</button>                                                                                                       
+                                                </td>
+
+                                                <!-- Gestione pulsanti su riga -->
+                                                <td class="dt-left">
+                                                    <a *ngIf="!el.allegati" 
+                                                       download="{{ el.descrizione }}"
+                                                       href="{{this.anagraficaSoggettiService.getUrlScaricaDocumentoMaster()+el.descrizione}}">
+                                                       <img style="width:23px; height:23px;float: left;" alt="scarica documento" title="scarica documento" src="assets/documento.png"></a>
+                                                    <a *ngIf="el.allegati" 
+                                                       download="{{ el.descrizione }}"
+                                                       href="{{this.anagraficaSoggettiService.getUrlScaricaDocumentoMaster()+el.descrizione}}">
+                                                       <img style="width:23px; height:23px;float: left;" alt="scarica documento" title="scarica documento" src="assets/documento.png"></a>
+                                                    <a *ngIf="el.allegati" 
+                                                       download="{{el.tipoComunicazioneVO.denominazione}}_{{el.dataDocumento}}.zip"
+                                                       href="{{this.anagraficaSoggettiService.getUrlScaricaDocumento()+el.descrizione}}">
+                                                       <img style="width:23px; height:23px;float: left;" alt="scarica pacchetto" title="scarica pacchetto" src="assets/pacchetto.png"></a>
+                                                </td>
+                                                <td (click)="dettaglioDocumento(el)" class="dt-left">
+                                                    <label class="switch-small margin-icon">
+                                                        <input [(ngModel)]="el.allarmeOn" disabled type="checkbox" aria-label="Stato allarme">
+                                                        <span class="slider-small round">
+                                                            <span *ngIf="el.allarmeOn" class="switch-on-small">ON</span>
+                                                            <span *ngIf="!el.allarmeOn" class="switch-off-small">OFF</span>
+                                                        </span>
+                                                    </label>
+                                                </td>
+                                                <td>
+                                                    <!-- ELIMINA DOCUMENTO 
+                                                    <button (click)="confermaEliminaDocumento(el.idComunicazione)"
+                                                            class="btn btn-danger btn-sm margin-icon"
+                                                            title="Elimina documento">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    -->
+                                                    <!-- Cancella -->                                                    
+                                                    <button type="button" class="btn btn-danger btn-sm margin-icon" 
+                                                            data-toggle="modal" 
+                                                            data-target="#dialogBoxCancellaDocAnag" 
+                                                            title="Elimina documento"
+                                                            (click)="dialogBoxShowDeleteDocument(el.idComunicazione)">
+                                                            <i class="fas fa-trash"></i></button>
+                                                    
+                                                </td>
+                                                <!--Per ordinamento su descrizione-->
+                                                <td class="short-td">{{ el.datiRiassuntivi }}</td>
+                                                 <!--Per ordinamento su data documento-->
+                                                 <td class="short-td">{{ el.dataDocumento | date :'yyyyMMddhhmmss'}}</td>                                                 
+                                            </tr>                                            
+                                        </ng-container>                                        
+                                    </tbody>                                    
+                                </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Gestione pulsanti -->
+    <div class="bs-example" data-example-id="single-button-dropdown">
+        <div class="form-group row col-lg-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                <!-- Indietro -->
+                <div class="btn-group">
+                    <a (click)="goBackMain()" class="btn btn-default pointer margin-icon" role="button">
+                        <i class="fa fa-angle-left"></i>
+                        indietro</a>
+                </div>
+                <!-- Nuovo documento -->
+                <div class="btn-group">
+                    <button (click)="onClickNuovo()" *ngIf="!nuovoDocumento && !updateDocumento"
+                            class="btn btn-primary margin-icon btn-standard"
+                            type="button">
+                        <i class="fas fa-angle-down"></i> Nuovo documento
+                    </button>
+                </div>
+                <!-- Scarica Excel -->
+                <div class="btn-group">
+                    <button (click)="goExcel()" *ngIf="!loaderExcel && !nuovoDocumento && !loaderExcel"
+                            class="btn btn-success btn-excel margin-icon pointer" type="button">
+                        <i class="far fa-file-excel"></i> Scarica in Excel
+                    </button>
+                    <button *ngIf="loaderExcel" class="btn btn-success" type="button">
+                        <sigas-spinner-form [diameter]="20"></sigas-spinner-form>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <!-- Form Update -->
+    <form #insUpdateDocumento="ngForm" *ngIf="updateDocumento">
+        <div class="contains">
+            <div class="d-flex justify-content-center">
+                <span class="title">Modifica documento</span>
+            </div>
+            <div class="container main-div">
+                <div class="up-div">
+                    <!-- Tipologia -->
+                    <div class="form-group row">
+                        <label id="lblTipologiaDocMod" class="mt-2 col-md-auto" for="tipologiaDocMod">Tipologia:</label>
+                        <div class="col-sm-2">
+                            <select (change)="setTipologiaDocumento($event.target.value)"
+                                    [(ngModel)]="documentoToSave.tipoComunicazioneVO.idTipoComunicazione"
+                                    class="form-control"
+                                    id="tipologiaDocMod"
+                                    aria-labelledby="lblTipologiaDocMod"
+                                    name="tipologiaDocMod" required>
+                                <option *ngFor="let tipologia of listaTipologie"
+                                        [value]="tipologia.idTipoComunicazione">
+                                    {{tipologia.denominazione}}</option>
+                            </select>
+                        </div>
+
+                        <!-- Annualita -->
+                        <label class="mt-2 col-md-auto" id="lblAnnoDocumentoMod" for="annoDocumentoMod">Annualità di riferimento:</label>
+                        <div class="col-md-auto">
+                            <select [(ngModel)]="documentoToSave.annualita" class="form-control"
+                                    id="annoDocumentoMod" aria-labelledby="lblAnnoDocumentoMod" name="annoDocumentoMod" required>
+                                <option *ngFor="let anno of listaAnni" [value]="anno">
+                                    {{ anno }}</option>
+                            </select>
+                        </div>
+                        <label id="lblDataDocumMod" class="mt-2 col-md-auto" for="dataDocumMod">Data documento:</label>
+                        <!--  <input type="date" class="form-control first-row-input col-lg-6" value="{{documentoToSave.dataDocumento}}"
+                           [(ngModel)]=documentoToSave.dataDocumento name="dataDocumento" #dataDocumento="ngModel" required>  -->
+                        <div class="col-sm-3">
+                            <div class="input-group">
+
+                                <input #dataDocum="ngbDatepicker"
+                                       (click)="dataDocum.toggle()"
+                                       [(ngModel)]="dataDocumentoPicker"
+                                       [footerTemplate]="footerTemplateDataDoc"
+                                       class="form-control col-mg-8 col-lg-4 "
+                                       class="form-control"
+                                       id="dataDocumMod"
+                                       aria-labelledby="lblDataDocumMod"
+                                       name="dataDocumMod"
+                                       ngbDatepicker
+                                       placeholder="gg/mm/aaaa"
+                                       readonly
+                                       required>
+                                <ng-template #footerTemplateDataDoc>
+                                    <hr class="my-0">
+                                    <button (click)="dataDocumentoPicker = null; dataDocum.close();"
+                                            class="btn btn-primary btn-sm m-2 float-left">Pulisci
+                                    </button>
+                                    <button (click)="dataDocum.close();"
+                                            class="btn btn-secondary btn-sm m-2 float-right">Chiudi
+                                    </button>
+                                </ng-template>
+                                <div class="input-group-append">
+                                    <button (click)="dataDocum.toggle()" 
+                                            class="btn btn-outline-secondary calendar"
+                                            aria-label="seleziona data"
+                                            title="seleziona data"
+                                            type="button">
+                                        <svg _ngcontent-c4="" aria-hidden="true"
+                                             class="svg-inline--fa fa-calendar-alt fa-w-14" data-fa-i2svg=""
+                                             data-icon="calendar-alt"
+                                             data-prefix="far" focusable="false" role="img"
+                                             viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+                                             <title>Calendario</title>
+                                            <path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"
+                                                  fill="currentColor"></path>
+                                        </svg>
+                                        <!--<i class="far fa-calendar-alt"></i>-->
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Protocollo -->
+                    <div class="row p-4 ">
+                        <div class="col-lg-4">
+                            <label id="lblNprotocolloDocMod" for="nprotocolloDocMod">Protocollo:</label>
+                            <input #nprotocollo="ngModel" [(ngModel)]="documentoToSave.nprotocollo"
+                                   id="nprotocollo"
+                                   class="form-control first-row-input col-lg-7"
+                                   name="nprotocolloDocMod"
+                                   id="nprotocolloDocMod"
+                                   aria-labelledby="lblNprotocolloDocMod"
+                                   required
+                                   type="text">
+                        </div>
+                    </div>
+                    <!-- Dati riassuntvi -->
+                    <div class="row p-4 ">
+                        <div class="col-lg-8">
+                            <label for="datiRiassuntiviModDocSoggetti" id="lblDatiRiassuntiviModDocSoggetti">Dati riassuntivi:</label>
+                            <div class="col-lg-10 col-value note-div">
+                              <textarea [(ngModel)]="documentoToSave.datiRiassuntivi" 
+                              [ngModelOptions]="{standalone: true}"
+                              class="note-textarea" 
+                              id="datiRiassuntiviModDocSoggetti"
+                              aria-labelledby="lblDatiRiassuntiviModDocSoggetti"
+                              rows="4"></textarea>
+                            </div>
+                        </div>
+                        <!-- Pulsante allarme -->
+                        <div class="col-lg-3">
+                            <label for="allarmeOnMod">Allarme:</label>
+                            <label class="switch-small margin-icon">
+                                <input (click)="modButtonAllarme()" [(ngModel)]="documentoToSave.allarmeOn"
+                                       name="allarmeOnMod"
+                                       id="allarmeOnMod"
+                                       aria-label="Allarme"
+                                       type="checkbox">
+                                <span class="slider-small round">
+                      <span *ngIf="documentoToSave.allarmeOn" class="switch-on-small">ON</span>
+                      <span *ngIf="!documentoToSave.allarmeOn" class="switch-off-small">OFF</span>
+                    </span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- File allegato -->
+                    <div class="col-lg-8">
+                        <label class="label-file" id="lblFileMod" for="fileMod">File allegato: </label>
+                        <div class="form-group upload-div upload-btn-wrapper">
+                            <input (change)="handleFileInput($event.target.files)" class="input-upload" id="fileMod" aria-labelledby="lblFileMod"
+                                   type="file">
+                            <button class="btn btn-primary pull-right" type="button">
+                                <i class="fas fa-check"></i> Carica allegato
+                            </button>
+                        </div>
+                        <div *ngIf="fileCaricato" class="col-lg-5 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <label class="col-form-label">File selezionato:</label>
+                            <span *ngIf="fileCaricato && fileModificato"
+                                  id="reSelectedFile"> {{ fileToUpload ? fileToUpload.name : '' }}</span>
+                            <span *ngIf="fileCaricato && !fileModificato"
+                                  id="updateSelectedFile"> {{ documentoToSave.descrizione }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestione pulsanti -->
+        <div class="bs-example" data-example-id="single-button-dropdown">
+            <div class="form-group row col-lg-12">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                    <!-- Indietro -->
+                    <div class="btn-group">
+                        <a (click)="goBack()" class="btn btn-default pointer margin-icon" role="button">
+                            <i class="fa fa-angle-left"></i>
+                            indietro</a>
+                    </div>
+                    <!-- Aggiorna -->
+                    <div class="btn-group">
+                        <button (click)="onClickUpdate()" *ngIf="updateDocumento" [disabled]="!fileCaricato"
+                                class="btn btn-primary margin-icon btn-standard" type="button">
+                            <i class="fas fa-angle-down"></i> Aggiorna documento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div>
+    <!-- GESTIONE NUOVO DOCUMENTO -->
+    <form #insNuovoDocumento="ngForm" [ngStyle]="{'display': nuovoDocumento == true ? 'block' : 'none'}">
+        <div class="contains">
+            <div class="d-flex justify-content-center">
+                <span class="title">Nuovo documento</span>
+            </div>
+            <div class="container main-div">
+                <div class="up-div">
+                    <div class="form-group row">
+                        <!-- Tipologia -->
+                        <label id="lblTipologiaDoc" class="mt-2 col-2" for="tipologiaDoc">Tipologia:</label>
+                        <div class="col-sm-2">
+                            <select (change)="setTipologiaDocumento($event.target.value)"
+                                    [(ngModel)]="documentoToSave.tipoComunicazioneVO.idTipoComunicazione"
+                                    class="form-control"
+                                    id="tipologiaDoc"
+                                    aria-labelledby="lblTipologiaDoc"
+                                    name="tipologiaDoc" 
+                                    required>
+                                <option *ngFor="let tipologia of listaTipologie"
+                                        [value]="tipologia.idTipoComunicazione">{{tipologia.denominazione}}</option>
+                            </select>
+                        </div>
+                        <!-- Annualita -->
+                        <label id="lblAnnoDocumentoDich" class="col-sm-2" for="annoDocumentoDich">Anno di riferimento dichiarazione:</label>
+                        <div class="col-sm-2">
+                            <select [(ngModel)]="documentoToSave.annualita" 
+                                    class="form-control"
+                                    id="annoDocumentoDich" 
+                                    aria-labelledby="lblAnnoDocumentoDich" 
+                                    name="annoDocumentoDich" required>
+                                <option *ngFor="let anno of listaAnni" 
+                                        [value]="anno">{{ anno }}</option>
+                            </select>
+                        </div>
+                        <!-- Data documento -->
+                        <label id="lblDataDocum" class="mt-2 col-sm-2" for="dataDocum">Data documento:</label>                        
+                        <div class="col-sm-2">
+                            <div class="input-group">
+                                <input #dataDocum="ngbDatepicker"
+                                       (click)="dataDocum.toggle()"
+                                       [(ngModel)]="dataDocumentoPicker"
+                                       [footerTemplate]="footerTemplateDataDoc"
+                                       class="form-control col-mg-8 col-lg-4 "
+                                       class="form-control"
+                                       id="dataDocum"
+                                       aria-labelledby="lblDataDocum"
+                                       name="dataDocum"
+                                       ngbDatepicker
+                                       placeholder="gg/mm/aaaa"
+                                       readonly
+                                       required>
+                                <ng-template #footerTemplateDataDoc>
+                                    <hr class="my-0">
+                                    <button (click)="dataDocumentoPicker = null; dataDocum.close();"
+                                            class="btn btn-primary btn-sm m-2 float-left">Pulisci
+                                    </button>
+                                    <button (click)="dataDocum.close();"
+                                            class="btn btn-secondary btn-sm m-2 float-right">Chiudi
+                                    </button>
+                                </ng-template>
+                                <div class="input-group-append">
+                                    <button (click)="dataDocum.toggle()" 
+                                            class="btn btn-outline-secondary calendar"
+                                            aria-label="seleziona data"
+                                            type="button">
+                                        <svg _ngcontent-c4="" aria-hidden="true"
+                                             class="svg-inline--fa fa-calendar-alt fa-w-14" data-fa-i2svg=""
+                                             data-icon="calendar-alt"
+                                             data-prefix="far" focusable="false" role="img"
+                                             viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+                                             <title>Calendario</title>
+                                            <path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"
+                                                  fill="currentColor"></path>
+                                        </svg>
+                                        <!--<i class="far fa-calendar-alt"></i>-->
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Protocollo -->
+                    <div class="row p-4 ">
+                        <div class="col-lg-4">
+                            <label id="lblProtocolloNuovo" for="protocolloNuovo">Protocollo:</label>
+                            <input #nprotocollo="ngModel" [(ngModel)]="documentoToSave.nprotocollo"
+                                   class="form-control first-row-input col-lg-7"
+                                   name="protocolloNuovo" 
+                                   id="protocolloNuovo"
+                                   aria-labelledby="lblProtocolloNuovo"
+                                   required
+                                   type="text">
+                        </div>
+                    </div>
+                    <!-- Dati Riassuntivi -->
+                    <div class="row p-4 ">
+                        <div class="col-lg-8">
+                            <label id="lblDatiRiassuntiviNuovo" for="datiRiassuntiviNuovo">Dati riassuntivi:</label>
+                            <div class="col-lg-10 col-value note-div">
+                                <textarea [(ngModel)]="documentoToSave.datiRiassuntivi" [ngModelOptions]="{standalone: true}"
+                                          class="note-textarea" 
+                                          id="datiRiassuntiviNuovo"
+                                          aria-labelledby="lblDatiRiassuntiviNuovo"
+                                          rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="allarmeNuovo">Allarme:</label>
+                            <label class="switch-small margin-icon">
+                                <input (click)="modButtonAllarme()" [(ngModel)]="documentoToSave.allarmeOn"
+                                       name="allarmeNuovo"
+                                       id="allarmeNuovo"
+                                       aria-label="Allarme"
+                                       type="checkbox">
+                                <span class="slider-small round">
+                      <span *ngIf="documentoToSave.allarmeOn" class="switch-on-small">ON</span>
+                      <span *ngIf="!documentoToSave.allarmeOn" class="switch-off-small">OFF</span>
+                    </span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Allegato -->
+                    <div class="col-lg-8">
+                        <label id="lblFileAllegato" class="label-file" for="file">File allegato: </label>
+                        <div class="form-group upload-div upload-btn-wrapper">
+                            <input #utfFileRef (change)="handleFileInput($event.target.files)" class="input-upload"
+                                   id="file"
+                                   aria-labelledby="lblFileAllegato"
+                                   type="file">
+                            <button class="btn btn-primary pull-right" type="button">
+                                <i class="fas fa-check"></i> Carica allegato
+                            </button>
+                        </div>
+                        <div *ngIf="fileCaricato" class="col-lg-5 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <label class="col-form-label">File selezionato:</label>
+                            <span *ngIf="fileCaricato && fileModificato"
+                                  id="newSelectedFile"> {{ fileToUpload ? fileToUpload.name : '' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bs-example" data-example-id="single-button-dropdown">
+            <div class="form-group row col-lg-12">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                    <div class="btn-group">
+                        <a (click)="goBack()" class="btn btn-default pointer margin-icon" role="button">
+                            <i class="fa fa-angle-left"></i>
+                            indietro</a>
+                    </div>
+                    <div class="btn-group">
+                        <button (click)="onClickSalva()" class="btn btn-primary margin-icon btn-standard"
+                                type="button">
+                            <i class="fas fa-angle-down"></i> Salva documento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+<!-- Modal Object -->
+<div class="modal fade" id="dialogBoxCancellaDocAnag" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+				<span class="modal-title h5-font">{{dialogBoxTitle || 'Cancella'}}</span>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Message -->
+                <p><span>{{dialogBoxMessage}}</span></p>
+            </div>
+            <!-- Pulsanti -->
+            <div class="modal-footer">
+                <!-- Annulla -->
+               <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="dialogBoxDismissButton()">Annulla</button>
+               <!-- Conferma -->
+               <button type="button" class="btn btn-default" data-dismiss="modal" (click)="dialogBoxConfirmButton()">S&igrave;</button>
+            </div>
+        </div>
+    </div>
+</div>

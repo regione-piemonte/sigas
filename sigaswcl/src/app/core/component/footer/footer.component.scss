@@ -1,0 +1,16 @@
+//Import di sistema
+@import '../../../color.scss';
+
+//sezione dispositva
+.footer {padding-right: 80px;padding-left: 80px;} 
+.footer { background-color: $footer-background; color:#ffffff;} 
+.footer hr{display:none;} 
+.footer .col-md-9 { padding: 30px 0;}
+
+//Sezione elementi custom
+.footerCsi { padding:20px 0px;overflow:hidden;width:auto} 
+.footerCsi a{color:#ffffff;} 
+
+
+
+  

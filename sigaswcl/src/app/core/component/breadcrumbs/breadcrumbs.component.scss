@@ -1,0 +1,48 @@
+/*Import di classe*/
+@import '../../../color.scss';
+
+//--------------
+/* selettori */
+//--------------
+.breadcrumbs { 
+    list-style: none; 
+    overflow: hidden; 
+    margin-top: 20px;
+  }
+  //--------------
+.breadcrumbs li{
+    background:$bgDefault;
+    text-align: center;
+    float: left;
+}
+//--------------
+.breadcrumbs li a {
+    color: white;  
+    margin-left: 5px;
+    margin-right: 5px;
+}
+//-------------------
+
+//sezione custom
+.text-color{
+  color:white;  
+}
+
+.text-color-under{
+  color:white;
+  text-decoration: underline;
+}
+//--------------
+.arrow-blue{
+  @extend %arrow;
+  border-left: 10px solid $bgDefault;
+}
+//--------------
+%arrow {
+  float:left;
+  width: 0; 
+  height: 0; 
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+//------------------------------

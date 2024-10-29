@@ -1,0 +1,133 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
+  <sigas-spinner *ngIf="loaderImportUTF"></sigas-spinner>
+  <div class="card card-primary center-default" *ngIf="!loaderImportUTF" >
+      <div class="card-header text-white">          
+          <h1 class="h1-font"><strong>Importazione UTF</strong></h1>
+      </div>
+      <div>
+        <form #importazioneUTF="ngForm" (ngSubmit)="onSubmit()">
+        
+          <!--Sigas alert componente-->
+          <sigas-alert [message]="'Selezionare l\'annulità di cui si vuole caricare le dichiarazioni. Selezionare il file in formato zip. Premere conferma'" *ngIf="!showSuccess && !showMessageError"  [type]="'INFO'"></sigas-alert>
+          <sigas-alert [message]="messageSuccess" *ngIf="showSuccess" [type]="'SUCCESS'"></sigas-alert>
+          <sigas-alert [message]="messageError" *ngIf="showMessageError" [type]="'DANGER'"></sigas-alert>
+          <!--Sigas alert FINE-->
+
+          <div class="card-body container">
+              <!--testata-->
+              <div class="form-group row padding-search">
+                  <!--anno-->
+                  <div class="form-group col-lg-10">
+                      <div class="row">
+                          <label id="lblAnno" for="anno" class="col-lg-3 col-form-label">Annualità dichiarazione:</label>
+                          <sigas-spinner-form [diameter]="30" *ngIf="loaderAnno;  else elseAnnoCaricato"></sigas-spinner-form>
+                          <ng-template #elseAnnoCaricato>
+                              <div class="col-lg-3">
+                                  <select class="form-control" id="anno" aria-labelledby="lblAnno" 
+                                          [(ngModel)]="importazioneUTFRequest.annualita" name="anno" (change)="getImportState()" required>
+                                      <option *ngFor="let annualita of listaAnnualita" [value]="annualita.anno">{{annualita.anno}}</option>
+                                  </select>
+                              </div>
+                          </ng-template>
+
+                          <!--Update file-->
+                          <label id="lblUpdateFile" for="utfFile" class="col-lg-2 offset-lg-2 col-form-label">Seleziona File:</label>
+                            <div id="updateFile" class="col-lg-2 upload-btn-wrapper">
+                                <button type="button" class="btn btn-primary margin-icon" [disabled]="notImportable">
+                                    <i class="fas fa-check"></i> Apri</button>
+                                <input #utfFileRef 
+                                       type="file" 
+                                       id="utfFile" 
+                                       aria-labelledby="lblUpdateFile"
+                                       onclick="this.value = null" 
+                                       (change)="handleFileInput($event)" *ngIf="!notImportable"/>
+                            </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-12 form-group padding-search hight"  *ngIf="importazioneUTFRequest.annualita != ''">
+
+                <div class="form-group row col-12">
+                    
+                        
+                        <div class="col-11">
+                            <label class="col-form-label">Stato importazione anno {{ importazioneUTFRequest.annualita }}</label>
+                            <div>
+                                <div class="progress"  *ngIf="progress!=null && progress.anno === importazioneUTFRequest.annualita" >
+                                    <!--Progress-bar object-->
+                                    <div class="progress-bar " role="progressbar" [ngClass]="{'bg-danger' : progress.esito < 0 }" 
+                                            [ngStyle]="{'width': (progress.esito > 0?perc[progress.esito]:percNeg[-progress.esito]) + '%'}">
+                                            {{ progress.esito > 0?perc[progress.esito]:percNeg[-progress.esito] }}%
+                                    </div>
+                                </div>
+                                <!--Progress-bar error-->
+                                <div *ngIf="progress!=null && progress.anno === importazioneUTFRequest.annualita && progress.esito < 0 else elseSuccess">
+                                    <label class="col-form-label padding-error">Errore:</label>
+                                    <div class="col-value">
+                                            {{ progress.errore }}
+                                    </div>
+                                </div>
+                                
+                                <!--Progress-bar success-->
+                                <ng-template #elseSuccess>
+                                    <div *ngIf="progress.success != ''">
+                                        <label class="col-form-label padding-error">Success: </label>
+                                        <div class="col-value">
+                                                {{ progress.success }}
+                                        </div>
+                                    </div>
+                                </ng-template>
+                            </div> 
+                            
+                        </div>
+
+                        <div class="col-1">
+
+                            <!--pulsante-->
+                            <button type="button" (click)="getImportState()" class="btn btn-default padding-reload">
+                                    <i class="fas fa-sync-alt"></i></button>
+                        </div>
+
+                    
+                </div>
+
+              </div>
+              <hr>
+              <!--pulsanti-->
+              <div class="bs-example" data-example-id="single-button-dropdown">
+                  <div class="form-group row col-lg-12">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <label id="lblSelectedFile" for="selectedFile" class="col-form-label">File Selezionato:</label>
+                            <span id="selectedFile" aria-labelledby="lblSelectedFile"> {{importazioneUTFRequest.utfFile ? importazioneUTFRequest.utfFile.name : ''}}</span>
+                        </div>
+                  </div>
+                  <div class="form-group row col-lg-12">
+                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                          <!--Cancella-->
+                          <div class="btn-group">
+                              <button type="button" (click)="cancella()" class="btn btn-primary margin-icon btn-standard">
+                                <i class="fas fa-times"></i> Cancella</button>
+                          </div>
+
+                          <!--Conferma-->
+                          <div class="btn-group">
+                              <button type="submit" class="btn btn-primary margin-icon btn-standard" [disabled]="!importazioneUTF.form.valid || importazioneUTFRequest.annualita == null || importazioneUTFRequest.utfFile == mull || notImportable">
+                                <i class="fas fa-check"></i> Conferma</button>
+                          </div>
+
+                      </div>
+                  </div>
+              </div>
+              <!--pulsanti-->
+          </div>
+        </form>
+      </div>
+  </div>
+</div>

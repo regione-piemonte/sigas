@@ -1,0 +1,82 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<!-- DIV principale -->
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
+	
+	<!-- Gestione spinner object -->
+	<sigas-spinner *ngIf="loaderInserimentoSoggettoPage"></sigas-spinner>
+	<!-- end spinner -->
+	<!-- check inserimento -->
+	<div  *ngIf="!loaderInserimentoSoggettoPage" class="card card-primary center-default">
+		<div class="card-header text-white">			
+			<h3 class="h1-font"><strong>Nuovo Soggetto Anagrafica</strong></h3>
+		</div>
+		<div>
+			<!-- Gestione messaggio di alert -->
+			<sigas-alert [message]="'Inserire la Denominazione del soggetto e premere Salva'" [type]="'INFO'"></sigas-alert>
+            <!-- end alert -->
+			<div class="card-body container">
+				<div class="form-group row">
+					<div class="col-lg-12">
+						<div class="form-group col-lg-12">
+							<div class="form-group col-lg-12">
+
+								<!-- FORM -->
+								<form #insNuovoSoggetto="ngForm" (ngSubmit)="onSubmitInserisci()">
+									<div class="panel-body" role="main">
+										<div
+											class="form-group row col-lg-8 col-md-8 col-sm-12 col-xs-12 text-center">
+											<!-- soggetto -->
+											<label id="lblDenominazione" for="denominazione " class="col-lg-6 col-form-label">Denominazione
+												Soggetto:</label>
+											<div class="col-lg-6">
+                          
+                                               <input type="text" class="form-control col-lg-12" id="denominazione" aria-labelledby="lblDenominazione"
+                                                 placeholder="Denominazione soggetto" [(ngModel)]="soggettoToSave.denominazione" name="denominazione"
+                                                 #denominazione="ngModel"  maxlength="30" size="80" required>
+
+												 <!-- Gestione segnalazione alert -->   
+                                                 <div *ngIf="denominazione.invalid && (denominazione.dirty || denominazione.touched)" class="alert alert-danger">
+                                                    <div *ngIf="denominazione.errors.required ">
+                                                        La denominazione è richiesta.
+                                                    </div>
+                                                </div>
+											</div>
+										</div>
+
+										<!--pulsanti-->
+                                        <div class="bs-example" data-example-id="single-button-dropdown">
+                                          <div class="form-group row col-lg-12">
+                                              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+
+												  <!-- Indietro -->
+                                                  <div class="btn-group">
+                                                      <a class="btn btn-default margin-icon btn-standard" (click)="goBack()" role="button">
+                                                          <i class="fa fa-angle-left"></i> indietro</a>
+                                                  </div>
+												  <!-- Salva -->
+                                                  <div class="btn-group">
+                                                      <button type="submit" [disabled]="!insNuovoSoggetto.form.valid" class="btn btn-primary margin-icon" >
+                                                          <i class="fas fa-check"></i> Salva</button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                    
+									</div>
+								</form>
+								<!-- end form -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--end check inserimento -->
+</div>

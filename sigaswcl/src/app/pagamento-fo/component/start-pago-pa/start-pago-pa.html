@@ -1,0 +1,25 @@
+<div style="margin: 80px">
+    <sigas-spinner *ngIf="!isPaymentReady"></sigas-spinner>
+    <div class="panel panel panel-success center-all">
+        <div>
+        </div>
+        <!-- Testo -->
+        <h1 class="h-font">{{ paymentInfo.waitingUserMessage? paymentInfo.waitingUserMessage : "Il pagamento dovrebbe partire a breve. Nel caso l'attesa dovesse protrarsi a lungo si consiglia di riprovare in un altro momento accedendo nuovamente al carrello dei pagamenti dal menu 'Paga'." }}</h1>
+
+
+          <!-- Form -->
+          <form id="postform" [action]="paymentInfo.url" method="GET">
+            <!-- Codice Chiamante -->
+            <input name="codiceChiamante" [value]="paymentInfo.codiceChiamante" type="hidden">
+            <!-- Digest -->
+            <input name="digest" [value]="paymentInfo.digest" type="hidden">
+            <!-- IUV -->
+            <input name="iuv" [value]="paymentInfo.iuv" type="hidden">
+            <!-- Codice Fiscale -->
+            <input name="codiceFiscale" [value]="paymentInfo.codiceFiscale" type="hidden">
+            <!-- Identificativo Pagamento -->
+            <input name="identificativoPagamento" [value]="paymentInfo.identificativoPagamento" type="hidden">
+          </form>          
+
+    </div>
+</div>

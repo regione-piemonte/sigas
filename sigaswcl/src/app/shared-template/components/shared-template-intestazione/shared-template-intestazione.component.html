@@ -1,0 +1,51 @@
+<!-- Main DIV -->
+<div class="form-group row center">
+    <form>
+        <!-- Logo Reg. Piemonte -->
+        <img alt="Logo Regione Piemonte" class="center" src="assets/logo_RegPie.jpg">
+
+        <div class="col-xs-3 col-sm-3col-md-3 col-lg-3"></div>
+        <div class="row" style="text-align: center">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Direzione Risorse Finanziarie
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                Settore Politiche Fiscali e Contenzioso Amministrativo
+            </div>
+            <!-- Mail sezione tributi -->
+            <div *ngIf="viewMailTributiField" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{datiTemplate.mailSettoreTributi}}
+            </div>
+        </div>
+        <div class="col-xs-3 col-sm-3col-md-3 col-lg-3"></div>
+    </form>
+
+</div>
+<div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 ">
+        <!-- Data odierna -->
+        </div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 text-right">
+            Torino, {{dataOdierna}}
+        </div>
+    </div>
+
+    <!-- Clsssificazione -->
+    <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            CLASS. {{datiTemplate.classificazione}}
+        </div>
+    </div>
+
+    <!-- FN -->
+    <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12 row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            F.N.
+            <div class="form-control-view" style="display: inline-block">{{datiTemplate.fn}}
+            </div>
+            <!--<input type="text" id="f.n." class="form-control" style="display: inline-block; width: 20%" name="f.n."
+                [(ngModel)]="datiCompilati.fn" required *ngIf="!isAnteprima">-->
+        </div>
+    </div>
+</div>

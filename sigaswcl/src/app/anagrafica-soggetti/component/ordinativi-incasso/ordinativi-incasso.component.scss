@@ -1,0 +1,119 @@
+//Import di sistema
+@import '../../../color.scss';
+
+//Sezione dispositiva
+.badge {
+    min-width: 45px;
+    padding-top: 5px;
+    display: inline-block;
+    margin-right: 4px;
+    margin-top: 2px;
+    font-size: 13px;
+}
+// -------------
+
+//Badge
+.alert-badge {
+    display: inline-block;
+    margin-right: 4px;
+    margin-top: 0px;
+}
+// -------------
+.col-form-label {
+    min-width: 75px;
+}
+// -------------
+.scroll_table {
+    overflow-x: auto;
+}
+// -------------
+
+//Sezione generale
+.view {
+  margin: auto;
+  width: 100%;
+}
+// -------------
+.wrapper {
+  position: relative;
+  overflow: auto;
+  border: 0px solid black;
+  white-space: nowrap;
+}
+// -------------
+
+//Sezione tabella
+.sticky-col {
+  position: -webkit-sticky;
+  position: sticky;
+  background-color: white;
+}
+// colonna
+.first-col {
+  width: 25px;
+  min-width: 25px;
+  max-width: 25px;
+  left: 0px;
+}
+// -------------
+
+// colonna
+.second-col {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  left: 26px;
+}
+// -------------
+
+// colonna
+.third-col {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+  left: 65px;
+}
+// -------------
+
+// colonna
+.four-col {
+  width: 15px;
+  min-width: 15px;
+  max-width: 15px;
+  left: 215px;
+}
+//--------
+
+/*Gestione H1*/
+.h1-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
+}
+
+/*Gestione H3*/
+.h3-font {
+  font-size: 1.7em; /* 40px/16=2.5em */
+}
+
+//Accesso main via tab
+.skip-link {
+  //background: $white;
+  //border: 2px solid $primary;
+  color: #000;
+  //padding: 15px;
+  font-weight: 700;
+  left: calc(50% - 125px);
+  width: 250px;
+  //padding: 10px;
+  text-align: center;
+  position: absolute;
+  z-index: 100000;
+  transform: translateY(-110%);
+  transition: transform 0.3s;  
+}
+
+.skip-link {
+  &:focus {
+    transform: translateY(0%);
+    top: 10px;
+  }
+}

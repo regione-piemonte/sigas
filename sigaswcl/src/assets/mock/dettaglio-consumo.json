@@ -1,0 +1,39 @@
+{
+    "esito": "S",
+    "object": [
+        {   
+            "soggetto": {
+                "codice_azienda": "1111",
+                "denominazione": "TOTALERG S.P.A.",
+                "indirizzo": "",
+                "comune": "ROMA",
+                "provincia": "ROMA",
+                "tipo": "T",
+                "status": "Attivo"
+            },
+            "consumi": [
+                {
+                    "annualita": "2018",
+                    "provincia_erogazione": "",
+                    "data_presentazione": "",
+                    "stato_dich": "",
+                    "usi_industriali_1200": "",
+                    "usi_industriali_up": "",
+                    "usi_civili_120": "",
+                    "usi_civili_480": "",
+                    "usi_civili_1560": "",
+                    "usi_civili_up": "",
+                    "tot_nuovi_allacciamenti": "",
+                    "sigas_dich_consumi.tot_industriali": "",
+                    "sigas_dich_consumi.tot_civili": "",
+                    "sigas_dich_consumi.conguaglio": "",
+                    "sigas_dich_consumi.conguaglio_calc": "",
+                    "sigas_dich_consumi.totale": "",
+                    "sigas_dich_consumi.rettifiche": "",
+                    "sigas_dich_consumi.arrotondamenti": ""
+                }
+
+            ]
+        }
+    ]  
+}

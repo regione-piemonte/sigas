@@ -1,0 +1,412 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<!--  Div principale -->
+<div class="principal-div" name="principal-div-id" id="principal-div-id">
+	<!-- SPINNER -->
+  <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
+  <!-- FINE SPINNER   -->
+  <div *ngIf="!loaderPage">
+	<!-- DIV CARD -->
+  <div class="card card-primary center-default">
+    <div class="card-header text-white">      
+	  <h1 class="h1-font">Inserisci Documentazione</h1>
+	</div>
+    <form #praticaDocumentazione="ngForm">
+		<!-- Alert -->
+      <sigas-alert [message]="'Valorizza i campi per la documentazione. Si ricorda che la dimensione massima prevista è di 20Mb  mentre i formati consentiti sono: pdf, tiff, jpg, jpeg e p7m'"
+        [type]="'INFO'"></sigas-alert>
+		<!-- end Alert -->
+       <div class="card-body container">    
+        <sigas-alert [message]="message" *ngIf="showMessage" [type]="levelMessage"></sigas-alert>
+            
+                            <div class="form-group col-lg-12">
+								<!-- Spinner Component -->
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+								<!-- end Spinner -->
+
+								<!-- Gestione accordion object -->
+                                <div id="accordion" *ngIf="!loaderDT">
+									   	<!-- Inizio Form  -->
+								        <div class="form-group row">
+										  
+											<!-- Azienda -->
+		                                  <div class="col-lg-4 hight">
+		                                      <div class="form-group row">
+		                                          <label class="col-lg-5 col-form-label" id="lblAzienda" for="azienda">Azienda</label>
+		                                          <div class="col-lg-7">
+		                                                 <select class="form-control" id="azienda" aria-labelledby="lblAzienda" [(ngModel)]="documentoToSave.anagraficaSoggettoVO" 
+		                                                      name="azienda" (change)="changeAzienda($event)" required>
+		                                                      <option *ngFor="let azienda of listaAziende" [ngValue]="azienda">{{azienda.denominazione}}</option>
+		                                                 </select>
+		                                          </div>
+		                                      </div>
+		                                  </div>
+								           <!--fine  Azienda -->   
+								            
+										  <!-- Codice Fiscale -->
+								            <div class="col-lg-4 hight">
+								            <div class="form-group row">
+												<label for="codiceFiscalePIva" id="lblCodiceFiscalePIva" class="col-lg-6 col-form-label">Codice Fiscale/P.Iva:</label>
+						                        <div class="col-lg-6">
+						                            <input type="text" id="codiceFiscalePIva" aria-labelledby="lblCodiceFiscalePIva" placeholder="Codice Fiscale/P.Iva" [(ngModel)]="documentoToSave.cfPiva" name="codiceFiscalePIva"
+						                                class="form-control maiuscolo"  [disabled]="cfPivaEsistente" required>						                            
+						                        </div>
+						                        </div>
+					                        </div>
+					                      <!--fine  Codice Fiscale -->
+											<!-- Annualità -->
+					                        <div class="col-lg-4 hight">
+						                        <div class="form-group row">
+							                        <label for="year"  id="lblYear" class="col-lg-8 col-form-label">Annualità di riferimento</label>
+							                        <div class="col-lg-4">
+														<select class="form-control" id="year" aria-labelledby="lblYear" [(ngModel)]="documentoToSave.annualita" name="year" [required]="rimborso" >
+															<option *ngFor="let year of yearsList" [value]="year">{{year}}</option>
+														</select>
+													</div>
+												</div>
+											</div>
+											<!--fine  Annualità -->
+											
+              
+								        </div>
+								        <!-- Fine   Form -->
+								        
+								        
+								        <!-- Form documenti -->
+  								        <div class="form-group row">
+	  								        <div class="col-lg-20 hight">
+
+												<!-- Protocollo di riferimento -->
+								                <div class="form-group row">
+								                  <label for="rifArchivio" id="lblRifArchivio" class="col-lg-6 col-form-label">Protocollo di riferimento:</label>
+								                  <div class="col-lg-6">
+									                  <input type="text"
+															 class="form-control"
+															 placeholder="nnnnnnnn/aaaa"
+															 [pattern]="riferimentoProtocolloRegex"
+									                    	 [(ngModel)]="documentoToSave.rifArchivio" 
+															 name="rifArchivio" 
+															 id="rifArchivio"
+															 aria-labelledby="lblRifArchivio"  >
+								                    </div>
+								                </div>
+												<!--fine  Protocollo di riferimento -->
+								              </div>
+
+											  	<!-- Tipo documento -->
+										        <div class="col-lg-6 hight">
+				                                      <div class="form-group row">
+				                                          <label id="lblTipoDocumento" 
+														  		 for="tipoDocumento" 
+																 class="col-lg-4 col-form-label">Tipo Documento</label>
+				                                          <div class="col-lg-8">
+				                                                 <select class="form-control" 
+																 		 id="tipoDocumento"
+																		 aria-labelledby="lblTipoDocumento" 
+																		 [(ngModel)]="documentoToSave.tipoDocumentoVO" 
+				                                                         name="tipoDocumento" 
+																		 (change)="changeTipoDocumento($event)" required>
+				                                                      <option *ngFor="let tipoDocumento of listaTipoDocumentoMacro" [ngValue]="tipoDocumento">{{tipoDocumento.descrizione}}</option>
+				                                                 </select>
+				                                          </div>
+				                                      </div>
+				                                  </div>
+												  <!--fine Tipo documento -->
+		                                  </div>
+		                                  
+		                                  
+										  <!-- Tipo di documentazione -->
+		                                   <div class="form-group row" *ngIf="comunicazioniVarie">
+										        <div class="col-lg-6 hight">
+				                                      <div class="form-group row">
+				                                          <label id="lblTipoComunicazione" 
+														  		 for="tipoComunicazione" 
+																 class="col-lg-4 col-form-label">Tipo Comunicazione</label>
+				                                          <div class="col-lg-8">
+				                                                 <select class="form-control" 
+																 		 id="tipoComunicazione"
+																		 aria-labelledby="lblTipoComunicazione" 
+																		 [(ngModel)]="documentoToSave.tipoComunicazioneVO" 
+				                                                     	 name="tipoComunicazione" required>
+				                                                      <option *ngFor="let tipoComunicazione of listaTipoComunicazione" [ngValue]="tipoComunicazione">{{tipoComunicazione.descrizione}}</option>
+				                                                 </select>
+				                                          </div>
+				                                      </div>
+				                                  </div>
+		                                  </div>
+										  <!--fine  Tipo di documentazione -->
+		                                  
+
+										  <!-- Tipo rimborso -->
+		                                  <div class="form-group row" *ngIf="rimborso">
+										        <div class="col-lg-6 hight">
+				                                      <div class="form-group row">
+				                                          <label id="lblTipoRimborso" 
+														  		 for="tipoRimborso"
+														  		 class="col-lg-4 col-form-label">Tipo Rimborso</label>
+				                                          <div class="col-lg-8">
+				                                                 <select class="form-control" 
+																 		 id="tipoRimborso" 
+																 		 aria-labelledby="lblTipoRimborso"
+																 		 [(ngModel)]="documentoToSave.tipoRimborsoVO" 
+				                                                         name="tipoRimborso" required>
+				                                                      <option *ngFor="let tipoRimborso of listaTipoRimborso" [ngValue]="tipoRimborso">{{tipoRimborso.descrizione}}</option>
+				                                                 </select>
+				                                          </div>
+				                                      </div>
+				                                  </div>
+		                                  </div>
+		                                  <!--fine Tipo rimborso -->
+		                                  
+
+										  <!-- Protocollo atto di accertamento -->
+		                                  <div class="form-group row" *ngIf="accertamento">
+	  								        <div class="col-lg-20 hight">
+								                <div class="form-group row">
+													<!-- Protocollo -->
+								                  <label for="nProtocolloAccertamento" 
+														 id="lblNProtocolloAccertamento" 
+														 class="col-lg-6 col-form-label">Protocollo atto Accertamento:</label>
+								                  <div class="col-lg-6">
+									                  <input type="text" 
+													  		 id="nProtocolloAccertamento"
+															 aria-labelledby="lblNProtocolloAccertamento" 
+													   		 class="form-control" 
+															 placeholder="nnnnnnnnn/aaaa"
+									                    	 [(ngModel)]="documentoToSave.nProtocolloAccertamento" 
+															 name="nProtocolloAccertamento"  required>
+								                    </div>
+								                </div>
+								              </div>
+										        <div class="col-lg-6 hight">
+				                                      <div class="form-group row">
+														<!-- Anno protocollo -->
+				                                          <label id="lblYearAccertamento" 
+														  		 for="yearAccertamento"
+														  		 class="col-lg-4 col-form-label">Anno protocollazione atto accertamento</label>
+				                                          <div class="col-lg-8">
+				                                                 <select class="form-control" 
+																         id="yearAccertamento"
+																		 aria-labelledby="lblYearAccertamento" 
+																		 [(ngModel)]="documentoToSave.annoProtocolloAccertamento" 
+				                                                     	 name="yearAccertamento"  required>
+				                                                      <option *ngFor="let yearAcc of yearsListAccertamento" [ngValue]="yearAcc">{{yearAcc}}</option>
+				                                                 </select>
+				                                          </div>
+				                                      </div>
+				                                  </div>
+		                                  </div>
+		                                  <!--fine Protocollo atto di accertamento -->
+		                                  <div class="form-group row">
+		                                  
+		                                  
+		                                  <div class="col-lg-8">
+							                  <label id="label-note" 
+											  		 aria-labelledby="note" 
+													 for="note">Note:</label>
+							                  <div class="col-lg-10 col-value note-div">
+							                    <textarea class="note-textarea" rows="4" [(ngModel)]="documentoToSave.note" id="note" aria-labelledby="label-note"
+							                      [ngModelOptions]="{standalone: true}"></textarea>
+							                  </div>
+							                </div>              
+								        </div>							        
+								        
+								        <div class="form-group row">										
+											<!-- Documento principale -->
+		                                  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">									            
+												<h2 class="border-title h2-font"><strong>Documento Principale</strong></h2>
+									        </div>
+											<!-- Upload Documento -->
+		                                  <div class="col-lg-4">
+							                <label class="label-file" 
+												   id="label-file" 
+												   for="file">File allegato: </label>
+							                <div class="form-group upload-div upload-btn-wrapper">
+							                  <input #mainFile 
+											  		 class="input-upload" 
+													 type="file" 
+													 id="mainFile" 
+													 aria-labelledby="label-file"
+													 onclick="this.value = null"
+							                    	 (change)="handleFileInput($event.target.files)" 
+												required>												
+							                  <button type="button" class="btn btn-primary pull-right" id="caricaDocumentoPrincipale">
+							                    <i class="fas fa-check"></i>  Carica Documento Principale</button>
+							                </div>
+							                <!--Fine Upload Documento -->
+							              </div>
+							              </div>
+							              <div class="form-group row">
+							              <div class="col-lg-4">
+											<!-- Check File caricato -->
+							              <div *ngIf="fileCaricato" class="row  text-center">
+							                	
+							                     <table class="table" *ngIf="fileCaricato" >
+									                
+									                <tbody>
+									                <tr>
+									                    <td>
+							                    			<span > {{ fileToUpload ? fileToUpload.name : '' }}</span>
+						                    			</td>
+									                    
+									                    <td nowrap class="text-right">
+
+															<!-- Pulsante elimina -->
+									                        <button type="button" class="btn-sigas button-garnet btn-xs"
+									                                (click)="eliminaFilePrincipale()">
+									                                <i class="fas fa-trash-alt"></i> Elimina
+									                        </button>
+									                    </td>
+									                </tr>
+									                </tbody>
+									            </table>
+							                    
+							                </div>
+											<!--Fine Check File caricato -->
+							              </div>
+		                                  
+              
+								        </div>
+								        
+								        
+								        <div class="row" >
+											        <!--Gestione Allegati  -->
+										<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+													<h2 class="border-title h2-font"><strong>Allegati</strong></h2>
+										        </div>
+												<!-- Alert messages -->
+									        <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									            <sigas-alert [message]="messageTopM" [type]="typeMessageTopM" *ngIf="showMessageTop"></sigas-alert>
+									        </div> 
+											     <!-- End Alert  -->
+									
+									        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 text-left" style="padding-top: 30px" >												
+												<!-- button Aggiungi -->
+									            <button *ngIf="(!confermaM && !eliminaM) || (confermaM && eliminaM)" type="button" class="btn-sigas button-green"
+									                (click)="fileInput.click()" id="btnAggiungiAllegato">
+									                <i class="fas fa-plus-circle" style="font-size:24px"></i>
+									                Aggiungi</button>
+													<!-- end button -->
+									            <span style="visibility: hidden; position: absolute; overflow: hidden; width: 0px; height:0px;border:none;margin:0; padding:0">
+														<!--<label class="label-file" id="lblInputScegliAllegato" for="inputScegliAllegato"></label>-->
+									                    <input id="inputScegliAllegato" aria-label="Aggiungi allegato" type="file" #fileInput ng2FileSelect [uploader]="uploaderM" multiple (click)="aggiungiM()"/>
+									            </span>
+									        </div>
+									
+									        <div *ngIf="uploaderM.getNotUploadedItems().length" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-bottom:30px; padding-top: 30px">
+												<!-- Table Allegati -->
+									            <table class="table" >
+									                <thead>
+									                <tr>
+									                    <th style="width:60%">Descrizione</th>
+									                    <th style="width:20%" >Nome allegati aggiunti</th>
+									                    <th style="width:10%"></th> 
+									                    <th style="width:10%"></th> 
+									                </tr>
+									                </thead>
+									                <tbody>
+									                <!-- items uploaded -->
+									                <tr *ngFor="let item of uploaderM.queue; index as i">
+									                	<td> 
+									                		<input type="text" class="form-control" placeholder="descrizione"
+									                    	[(ngModel)]="item.headers" name="descrizione"    >
+									                    </td> 
+									                    <td>{{ item?.file?.name }}</td>
+									                    
+									                    <td class="text-left">
+									                        <span *ngIf="item.isError"><i class="fas fa-exclamation-triangle" title="Errore"></i></span>
+									                    </td> 
+									                    <td nowrap class="text-right">
+									                        <button type="button" class="btn-sigas button-garnet btn-xs"
+									                                (click)="eliminaFile(item, null)">
+									                                <i class="fas fa-trash-alt"></i> Elimina
+									                        </button>
+									                    </td>
+									                </tr>
+													<!--end items uploaded -->
+									                </tbody>
+									            </table>
+												<!--End Table Allegati -->
+									             <div class="bs-example" data-example-id="single-button-dropdown">
+         <div class="form-group row col-lg-12">
+             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                 <div class="btn-group">
+									                <button *ngIf="confermaM && eliminaM" type="button" class="btn-sigas button-green"
+									                    (click)="confermaAllegato(uploaderM.queue)" >
+									                    <i class="fa fa-angle-right glyphicon glyphicon-ok"></i>
+									                    Conferma
+									                </button>
+									                <!-- 
+									                <button *ngIf="!confermaM || !eliminaM" type="button" class="btn-sigas button-red"
+									                        (click)="uploadMultipli(uploaderM.queue)" >
+									                        <i class="fas fa-paperclip  text-red-sigas"></i>
+									                        Allega
+									                </button> -->
+									                <button type="button" class="btn-sigas button-garnet btn-glyphicon"
+									                        (click)="eliminaFile(null, uploaderM)" [disabled]="!uploaderM.queue.length">
+									                        <i class="fas fa-trash-alt text-garnet-sigas"></i>
+									                        Elimina tutti
+									                </button>
+									            </div>
+             </div>
+         </div>
+     </div>
+									        </div>
+									    </div>
+										<!--Fine Gestione Allegati  -->
+									    
+										<!-- Sezione Alert -->
+									    <div *ngIf="sizeAlert" class="alert alert-danger" role="alert">
+									        <i class="fas fa-exclamation-triangle"></i><strong>Attenzione!</strong> {{message}}
+									    </div>
+									    
+									    <div *ngIf="numAllegatiAlert" class="alert alert-danger" role="alert">
+									        <i class="fas fa-exclamation-triangle"></i><strong>Attenzione!</strong> {{message}}
+									    </div>
+									    
+									    <div *ngIf="descAllegatoAlert" class="alert alert-danger" role="alert">
+									        <i class="fas fa-exclamation-triangle"></i><strong>Attenzione!</strong> {{message}} 
+									    </div>
+										<!-- Sezione Alert FINE -->
+    
+								        
+								 
+								 
+								
+                            	
+                            </div>
+                        </div>
+     <div class="bs-example" data-example-id="single-button-dropdown">
+         <div class="form-group row col-lg-12">
+         
+        
+             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+				<!-- Button Cancella -->
+              <div class="btn-group">
+                              <button type="button" (click)="resetForm()" class="btn btn-primary margin-icon btn-standard">
+			                  <i class="fas fa-times"></i>
+			                  Cancella</button>
+                          </div>
+						  <!--End Button Cancella -->
+						  <!-- Button Conferma -->
+                 <div class="btn-group">
+                     <button type="submit" [disabled]="!praticaDocumentazione.form.valid || !fileCaricato" class="btn btn-primary margin-icon btn-standard" (click)="salvaDocumentazione()">
+                         <i class="fa fa-angle-right glyphicon glyphicon-ok"></i> Conferma</button>
+                 </div>
+				 <!-- fine Button Conferma -->
+             </div>
+         </div>
+     </div>
+     </div>
+    </form>
+
+  </div>
+  <!--FINE DIV CARD -->
+</div>
+</div>
+<!-- fine Div principale -->

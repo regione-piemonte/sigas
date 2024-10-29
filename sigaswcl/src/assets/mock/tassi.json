@@ -1,0 +1,27 @@
+{
+    "esito":"S",
+    "object": [
+     
+        {
+            "id":1,
+            "tipo": "Rimborsi",
+            "valore": 0.264,
+            "dataDa": "14/09/2017",
+            "dataA": "12/01/2018"
+        },
+        {
+            "id":2,
+            "tipo": "Rimborsi",
+            "valore": 0.222,
+            "dataDa": "13/01/2018",
+            "dataA": "12/07/2018"
+        },
+        {
+            "id":3,
+            "tipo": "Accertamenti",
+            "valore": 0.264,
+            "dataDa": "13/07/2018",
+            "dataA": "12/01/2019"
+        }
+    ]
+}

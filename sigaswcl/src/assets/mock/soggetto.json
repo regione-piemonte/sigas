@@ -1,0 +1,14 @@
+{
+    "esito": "S",
+    "object": {   
+        "id_anag": 1,
+        "codice_azienda": "ALO00216S",
+        "denominazione": "AMC ENERGIA S.R.L.",
+        "indirizzo": "Str. degli Orti, 2",
+        "comune": "Casale Monferrato",
+        "provincia": "AL",
+        "iban": "xxxxxxxxxxxxxxxxxx",
+        "tipo": "XXX",
+        "status": "A" 
+    }
+}

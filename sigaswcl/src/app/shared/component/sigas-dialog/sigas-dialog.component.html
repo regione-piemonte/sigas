@@ -1,0 +1,32 @@
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+             
+            <!-- Header --> 
+             <div class="modal-header">
+               <span class="modal-title h5-font">{{titolo}}</span>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Body --> 
+            <div class="modal-body">
+                <p>
+                    <span *ngIf="testo!=null; else submessageElse">{{testo}}</span>
+                    <span #submessageElse *ngFor="let s of subMessages">{{s}}
+                        <br>
+                    </span>
+                </p>
+            </div>
+            <!-- Bottoni --> 
+            <div class="modal-footer" *ngIf="!hideButton">
+                <!-- Close --> 
+                <button type="button" class="btn btn-default" (click)="closeS()">{{buttonAnnullaText}}</button>
+                <!-- Save --> 
+                <button type="button" class="btn btn-primary" (click)="saveS()">{{buttonConfirmText}}</button>
+            </div>
+        </div>
+
+    </div>
+</div>

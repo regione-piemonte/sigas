@@ -1,0 +1,93 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
+    <div class="card card-primary center-default">
+        <div class="card-header text-white">            
+            <h1 class="h1-font"><strong>Ricerca pagamenti</strong></h1>
+        </div>
+        <div>
+            <!--Alert component-->
+            <sigas-alert [message]="'Selezionare un pagamento  di interesse e premere \'Conferma\' per consultare il dettaglio.'" [type]="'INFO'"></sigas-alert>
+            <!--Card Body-->
+            <div class="card-body container">
+                <div class="form-group row">
+                    <div class="col-lg-12">
+                        <div class="form-group col-lg-12">
+                            <div class="form-group col-lg-12">
+                                <!--Spinner component-->
+                                <sigas-spinner-form [diameter]="30" *ngIf="loaderDT"></sigas-spinner-form>
+                                <!--Tabella-->
+                                <table [style.display]="!loaderDT ? '' : 'none' " id="elenco-consumi"  class="row-border hover" 
+                                    datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" width="100%">
+                                    <!--Table head-->
+                                    <thead>
+                                        <tr>
+                                            <td></td>
+                                            <th><b>Codice Azienda</b></th>
+                                            <th><b>Denominazione azienda</b></th>                                            
+                                            <th><b>Mese</b></th>
+                                            <th><b>Importo</b></th>
+                                            <th><b>Stato Carrello</b></th>
+                                        </tr>
+                                    </thead>
+                                    <!--table body-->
+                                    <tbody>
+                                        <tr class ="pointer" *ngFor="let el of subjectList; let i = index " (click) = "dettaglioSocieta(el)">
+                                            <td>                                                
+                                                <!--Radio-->
+                                                <input [attr.aria-label]="calculateArialLabel(el)"
+                                                       type="radio" name="selection" 
+                                                       (change)="checkRow(el.idAnag, el.nomeAzienda, el.id)">
+                                            </td>
+                                            <!--Codice azienda -->
+                                            <td tabindex="-1">{{ el.codiceAzienda }}</td>
+                                            <!--Nome azienda -->
+                                            <td tabindex="-1">{{ el.nomeAzienda }}</td>
+                                            <!-- Mesi -->
+                                            <td tabindex="-1">{{ el.mesi }}</td>
+                                            <!-- Totale -->
+                                            <td tabindex="-1">{{ el.totale | currency:'EUR':'symbol' }}</td>
+                                            <!--Stato Carrello-->
+                                            <td tabindex="-1">{{ getStatus(el.statoCarrello) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--tabella-->
+                <!--pulsanti-->
+                <div class="bs-example" data-example-id="single-button-dropdown">
+                    <div class="form-group row col-lg-12">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                            <!--Indietro-->
+                            <div class="btn-group">
+                                <a class="btn btn-default" (click)="goBack()" role="button">
+                                    <i class="fa fa-angle-left glyphicon glyphicon-chevron-left"></i>
+                                    indietro</a>
+                            </div>
+                            &nbsp;
+                            <!--Cancella-->
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary margin-icon" (click)="goHome()">
+                                    <i class="fas fa-times"></i> Cancella</button>
+                            </div>
+                            <!--Conferma-->
+                            <div class="btn-group">
+                                <button type="button" [disabled]="!foPayService.searchReq.id" class="btn btn-primary margin-icon" (click)="onSubmit()">
+                                    <i class="fas fa-check"></i> Conferma</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+                <!--pulsanti-->
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+/*Import di classe*/
+@import '../../../color.scss';
+
+/* selettori */
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+  }  
+//--------------------------------------
+  .upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+  }
+//--------------------------------------
+  //Sezione padding
+  .padding-error {
+    padding-top: 15px;
+  }
+//--------------------------------------
+  .padding-reload {
+    margin-top: 23px;
+  }
+  //-------
+
+  .mainDiv {
+    padding-right: 3%;
+  }
+//--------------------------------------
+  .newButton {
+    padding-bottom: 1%;
+    padding-left: 10%;
+  }
+//--------------------------------------
+
+  //Sezione Tabella  
+  .dt-center {
+    text-align: center;
+    border: 1px solid lightgrey;
+  }
+//--------------------------------------
+  table td, table th {
+    padding: 1%;
+    vertical-align: middle;
+  }
+//--------------------------------------
+  .first-th {
+    width: 10%;
+  }
+//--------------------------------------
+  .tipoAl-th {
+    width: 11%;
+  } 
+//--------------------------------------
+  .progRigo-th {
+    width: 9%;
+  }
+  //--------------------------------------
+  .desc-aliq-th {
+    width: 17%;
+  }
+  //--------------
+
+  //Sezione custom
+  #tipoAliquotaSelect, #descAliquotaSelect {
+    border-left: 1px solid #ced4da;
+  }
+//--------------------------------------
+  .valid-th {
+    width: 15%;
+  }
+//--------------------------------------
+  //Ultimo pulsante colonna
+  .last-button-col {
+    width: 24%;
+  }
+ //--------------------------------------
+
+/* Gestione classi Header */
+.h1-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
+}
+/**************************/
+
+ /*Gestione H4*/
+ .h4-font {
+  font-size: 1.5em; /* 40px/16=2.5em */
+}
+  
