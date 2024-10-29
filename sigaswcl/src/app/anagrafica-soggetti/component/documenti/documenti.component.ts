@@ -332,16 +332,26 @@ export class DocumentiComponent implements OnInit, AfterViewInit {
 
     onClickSalva() {
         let field: string = null;
-        this.documentoToSave.dataDocumento = new Date(this.dataDocumentoPicker.year, this.dataDocumentoPicker.month - 1, this.dataDocumentoPicker.day);
 
-        if (this.documentoToSave.tipoComunicazioneVO.idTipoComunicazione == null) {
-            field = ' tipo documnento';
+        if(this.dataDocumentoPicker==null||this.dataDocumentoPicker==undefined){
+            field == null ? field = ' data documento' : field += ', data documento';
+        } else {
+            this.documentoToSave.dataDocumento = new Date(this.dataDocumentoPicker.year, this.dataDocumentoPicker.month - 1, this.dataDocumentoPicker.day);
+        }       
+
+        if (this.documentoToSave.tipoComunicazioneVO.idTipoComunicazione == null || 
+            this.documentoToSave.tipoComunicazioneVO.idTipoComunicazione == undefined || 
+            this.documentoToSave.tipoComunicazioneVO.idTipoComunicazione == 0) 
+        {
+            field == null ? field = ' tipo documento' : field += ', tipo documento';
         }
+
         if (this.documentoToSave.annualita == null) {
             field == null ? field = ' annualita\' di riferimento' : field += ', annualita\' di riferimento';
-        }
-        if (this.documentoToSave.dataDocumento == null) {
-            field == null ? field = ' data documento' : field += ', data documento';
+        }        
+
+        if(this.fileToUpload==null||this.fileToUpload==undefined){
+            field == null ? field = ' allegato' : field += ', allegato';
         }
 
         if (field != null) {

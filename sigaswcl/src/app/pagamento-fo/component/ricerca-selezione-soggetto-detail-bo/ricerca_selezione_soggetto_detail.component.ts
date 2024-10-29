@@ -7,6 +7,7 @@ import { LoggerService } from "../../../core/services/logger.service";
 import { PaymentFoService } from '../../service/pagamento-fo.service';
 import { SubjectVO } from "../../commons/vo/subject-vo";
 import { Location } from '@angular/common';
+import { DataTableIt } from '../../commons/class/commons-data-table';
 
 @Component({
   selector: 'app-ricerca-selezione_soggetto_detail',
@@ -21,7 +22,8 @@ export class SearchSubjectSelectBOComponent implements OnInit, AfterViewInit {
 
   private loaderDT: boolean;
   private subjectList: Array<SubjectVO>;
-  private dtTrigger: Subject<any> = new Subject();
+  private dtTrigger: Subject<any> = new Subject();   
+  private dtOptions: any;
 
   public subscribers: any = {};
 
@@ -39,7 +41,20 @@ export class SearchSubjectSelectBOComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-//if(true){this.foPayService.searchReq.year='2019';}
+
+    this.dtOptions = {
+      searching: true,
+      pagingType: 'full_numbers',
+      info: false,
+      language: DataTableIt.language,
+      ordering: true,
+      columnDefs: [
+        { className: 'dt-center'},
+        { orderable: false, targets: 0 }
+        
+      ]
+
+    };
 
     if(!this.foPayService.searchReq.year)
       this.router.navigateByUrl("home/ricerca-soggetto-pagamento")
@@ -82,6 +97,14 @@ export class SearchSubjectSelectBOComponent implements OnInit, AfterViewInit {
   goBack() {
 //    window.history.go(-1);
       this.location.back();
+  }
+
+  calculateArialLabel(el: SubjectVO){
+    let frase: String;
+    frase = "Seleziona pagamento associato al soggetto " + el.nomeAzienda + 
+            " avente il codice " + el.codiceAzienda +
+            " relativo al mese " + el.mesi; 
+    return frase;
   }
   
 }

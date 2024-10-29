@@ -42,7 +42,12 @@
                             <div id="updateFile" class="col-lg-2 upload-btn-wrapper">
                                 <button type="button" class="btn btn-primary margin-icon" [disabled]="notImportable">
                                     <i class="fas fa-check"></i> Apri</button>
-                                <input #utfFileRef type="file" id="utfFile" aria-labelledby="lblUpdateFile" (change)="handleFileInput($event)" *ngIf="!notImportable"/>
+                                <input #utfFileRef 
+                                       type="file" 
+                                       id="utfFile" 
+                                       aria-labelledby="lblUpdateFile"
+                                       onclick="this.value = null" 
+                                       (change)="handleFileInput($event)" *ngIf="!notImportable"/>
                             </div>
                       </div>
                   </div>

@@ -44,6 +44,8 @@ import { UpdateAllarmeAccertamentoRequest } from 'src/app/commons/request/update
 import { CompensazioniPrVO } from 'src/app/commons/vo/compensazioni-pr-vo';
 import { SalvaCompensazioneRequest } from 'src/app/commons/request/salva-compensazione-request';
 import { AnnualitaVersamentoVO } from 'src/app/commons/vo/annualita-versamenti-vo';
+import { RateoVO } from 'src/app/commons/vo/rateo-vo';
+import { RicercaRateoRequest } from 'src/app/commons/request/ricerca-rateo-request';
 
 @Injectable({
   providedIn: 'root'
@@ -103,6 +105,26 @@ export class AnagraficaSoggettiService {
   emitConsumiPr(consumiPr: any){
     this.consumiPrSubject.next(consumiPr);
   };
+
+  /**
+   * Evolutiva  REQ-26 Editing Rateo
+  */
+  private rateoRefreshAnniProvincieDispinibiliSubject = new Subject<any>();
+  public rateoRefreshAnniProvincieDispinibiliObservable = this.rateoRefreshAnniProvincieDispinibiliSubject.asObservable();
+  emitRateoRefreshAnniProvincieDispinibili(rateoRefreshAnniProvincieDispinibili: any) {
+    this.rateoRefreshAnniProvincieDispinibiliSubject.next(rateoRefreshAnniProvincieDispinibili);
+  }
+  //************************************/
+
+
+  /**
+   * refresh rateo per versamenti
+  */
+  private versamentiRefreshRateoSubject = new Subject<any>();
+  public versamentiRefreshRateoObservable = this.versamentiRefreshRateoSubject.asObservable();
+  emitVersamentiRefreshRateo(versamentiRefreshRateo: any) {
+    this.versamentiRefreshRateoSubject.next(versamentiRefreshRateo);
+  }
 
   public ricercaConsumiForProvinceByAnno(anno: number) {
     var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvince';
@@ -843,5 +865,48 @@ export class AnagraficaSoggettiService {
 
       const body = versamentoList.map(versamento => new ConfermaVersamentoRequest(versamento));
       return this.http.post<Array<VersamentiPrVO>>(url, body);
+    }
+
+    /**
+     * Servizio eliminazione rateo
+     */     
+    public eliminaRateo(idRateo: number) {
+      var url: string = this.config.getBEServer() + '/rest/rateo/cancella/' + idRateo;      
+      return this.http.delete(url, {});
+    }
+
+    /**
+     * Servizio ricerca rateo a partire dall'idRateo
+     */     
+    public ricercaRateo(idRateo: number) {
+      var url: string = this.config.getBEServer() + '/rest/rateo/' + idRateo;      
+      return this.http.get<RateoVO>(url, {});
+    }
+
+    /**
+     * Servizio ricerca lista ratei
+     */     
+    public ricercaRateoList(ricercaRateoRequest: RicercaRateoRequest) {
+      var url: string = this.config.getBEServer() + '/rest/rateo/ricerca-rateo';      
+      const body = ricercaRateoRequest;
+      return this.http.post<Array<RateoVO>>(url, body);
+    }
+
+    /**
+     * Servizio inserisci nuovo rateo
+     */     
+    public inserisciRateo(rateo: RateoVO) {
+      var url: string = this.config.getBEServer() + '/rest/rateo/inserisci';      
+      const body = rateo;
+      return this.http.put<String>(url, body);
+    }
+
+    /**
+     * Servizio modifica rateo
+     */     
+    public modificaRateo(rateo: RateoVO) {
+      var url: string = this.config.getBEServer() + '/rest/rateo/modifica';      
+      const body = rateo;
+      return this.http.post<String>(url, body);
     }
 }

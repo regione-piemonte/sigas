@@ -13,6 +13,7 @@ import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsu
 
 import { PaymentFoService } from '../../service/pagamento-fo.service';
 import { UtilityCtrlVO } from "../../commons/vo/utility-ctrl-vo";
+import { PaymentStoreCartRequest } from '../../commons/request/payment-store-cart-request';
 
 declare var $: any;
 
@@ -22,31 +23,33 @@ declare var $: any;
     styleUrls: ['./cart-payments.component.scss']
 })
 @DestroySubscribers()
-export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
-
+export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit 
+{
     private dialogBoxType: string;
     private dialogBoxTitle: string;
     private dialogBoxMessage: string;
-
     private pageLoadingInProgress: boolean;
-
     confermaEmailModel: string;
-    paymentMethods: Array<PaymentMethodVO>;
-    
+    paymentMethods: Array<PaymentMethodVO>;    
     tipoPagamentoLoader: boolean;
     flgCartSaved: boolean = false;
-
     msgAlertSuccess: string;
     causale: string;
-
     public subscribers: any = {};
-
     private msgCart: UtilityCtrlVO;
-
     private message: string;
     private showMsg: boolean;
     private levelMessage: string;
+    private cartItem2delete: any;
+    private deleteAllCartOk: boolean = false;
+    private deleteAllCartError: string = null;
+    private paymentStartError: boolean = false;
+    private paymentStartedOk: boolean = false;
 
+    private paymentNoticeError: boolean = false;
+    private paymentNoticeErrorText: string;
+    private viewQueryParams: string;
+    private flagCancellazioneInEsecuzione: boolean = false;
 
     constructor(
         private logger: LoggerService,
@@ -67,10 +70,41 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
         if(!this.foPayService.cartReq.year || !this.foPayService.cartReq.subjectName)
             this.router.navigateByUrl("home/selezione-soggetto-pagamento");
 
-//if(true){ this.foPayService.cartReq.year = '2021';this.foPayService.cartReq.subjectName = '19 novembre - 11111111111'; }
-        this.foPayService.loadCart(() => { this.setFirstCart() } );
+        this.viewQueryParams = this.activatedRoute.snapshot.queryParamMap.get('caller');
 
+        this.foPayService.loadCart(() => { 
 
+            //Marst
+            const lst = this.foPayService.cartList;              
+            let filterKeyList = Object.keys(lst).filter((key, index) => {return lst[key].status!="45"});
+            let filterCardList: PaymentStoreCartRequest[]=[];
+            filterKeyList.forEach((key) => {
+                let cartItem:PaymentStoreCartRequest = new PaymentStoreCartRequest(
+                    lst[key].id,
+                    lst[key].amount,
+                    lst[key].year,
+                    lst[key].area,
+                    lst[key].subjectName,
+                    lst[key].idAnag,
+                    lst[key].subjectCode,
+                    lst[key].status,
+                    lst[key].paymentCode,
+                    lst[key].paymentType,
+                    lst[key].currentDate,
+                    lst[key].payDate,
+                    lst[key].email,
+                    lst[key].month,
+                    lst[key].type,
+                    0,
+                    lst[key].codiceFiscalePIva,
+                    lst[key].iuv)
+                    filterCardList.push(cartItem);
+            });
+            this.foPayService.loadCartList(filterCardList);
+            //Marts
+            
+            this.setFirstCart() 
+        });
 
         this.foPayService.retrievePaymentMethods().subscribe(
             resp => { 
@@ -79,45 +113,34 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.foPayService.cartReq.paymentType = ''+resp[0].idTipoPagamento;
                 this.pageLoadingInProgress = false;
             },
-            err => { this.logger.error(err); });
+            err => { 
+                this.logger.error(err); 
+            }
+        );
 
-        this.confermaEmailModel = this.foPayService.cartReq.email;
-        
+        this.confermaEmailModel = this.foPayService.cartReq.email;        
         
         this.foPayService.retriveMessageAndParameters("", "carrelloNotificato")
-        .subscribe(res => {
-          this.msgCart = res;
-          if(parseInt(this.foPayService.cartReq.status,10)==40){
-              this.message = this.msgCart.message;
-              this.levelMessage = this.msgCart.levelMessagge;
-              this.showMsg = true;
-          }
-        }, err => {
-          this.logger.error("errore ");
-      });
+            .subscribe(res => {
+            this.msgCart = res;
+            if(parseInt(this.foPayService.cartReq.status,10)==40){
+                this.message = this.msgCart.message;
+                this.levelMessage = this.msgCart.levelMessagge;
+                this.showMsg = true;
+            }
+            }, err => {
+            this.logger.error("errore ");
+        });
     }
 
     ngAfterViewChecked() {
-        /*
-        let d = new Date();
-        d.setDate(d.getDate() - 1);
-        if ($('.input-group.date').length) {
-            $('.input-group.date').each(function (index) {
-                $(this).datetimepicker({
-                    format: 'DD/MM/YYYY',
-                    minDate: d,
-                    disabledDates: [d]
-                });
-            });
-        }
-        */
+       //VOID
     }
 
     tipoPagamento() {
         this.tipoPagamentoLoader = false;
     }
-
-    private cartItem2delete: any;
+    
     dialogBoxShowDestroyCartItem(id:number) {
         this.cartItem2delete = id;
         this.dialogBoxType = 'DestroyCartItem';
@@ -134,34 +157,52 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
     dialogBoxDismissButton() {
     }
 
-    private deleteAllCartOk: boolean = false;
-    private deleteAllCartError: string = null;
     dialogBoxConfirmButton() {
-        if(this.dialogBoxType == 'DestroyAllCart') {
+        if(this.dialogBoxType == 'DestroyAllCart') 
+        {
+            this.flagCancellazioneInEsecuzione = true;
             this.foPayService.destroyAllCart(() => { 
                 this.deleteAllCartOk = true
-
-                setTimeout(() => { this.router.navigateByUrl("home/selezione-soggetto-pagamento"); }, 5000);
+                setTimeout(() => { 
+                    this.flagCancellazioneInEsecuzione = false;
+                    this.router.navigateByUrl("home/selezione-soggetto-pagamento"); 
+                }, 5000);
              },
              (error) => {
+                this.flagCancellazioneInEsecuzione = false;
                 if(error.errorCode == 'BUSSINESS EXCEPTION')
                     this.deleteAllCartError = error.message;
                 else
                     this.deleteAllCartError = 'Errore generico durante la cancellazione del carrello. Riprovare in seguito. ';
              });
         }
-
         if(this.dialogBoxType == 'DestroyCartItem') {
+            this.flagCancellazioneInEsecuzione = true;
             this.foPayService.destroyCartItem(this.cartItem2delete, () => {
-                    if(!this.foPayService.howManyCartItems())
-                        this.router.navigateByUrl("home/selezione-soggetto-pagamento");
-                })
+                this.flagCancellazioneInEsecuzione = false;
+                if(!this.foPayService.howManyCartItems()){
+                    this.router.navigateByUrl("home/selezione-soggetto-pagamento");                    
+                }                    
+            })
         }
     }
 
     goBack() {
-        this.foPayService.addCurrentCartItemToList();
-        this.router.navigateByUrl("home/pagamento-fo-importo");
+        //this.foPayService.addCurrentCartItemToList();
+        //this.router.navigateByUrl("home/pagamento-fo-importo");
+                
+        if(parseInt(this.foPayService.cartReq.status,10) >= 40){
+            //stato 40 -> IN ELABORAZIONE
+            return this.router.navigateByUrl("home/selezione-soggetto-pagamento");
+        }
+
+        if(this.viewQueryParams==null || this.viewQueryParams==undefined){
+            //this.router.navigate([`home/selezione-soggetto-pagamento`], {queryParams: {caller: 'det'}});            
+           return  this.router.navigateByUrl("home/selezione-soggetto-pagamento");
+        } else {
+            return this.router.navigate([`home/pagamento-fo-importo`], {queryParams: {caller: 'add'}});
+        }
+        
     }
 
     saveCart() {
@@ -172,11 +213,10 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
             },
             err => { 
                 this.logger.error("errore " + err); 
-            });
+            }
+        );
     }
-
-    private paymentStartError: boolean = false;
-    private paymentStartedOk: boolean = false;
+    
     payCart() {
         //-----------------------
         //SOLO PER BYPASS
@@ -184,25 +224,37 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
         //this.router.navigateByUrl("home/start-ppay");
         //this.paymentStartedOk = true;
         //-----------------------
-       
-        this.paymentStartError = this.paymentStartedOk = false;
-        this.foPayService.startCartPayment().subscribe(
-            res => {
-                this.router.navigateByUrl("home/start-ppay");
-                this.paymentStartedOk = true;
-            },
-            err => { 
-                this.paymentStartError = true;
-                this.logger.error("errore " + err); 
-            });
-        this.pageLoadingInProgress = false;
+
+        this.pageLoadingInProgress = true;
+        if( this.foPayService.cartReq.status == "GENERATO AVVISO PAGAMENTO"){
+            this.router.navigateByUrl("home/start-ppay");
+            this.paymentStartedOk = true;
+            this.pageLoadingInProgress = false;
+        } else {
+            this.deleteAllCartOk = false
+            this.deleteAllCartError = null;
+            this.paymentNoticeError = false;
+            this.paymentNoticeErrorText = "";
         
-        
+            this.paymentStartError = this.paymentStartedOk = false;
+            this.foPayService.startCartPayment().subscribe(
+                res => {
+                    this.router.navigateByUrl("home/start-ppay");
+                    this.paymentStartedOk = true;
+                },
+                err => { 
+                    this.paymentStartError = true;
+                    this.logger.error("errore " + err);
+                    this.pageLoadingInProgress = false; 
+                });
+            //this.pageLoadingInProgress = false;
+        }   
+                
     }
 
     downloadExcelCart() {
         this.foPayService.saveCart();
-    }    
+    }   
 
     ngOnDestroy(): void {
     }
@@ -213,7 +265,6 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
         Object.keys(lst).forEach((key, index) => {
             amounts += parseFloat((''+lst[key].amount).replace(',','.'));
         });
-
         return amounts;
     }
 
@@ -248,11 +299,14 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
 
     isDeletable(): boolean {
         let status = this.foPayService.cartReq.status;
-
-        return !status 
-            || status === 'BOZZA'
-            || parseInt(status,10) <= 20 /*COMPLETO*/
-            || parseInt(status,10) >= 51 /*ERRORE PAGAMENTO*/;
+        if(this.flagCancellazioneInEsecuzione){
+            return false;
+        } else {
+            return !status 
+                   || status === 'BOZZA'
+                   || parseInt(status,10) <= 20 /*COMPLETO*/
+                   || parseInt(status,10) >= 51 /*ERRORE PAGAMENTO*/;
+        }        
     }
 
     getStatus(): String {
@@ -267,18 +321,96 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit {
             case 30: /*PAGAMENTO AVVIATO     */
                 return "IN PAGAMENTO";
             case 40: /*PAGAMENTO NOTIFICATO  */
-                return "DA PAGARE";
+                return "IN ELABORAZIONE";
+            case 45: /*CREATO AVVISO PAGAMENTO  */
+                return "GENERATO AVVISO PAGAMENTO";
             case 50: /*PAGATO                */
                 return "PAGATO";
             case 51: /*ERRORE PAGAMENTO      */
                 return "ERRORE PAGAMENTO";
             }
-            
+
             return this.foPayService.cartReq.status;
         
     }
 
     checkMails(): boolean {
         return this.confermaEmailModel == this.foPayService.cartReq.email;
+    }
+
+    disabilitaDownloadBollettino(): boolean {
+        /*
+        if(this.foPayService.cartReq.iuv==null || this.foPayService.cartReq.iuv==undefined || this.foPayService.cartReq.iuv==""){
+            return true;
+        }
+        */
+        let statusNumeral = parseInt(this.foPayService.cartReq.status,10);
+        /*
+        if(statusNumeral < 30 || statusNumeral > 40){
+            return true;
+        }
+        */
+        if(statusNumeral > 45){
+            return true;
+        }
+        return false;        
+    }
+
+    downloadAvvisoPagamento(){
+        let esecuzioneOK: String = "000";
+        this.paymentStartError = false;
+        this.deleteAllCartOk = false
+        this.deleteAllCartError = null;
+        this.paymentNoticeError = false;
+        this.paymentNoticeErrorText = "";
+        this.pageLoadingInProgress = true;        
+        if(this.foPayService.cartReq.iuv!=null && this.foPayService.cartReq.iuv!=undefined && this.foPayService.cartReq.iuv!=""){
+            this.foPayService.getPaymentNotice(this.foPayService.cartReq.iuv).subscribe(
+                res => {                    
+                    this.paymentNoticeError = false;
+                    this.paymentNoticeErrorText = "";
+
+                    saveAs(res, "avviso_pagamento_" + this.foPayService.cartReq.subjectName + ".pdf");
+                    this.pageLoadingInProgress = false;                   
+                },
+                err => { 
+                    this.logger.error("errore " + err);
+                    this.paymentNoticeError = true;
+                    this.pageLoadingInProgress = false;
+                    //
+                }
+            );
+        } else {
+            this.foPayService.generaPaymentNotice().subscribe(
+                res => {
+                    this.paymentNoticeError = false;
+                    this.paymentNoticeErrorText = "";                    
+                    saveAs(res, "avviso_pagamento_" + this.foPayService.cartReq.subjectName + ".pdf");
+                    
+                    this.foPayService.searchCartItems(this.foPayService.searchReq.year, this.foPayService.searchReq.subjectName,null).subscribe(
+                        res => {
+                            //this.foPayService.loadCartList(res);
+                            //Marst
+                            let filterList: PaymentStoreCartRequest[];
+                            filterList = res.filter((item) => {
+                                return item.paymentCode == this.foPayService.cartReq.paymentCode
+                            });                            
+                            this.foPayService.loadCartList(filterList);
+                            //Marts
+                            this.setFirstCart();
+                            this.pageLoadingInProgress = false;
+                        },
+                        err => {
+                            this.logger.error("-------errore " + err);
+                            this.pageLoadingInProgress = false;
+                        }
+                    )
+                    
+                },
+                err => { 
+                    this.logger.error("errore " + err); 
+                }
+            )                        
+        }           
     }
 }

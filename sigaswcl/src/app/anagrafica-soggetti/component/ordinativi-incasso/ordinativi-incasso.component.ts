@@ -582,5 +582,12 @@ export class OrdinativiIncassoComponent implements OnInit, AfterViewInit {
       this.router.navigateByUrl(Routing.ASSOCIA_SOGGETTO);
   }
 
+  calculateArialLabel(el: OrdinativiIncassoVO){
+    let frase: String;
+    frase = "Seleziona ordinativo avente importo attuale " + el.importoAttuale + 
+            " emesso il " + moment(el.dataEmissione).format('DD/MM/YYYY');
+    return frase;
+  }
+
 
 }

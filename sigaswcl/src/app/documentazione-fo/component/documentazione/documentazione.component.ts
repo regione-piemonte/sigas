@@ -1,4 +1,12 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, 
+         OnInit, 
+         ViewChild, 
+         ElementRef, 
+         Input, 
+         Output, 
+         EventEmitter, 
+         AfterViewInit, 
+         Renderer2 } from '@angular/core';
 import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsubscribers';
 import { DocumentazioneService } from '../../service/documentazione.service';
 import { LoggerService } from '../../../core/services/logger.service';
@@ -93,6 +101,10 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     public accertamento: boolean;
     
     private yearsListAccertamento: Number[];
+
+    @ViewChild('mainFile')
+    iptMainFile: ElementRef;
+    
     
     
   constructor(
@@ -279,20 +291,16 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
         }
     }
     
-    public uploaderM : FileUploader = new FileUploader({url: URL});
+    public uploaderM : FileUploader = new FileUploader({url: URL});   
     
-    
-    
-    
-    eliminaFile(file : FileItem, files : FileUploader) {
-      
-           if(file != null)
-                this.elimina(file);
-            else
-                this.eliminaTutti(files);
-          
-
-        
+    eliminaFile(file : FileItem, files : FileUploader) 
+    {      
+        if(file != null){
+            this.elimina(file);
+        }else{
+            this.eliminaTutti(files);
+        }
+        //this.iptMainFile.nativeElement.value = "";        
     }
     
     aggiungiM(){
@@ -431,19 +439,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
         }
         
     }
-    
-//    descrizioneChange(i: any){
-//        console.log('posizione elemento'+i);
-//        let descrizione = this.uploaderM.queue[i].headers+'' 
-//        if(this.uploaderM.queue[i].headers+''.trim()!=''){
-//            this.uploaderM.queue[i].isError = false;
-//            this.descAllegatoAlert = false;
-//            this.confermaAllegato(this.uploaderM.queue);
-//        }
-//         
-//        
-//    }
-    
+        
     resetForm(){
         this.documentoToSave = new DocumentiVO(0,null,
                 null,null,null,null,'','',null,'',null, new StatoDocumentoVO(null,'',''),null,null,null,'',null,null,null,null,null);

@@ -8,7 +8,7 @@
 
 
           <!-- Form -->
-          <form id="postform" [action]="paymentInfo.url" method="POST">
+          <form id="postform" [action]="paymentInfo.url" method="GET">
             <!-- Codice Chiamante -->
             <input name="codiceChiamante" [value]="paymentInfo.codiceChiamante" type="hidden">
             <!-- Digest -->

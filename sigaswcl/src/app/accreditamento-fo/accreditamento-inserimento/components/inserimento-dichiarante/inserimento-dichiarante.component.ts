@@ -355,4 +355,11 @@ private dtOptions: any;
         private router: Router,
         private renderer: Renderer2
     ) { }
+
+    calculateArialLabel(el: AnagraficaSoggettoVO){
+        let frase: String;
+        frase = "Seleziona dichiarante " + el.denominazione + 
+                " avente il codice " + el.codiceAzienda;
+        return frase;
+    }
 }

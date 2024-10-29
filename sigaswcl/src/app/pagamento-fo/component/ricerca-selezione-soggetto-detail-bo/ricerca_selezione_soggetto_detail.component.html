@@ -47,21 +47,24 @@
                                                 <!--<input type="radio"  name="selection"  [checked]="checked[i]" (change)="checkRow(el.id, i)">-->
 
                                                 <!-- Radion button -->
-                                                <input aria-label="Dettaglio società" type="radio" name="selection" (change)="checkRow(el.idAnag, el.nomeAzienda, el.id)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)"
+                                                       type="radio" 
+                                                       name="selection" 
+                                                       (change)="checkRow(el.idAnag, el.nomeAzienda, el.id)">
                                             </td>
                                             <!-- Codice azienda -->
-                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td tabindex="-1">{{ el.codiceAzienda }}</td>
 
                                             <!-- Nome azienda -->
-                                            <td>{{ el.nomeAzienda }}</td>
+                                            <td tabindex="-1">{{ el.nomeAzienda }}</td>
 
                                             <!--<td>{{ el.siglaProvincia }}</td>-->
 
                                             <!-- Mesi -->
-                                            <td>{{ el.mesi }}</td>
+                                            <td tabindex="-1">{{ el.mesi }}</td>
 
                                             <!-- totale -->
-                                            <td>{{ el.totale | currency:'EUR':'symbol' }}</td>
+                                            <td tabindex="-1">{{ el.totale | currency:'EUR':'symbol' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

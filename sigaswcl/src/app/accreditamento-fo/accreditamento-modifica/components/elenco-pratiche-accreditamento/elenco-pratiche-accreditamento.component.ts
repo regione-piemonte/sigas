@@ -95,9 +95,7 @@ export class ElencoPraticheAccreditamentoComponent implements OnInit, AfterViewI
       this.modificaAccreditamentoService.ricercaAccreditamento = this.ricercaModel;
       this.router.navigate([RoutingAccreditamentoFO.MODIFICA_ACCREDITAMENTO]);
 
-    }
-
-   
+    }   
     
     goBack(){
     }
@@ -107,8 +105,11 @@ export class ElencoPraticheAccreditamentoComponent implements OnInit, AfterViewI
         this.ricercaModel = new RicercaAccreditamentoRequest(idUtenteProvv);
     }
 
-
-
-
+    calculateArialLabel(el: UtenteProvvisorioVO){
+      let frase: String;
+      frase = "Seleziona pratica " + el.idPratica + 
+              " in stato " + el.stato;
+      return frase;
+    }
   
 }

@@ -7,7 +7,6 @@ export class PaymentStoreCartRequest {
         public area: string = '',
         public subjectName: string = '',
         public idAnag: string = '',
-
         public subjectCode: string = '',
         public status: string = null,
         public paymentCode: string = "" + Date.now(),
@@ -18,7 +17,8 @@ export class PaymentStoreCartRequest {
         public month: string = '',
         public type: string = '',
         public cartOption: number = 0,
-        public codiceFiscalePIva: string = ''
+        public codiceFiscalePIva: string = '',
+        public iuv: string = ''
     ) { }
 
     public get months(): { [key: number]: string } {
@@ -59,7 +59,8 @@ export class PaymentStoreCartRequest {
     }
 
     public get cartKey(): string {
-        return this.year+this.area+this.subjectName+this.month;
+        //return this.year+this.area+this.subjectName+this.month+this.paymentCode+this.id+this.paymentType;
+        return this.year+this.area+this.subjectName+this.month+this.paymentCode+this.id+this.paymentType;
     }
     
  

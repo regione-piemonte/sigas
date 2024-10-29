@@ -8,6 +8,7 @@ import { LuoghiService } from './service/luoghi-service';
 import { SigasDialogComponent } from './component/sigas-dialog/sigas-dialog.component';
 import { ProvinciaPipe } from '../commons/filtri/provincia.pipe';
 import { AnnualitaPipe } from '../commons/filtri/annualita.pipe';
+import { UtilsService } from './service/utils-service';
 
 @NgModule({
   imports: [
@@ -30,6 +31,6 @@ import { AnnualitaPipe } from '../commons/filtri/annualita.pipe';
     AnnualitaPipe
     
   ],
-  providers: [LuoghiService]
+  providers: [LuoghiService, UtilsService]
 })
 export class SharedModule { }

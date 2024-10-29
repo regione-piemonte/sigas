@@ -617,7 +617,11 @@
             </div>
             <sigas-spinner *ngIf="loaderPageStorico"></sigas-spinner>
             <div *ngIf="!loaderPageStorico" class="modal-body">
-                <span class="form-group row storico-title col-lg-12">{{this.anagraficaSoggettiService.headerDichiarante!= undefined ? anagraficaSoggettiService.headerDichiarante.denominazione: ""}} - ANNO {{this.anno}} - Provincia {{consumi != undefined ? consumi.provincia_erogazione:""}}</span>
+                <span class="form-group row storico-title col-lg-12">
+                    {{this.anagraficaSoggettiService.headerDichiarante!= undefined ? anagraficaSoggettiService.headerDichiarante.denominazione: ""}} 
+                    - ANNO {{this.anagraficaSoggettiService.annoDichiarazione!=undefined ? this.anagraficaSoggettiService.annoDichiarazione : ""}} 
+                    - Provincia {{consumi != undefined ? consumi.provincia_erogazione:""}}
+                </span>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -786,7 +790,9 @@
                                 <span  *ngIf= "el.compensazionePrVO!=null">{{ el.compensazionePrVO.compensazione | currency:'EUR':'symbol' }}</span>
                             </td>                            
                             <td class="compensazione-align-right padding-right-15" *ngIf= "!last">
-                                {{ el.conguaglio_calc | currency:'EUR':'symbol' }}
+                                <!--{{ el.conguaglio_calc | currency:'EUR':'symbol' }}-->                                
+                                <span *ngIf="el.compensazionePrVO==null">{{ el.conguaglio_calc  | currency:'EUR':'symbol'}}</span>
+                                <span *ngIf="el.compensazionePrVO!=null">{{ el.compensazionePrVO.conguaglio_di_riferimento_t0 | currency:'EUR':'symbol'}}</span>
                             </td>
                             <td class="compensazione-align-right" *ngIf= "!last">
                                 <img *ngIf="!checkCompensazioneValue(el)" class="table-buttons-custom" alt="Per attivare l'operazione di aggiornamneto compensazione è necessario indicare un valore di compensazione" title="salva compensazione disabilitato. Indicare un valore di compensazione" src="assets/save-disable.png">

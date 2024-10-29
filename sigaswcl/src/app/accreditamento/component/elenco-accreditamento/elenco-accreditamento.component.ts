@@ -118,9 +118,7 @@ export class ElencoAccreditamentoComponent implements OnInit, AfterViewInit {
       this.accreditamentoService.ricercaAccreditamento = this.ricercaModel;
       this.router.navigate([RoutingAccreditamento.ACCREDITAMENTO_GESTIONE]);
 
-    }
-
-   
+    }   
     
     goBack(){
     }
@@ -130,8 +128,12 @@ export class ElencoAccreditamentoComponent implements OnInit, AfterViewInit {
         this.ricercaModel = new RicercaAccreditamentoRequest(idUtenteProvv);
     }
 
-
-
-
+    calculateArialLabel(el: UtenteProvvisorioVO){
+      let frase: String;
+      frase = "Seleziona pratica numero " + el.idPratica + 
+              " presentata il " + moment(el.insDate).format("DD/MM/YYYY") + 
+              " associata a " + el.dichiaranteVO.denominazione;
+      return frase;
+    }
   
 }

@@ -35,14 +35,17 @@
                                         <tr class="pointer" *ngFor="let el of elencoPratiche">
                                             <!--Radio button-->
                                             <td>
-                                                <input aria-label="Seleziona utente provvisorio" type="radio" name="selection" (change)="checkRow(el.idUtenteProvv)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)" 
+                                                       type="radio" 
+                                                       name="selection" 
+                                                       (change)="checkRow(el.idUtenteProvv)">
                                             </td>
                                             <!--IDPratica-->
-                                     		<td>{{ el.idPratica }}</td>
+                                     		<td tabindex="-1">{{ el.idPratica }}</td>
                                              <!--Stato-->
-                                            <td>{{ el.stato }}</td>
+                                            <td tabindex="-1">{{ el.stato }}</td>
                                             <!--Note-->
-                                            <td>{{ el.note }}</td>
+                                            <td tabindex="-1">{{ el.note }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -52,12 +55,13 @@
      <div class="bs-example" data-example-id="single-button-dropdown">
                     <div class="form-group row col-lg-12">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-                            <!--Pulsante indietro-->
+                            <!--Pulsante indietro
                             <div class="btn-group">
                                 <a class="btn btn-default margin-icon btn-standard" (click)="goBack()" role="button">
                                     <i class="fa fa-angle-left glyphicon glyphicon-chevron-left"></i>
                                     indietro</a>
                             </div>
+                            -->
                             <!--Pulsante Conferma-->
                             <div class="btn-group">
                                 <button type="submit" [disabled]="!ricercaModel" class="btn btn-primary margin-icon btn-standard">

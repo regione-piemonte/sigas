@@ -74,5 +74,13 @@ export class SelezioneSoggettoDetailComponent implements OnInit, AfterViewInit {
   goBack() {
     window.history.go(-1);
   }
+
+  calculateArialLabel(el: SubjectVO){
+    let frase: String;
+    frase = "Seleziona pagamento associato al soggetto " + el.nomeAzienda + 
+            " avente il codice " + el.codiceAzienda +
+            " provincia " + el.provincie; 
+    return frase;
+  }
   
 }

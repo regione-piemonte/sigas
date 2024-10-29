@@ -27,11 +27,12 @@
                                     <!--Table head-->
                                     <thead>
                                         <tr>
-                                            <th></th>
+                                            <td></td>
                                             <th><b>Codice Azienda</b></th>
                                             <th><b>Denominazione azienda</b></th>                                            
                                             <th><b>Mese</b></th>
                                             <th><b>Importo</b></th>
+                                            <th><b>Stato Carrello</b></th>
                                         </tr>
                                     </thead>
                                     <!--table body-->
@@ -39,16 +40,20 @@
                                         <tr class ="pointer" *ngFor="let el of subjectList; let i = index " (click) = "dettaglioSocieta(el)">
                                             <td>                                                
                                                 <!--Radio-->
-                                                <input aria-label="Dettaglio società" type="radio" name="selection" (change)="checkRow(el.idAnag, el.nomeAzienda, el.id)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)"
+                                                       type="radio" name="selection" 
+                                                       (change)="checkRow(el.idAnag, el.nomeAzienda, el.id)">
                                             </td>
                                             <!--Codice azienda -->
-                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td tabindex="-1">{{ el.codiceAzienda }}</td>
                                             <!--Nome azienda -->
-                                            <td>{{ el.nomeAzienda }}</td>
+                                            <td tabindex="-1">{{ el.nomeAzienda }}</td>
                                             <!-- Mesi -->
-                                            <td>{{ el.mesi }}</td>
+                                            <td tabindex="-1">{{ el.mesi }}</td>
                                             <!-- Totale -->
-                                            <td>{{ el.totale | currency:'EUR':'symbol' }}</td>
+                                            <td tabindex="-1">{{ el.totale | currency:'EUR':'symbol' }}</td>
+                                            <!--Stato Carrello-->
+                                            <td tabindex="-1">{{ getStatus(el.statoCarrello) }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

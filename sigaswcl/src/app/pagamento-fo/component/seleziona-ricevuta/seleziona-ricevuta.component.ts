@@ -35,6 +35,7 @@ export class SelezioneRicevutaComponent implements OnInit, AfterViewInit {
     }
 
     onSubmit() {
+        /*
         this.foPayService.getPaymentCartRT(this.foPayService.searchReq.iuv).subscribe(
             res => {
                 if (!(this.noIUVFound = !res.iuv)) {
@@ -45,6 +46,19 @@ export class SelezioneRicevutaComponent implements OnInit, AfterViewInit {
             err => {
                 this.noIUVFound = true;
             });
+        */
+        
+        this.foPayService.getRicevutaPagamento(this.foPayService.searchReq.iuv).subscribe(
+            res => {
+                if(res != null && res != undefined){
+                    this.sharedCacheService.put(SelezioneRicevutaComponent.RICEVUTA_PAG_KEY, res);
+                    this.router.navigateByUrl('home/visualizza-ricevuta');
+                }
+            },
+            err => {
+                this.noIUVFound = true;
+            }
+        );
     }
 
     goBack() {

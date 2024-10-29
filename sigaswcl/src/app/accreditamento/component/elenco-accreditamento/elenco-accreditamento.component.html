@@ -68,31 +68,35 @@
                                     <!-- Table Body -->
                                     <tbody>
                                         <tr class="pointer" *ngFor="let el of elencoPratiche">
-                                         <td>
-                                                <input aria-label="Seleziona utente provvissorio" type="radio" name="selection" (change)="checkRow(el.idUtenteProvv)">
-                                            </td>
+                                          <td>
+                                              <input [attr.aria-label]="calculateArialLabel(el)" 
+                                                      type="radio" 
+                                                      name="selection" 
+                                                      (change)="checkRow(el.idUtenteProvv)">
+                                          </td>
 
-                                            <!-- data -->
-                                            <td>
-                                                <span style="display: none">{{ el.insDate | date:'yyyyMMdd' }}</span>
-                                                {{ el.insDate | date:'dd/MM/yyyy' }}
-                                            </td>
-                                            <td   [ngStyle]="{'display':  'none'}">{{ el.insDate}}</td> 
+                                          <!-- data -->
+                                          <td tabindex="-1">
+                                              <span style="display: none">{{ el.insDate | date:'yyyyMMdd' }}</span>
+                                              {{ el.insDate | date:'dd/MM/yyyy' }}
+                                          </td>
 
-                                            <!-- ID pratica -->  
-                                     		<td>{{ el.idPratica }}</td>
+                                          <td tabindex="-1"  [ngStyle]="{'display':  'none'}">{{ el.insDate}}</td> 
 
-                                            <!-- Stato -->  
-                                            <td>{{ el.stato }}</td>
+                                          <!-- ID pratica -->  
+                                          <td tabindex="-1">{{ el.idPratica }}</td>
 
-                                            <!-- Note -->  
-                                            <td>{{ el.note }}</td>
+                                          <!-- Stato -->  
+                                          <td tabindex="-1">{{ el.stato }}</td>
 
-                                            <!-- Denominazione dichiarante -->  
-                                            <td>{{ el.dichiaranteVO.denominazione }}</td>
+                                          <!-- Note -->  
+                                          <td tabindex="-1">{{ el.note }}</td>
 
-                                            <!-- Dati operatore -->  
-                                            <td>{{ el.operatoreVO.cognome }} {{ el.operatoreVO.nome }}</td>
+                                          <!-- Denominazione dichiarante -->  
+                                          <td tabindex="-1">{{ el.dichiaranteVO.denominazione }}</td>
+
+                                          <!-- Dati operatore -->  
+                                          <td tabindex="-1">{{ el.operatoreVO.cognome }} {{ el.operatoreVO.nome }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

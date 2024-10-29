@@ -289,6 +289,10 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
          this.soggetto = res;
          this.copFid = res.fideussione ? 'OK' : 'KO';
          this.impFid = res.importoFideussione != null ? res.importoFideussione : 0;
+
+         //update card header dettaglio-soggetto-component         
+         this.anagraficaSoggettiService.headerDichiarante.denominazione = this.soggetto.denominazione;
+
          this.loaderPage = false;
          this.updateSoggetto = false;
          this.associateSoggetto = false;
@@ -467,6 +471,10 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
           this.messageError = msg.message || '';
         }, error => {this.logger.error(error);});
       } else{
+        if(this.soggettoToSave.cfPiva != null && this.soggettoToSave.cfPiva != undefined)
+        {
+          this.soggettoToSave.cfPiva = this.soggettoToSave.cfPiva.toUpperCase();
+        }        
         this.subscribers.confermaModificaSoggetto = this.anagraficaSoggettiService.confermaModificaSoggetto(this.soggettoToSave).subscribe(
           resp =>{
               this.showMessageError = false;
@@ -602,6 +610,21 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
               this.logger.error("errore in download excel");
           }
       );
+    }
+
+    calculateArialLabel(el: AnagraficaSoggettoVO){
+      let frase: String;
+      frase = "Seleziona soggetto " + el.denominazione + 
+              " avente il codice " + el.codiceAzienda;
+      return frase;
+    }
+
+    calculateArialLabelSoggettoFusione(el: AnagraficaSoggettoVO){
+      let frase: String;
+      frase = "Seleziona soggetto " + el.denominazione + 
+              " avente il codice " + el.codiceAzienda + 
+              " che converge in un Soggetto unico a seguito di una Fusione Societaria";
+      return frase;
     }
   
 }

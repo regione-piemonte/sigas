@@ -150,7 +150,8 @@
                                                     -->
                                                     <!-- Cancella -->                                                    
                                                     <button type="button" class="btn btn-danger btn-sm margin-icon" 
-                                                            data-toggle="modal" data-target="#dialogBox" 
+                                                            data-toggle="modal" 
+                                                            data-target="#dialogBoxCancellaDocAnag" 
                                                             title="Elimina documento"
                                                             (click)="dialogBoxShowDeleteDocument(el.idComunicazione)">
                                                             <i class="fas fa-trash"></i></button>
@@ -392,26 +393,26 @@
                                     class="form-control"
                                     id="tipologiaDoc"
                                     aria-labelledby="lblTipologiaDoc"
-                                    name="tipologiaDoc" required>
+                                    name="tipologiaDoc" 
+                                    required>
                                 <option *ngFor="let tipologia of listaTipologie"
-                                        [value]="tipologia.idTipoComunicazione">
-                                    {{tipologia.denominazione}}</option>
+                                        [value]="tipologia.idTipoComunicazione">{{tipologia.denominazione}}</option>
                             </select>
                         </div>
                         <!-- Annualita -->
                         <label id="lblAnnoDocumentoDich" class="col-sm-2" for="annoDocumentoDich">Anno di riferimento dichiarazione:</label>
                         <div class="col-sm-2">
-                            <select [(ngModel)]="documentoToSave.annualita" class="form-control"
-                                    id="annoDocumentoDich" aria-labelledby="lblAnnoDocumentoDich" name="annoDocumentoDich" required>
-                                <option *ngFor="let anno of listaAnni" [value]="anno">
-                                    {{ anno }}</option>
+                            <select [(ngModel)]="documentoToSave.annualita" 
+                                    class="form-control"
+                                    id="annoDocumentoDich" 
+                                    aria-labelledby="lblAnnoDocumentoDich" 
+                                    name="annoDocumentoDich" required>
+                                <option *ngFor="let anno of listaAnni" 
+                                        [value]="anno">{{ anno }}</option>
                             </select>
                         </div>
-
                         <!-- Data documento -->
-                        <label id="lblDataDocum" class="mt-2 col-sm-2" for="dataDocum">Data documento:</label>
-                        <!--  <input type="date" class="form-control first-row-input col-lg-6" value="{{documentoToSave.dataDocumento}}"
-                           [(ngModel)]=documentoToSave.dataDocumento name="dataDocumento" #dataDocumento="ngModel" required>  -->
+                        <label id="lblDataDocum" class="mt-2 col-sm-2" for="dataDocum">Data documento:</label>                        
                         <div class="col-sm-2">
                             <div class="input-group">
                                 <input #dataDocum="ngbDatepicker"
@@ -456,9 +457,6 @@
                             </div>
                         </div>
                     </div>
-
-
-
                     <!-- Protocollo -->
                     <div class="row p-4 ">
                         <div class="col-lg-4">
@@ -477,11 +475,11 @@
                         <div class="col-lg-8">
                             <label id="lblDatiRiassuntiviNuovo" for="datiRiassuntiviNuovo">Dati riassuntivi:</label>
                             <div class="col-lg-10 col-value note-div">
-                    <textarea [(ngModel)]="documentoToSave.datiRiassuntivi" [ngModelOptions]="{standalone: true}"
-                              class="note-textarea" 
-                              id="datiRiassuntiviNuovo"
-                              aria-labelledby="lblDatiRiassuntiviNuovo"
-                              rows="4"></textarea>
+                                <textarea [(ngModel)]="documentoToSave.datiRiassuntivi" [ngModelOptions]="{standalone: true}"
+                                          class="note-textarea" 
+                                          id="datiRiassuntiviNuovo"
+                                          aria-labelledby="lblDatiRiassuntiviNuovo"
+                                          rows="4"></textarea>
                             </div>
                         </div>
                         <div class="col-lg-3">
@@ -542,7 +540,7 @@
 </div>
 </div>
 <!-- Modal Object -->
-<div class="modal fade" id="dialogBox" role="dialog">
+<div class="modal fade" id="dialogBoxCancellaDocAnag" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

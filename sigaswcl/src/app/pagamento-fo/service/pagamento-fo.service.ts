@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable, Output } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ConfigService } from '../../core/services/config.service';
 import { RicercaConsumiRequest } from '../../commons/request/ricerca-consumi-request';
@@ -17,6 +17,9 @@ import { ConditionalExpr } from '@angular/compiler';
 import { Observable, Subscription } from 'rxjs';
 
 import { saveAs } from "file-saver";
+import { GeneraAvvisoPagamentoResponseVO } from '../commons/vo/genera-avviso-pagamento-response-vo';
+import { RicevutaPagamentoVO } from '../commons/vo/ricevuta-pagamento-vo';
+import { ReportResponseVO } from '../commons/vo/report-response-vo';
 
 @Injectable({
   providedIn: 'root'
@@ -30,18 +33,29 @@ export class PaymentFoService {
 
   public searchReq: SearchSubjectPaymentFoRequest
 
+  @Output() loadCardListEvent = new EventEmitter<boolean>();
+  emmettiEventoLoadCardList(loadEseguito: boolean) {    
+    this.loadCardListEvent.emit(loadEseguito);
+  }
+
+  @Output() selectCartsEvent = new EventEmitter<boolean>();
+  emmettiEventoSelectCarts(cartsExist: boolean) {    
+    this.selectCartsEvent.emit(cartsExist);
+  }
+
+  public meseSelezionatoAggiungiPagamentoCarrello: string;
 
   constructor(private http: HttpClient,
-                private config: ConfigService, 
-                private logger: LoggerService) {
+              private config: ConfigService, 
+              private logger: LoggerService) 
+  {
     this.cartReq = new PaymentStoreCartRequest();
     this.searchReq = new SearchSubjectPaymentFoRequest();
   }
 
   public addCurrentCartItemToList() {
     this.cartReq.status = "BOZZA";
-
-    this.cartList[this.cartReq.year+this.cartReq.area+this.cartReq.subjectName+this.cartReq.month /*this.cartReq.getCartKey*/] = this.cartReq;
+    this.cartList[this.cartReq.year+this.cartReq.area+this.cartReq.subjectName+this.cartReq.month+this.cartReq.paymentType /*this.cartReq.getCartKey*/] = this.cartReq;
     this.cartReq = this.cloneCartReq(this.cartReq);
   }
 
@@ -62,7 +76,9 @@ export class PaymentFoService {
       cart.email,
       cart.month,
       cart.type,
-      cart.cartOption, cart.codiceFiscalePIva);
+      cart.cartOption, 
+      cart.codiceFiscalePIva,
+      cart.iuv);
 
     return res;
   }
@@ -80,28 +96,49 @@ export class PaymentFoService {
     return Object.keys(this.cartList).length;
   }
 
-  public loadCart(loadedCallback: any = null, 
-          year: string = null, 
-          subjectName: string = null) {
-    if(!!this.howManyCartItems()) {
-      if(loadedCallback) loadedCallback();
+  public loadCart(loadedCallback: any = null, year: string = null, subjectName: string = null) 
+  {
+    if(!!this.howManyCartItems()) 
+    {
+      if(loadedCallback) 
+      {
+        loadedCallback();
+      }      
       return null;
     }
 
-    let res = this.searchCartItems(year, subjectName);
-    res.subscribe(
-      res => {
-          this.loadCartList(res);
-          if(loadedCallback) loadedCallback();
-      },
-      err => { this.logger.error("-------errore " + err); });
+    this.searchCartItems(year, subjectName).subscribe(
+          res => {
+                    this.loadCartList(res);
+                    this.emmettiEventoLoadCardList(true);
+                    if(loadedCallback) loadedCallback();
+                },
+          err => 
+                { 
+                  this.logger.error("-------errore " + err); 
+                }
+    );
   }
 
   public savePaymentCart(paidCallback: any, errorCallback: any) {
     this.storePaymentCart().subscribe(
       res => {
-        this.cartReq=this.cloneCartReq(res);
+        this.cartReq = this.cloneCartReq(res);
         this.addCurrentCartItemToList();
+        paidCallback();
+      },
+      err => {
+        this.logger.error("errore " + JSON.stringify(err)); 
+        if(errorCallback) errorCallback(err)
+      });
+  }
+
+  public insertPaymentCart(paidCallback: any, errorCallback: any) {
+    this._insertPaymentCart().subscribe(
+      res => {
+        this.cartReq = this.cloneCartReq(res);
+        //this.cartList = {};
+        this.addCurrentCartItemToList();        
         paidCallback();
       },
       err => {
@@ -149,6 +186,10 @@ export class PaymentFoService {
 
   public loadCartList(cartArray: Array<PaymentStoreCartRequest>) {
     this.cartList = {};
+    if(cartArray.length > 0) {
+      console.log("puoi gesstire carrelli");
+      this.emmettiEventoSelectCarts(true);
+    }
     cartArray.forEach((item, key) => {
       let cartItem:PaymentStoreCartRequest = new PaymentStoreCartRequest(
         item.id,
@@ -164,33 +205,14 @@ export class PaymentFoService {
         item.currentDate,
         item.payDate,
         item.email,
-        item.month,
+        (item.month!=null)?item.month.toString():null,
         item.type,
         0,
-        item.codiceFiscalePIva)
-        this.cartList[cartItem.cartKey] = cartItem;
-        //why this?
-        //this.cartList[cartItem.id] = cartItem; 
+        item.codiceFiscalePIva,
+        item.iuv)
+        this.cartList[cartItem.cartKey] = cartItem;        
     });
-  }
-
-//public subjectList(): Array<ConsumiVO> {
-//  let res: Array<ConsumiVO> = [];
-//  Object.keys(this.cartList).forEach((key) => {
-//    let cartItem = this.cartList[key];
-//    res.push(new ConsumiVO(
-//      parseInt(cartItem.idAnag,10) /* idAnag */,
-//      '' /* codiceAzienda */,
-//      cartItem.subjectName /* denominazione */,
-//      0 /* nProvince */,
-//      parseFloat(cartItem.amount) /* totVersato */,
-//      parseFloat(cartItem.amount) /* totCalcolato */,
-//      '' /* validato */,
-//      null /* allarmi */,
-//      cartItem.area /* siglaProvincia */);
-//  });
-//  return res;
-//}
+}
 
 public searchYearsForFoUser() {
   return this.http.get<Array<string>>(this.config.getBEServer() + '/rest/fopayment/searchYearsForFoUser');
@@ -291,12 +313,17 @@ public retrievePaymentTypes() {
 
   public storePaymentCart() {
     return this.http.post<PaymentStoreCartRequest>(this.config.getBEServer() + '/rest/fopayment/storePaymentCart', 
-              this.cartReq);
+                                                   this.cartReq);
+  }
+
+  public _insertPaymentCart() {
+    return this.http.post<PaymentStoreCartRequest>(this.config.getBEServer() + '/rest/fopayment/insert-payment-cart', 
+                                                   this.cartReq);
   }
 
   public deletePaymentCartItem(id:number = -1) {
     return this.http.post<string>(this.config.getBEServer() + '/rest/fopayment/deletePaymentCartItem', 
-          new PaymentStoreCartRequest(id, null, null, null, null, null, null, null, this.cartReq.paymentCode));
+                                  new PaymentStoreCartRequest(id, null, null, null, null, null, null, null, this.cartReq.paymentCode));
   }
 
   public storePaymentInfoToAllCartItems() {
@@ -305,8 +332,8 @@ public retrievePaymentTypes() {
   }
 
   public startCartPayment() {
-    return this.http.post<string>(this.config.getBEServer() + '/rest/fopayment/startCartPayment', 
-              this.cartReq);
+    var url: string = this.config.getBEServer() + '/rest/fopayment/startCartPayment';
+    return this.http.post<string>(url, this.cartReq);
   }
 
   public searchCartItems(year: string = null, subjectName: string = null, area: string = null) {
@@ -374,5 +401,47 @@ public retrievePaymentTypes() {
     return this.http.get(url, {params: new HttpParams().append('Access-Control-Allow-Origin','*')});
   }
 
+  //Notifica pagamento - Bollettino per il pagamento prodotto da PPAY
+  public getPaymentNotice(iuv: string) {
+    var url: string = this.config.getBEServer() + '/rest/fopayment/avviso-pagamento/' + iuv + '/download';    
+    return this.http.post(url, null,  { responseType: 'blob' }).map(
+          (res) =>  
+          {
+            return new Blob([res], { type: 'application/pdf' })
+          }
+    );    
+  }
+  
+  //Genera avviso pagamento
+  public generaPaymentNotice() {
+    var url: string = this.config.getBEServer() + '/rest/fopayment/avviso-pagamento';
+    return this.http.post(url, this.cartReq,  { responseType: 'blob' }).map(
+            (res) =>  
+            {
+               return new Blob([res], { type: 'application/pdf' })
+            }
+    );        
+  }
+
+  //Ricevuta di pagamento REPORT - template in formato PDF
+  public downloadRicevutaPagamento(iuv: string) {
+    var url: string = this.config.getBEServer() + '/rest/fopayment/ricevuta-pagamento/' + iuv + '/download';       
+    return this.http.post(url, null,  { responseType: 'blob' }).map(
+      (res) => {
+        return new Blob([res], { type: 'application/pdf' })
+      });
+  }  
+
+  //Ricevuta pagamento - object
+  public getRicevutaPagamento(iuv: string) {
+    var url: string = this.config.getBEServer() + '/rest/fopayment/ricevuta-pagamento/' + iuv;    
+    return this.http.get<RicevutaPagamentoVO>(url);
+  }
+
+  //Redirect URL verso PAGO PA versione V1
+  public getPaymentPagoPaURLInfo() {
+    var url: string = this.config.getBEServer() + '/rest/fopayment/pago-pa-redirect-info';    
+    return this.http.post<PaymentRedirectVO>(url,this.cartReq);
+  }
 
 }

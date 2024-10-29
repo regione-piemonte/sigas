@@ -6,6 +6,7 @@ import { DestroySubscribers } from '../../../core/commons/decorator/destroy-unsu
 import { LoggerService } from "../../../core/services/logger.service";
 import { PaymentFoService } from '../../service/pagamento-fo.service';
 import { SubjectVO } from "../../commons/vo/subject-vo";
+import { DataTableIt } from '../../commons/class/commons-data-table';
 
 @Component({
   selector: 'app-ricerca-selezione_soggetto_detail',
@@ -21,6 +22,7 @@ export class SearchSubjectSelectComponent implements OnInit, AfterViewInit {
   private loaderDT: boolean;
   private subjectList: Array<SubjectVO>;
   private dtTrigger: Subject<any> = new Subject();
+  private dtOptions: any;
 
   public subscribers: any = {};
 
@@ -37,6 +39,20 @@ export class SearchSubjectSelectComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+
+    this.dtOptions = {
+      searching: true,
+      pagingType: 'full_numbers',
+      info: false,
+      language: DataTableIt.language,
+      ordering: true,
+      columnDefs: [
+        { className: 'dt-center'},
+        { orderable: false, targets: 0 }
+        
+      ]
+
+    };
     
     if(!this.foPayService.searchReq.year)
       this.router.navigateByUrl("home/ricerca-soggetto-pagamento")
@@ -78,6 +94,34 @@ export class SearchSubjectSelectComponent implements OnInit, AfterViewInit {
 
   goBack() {
     window.history.go(-1);
+  }
+
+  calculateArialLabel(el: SubjectVO){
+    let frase: String;
+    frase = "Seleziona pagamento associato al soggetto " + el.nomeAzienda + 
+            " avente il codice " + el.codiceAzienda +
+            " relativo al mese " + el.mesi; 
+    return frase;
+  }
+
+   public getStatus(status): String {        
+      switch(parseInt(status,10)) {
+          case 10: /*APERTO                */
+              return "Bozza";
+          case 20: /*COMPLETO              */
+              return "Completo";
+          case 30: /*PAGAMENTO AVVIATO     */
+              return "In Pagamento";
+          case 40: /*PAGAMENTO NOTIFICATO  */
+              return "In Elaborazione";
+          case 45: /*CREATO AVVISO PAGAMENTO  */
+              return "Generato Avviso Pagamento";
+          case 50: /*PAGATO                */
+              return "Pagato";
+          case 51: /*ERRORE PAGAMENTO      */
+              return "Errore Pagamento";
+      }
+      return status;    
   }
   
 }

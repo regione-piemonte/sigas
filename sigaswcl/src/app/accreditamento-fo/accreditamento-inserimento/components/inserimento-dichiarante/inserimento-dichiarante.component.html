@@ -111,13 +111,16 @@
                                     <tbody>
                                         <tr class="pointer" *ngFor="let el of dichiaranteModelList">
                                      		<td>
-                                                <input aria-label="Seleziona dichiarante" type="radio"  name="selection" (click)="associaDichiarante(el)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)" 
+                                                       type="radio"  
+                                                       name="selection" 
+                                                       (click)="associaDichiarante(el)">
                                             </td>
                                             <!-- Denominazione --> 
-                                            <td>{{ el.denominazione }}</td>
+                                            <td tabindex="-1">{{ el.denominazione }}</td>
 
                                             <!-- Codice azienda -->
-                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td tabindex="-1">{{ el.codiceAzienda }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

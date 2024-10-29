@@ -171,12 +171,13 @@
                           <!--Table head-->
                           <thead>
                               <tr>
-                                  <th>Anno</th>
+                                  <!--<th>Anno</th>-->
                                   <th>Mese</th>
                                   <th>Provincia</th>
                                   <th>Tipo</th>
+                                  <th>Rateo Applicato</th>
                                   <th>Importo Versato</th>
-                                  <th>Importo Calcolato</th>
+                                  <th>Importo Calcolato</th>                                  
                                   <th>Differenza</th>
                                   <th>Note</th>
                                   <th>Mod. Pag.</th>
@@ -188,13 +189,15 @@
                           <tbody>
                               <tr class ="pointer" *ngFor="let el of elencoVersamentiFinal; let i = index ">
                                   <!--annualita-->
-                                  <td>{{ el.annualita }}</td>
+                                  <!--<td>{{ el.annualita }}</td>-->
                                   <!--mese-->
                                   <td>{{ el.mese }}</td>
                                   <!--provincia-->
                                   <td>{{ el.provincia }}</td>
                                   <!--denominazione-->
                                   <td>{{ el.tipo.denominazione }}</td>
+                                  <!--rateo applicato-->
+                                  <td>{{ determinaRateoDaApplicare(el.mese) | currency:'EUR':'symbol' }}</td>
                                   <!--importo-->
                                   <td>{{ el.importo | currency:'EUR':'symbol' }}</td>                                  
                                   <td *ngIf="el.tipo.denominazione != 'Accertamento'">{{ el.importo_prec | currency:'EUR':'symbol' }}</td>
@@ -245,7 +248,14 @@
                   <div class="btn-group">
                       <button type="button" class="btn btn-primary margin-icon" (click)="salvaModificaRateo()"
                       [disabled] = "!consumi">
-                          <i class="fas fa-check"></i> Salva</button>
+                      <i class="fas fa-check"></i> Salva</button>
+                  </div>
+                  <div class="btn-group" *ngIf="!disabilitaGenerazioneVersamenti">
+                    <button type="button" 
+                            class="btn btn-primary margin-icon" 
+                            (click)="salvaVersamentiGenerati()"
+                            [disabled] = "!applicaControlloVersamentoSimulato">
+                        <i class="fas fa-check"></i> Salva Versamenti Generati</button>
                   </div>
                   <div class="btn-group">
                      <button type="button" *ngIf="!loaderExcel" class="btn btn-success btn-excel margin-icon pointer" (click)="goExcel()"
@@ -261,7 +271,7 @@
       </div>
       <!--pulsanti-->
     </div>
-  </div>
+</div>
   
   <sigas-alert [message]="messageSuccess" *ngIf="showSuccess" [type]="'SUCCESS'"></sigas-alert>
   <sigas-alert [message]="messageError" *ngIf="showMessageError" [type]="'DANGER'"></sigas-alert>
@@ -480,7 +490,8 @@
                                                       (click)="onClickModifica()">
                                                       <i class="fas fa-angle-down"></i> Modifica versamento</button>
                                               <button *ngIf="updateVersamento" 
-                                                      type="button"                                                       
+                                                      type="button"
+                                                      [disabled]="versamentoToSave.hasPagamentiVersamenti || versamentoToSave.tipo.idTipoVersamento==99"                                                       
                                                       class="btn btn-primary margin-icon btn-standard" 
                                                       (click)="onClickPulsanteElimina()">
                                                       <i class="fas fa-angle-down"></i> Elimina versamento</button>
@@ -492,7 +503,7 @@
                       </div>
                   </form>
           </div>
-    </div>
+  </div>
     <!-- DIALOG BOX -->
     <div class="modal fade" id="dialogBox" role="dialog">
         <div class="modal-dialog">

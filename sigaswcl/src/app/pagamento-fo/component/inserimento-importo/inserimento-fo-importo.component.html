@@ -13,8 +13,9 @@
 	<div  *ngIf="!pageLoadingInProgress" class="card card-primary center-default">
 		<!-- Header card -->
 		<div class="card-header text-white">
-			<strong>Inserisci pagamento - {{foPayService.cartReq.area}}</strong>
-		</div>
+			<!--<strong>Inserisci pagamento - {{foPayService.cartReq.area}}</strong>-->
+			<strong>Inserisci pagamento</strong>
+		</div>		 
 		<div>
 			<!-- ALERT MESSAGES -->
 			<sigas-alert [message]="'Inserire l\'importo da pagare e premere \'Conferma\''" [type]="'INFO'"></sigas-alert>
@@ -22,7 +23,7 @@
 			<!--END ALERT MESSAGES -->
 			<!-- card container -->
 			<div class="card-body container">
-			<sigas-alert [message]="message" *ngIf="showMsg" [type]="levelMessage"></sigas-alert>
+			<sigas-alert [message]="message" *ngIf="showMsg" [type]="'WARNING'"></sigas-alert>
 			<!-- start form  insAmount-->
 				<div class="form-group row">
 					<div class="col-lg-12">
@@ -52,36 +53,56 @@
 														<!--<option *ngFor="let month of foPayService.cartReq.months | keyvalue" [ngValue]="month.key">
 															{{month.value}}
 														</option>-->
-														<option [ngValue]="1">Gennaio</option>
-														<option [ngValue]="2">Febbraio</option>
-														<option [ngValue]="3">Marzo</option>
-														<option [ngValue]="4">Aprile</option>
-														<option [ngValue]="5">Maggio</option>
-														<option [ngValue]="6">Giugno</option>
-														<option [ngValue]="7">Luglio</option>
-														<option [ngValue]="8">Agosto</option>
-														<option [ngValue]="9">Settembre</option>
-														<option [ngValue]="10">Ottobre</option>
-														<option [ngValue]="11">Novembre</option>
-														<option [ngValue]="12">Dicembre</option>
+														<option [ngValue]="'1'">Gennaio</option>
+														<option [ngValue]="'2'">Febbraio</option>
+														<option [ngValue]="'3'">Marzo</option>
+														<option [ngValue]="'4'">Aprile</option>
+														<option [ngValue]="'5'">Maggio</option>
+														<option [ngValue]="'6'">Giugno</option>
+														<option [ngValue]="'7'">Luglio</option>
+														<option [ngValue]="'8'">Agosto</option>
+														<option [ngValue]="'9'">Settembre</option>
+														<option [ngValue]="'10'">Ottobre</option>
+														<option [ngValue]="'11'">Novembre</option>
+														<option [ngValue]="'12'">Dicembre</option>
 													</select>
 												</div>
 												<!-- fine Mese -->
 												<!-- Tipo -->
 												<label id="lblType" for="type" class="col-lg-1 col-form-label">Tipo:</label>
 												<div class="col-lg-3">
-													<select class="form-control" id="type" aria-labelledby="lblType" [(ngModel)]="foPayService.cartReq.type" name="type" required (change)="changeTipoVersamento($event)">
+													<select class="form-control" id="type" 
+															aria-labelledby="lblType" 
+															[(ngModel)]="foPayService.cartReq.type" 
+															name="type" required 
+															(change)="changeTipoVersamento($event)">
 														<option *ngFor="let type of paymentTypes" [ngValue]="type.idTipoVersamento">
 															{{type.denominazione}}
 														</option>
 													</select>
 												</div>
-												<!-- fine Tipo -->
+												<!-- fine Tipo -->												
+											</div>
+											<br>
+											<div class="row">
+												<!-- Provincia -->
+												<label id="lblArea" for="type" class="col-lg-2 col-form-label">Prov.:</label>
+												<div class="col-lg-2" style="margin-left: -50px">
+													<select class="form-control" 
+															id="area" 
+															aria-labelledby="lblArea" 
+															[(ngModel)]="foPayService.cartReq.area" 
+															name="area"
+															(change)="changeArea($event)" 															
+															required>
+														<option *ngFor="let area of countiesList" [ngValue]="area">{{area}}</option>
+													</select>
+												</div>
+												<!-- FINE Provincia --> 
 											</div>
 										</div>
-
-										<br><br>
-
+										<br>
+										<br>
 										<!--pulsanti-->
                                         <div class="bs-example" data-example-id="single-button-dropdown">
                                           <div class="form-group row col-lg-12">
@@ -97,10 +118,15 @@
 													<button type="submit" class="btn btn-primary margin-icon" (click)="cleanAllSelection()">
 														<i class="fas fa-times"></i> Cancella</button>
 												</div>
-												&nbsp;
-												<!-- Conferma -->
+												&nbsp;												
+												<!-- Conferma -->												 												 												 
 												<div class="btn-group">
-													<button type="submit" [disabled]="!insAmount.form.valid" class="btn btn-primary margin-icon" (click)="controlloVersamentoEsistente()" >
+													<sigas-spinner-form [diameter]="30" *ngIf="flagLoadingProvinciaSelezionata"></sigas-spinner-form>
+													<button type="submit" 
+															[disabled]="!insAmount.form.valid || flagLoadingProvinciaSelezionata" 
+															class="btn btn-primary margin-icon" 
+															(click)="controlloVersamentoEsistente()" 
+															*ngIf="!flagLoadingProvinciaSelezionata">
 														<i class="fas fa-check"></i> Conferma</button>
 												</div>
                                               </div>
@@ -148,9 +174,12 @@
             </div>
 			<!-- Buttons -->
             <div class="modal-footer">
-               <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="goToStep('carrello-fo')">No</button>
-               <button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('selezione-soggetto-pagamento')">S&igrave;</button>
-               <!--<button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('pagamento-fo-importo')">S&igrave;</button>-->
+			   <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="goToStep('popup-no')">No</button>
+               <button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('popup-si')">S&igrave;</button>
+
+               <!-- <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="goToStep('carrello-fo')">No</button> -->
+               <!-- <button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('selezione-soggetto-pagamento')">S&igrave;</button> -->
+               <!-- <button type="button" class="btn btn-default" data-dismiss="modal" (click)="goToStep('pagamento-fo-importo')">S&igrave;</button> -->
             </div>
 			<!-- end Buttons -->
         </div>

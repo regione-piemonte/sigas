@@ -163,4 +163,8 @@ export class AssociaOrdincSoggettoComponent implements OnInit, AfterViewInit {
           }
       );
     }
+
+    calculateArialLabel(sogg: AnagraficaSoggettoVO): String{
+      return "Seleziona soggetto " +  sogg.denominazione + " avente codice azienda " + sogg.codiceAzienda;
+    }
 }

@@ -231,11 +231,14 @@
                                     <tbody>
                                         <tr class ="pointer" *ngFor="let el of elencoOrdinativiIncasso; let i = index " (click) = "dettaglioOrdinativoIncasso(el)">
                                             <td class="sticky-col first-col">                                            
-                                                <input aria-label="Seleziona ordinativo" type="radio"  name="selection" (click)="ordinativoSelect(el)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)" 
+													   type="radio"  
+													   name="selection" 
+													   (click)="ordinativoSelect(el)">
                                             </td> 
                                             <td class="sticky-col second-col"><div *ngIf="el.sigasPagamentiVersamentis.length>0"><button type="button" class="btn btn-link  btn-sm" (click)="eliminaConciliazione(el)"
                                  			  data-toggle="modal" data-target="#dialogConferma">
-                                    <i class="fas fa-trash-alt"></i> </button></div></td>
+                                    		<i class="fas fa-trash-alt"></i> </button></div></td>
 											<!--Importo attuale-->
                                             <td class="sticky-col third-col">{{ el.importoAttuale  | currency:'EUR':'symbol'  }}</td>
                                             <td class="sticky-col four-col"  [ngStyle]="{'display':  'none'}"	><div  >{{ el.importoAttuale  }}</div></td>

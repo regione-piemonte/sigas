@@ -1,6 +1,6 @@
 {
   "name": "sigaswcl",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "scripts": {
     "ng": "ng",
     "start": "webpack-dev-server --config buildfiles/webpack.local.js --host=localhost --port=4200",

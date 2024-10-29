@@ -257,14 +257,17 @@
                                     <tbody>
                                         <tr class="pointer" *ngFor="let el of elencoSoggetti">
                                             <td>
-                                                <input type="radio" name="selection" (change)="checkRow(el.idAnag, el.denominazione)">
+                                                <input type="radio" 
+                                                       [attr.aria-label]="calculateArialLabel(el)" 
+                                                       name="selection" 
+                                                       (change)="checkRow(el.idAnag, el.denominazione)">
                                             </td>
                                             <!-- DICHIARANTE -->
-                                            <td class="dichiarante">{{ el.denominazione }}</td>
+                                            <td tabindex="-1" class="dichiarante">{{ el.denominazione }}</td>
                                             <!-- CODICE AZIENDA -->
-                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td tabindex="-1">{{ el.codiceAzienda }}</td>
                                             <!-- VERSATO -->
-                                            <td>{{ el.totVersato | currency:'EUR':'symbol' }}</td>
+                                            <td tabindex="-1">{{ el.totVersato | currency:'EUR':'symbol' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -557,14 +560,17 @@
                                         <!-- CICLO FOR SU  soggettiFusione -->
                                         <tr *ngFor="let el of soggettiFusione">
                                             <td>
-                                                <input aria-label="Selezione soggetto" type="radio"  name="selection" (change)="fusioneReq.idAnagDerivante = (el.idAnag);">
+                                                <input [attr.aria-label]="calculateArialLabelSoggettoFusione(el)" 
+                                                       type="radio"  
+                                                       name="selection" 
+                                                       (change)="fusioneReq.idAnagDerivante = (el.idAnag);">
                                             </td>
                                             <!-- DENOMINAZIONE -->
-                                            <td>{{ el.denominazione }}</td>
+                                            <td tabindex="-1">{{ el.denominazione }}</td>
                                             <!-- COD AZIENDA -->
-                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td tabindex="-1">{{ el.codiceAzienda }}</td>
                                             <!-- TOTALE -->
-                                            <td>{{ el.totVersato | currency:'EUR':'symbol' }}</td>
+                                            <td tabindex="-1">{{ el.totVersato | currency:'EUR':'symbol' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

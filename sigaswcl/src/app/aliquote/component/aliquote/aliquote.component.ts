@@ -77,8 +77,7 @@ export class AliquoteComponent implements OnInit {
       responsive: true,
       order: [],
       columnDefs: [
-        { className: 'dt-center', 'targets': [0, 1, 2, 3, 4, 5, 6] },
-        // { "orderable": false,  width: '1%', "targets": 0 },
+        { className: 'dt-center', 'targets': [0, 1, 2, 3, 4, 5, 6] },        
         { width: '10%', targets: 0 },
         { width: '15%', targets: 1 },
         { width: '20%', targets: 2 },
@@ -87,19 +86,9 @@ export class AliquoteComponent implements OnInit {
         { width: '5%', targets: 5 },
         { width: '20%', targets: 6 }
       ]
-    };
-
-    // this.subscribers.ricercaAliquota = this.aliquoteService.ricercaAliquote()
-    //   .subscribe(res => {
-    //     this.elencoAliquote = res;
-    //     this.loaderPage = false;
-    //   }, err => {
-    //     this.logger.error('errore ');
-    //     this.loaderPage = false;
-    //   });
+    };   
 
     this.reInitAliquota();
-
   }
 
   goBack() {
@@ -171,12 +160,6 @@ export class AliquoteComponent implements OnInit {
   }
 
   onSubmitSalva() {
-//    this.buttonConfirmText = 'Conferma';
-//    this.buttonAnnullaText = 'Annulla';
-//    this.messageDialog = 'Stai per salvare una nuova aliquota!';
-//    this.sigasDialog.open();
-
-//    this.subscribers.save = this.sigasDialog.salvaAction.subscribe(data => {
       console.log('INIZIO');
       console.log(this.aliquotaToSave);
       console.log(this.aliquotaToSave.tipoAliquote);
@@ -213,11 +196,6 @@ export class AliquoteComponent implements OnInit {
         this.logger.error('errore ');
         this.loaderPage = false;
       });
-//    }, err => {
-//      this.logger.error(err);
-//    });
-
-//    this.annullaPopUp();
   }
   
   limiteNumber(value: number){
@@ -226,21 +204,12 @@ export class AliquoteComponent implements OnInit {
           if (daconvertire.length > 4) {
               this.aliquotaToSave.aliquota = Number(daconvertire.slice(0, 4));
           }
-      }
-      
-      
+      }      
   }
 
   onClickModifica() {
-//    this.buttonConfirmText = 'Conferma';
-//    this.buttonAnnullaText = 'Annulla';
-//    this.messageDialog = 'Stai per modificare l aliquota!';
-//    this.sigasDialog.open();
 
-//     this.subscribers.save = this.sigasDialog.salvaAction.subscribe(data => {
-
-      console.log(this.aliquotaToSave);
-      
+      console.log(this.aliquotaToSave);      
 
       this.loaderModPage = true;
       this.aliquoteService.idAliquota = this.aliquotaToSave.tipoAliquote.idTipoAliquota;
@@ -273,13 +242,6 @@ export class AliquoteComponent implements OnInit {
         this.logger.error('errore ');
         this.loaderPage = false;
       });
-
-//    }, err => {
-//      this.logger.error(err);
-//      this.loaderPage = false;
-//    });
-
-//    this.annullaPopUp();
   }
 
   reInitAliquota() {
@@ -318,32 +280,10 @@ export class AliquoteComponent implements OnInit {
     this.showSuccess = false;
   }
   
-//deleteRow(aliquota: AliquotaVO) {
-//console.log(aliquota.id);
-//this.aliquotaToDel = aliquota;
-//this.buttonConfirmText = 'Conferma';
-//this.buttonAnnullaText = 'Annulla';
-//this.messageDialog = 'Stai per cancellare un aliquota!';
-//this.sigasDialog.open();
-//
-//this.subscribers.save = this.sigasDialog.salvaAction.subscribe(data => {
-//  this.subscribers.elimina = this.aliquoteService.eliminaAliquota(this.aliquotaToDel.id).subscribe(
-//    () => {
-//      const index = this.elencoAliquote.indexOf(this.aliquotaToDel);
-//      this.elencoAliquote.splice(index, 1);
-//    }
-//  );
-//}, err => {
-//  this.logger.error(err);
-//});
-//
-//this.annullaPopUp();
-//}
-  
   deleteRow(aliquota: AliquotaVO){
       console.log(aliquota.id);
       this.aliquotaToDel = aliquota;
-      this.messageDialog = "Stai per cancellare un aliquota!";
+      this.messageDialog = "Stai per cancellare un'aliquota!";
       this.buttonAnnullaText = "Annulla";
       this.buttonConfirmText = "Conferma";
   }

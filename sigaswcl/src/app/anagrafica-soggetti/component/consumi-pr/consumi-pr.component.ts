@@ -743,10 +743,12 @@ onChangeUsiCivili120(value){
     compensazionePrVO.compensazione = consumo.compensazione;
     if(consumo.compensazionePrVO!=null && consumo.compensazionePrVO!=undefined){
       compensazionePrVO.conguaglio_compensato = consumo.compensazionePrVO.conguaglio_compensato + consumo.compensazione;
-      compensazionePrVO.conguaglio_di_riferimento = consumo.compensazionePrVO.conguaglio_compensato; 
+      compensazionePrVO.conguaglio_di_riferimento = consumo.compensazionePrVO.conguaglio_compensato;
+      compensazionePrVO.conguaglio_di_riferimento_t0 = consumo.compensazionePrVO.conguaglio_di_riferimento_t0;
     } else {
       compensazionePrVO.conguaglio_compensato = consumo.conguaglio_calc + consumo.compensazione;
       compensazionePrVO.conguaglio_di_riferimento = consumo.conguaglio_calc;
+      compensazionePrVO.conguaglio_di_riferimento_t0 = consumo.conguaglio_calc;
     }    
     compensazionePrVO.id_consumi = consumo.id_consumi;
     this.anagraficaSoggettiService.salvaCompensazione(compensazionePrVO).subscribe(

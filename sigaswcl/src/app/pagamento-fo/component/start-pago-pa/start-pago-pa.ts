@@ -37,8 +37,37 @@ export class StartPagoPaComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
     }
 
+    getPaymentInfo() {        
+        this.foPayService.getPaymentPagoPaURLInfo().subscribe(    
+            res => {
+                if(res) {
+                    this.paymentInfo = res;
+                   
+                    if(res.url){
+                        //setTimeout(() => { $('#postform')[0].submit(); }, 5000);                        
+                        setTimeout(() => { 
+                            window.location.href = this.paymentInfo.url; 
+                        }, 5000);                        
+                    } else if(++this.maxRetryCounter < 40) {
+                        // 20 minutes retry at most
+                        setTimeout(() => { this.getPaymentInfo() }, 30000);
+                    } else {
+                        this.gotoPayment();
+                    }
+                                                               
+                } else {
+                    this.gotoPayment();
+                }
+                    
+            },
+            err => { 
+                this.logger.error("errore " + err); 
+                this.gotoPayment(); 
+            });
+    }
+    /*
     getPaymentInfo() {
-        this.foPayService.getPaymentPagoPaRedirectInfo().subscribe(
+        this.foPayService.getPaymentPagoPaRedirectInfo().subscribe(        
             res => {
                 if(res) {
                     this.paymentInfo = res;
@@ -51,15 +80,7 @@ export class StartPagoPaComponent implements OnInit, OnDestroy {
                             setTimeout(() => { this.getPaymentInfo() }, 30000);
                         else
                             this.gotoPayment();
-                    }
-                    /*
-                    if(res.url)
-                        setTimeout(() => { $('#postform')[0].submit(); }, 5000);
-                    else if(++this.maxRetryCounter < 40) // 20 minutes retry at most
-                        setTimeout(() => { this.getPaymentInfo() }, 30000);
-                    else
-                        this.gotoPayment();
-                    */
+                    }                   
                 }
                 else
                     this.gotoPayment();
@@ -69,12 +90,13 @@ export class StartPagoPaComponent implements OnInit, OnDestroy {
                 this.gotoPayment(); 
             });
     }
+    */
 
     gotoPayment() {
         this.router.navigateByUrl("home/selezione-soggetto-pagamento");
     }
 
-    doSubmit() {
+    doSubmit() {        
         $('#postform')[0].submit();
     }
 

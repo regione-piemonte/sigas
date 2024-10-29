@@ -35,7 +35,10 @@
                                         <tr class ="pointer" *ngFor="let el of subjectList; let i = index " (click) = "dettaglioSocieta(el)">
                                             <td>
                                                 <!--Radio-->
-                                                <input aria-label="Dettaglio società" type="radio" name="selection" (change)="checkRow(el.idAnag, el.codiceAzienda)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)" 
+                                                       type="radio" 
+                                                       name="selection" 
+                                                       (change)="checkRow(el.idAnag, el.codiceAzienda)">
                                             </td>
                                             <td>{{ el.codiceAzienda }}</td>
                                             <td>{{ el.nomeAzienda }}</td>

@@ -19,7 +19,7 @@
         <!--Card header-->
 		<div class="card-header text-white">
             <div class="card-header text-white">                
-                <h1 class="h1-font"><strong>Pagamento on-line SIGAS</strong></h1>
+                <h1 class="h1-font"><strong>Ricevuta di pagamento</strong></h1>
             </div>
         </div>
 		<div>
@@ -27,33 +27,62 @@
 			<div class="card-body container">
 				<div class="form-group row">
 					<div class="col-lg-12">
-
 						<div class="form-group col-lg-12">
 									<div class="panel-body" role="main">
 										<div class="form-group col-lg-12">
+                                            <div class="row row-spaced-top">
+                                                <div class="col-lg-4 bold-font"><b>Informazioni sul dovuto</b></div>
+                                            </div>
+                                            <!--Ente beneficiario-->
+                                            <div class="row row-spaced-top">
+                                                <div class="col-lg-4 col-form-label">Ente beneficiario:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.enteBeneficiario}}</div>
+                                            </div>
+                                            <!--CF Ente-->
+                                            <div class="row row-spaced-top">
+                                                <div class="col-lg-4 col-form-label">Codice Fiscale Ente beneficiario:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.cfEnte}}</div>
+                                            </div>
+                                            <!--Importo-->
+                                            <div class="row row-spaced-top">
+                                                <div class="col-lg-4 col-form-label">Importo pagato:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.importoPagato}}</div>
+                                            </div>                                            
                                             <!--Codice pagamento-->
                                             <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">Codice pagamento: {{rtInfo.paymentCode}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Id. Transazione: {{rtInfo.transactionCode}}</div>
-                                            </div>
-                                            <!--IUV-->                                        
+                                                <div class="col-lg-4 col-form-label">Codice pagamento:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.codiceAvviso}}</div>
+                                            </div>                                            
+                                            <!--IUV-->
                                             <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">IUV: {{rtInfo.iuv}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Id. Riscossione: {{rtInfo.idOriginPay}}</div>
+                                                <div class="col-lg-4 col-form-label">Identificativi Univoco Versamento:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.iuv}}</div>
                                             </div>
-                                            <!--Denominazione dichiarazione-->                                            
+                                            <br/>
                                             <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">Denominazione Dichiarazione: {{rtInfo.subjectName}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Regione Beneficiaria: {{rtInfo.receivingEntity}}</div>
+                                                <div class="col-lg-4 bold-font"><b>Informazioni sul pagatore</b></div>
+                                            </div>                                            
+                                            <!--Ragione sociale-->                                            
+                                            <div class="row row-spaced-top">
+                                                <div class="col-lg-4 col-form-label">Ragione sociale:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.ragioneSociale}}</div>
                                             </div>
                                             <!--Codice fiscale-->
                                             <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">Codice Fiscale/P.Iva Dichiarante: {{rtInfo.taxCode}} {{rtInfo.vatCode}}</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">Codice Fiscale Regione Beneficiaria: {{rtInfo.entityCode}}</div>
-                                            </div>
-                                            <!--Totale-->                                            
-                                            <div class="row row-spaced-top">
-                                                <div class="col-lg-4 col-form-label">Totale: {{rtInfo.totalAmount}}<div class="col-lg-8">&nbsp;</div></div>
-                                            </div>                                        
+                                                <div class="col-lg-4 col-form-label">Codice fiscale:</div><div class="col-lg-2">&nbsp;</div><div class="col-lg-6 col-form-label">{{ricevutaPagamento?.cfRivenditore}}</div>
+                                            </div>                                                                                    
 										</div>
 									</div>
 						</div>
+                        <!--pulsanti-->
+                        <div class="bs-example" data-example-id="single-button-dropdown">
+                            <div class="form-group row col-lg-12">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">                            
+                                    <!-- Conferma -->
+                                    <div class="btn-group">
+                                        <button type="button" 
+                                                class="btn btn-primary margin-icon" 
+                                                (click)="donwloandRicevutaPagamento()">
+                                                <i class="fas fa-check"></i> Scarica ricevuta</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--pulsanti-->
 					</div>
 				</div>
 			</div>

@@ -18,6 +18,7 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { OrdinativiIncassoComponent } from './component/ordinativi-incasso/ordinativi-incasso.component';
 import { AssociaOrdincSoggettoComponent } from './component/associa-ordinc-soggetto/associa-ordinc-soggetto.component';
 import { AssociaOrdincVersamentoComponent } from './component/associa-ordinc-versamento/associa-ordinc-versamento.component';
+import { RateoComponent } from './component/rateo/rateo.component';
 
 @NgModule({
   imports: [
@@ -31,6 +32,19 @@ import { AssociaOrdincVersamentoComponent } from './component/associa-ordinc-ver
   exports: [
     SoggettiComponent
   ],
-  declarations: [SoggettiComponent, InserimentoSoggettoComponent, DettaglioSoggettoComponent, AnagraficaSoggettoComponent, ConsumiPrComponent, VersamentiComponent, DocumentiComponent, RimborsiComponent, AccertamentiComponent, CalcoloAccertamentoComponent, OrdinativiIncassoComponent, AssociaOrdincSoggettoComponent, AssociaOrdincVersamentoComponent]
+  declarations: [SoggettiComponent, 
+                 InserimentoSoggettoComponent, 
+                 DettaglioSoggettoComponent, 
+                 AnagraficaSoggettoComponent, 
+                 ConsumiPrComponent, 
+                 VersamentiComponent, 
+                 DocumentiComponent, 
+                 RimborsiComponent, 
+                 AccertamentiComponent, 
+                 CalcoloAccertamentoComponent, 
+                 OrdinativiIncassoComponent, 
+                 AssociaOrdincSoggettoComponent, 
+                 AssociaOrdincVersamentoComponent,
+                 RateoComponent]
 })
 export class AnagraficaSoggettiModule { }

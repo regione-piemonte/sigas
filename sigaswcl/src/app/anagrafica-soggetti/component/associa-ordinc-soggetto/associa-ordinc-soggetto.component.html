@@ -43,14 +43,17 @@
                                     <tbody>
                                         <tr class ="pointer" *ngFor="let el of elencoSoggetti; let i = index " >
                                             <td>
-                                                <input aria-label="Seleziona soggetto" type="radio"  name="selection" (click)="associaSogg(el)">
+                                                <input [attr.aria-label]="calculateArialLabel(el)" 
+                                                       type="radio"  
+                                                       name="selection" 
+                                                       (click)="associaSogg(el)">
                                             </td>
                                             
                                             <!-- Denominazione azienda -->
-                                            <td>{{ el.denominazione }}</td>
+                                            <td  tabindex="-1">{{ el.denominazione }}</td>
 
                                             <!-- Codice azienda -->
-                                            <td>{{ el.codiceAzienda }}</td>
+                                            <td  tabindex="-1">{{ el.codiceAzienda }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
