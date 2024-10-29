@@ -1,4 +1,0 @@
-export class PaymentCartVO {
-    constructor(
-    ) { }
-}
