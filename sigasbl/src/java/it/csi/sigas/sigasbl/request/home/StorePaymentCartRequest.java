@@ -23,6 +23,7 @@ public class StorePaymentCartRequest implements Serializable{
 	private Integer type;
 	private Integer cartOption;
 	private String codiceFiscalePIva;
+	private String iuv;
 	
 	public Long getId() {
 		return id;
@@ -126,7 +127,11 @@ public class StorePaymentCartRequest implements Serializable{
 	public void setCodiceFiscalePIva(String codiceFiscalePIva) {
 		this.codiceFiscalePIva = codiceFiscalePIva;
 	}
-	
-	
+	public String getIuv() {
+		return iuv;
+	}
+	public void setIuv(String iuv) {
+		this.iuv = iuv;
+	}	
 	
 }

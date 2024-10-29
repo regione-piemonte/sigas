@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import it.csi.sigas.sigasbl.common.AuthorizationRoles;
 import it.csi.sigas.sigasbl.dispatcher.IPaymentFoDispatcher;
+import it.csi.sigas.sigasbl.integration.epay.rest.ppay.ResponseObjects.GeneraAvvisoPagamentoResponse;
 import it.csi.sigas.sigasbl.model.entity.SigasPaymentCartNotify;
 import it.csi.sigas.sigasbl.model.entity.SigasPaymentCartRT;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentCartVO;
@@ -15,6 +16,8 @@ import it.csi.sigas.sigasbl.model.vo.home.PaymentRTInfoVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentRedirectVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentSubjectVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentTypesVO;
+import it.csi.sigas.sigasbl.model.vo.home.ReportResponse;
+import it.csi.sigas.sigasbl.model.vo.home.RicevutaPagamento;
 import it.csi.sigas.sigasbl.model.vo.home.TipoCarrelloVO;
 import it.csi.sigas.sigasbl.request.home.SearchSubjectPaymentFoRequest;
 import it.csi.sigas.sigasbl.request.home.StorePaymentCartRequest;
@@ -92,6 +95,10 @@ public class PaymentFoDispatcherImpl implements IPaymentFoDispatcher {
 		return paymentFoService.storePaymentCart(storePaymentCartRequest);
 	}
 	
+	public PaymentCartVO insertPaymentCart(StorePaymentCartRequest storePaymentCartRequest) {
+		return paymentFoService.insertPaymentCart(storePaymentCartRequest);
+	}
+	
 	public void startCartPayment(StorePaymentCartRequest storePaymentCartRequest) {
 		paymentFoService.startCartPayment(storePaymentCartRequest);
 	}
@@ -133,4 +140,28 @@ public class PaymentFoDispatcherImpl implements IPaymentFoDispatcher {
 		return ExportService.getExcel(downloadReport, "EXCEL_CARRELLO_PAGAMENTI");
 	}
 	
+	@Override
+	public byte[] downloadAvvisoPagamento(String iuv) {
+		return paymentFoService.downloadAvvisoPagamento(iuv);
+	}
+	
+	@Override
+	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest) {
+		return paymentFoService.generaAvvisoPagamento(storePaymentCartRequest);
+	}
+	
+	@Override
+	public byte[] downloadRicevutaPagamento(String iuv) {
+		return paymentFoService.downloadRicevutaPagamento(iuv);
+	}
+	
+	@Override
+	public RicevutaPagamento previewRicevutaPagamento(String iuv) {
+		return paymentFoService.previewRicevutaPagamento(iuv);
+	}
+	
+	@Override
+	public PaymentRedirectVO getPaymentPagoPaRedirectUrl(StorePaymentCartRequest storePaymentCartRequest) {
+		return paymentFoService.getPaymentPagoPaRedirectUrl(storePaymentCartRequest);
+	}	
 }

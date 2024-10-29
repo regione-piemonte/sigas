@@ -27,6 +27,8 @@ public class PaymentSubjectVO implements VO {
 	private String codiceFiscale;
 	private String codiceFiscalePIva;
 	
+	private Integer statoCarrello;
+	
 	public Long getIdAnag() {
 		return idAnag;
 	}
@@ -117,5 +119,10 @@ public class PaymentSubjectVO implements VO {
 	public void setCodiceFiscalePIva(String codiceFiscalePIva) {
 		this.codiceFiscalePIva = codiceFiscalePIva;
 	}
-
+	public Integer getStatoCarrello() {
+		return statoCarrello;
+	}
+	public void setStatoCarrello(Integer statoCarrello) {
+		this.statoCarrello = statoCarrello;
+	}
 }

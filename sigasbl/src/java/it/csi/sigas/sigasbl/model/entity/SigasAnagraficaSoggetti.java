@@ -68,8 +68,8 @@ public class SigasAnagraficaSoggetti extends EntityBase implements Serializable 
 	@Column(name="fideussione", nullable=false)
 	private boolean fideussione;
 	
-	@Column(name="importo_fideussione", nullable=false)
-	private double importoFideussione;
+	@Column(name="importo_fideussione")
+	private Double importoFideussione;
 	
 	@Column(name="email", nullable=false)
 	private String email;
@@ -192,11 +192,11 @@ public class SigasAnagraficaSoggetti extends EntityBase implements Serializable 
 		this.fideussione = fideussione;
 	}
 
-	public double getImportoFideussione() {
+	public Double getImportoFideussione() {
 		return importoFideussione;
 	}
 
-	public void setImportoFideussione(double importoFideussione) {
+	public void setImportoFideussione(Double importoFideussione) {
 		this.importoFideussione = importoFideussione;
 	}
 

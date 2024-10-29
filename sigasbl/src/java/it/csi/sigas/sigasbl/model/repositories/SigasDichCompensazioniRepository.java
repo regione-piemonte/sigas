@@ -19,5 +19,13 @@ public interface SigasDichCompensazioniRepository extends CrudRepository<SigasDi
 					+ "WHERE comp.id_consumi = :idConsumo",  
 		   nativeQuery = true)
 	SigasDichCompensazioni cercaUltimaCompensazioneAssociataAlConsumo(@Param("idConsumo")Long idConsumo);
+	
+	@Query(value = "SELECT comp.* " + 
+				   "FROM sigas_dich_compensazioni comp " +			   		
+				   "WHERE comp.id_consumi = :idConsumo " +
+				   "ORDER BY comp.id_compensazione ASC " +
+				   "LIMIT 1"
+				   ,nativeQuery = true)
+	SigasDichCompensazioni cercaPrimaCompensazioneAssociataAlConsumo(@Param("idConsumo")Long idConsumo);
 
 }

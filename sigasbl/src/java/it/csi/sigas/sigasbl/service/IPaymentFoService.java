@@ -2,6 +2,7 @@ package it.csi.sigas.sigasbl.service;
 
 import java.util.List;
 
+import it.csi.sigas.sigasbl.integration.epay.rest.ppay.ResponseObjects.GeneraAvvisoPagamentoResponse;
 import it.csi.sigas.sigasbl.model.entity.SigasPaymentCartNotify;
 import it.csi.sigas.sigasbl.model.entity.SigasPaymentCartRT;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentCartVO;
@@ -9,6 +10,8 @@ import it.csi.sigas.sigasbl.model.vo.home.PaymentRTInfoVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentRedirectVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentSubjectVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentTypesVO;
+import it.csi.sigas.sigasbl.model.vo.home.ReportResponse;
+import it.csi.sigas.sigasbl.model.vo.home.RicevutaPagamento;
 import it.csi.sigas.sigasbl.model.vo.home.TipoCarrelloVO;
 import it.csi.sigas.sigasbl.request.home.SearchSubjectPaymentFoRequest;
 import it.csi.sigas.sigasbl.request.home.StorePaymentCartRequest;
@@ -44,6 +47,8 @@ public interface IPaymentFoService {
 	
 	public PaymentCartVO storePaymentCart(StorePaymentCartRequest storePaymentCartRequest);
 	
+	public PaymentCartVO insertPaymentCart(StorePaymentCartRequest storePaymentCartRequest);
+	
 	public void startCartPayment(StorePaymentCartRequest storePaymentCartRequest);
 
 	public void deletePaymentCartItem(StorePaymentCartRequest storePaymentCartRequest);
@@ -67,4 +72,15 @@ public interface IPaymentFoService {
 	public Integer storePaymentCartNotify(SigasPaymentCartNotify cartNotify, String iuv);
 	
 	public void sendMail2ConfirmPayment(String paymentcode);
+	
+	public byte[] downloadAvvisoPagamento(String iuv);
+	
+	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest);
+	
+	public byte[] downloadRicevutaPagamento(String iuv);	
+	
+	public RicevutaPagamento previewRicevutaPagamento(String iuv);
+	
+	public PaymentRedirectVO getPaymentPagoPaRedirectUrl(StorePaymentCartRequest storePaymentCartRequest);
+	
 }

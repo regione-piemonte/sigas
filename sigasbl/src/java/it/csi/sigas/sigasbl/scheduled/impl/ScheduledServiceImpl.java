@@ -4,6 +4,7 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.scheduled.impl;
 
+import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.model.entity.SigasCParametro;
 import it.csi.sigas.sigasbl.model.entity.SigasPaymentCart;
 import it.csi.sigas.sigasbl.model.repositories.SigasCParametroRepository;
@@ -15,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -30,12 +32,16 @@ public class ScheduledServiceImpl implements ScheduledService {
 
     // metodo da cancellare, anche dalla interface, task gestito tramite scheduler
     @Override
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 800000)    
     public void closeCartPending() {
         logger.info("inizio closeCartPending");
         List<SigasPaymentCart> listCartPay = sigasPaymentCartRepository.findByFkStatoCarrello(SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO);
         SigasCParametro delaytimeCloseCartPending = sigasCParametroRepository.findByDescParametro("tempoChiusuraCarrelliPending");
-        for (SigasPaymentCart sigasPaymentCart : listCartPay) {
+        
+        String codicePagamentoPrecedenteItem = null;
+        String codicePagamentoGenerato = null;
+        
+       for (SigasPaymentCart sigasPaymentCart : listCartPay) {
             long seconds = (sigasPaymentCart.getDataUpdate().getTime() - new Date().getTime()) / 1000;
             int hours = (int) (seconds / 3600);
             if (Math.abs(hours) >= delaytimeCloseCartPending.getValoreNumber().longValue()) {
@@ -47,7 +53,26 @@ public class ScheduledServiceImpl implements ScheduledService {
                 cart.setFkStatoCarrello(SigasPaymentCart.STATO_CARRELLO_COMPLETO);
                 cart.setDataPagamento(new Date());
                 cart.setDataVersamento(new Date());
-                cart.setCodicePagamento(sigasPaymentCartRepository.getUniquePaymentCode(sigasPaymentCart.getFkAnagSoggetto(), sigasPaymentCart.getAnno(), sigasPaymentCart.getFkUtenteInsert()));
+                
+                //------------------------------------------------
+                //CR PAGAMENTO REST FUL - CR-REQ-10
+                //------------------------------------------------
+                //cart.setCodicePagamento(sigasPaymentCartRepository.getUniquePaymentCode(sigasPaymentCart.getFkAnagSoggetto(), sigasPaymentCart.getAnno(), sigasPaymentCart.getFkUtenteInsert()));
+                
+                
+                if(codicePagamentoPrecedenteItem == null || 
+                   !sigasPaymentCart.getCodicePagamento().equalsIgnoreCase(codicePagamentoPrecedenteItem)) 
+                {
+                	codicePagamentoGenerato = sigasPaymentCartRepository.getUniquePaymentCodeForInsert(sigasPaymentCart.getFkAnagSoggetto(), 
+																									   sigasPaymentCart.getAnno(), 
+																									   sigasPaymentCart.getFkUtenteInsert());                	
+                }
+                cart.setCodicePagamento(codicePagamentoGenerato);
+                codicePagamentoPrecedenteItem = sigasPaymentCart.getCodicePagamento();                                
+                //------------------------------------------------
+                //CR PAGAMENTO REST FUL - CR-REQ-10 - FINE
+                //------------------------------------------------
+                
                 cart.setDataInsert(new Date());
 
                 cart.setImporto(sigasPaymentCart.getImporto());

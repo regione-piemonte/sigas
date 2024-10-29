@@ -4,6 +4,8 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.model.vo.home;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import it.csi.sigas.sigasbl.common.rest.VO;
 
 public class PaymentCartVO implements VO {
@@ -11,6 +13,7 @@ public class PaymentCartVO implements VO {
 	private static final long serialVersionUID = 1L;
 	
 	private String status;
+	private String statusDescrizione;
 	private String paymentCode;
 	private Integer paymentType;
 	private String currentDate;
@@ -30,6 +33,21 @@ public class PaymentCartVO implements VO {
 	private String typeDesc;
 	private String monthDesc;
 	private String codiceFiscalePIva;
+	private String note;	
+		
+	public String getStatusDescrizione() {
+		return statusDescrizione;
+	}
+	public void setStatusDescrizione(String statusDescrizione) {
+		this.statusDescrizione = statusDescrizione;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+	private String iuv;
 	
 	public Long getId() {
 		return id;
@@ -151,7 +169,11 @@ public class PaymentCartVO implements VO {
 	public void setCodiceFiscalePIva(String codiceFiscalePIva) {
 		this.codiceFiscalePIva = codiceFiscalePIva;
 	}
-
-	
+	public String getIuv() {
+		return iuv;
+	}
+	public void setIuv(String iuv) {
+		this.iuv = iuv;
+	}
 	
 }

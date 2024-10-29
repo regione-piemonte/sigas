@@ -20,6 +20,7 @@ public class AllarmiVO implements VO {
 	private boolean ravv;
 	private boolean vers;
 	private boolean comp;
+	private boolean nuovo;
     
 	public boolean isRavv() {
 		return ravv;
@@ -81,5 +82,10 @@ public class AllarmiVO implements VO {
 	public void setComp(boolean comp) {
 		this.comp = comp;
 	}
-	
+	public boolean isNuovo() {
+		return nuovo;
+	}
+	public void setNuovo(boolean nuovo) {
+		this.nuovo = nuovo;
+	}	
 }

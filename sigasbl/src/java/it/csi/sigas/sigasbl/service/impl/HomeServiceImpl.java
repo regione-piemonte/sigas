@@ -479,7 +479,9 @@ public class HomeServiceImpl implements IHomeService {
 			consumiPrVO.setNuoviAllacciamenti(consumiPrVO_TempList.get(i).getNuoviAllacciamenti());
 			i++;			
 						
-			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, consumiPrVO.getAnnualita(), (consumiPrVO.getProvincia_erogazione()==null) ? "" : consumiPrVO.getProvincia_erogazione());
+			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, 
+																										  consumiPrVO.getAnnualita(), 
+																										  (consumiPrVO.getProvincia_erogazione()==null) ? "" : consumiPrVO.getProvincia_erogazione());
 			Double totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato");			
 			Double conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato");
 			consumiPrVO.setConguaglio_calc(conguaglioCalcolato);						
@@ -489,6 +491,11 @@ public class HomeServiceImpl implements IHomeService {
 			
 			SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(consumiPrVO.getId_consumi());
 			consumiPrVO.setCompensazionePrVO(this.dichCompensazioniEntityMapper.mapEntityToVO(sigasDichCompensazioni));
+			
+			SigasDichCompensazioni sigasDichCompensazioniTempoT0 = sigasDichCompensazioniRepository.cercaPrimaCompensazioneAssociataAlConsumo(consumiPrVO.getId_consumi());
+			if(consumiPrVO.getCompensazionePrVO()!=null) {
+				consumiPrVO.getCompensazionePrVO().setConguaglio_di_riferimento_t0(sigasDichCompensazioniTempoT0.getConguaglio_di_riferimento());
+			}
 			
 		}
 		
@@ -1768,6 +1775,11 @@ public class HomeServiceImpl implements IHomeService {
 			
 			SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(dichConsumiDB.getIdConsumi());
 			consumiPrVO.setCompensazionePrVO(this.dichCompensazioniEntityMapper.mapEntityToVO(sigasDichCompensazioni));
+			
+			SigasDichCompensazioni sigasDichCompensazioniTempoT0 = sigasDichCompensazioniRepository.cercaPrimaCompensazioneAssociataAlConsumo(dichConsumiDB.getIdConsumi());
+			if(consumiPrVO.getCompensazionePrVO()!=null) {
+				consumiPrVO.getCompensazionePrVO().setConguaglio_di_riferimento_t0(sigasDichCompensazioniTempoT0.getConguaglio_di_riferimento());
+			}
 		}	
 		
 		return consumiPrVO;

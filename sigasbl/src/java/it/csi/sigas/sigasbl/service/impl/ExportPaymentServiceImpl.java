@@ -80,8 +80,14 @@ public class ExportPaymentServiceImpl implements IExportPaymentService {
         /* Convert List to JRBeanCollectionDataSource */
         JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(carrello);
         
+        
         jasperParam.put("soggetti", itemsJRBean);
 		jasperParam.put("anno", cartRequest.getYear());
+		if(carrello.get(0)!=null) {
+			jasperParam.put("denominazioneAzienda", carrello.get(0).getSubjectName());
+		} else {
+			jasperParam.put("denominazioneAzienda", cartRequest.getSubjectName());
+		}		
 		
 		try {
 			export = iUtilsService.printReportExcel(reportName, jasperParam);

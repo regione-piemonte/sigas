@@ -13,6 +13,8 @@ public class CompensazionePrVO implements VO {
 	private double conguaglio_compensato;
 	private double compensazione;
 	private Date data_compensazione;
+	private double conguaglio_di_riferimento_t0;
+	
 	public long getId_consumi() {
 		return id_consumi;
 	}
@@ -49,4 +51,10 @@ public class CompensazionePrVO implements VO {
 	public void setData_compensazione(Date data_compensazione) {
 		this.data_compensazione = data_compensazione;
 	}
+	public double getConguaglio_di_riferimento_t0() {
+		return conguaglio_di_riferimento_t0;
+	}
+	public void setConguaglio_di_riferimento_t0(double conguaglio_di_riferimento_t0) {
+		this.conguaglio_di_riferimento_t0 = conguaglio_di_riferimento_t0;
+	}	
 }

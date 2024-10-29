@@ -446,68 +446,7 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	@Override
 	@Transactional
 	public void insertVersamento(ConfermaVersamentoRequest confermaVersamentoRequest,String user, String codFiscale) {
-		this._insertVersamento(confermaVersamentoRequest, user, codFiscale);
-		/*
-		SigasAllarmi sigasAllarmi;
-		List<String> listKeyOper = new ArrayList<String>();
-		String oggOper ="";
-		SigasProvincia provVersamento = sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(confermaVersamentoRequest.getVersamento().getProvincia());
-		//Controllo esistenza
-		SigasDichVersamenti versamento = sigasDichVersamentiRepository.findBySigasAnagraficaSoggettiIdAnagAndMeseAndSigasTipoVersamentoIdTipoVersamentoAndAnnualitaAndSigasProvinciaIdProvincia(
-				confermaVersamentoRequest.getVersamento().getIdAnag(),
-				confermaVersamentoRequest.getVersamento().getMese(),
-				confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento(),
-				String.valueOf(confermaVersamentoRequest.getVersamento().getAnnualita()),
-				provVersamento.getIdProvincia());
-		
-		if(versamento != null) {
-			throw new BusinessException("Versamento gia' presente");
-		}
-		
-		SigasTipoVersamento tipoVersamento = sigasTipoVersamentoRepository.findOne(confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento());
-		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.CONGUAGLIO.getName())){
-			//Il versamento a conquaglio deve essere effettuato entro il mese di Marzo dell'anno successivo
-			//a quello cui si riferisce la dichiarazione
-			Date dataVersamentoAConguaglio = Utilities.dataVersamentoConguaglio(confermaVersamentoRequest.getVersamento().getAnnualita());
-			if(dataVersamentoAConguaglio.before(Utilities.azzeraOraMinuti(confermaVersamentoRequest.getVersamento().getDataVersamento())))
-						throw new BusinessException("Il versamento a conguaglio va effettuato entro marzo dell'anno successivo a quello cui si riferisce la dichiarazione");
-		}
-
-		if (confermaVersamentoRequest.getVersamento().getConsumo() == null && 
-			(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName()) || 
-			 tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName()))) 
-		{			
-			throw new BusinessException("Il versamento di tipo " + 
-										tipoVersamento.getDenominazione() + 
-										" deve essere relativo ad un consumo");
-
-		} else {
-
-			SigasDichVersamenti sigasVersamento = dichVersamentiEntityMapper
-					.mapVOtoEntity(confermaVersamentoRequest.getVersamento());
-			sigasVersamento.setInsDate(new Date());
-			sigasVersamento.setInsUser(codFiscale);
-			SigasDichVersamenti versamentoSavedDB = sigasDichVersamentiRepository.save(sigasVersamento);
-			VersamentiPrVO versamentoVO = dichVersamentiEntityMapper.mapEntityToVO(versamentoSavedDB);
-
-			oggOper += "sigas_dich_versamenti ";
-			listKeyOper.add(String.valueOf(versamentoSavedDB.getIdVersamento()) );
-			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.ACCERTAMENTO.getName())) {
-				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.ACCERTAMENTO.getName(), user, StatusAllarme.NON_ATTIVO.getName()));
-				oggOper += "sigas_allarmi ";
-				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
-			}
-			if (tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.RAVVEDIMENTO.getName())) {
-				sigasAllarmi = sigasAllarmiRepository.save(allarmeAccertamento(versamentoVO, TipoVersamenti.RAVVEDIMENTO.getName(), user, StatusAllarme.ATTIVO.getName()));
-				oggOper += "sigas_allarmi ";
-				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
-			} 
-		}
-		
-		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertVersamento", oggOper,String.join("_", listKeyOper));
-		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
-		*/
+		this._insertVersamento(confermaVersamentoRequest, user, codFiscale);		
 	}
 	
 	

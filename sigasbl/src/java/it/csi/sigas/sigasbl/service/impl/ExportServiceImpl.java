@@ -121,6 +121,7 @@ public class ExportServiceImpl implements IExportService {
              boolean alreadyRimb = false;
              boolean alreadyScarti = false;
              boolean alreadyVers = false;
+             boolean alreadyNuovo = false;
         	
         	if (allarme.isAcc() && !alreadyAcc) {
         		allarmeString.append("Acceratamento, ");
@@ -161,6 +162,10 @@ public class ExportServiceImpl implements IExportService {
         	if (allarme.isVers() && !alreadyVers) {
         		allarmeString.append("Versamenti, ");
         		alreadyVers = true;
+        	}
+        	if (allarme.isNuovo() && !alreadyNuovo) {
+        		allarmeString.append("Nuovo, ");
+        		alreadyNuovo = true;
         	}
         	
         	String allarmeSoggetto = allarmeString.toString();

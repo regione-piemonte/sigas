@@ -51,6 +51,7 @@
 	      <artifact name="spring-web-3.1.1.RELEASE" type="jar" />
 	      <artifact name="spring-test-3.1.1.RELEASE" type="jar" />
 	      <artifact name="spring-orm-3.1.1.RELEASE" type="jar" />
+	      <artifact name="spring-webmvc-3.1.1.RELEASE" type="jar" />	      
 	    </dependency>
 	    
 	    <dependency org="others" name="spring-security" rev="3.1.0.RELEASE"
@@ -60,8 +61,8 @@
 			<artifact name="spring-security-core-3.1.0.RELEASE"></artifact>
 			<artifact name="spring-security-web-3.1.0.RELEASE"></artifact>
 			<artifact name="spring-security-taglibs-3.1.0.RELEASE"></artifact>
-		</dependency>
-		
+		</dependency>		
+<!-- Thanks for using https://jar-download.com -->		
 	    <!-- ############################################################## -->
 		<!-- # JBOSS EAP 6.0 # -->
 		<!-- ############################################################## -->
@@ -89,24 +90,24 @@
 		<dependency org="others" name="spring-data-jpa" rev="1.1.0.RELEASE" />
 		<dependency org="others" name="spring-data-commons-core" rev="1.3.0.RELEASE" />
 		<dependency org="sun" name="persistence-api" rev="1.0" />
-		<dependency org="others" name="jboss" rev="eap-6.0" >			
+		<dependency org="others" name="jboss" rev="eap-6.0" >
+				<!-- MARTS --> 			
 				<artifact name="jackson-core-asl-1.9.2-redhat-1" type="jar" />
 				<artifact name="jackson-mapper-asl-1.9.2-redhat-1" type="jar" />
+				 
 				<artifact name="hibernate-validator-4.2.0.Final-redhat-1"/>
 				<!--Solo per test  -->
 				<artifact name="dom4j-1.6.1-redhat-1" type="jar"/>	
 				<artifact name="hibernate-commons-annotations-4.0.1.Final-redhat-1" type="jar"/>	
 				<artifact name="antlr-2.7.7-redhat-1" type="jar" />			
 		</dependency>
+		
 		<!-- esclusa dal pacchetto -->
 		<dependency org="redhat" name="hibernate-jpa-2.0-api" rev="1.0.1.Final-redhat-3" />
-		<dependency org="redhat" name="validation-api" rev="1.0.0.GA-redhat-3" />
-		
-		
+		<dependency org="redhat" name="validation-api" rev="1.0.0.GA-redhat-3" />		
 		
 		<!--Solo per test  -->
-		<dependency org="others" name="javassist" rev="3.18.1-GA" />
-		
+		<dependency org="others" name="javassist" rev="3.18.1-GA" />		
 		
 						
 		<dependency org="apache" name="commons-beanutils" rev="1.9.1">
@@ -157,13 +158,12 @@
 		
 	<dependency org="apache" name="commons-codec" rev="1.6" >
      		<artifact name="commons-codec-1.6" type="jar" />
-    </dependency>
-		
-
-	
+    </dependency>	
 	
 	<!-- jasper report -->
 	<dependency org="jaspersoft" name="jasperreports" rev="6.2.1" transitive="false"/>
+	<!--  <dependency org="jaspersoft" name="jasperreports" rev="6.16.0" transitive="false"/> -->
+	
 	<dependency org="google" name="zxing" rev="2.3.0"/>
 	<dependency org="others" name="itext" rev="2.1.7"/>
 	<dependency org="apache" name="commons-beanutils" rev="1.9.1"/>

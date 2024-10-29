@@ -15,6 +15,7 @@ import it.csi.sigas.sigasbl.common.ErrorCodes;
 import it.csi.sigas.sigasbl.common.Esito;
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.dispatcher.IPaymentFoDispatcher;
+import it.csi.sigas.sigasbl.integration.epay.rest.ppay.ResponseObjects.GeneraAvvisoPagamentoResponse;
 import it.csi.sigas.sigasbl.model.repositories.SigasCMessaggiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasCParametroRepository;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
@@ -24,6 +25,8 @@ import it.csi.sigas.sigasbl.model.vo.home.PaymentRTInfoVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentRedirectVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentSubjectVO;
 import it.csi.sigas.sigasbl.model.vo.home.PaymentTypesVO;
+import it.csi.sigas.sigasbl.model.vo.home.ReportResponse;
+import it.csi.sigas.sigasbl.model.vo.home.RicevutaPagamento;
 import it.csi.sigas.sigasbl.model.vo.home.TipoCarrelloVO;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.SearchSubjectPaymentFoRequest;
@@ -84,32 +87,8 @@ public class PaynentFoApiImpl extends SpringSupportedResource implements IPaymen
 		
     	logger.info("END: getUserAmountsForPrevYear");
         return Response.ok(new ResponseVO<List<String>>(Esito.SUCCESS, list)).build();
-	}
-    
-	/*
-    @Override
-    public Response getSubjectsInfo(RicercaConsumiRequest ricercaSoggettiUtente) {
-    	logger.info("START: ricercaSoggettiUtente");
-    	
-    	String cf = ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getIdentita().getCodFiscale();
-    	List<PaymentSubjectVO> ricercaConsumiList = this.payDispatcher.retrieveSubjectsFO(cf, ricercaSoggettiUtente.getAnno());
-    	
-    	// TODO filter
-    	List<PaymentSubjectVO> personListFiltered = ricercaConsumiList.stream()
-    			  .filter(distinctByKey(p -> p.getDenominazione())) 
-    			  .collect(Collectors.toList());
-
-    	logger.info("END: ricercaSoggettiUtente");
-        return Response.ok(new ResponseVO<List<PaymentSubjectVO>>(Esito.SUCCESS, personListFiltered)).build();
- 
-    	return null;
-    }
-
-    public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-	    Map<Object, Boolean> seen = new ConcurrentHashMap<>(); 
-	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null; 
-	}
-	*/
+	}   
+	
 
     @Override
     public Response retrieveSubjectsForFoUser(RicercaConsumiRequest ricercaSoggettiUtente) {
@@ -122,8 +101,7 @@ public class PaynentFoApiImpl extends SpringSupportedResource implements IPaymen
     
     @Override
     public Response retrieveSubjectPaymentFo(SearchSubjectPaymentFoRequest subject) {
-        logger.info("START: retrieveSubjectPaymentFo");
-        
+        logger.info("START: retrieveSubjectPaymentFo");        
     	
     	String idAnag = subject.getSubjectId();
     	String year = subject.getYear();
@@ -136,15 +114,7 @@ public class PaynentFoApiImpl extends SpringSupportedResource implements IPaymen
 	    	subjects.add(subjectIdAnag);
         }
         else {
-        	subjects = this.payDispatcher.retrieveSubjectsFO(year);
-
-        	/*
-        	List<PaymentSubjectVO> allsubjects = this.payDispatcher.retrieveSubjectsFO(year);
-	    	for(PaymentSubjectVO p : allsubjects)
-	    		if(p.getDenominazione().equals(name) && 
-	    				(area == null || area.length() == 0 || p.getSiglaProvincia().equals(area)))
-	    			subjects.add(p);
-	    	*/
+        	subjects = this.payDispatcher.retrieveSubjectsFO(year);        	
         }
         
     	logger.info("END: retrieveSubjectPaymentFo");
@@ -207,6 +177,17 @@ public class PaynentFoApiImpl extends SpringSupportedResource implements IPaymen
 		logger.info("END: storePaymentCart");
         return Response.ok(new ResponseVO<PaymentCartVO>(Esito.SUCCESS, cart)).build();
     }
+    
+    @Override
+    public Response insertPaymentCart(StorePaymentCartRequest storePaymentCartRequest) {
+    	logger.info("START: insertPaymentCart");
+		
+		PaymentCartVO cart = this.payDispatcher.insertPaymentCart(storePaymentCartRequest);
+		
+		logger.info("END: insertPaymentCart");
+        return Response.ok(new ResponseVO<PaymentCartVO>(Esito.SUCCESS, cart)).build();
+    	
+    };
 
     @Override
 	public Response startCartPayment(StorePaymentCartRequest storePaymentCartRequest) {
@@ -280,6 +261,50 @@ public class PaynentFoApiImpl extends SpringSupportedResource implements IPaymen
     	return Response.ok().entity(file).build();
 	}
 
-    
+	@Override
+	public Response downloadAvvisoPagamento(String iuv) {
+		logger.info("START: downloadAvvisoPagamento");
+				
+		byte[] output = this.payDispatcher.downloadAvvisoPagamento(iuv);
+    	logger.info("END: downloadAvvisoPagamento");
+    	return Response.ok().entity(output).build();
+	}
+	
+	@Override
+	public Response generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest) {
+		logger.info("START: generaAvvisoPagamento");
+				
+		byte[] output = this.payDispatcher.generaAvvisoPagamento(storePaymentCartRequest);
+    	logger.info("END: generaAvvisoPagamento");
+    	return Response.ok().entity(output).build();
+	}	
+	
+	@Override
+	public Response downloadRicevutaPagamento(String iuv) {
+		logger.info("START: downloadRicevutaPagamento");		
+		
+		byte[] output = this.payDispatcher.downloadRicevutaPagamento(iuv);
+		
+    	logger.info("END: downloadRicevutaPagamento");
+    	return Response.ok().entity(output).build();
+	}
+
+	@Override
+	public Response previewRicevutaPagamento(String iuv) {
+		logger.info("START: previewRicevutaPagamento");		
+		
+		RicevutaPagamento previewPagmentoResponse = this.payDispatcher.previewRicevutaPagamento(iuv);
+    	logger.info("END: previewRicevutaPagamento");
+    	return Response.ok().entity(previewPagmentoResponse).build();
+	}
+	
+	@Override
+	public Response getPaymentPagoPaRedirectUrl(StorePaymentCartRequest storePaymentCartRequest) {
+		logger.info("START: getPaymentPagoPaRedirectUrl");		
+		
+		PaymentRedirectVO res = payDispatcher.getPaymentPagoPaRedirectUrl(storePaymentCartRequest);
+    	logger.info("END: getPaymentPagoPaRedirectUrl");
+    	return Response.ok().entity(res).build();
+	}
     
 }

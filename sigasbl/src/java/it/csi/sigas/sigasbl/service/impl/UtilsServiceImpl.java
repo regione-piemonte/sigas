@@ -64,10 +64,8 @@ public class UtilsServiceImpl implements IUtilsService {
 				jasperParam.put(entry.getKey(), compileAndGetJasperFromDatabase(entry.getValue()));
 			}
 		}
-
 		
 		JasperPrint jasperPrint = printJasper(codReport, jasperParam);
-
 		return JasperExportManager.exportReportToPdf(jasperPrint);
 
 	}

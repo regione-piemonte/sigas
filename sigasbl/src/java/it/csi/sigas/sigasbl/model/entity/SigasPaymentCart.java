@@ -33,6 +33,7 @@ public class SigasPaymentCart implements Serializable {
 	public final static int STATO_CARRELLO_COMPLETO = 20;
 	public final static int STATO_CARRELLO_PAGAMENTO_AVVIATO = 30;
 	public final static int STATO_CARRELLO_PAGAMENTO_NOTIFICATO = 40;
+	public final static int STATO_CARRELLO_PAGAMENTO_CREATO_AVVISO_PAGAMENTO = 45;
 	public final static int STATO_CARRELLO_PAGATO = 50;
 	public final static int STATO_CARRELLO_PAGAMENTO_INCOMPLETO = 51;
 	

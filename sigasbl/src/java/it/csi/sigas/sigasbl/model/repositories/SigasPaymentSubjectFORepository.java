@@ -147,7 +147,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"				(denominazione||' - '||s.codice_azienda) as Denominazione," + 
 			"				m.months AS mesi, " +
 			"				counties as provincie, " +
-			"				totalAmount as totale" + 
+			"				totalAmount as totale " + 
 			"		FROM sigas_utenti u" + 
 			"			inner join sigas_utente_provvisorio up on (u.id_utente_provv = up.id_utente_provv AND up.stato='ACCETTATA')" +
 			"			INNER JOIN sigas_anagrafica_utente us on u.id_utente_provv=us.id_utente_provv" + 

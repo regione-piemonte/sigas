@@ -13,7 +13,7 @@ public class PaymentSubjectFOEntityGroupedCustom extends PaymentSubjectFOEntityC
 
 	private String mesi = null;
 	private String totale = null;
-	private String provincie = null;
+	private String provincie = null;	
     
 	public String getMesi() {
 		return mesi;

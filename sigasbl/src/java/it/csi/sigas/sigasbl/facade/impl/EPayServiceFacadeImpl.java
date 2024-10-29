@@ -40,10 +40,7 @@ import it.csi.sigas.sigasbl.model.vo.home.PaymentRedirectVO;
  * @date 
  */
 @Service
-public class EPayServiceFacadeImpl implements EPayServiceFacade{
-
-//	@Autowired
-//	private EPayConfig config;
+public class EPayServiceFacadeImpl implements EPayServiceFacade {
 	
 	private static final Logger logger = Logger.getLogger(EPayServiceFacadeImpl.class);
 
@@ -125,21 +122,7 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
 	public void inserisciListaDiCarico(InserisciListaDiCaricoRequest inserisciListaDiCaricoRequest,  String wsUser, String wsPWD) {
 		_inserisciListaDiCarico(inserisciListaDiCaricoRequest,true,wsUser,wsPWD);		
 	}	
-/*
 
-	@Value("${epay_service_redirect}")
-	private String epay_service_redirect;
-	
-	@Value("${epay_service_callback}")
-	private String epay_service_callback;
-
-	@Value("${epay_service_endpoint_redirect_callid}")
-	private String epay_service_endpoint_redirect_callid;
-	
-	@Value("${epay_service_endpoint_redirect_call_pass}")
-	private String epay_service_endpoint_redirect_call_pass;
-
- */
 	public boolean checkPiemontePayServiceHealth(String url) {    	
     	RestTemplate restTemplate = new RestTemplate();    	
     	ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -150,17 +133,19 @@ public class EPayServiceFacadeImpl implements EPayServiceFacade{
     	return true;   	
     }
 	
+	
 	public PaymentRedirectVO getPaymentRedirectInfo(String iuv, 
 													String identificativoPagamento, 
 													String codiceFiscale,
-													String defaultWaitMsg) throws Exception {
-		String url = sigasCParametroRepository.findByDescParametro("epay_service_callback").getValoreString(); // epay_service_endpoint_url 
-				
-		String codiceChiamante = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_redirect_callid").getValoreString();
+													String defaultWaitMsg) throws Exception 
+	{
+		String url = sigasCParametroRepository.findByDescParametro("epay_service_callback").getValoreString(); // epay_service_endpoint_url		
+		
+		String codiceChiamante = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_redirect_callid").getValoreString();		
 		
 		String digestStr = sigasCParametroRepository.findByDescParametro("epay_service_endpoint_redirect_call_pass").getValoreString() + "%%%%" + 
-				codiceChiamante + 
-				identificativoPagamento + iuv + url + "%%%%";
+						   codiceChiamante + 
+						   identificativoPagamento + iuv + url + "%%%%";
 		
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		byte[] hash = digest.digest(digestStr.getBytes(StandardCharsets.UTF_8));
