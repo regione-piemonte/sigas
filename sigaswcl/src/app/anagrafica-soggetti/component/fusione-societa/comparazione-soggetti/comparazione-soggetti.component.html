@@ -1,0 +1,876 @@
+<!--div check soggetto -->
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">
+    <a href='#principal-div-id' class="skip-link" role="listitem" id="idAnchorToContPrin">Vai al contenuto
+        principale</a>
+</div>
+<div>
+    <!-- SEZIONE ALERT -->
+    <sigas-alert [message]="messageInfo" [type]="'INFO'" *ngIf="showMessageInfo"></sigas-alert>
+    <sigas-alert [message]="messageError" [type]="'DANGER'" *ngIf="showMessageError"></sigas-alert>
+    <sigas-alert [message]="messageSuccess" [type]="'SUCCESS'" *ngIf="showMessageSuccess"></sigas-alert>
+    <!-- FINE ALERT -->
+    <div class="principal-div">
+        <!-- SPINNER -->
+        <sigas-spinner *ngIf="loaderComparazioniSoggettoPage"></sigas-spinner>
+        <div class="contains">
+            <div class="row">
+                <div class="col-lg-11 hight">
+                    <div class="form-group row">
+                        <div class="form-group col-lg-11 text-center">
+                            <h3 class="title">Confronta Soggetti</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 col-form-label">Soggetto incorporante</label>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-lg-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 col-form-label">Soggetto incorporato</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Denominazione -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Denominazione:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            {{consumiPrViewContainerIncorporante?.anagraficaSoggettoVO?.denominazione}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Denominazione:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            {{consumiPrViewContainerIncorporato?.anagraficaSoggettoVO?.denominazione}}
+                        </div>
+                    </div>
+                </div>
+                <!--END Denominazione -->
+            </div>
+            <div class="row">
+                <!-- Codice Azienda -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Codice Azienda:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            {{consumiPrViewContainerIncorporante?.anagraficaSoggettoVO?.codiceAzienda}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Codice Azienda:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            {{consumiPrViewContainerIncorporato?.anagraficaSoggettoVO?.codiceAzienda}}
+                        </div>
+                    </div>
+                </div>
+                <!--END Denominazione -->
+            </div>
+
+            <div class="row">
+                <!-- uso industriale fino a 1200 -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Ind. fino a 1200 Mc</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporante?.usi_industriali_1200 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(5) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporante?.usi_industriali_1200 * getAliquota(5) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Ind. fino a 1200 Mc</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporato?.usi_industriali_1200 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(5) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporato?.usi_industriali_1200 * getAliquota(5) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END uso industriale fino a 1200 -->
+            </div>
+
+            <div class="row">
+                <!-- uso industriale oltre 1200 -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Ind. oltre i 1200 Mc</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporante?.usi_industriali_up | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{getAliquota(6)}}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporante?.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Ind. oltre i 1200 Mc</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporato?.usi_industriali_up | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{getAliquota(6)}}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporato?.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END uso industriale oltre 1200 -->
+            </div>
+
+            <div class="row">
+                <!-- totale uso industriale -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale uso Ind.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.usi_industriali_1200 * getAliquota(5) + consumiPrViewContainerIncorporante?.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale uso Ind.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.usi_industriali_1200 * getAliquota(5) + consumiPrViewContainerIncorporato?.usi_industriali_up * getAliquota(6) | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END totale uso industriale -->
+            </div>
+
+            <div class="row">
+                <!-- uso civile fino a 120 -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. fino a 120</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporante?.usi_civili_120 | number:'1.2-2' }}</strong></span>
+                                    
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(1) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporante?.usi_civili_120 * getAliquota(1) | currency:'EUR':'symbol'}}</strong></span>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. fino a 120</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporato?.usi_civili_120 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(1) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporato?.usi_civili_120 * getAliquota(1) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--END uso civile fino a 120 -->
+            </div>
+
+            <div class="row">
+                <!-- uso civile fino a 480 -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. fino a 480</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporante?.usi_civili_480 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(2) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporante?.usi_civili_480 * getAliquota(2) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. fino a 480</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporato?.usi_civili_480 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(2) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporato?.usi_civili_480 * getAliquota(2) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--END uso civile fino a 480 -->
+            </div>
+
+            <div class="row">
+                <!-- uso civile fino a 1560 -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. fino a 1560</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporante?.usi_civili_1560 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(3) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporante?.usi_civili_1560 * getAliquota(3) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. fino a 1560</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporato?.usi_civili_1560 | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(3) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporato?.usi_civili_1560 * getAliquota(3) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--END uso civile fino a 1560 -->
+            </div>
+
+            <div class="row">
+                <!-- uso civile oltre 1560 -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. oltre i 1560</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporante?.usi_civili_up | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(4) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporante?.usi_civili_up * getAliquota(4) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Uso Civ. oltre i 1560</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            <div class="form-group row">
+                                <div class="col offset-sm-1">
+                                    <span>Consumi:</span>
+                                    <br>
+                                    <span><strong>{{ consumiPrViewContainerIncorporato?.usi_civili_up | number:'1.2-2' }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Aliq.:</span>
+                                    <br>
+                                    <span><strong>{{ getAliquota(4) }}</strong></span>
+                                </div>
+                                <div class="col">
+                                    <span>Importo:</span>
+                                    <br>
+                                    <span><strong>{{consumiPrViewContainerIncorporato?.usi_civili_up * getAliquota(4) | currency:'EUR':'symbol'}}</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--END uso civile oltre 1560 -->
+            </div>
+
+            <div class="row">
+                <!-- totale uso civile -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale uso Civile:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{ consumiPrViewContainerIncorporante?.usi_civili_120 * getAliquota(1) + 
+                                consumiPrViewContainerIncorporante?.usi_civili_480 * getAliquota(2) + 
+                                consumiPrViewContainerIncorporante?.usi_civili_1560 * getAliquota(3) +
+                                consumiPrViewContainerIncorporante?.usi_civili_up * getAliquota(4)  | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale uso Civile:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{ consumiPrViewContainerIncorporato?.usi_civili_120 * getAliquota(1) + 
+                                consumiPrViewContainerIncorporato?.usi_civili_480 * getAliquota(2) + 
+                                consumiPrViewContainerIncorporato?.usi_civili_1560 * getAliquota(3) +
+                                consumiPrViewContainerIncorporato?.usi_civili_up * getAliquota(4)  | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END totale uso civile -->
+            </div>
+
+            <div class="row">
+                <!-- totale nuovi allaciamenti -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Tot. nuovi allac.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.tot_nuovi_allacciamenti | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Tot. nuovi allac.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.tot_nuovi_allacciamenti | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END totale nuovi allaciamenti -->
+            </div>
+
+            <div class="row">
+                <!-- conguaglio dichiarato -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Congualglio Dich:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.conguaglio_dich | currency:'EUR':'symbol'}} 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Congualglio Dich:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.conguaglio_dich | currency:'EUR':'symbol'}} 
+                        </div>
+                    </div>
+                </div>
+                <!--END conguaglio dichiarato -->
+            </div>
+
+            <div class="row">
+                <!-- totale dichiarato -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale Dich.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.totaleDich | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale Dich.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.totaleDich | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END totale dichiarato -->
+            </div>
+
+            <div class="row">
+                <!-- rateo dichiarato -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Rateo Dich.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.rateo_dich | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Rateo Dich.:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.rateo_dich | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END rateo dichiarato -->
+            </div>
+
+            <div class="row">
+                <!-- rettifiche -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Rettifiche:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.rettifiche | number:'1.2-2'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Rettifiche:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.rettifiche | number:'1.2-2'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END rettifiche -->
+            </div>
+
+            <div class="row">
+                <!-- arrotondamenti -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Arrotondamenti:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporante">
+                            {{consumiPrViewContainerIncorporante?.arrotondamenti | number:'1.2-2'}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Arrotondamenti:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value" *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{consumiPrViewContainerIncorporato?.arrotondamenti | number:'1.2-2'}}
+                        </div>
+                    </div>
+                </div>
+                <!--END arrotondamenti -->
+            </div>
+
+            <div class="row">
+                <!-- scarti -->
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Scarti:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                    </div>
+                    <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporante && consumiPrViewContainerIncorporante?.listaScarti?.length > 0">
+                        <div class="form-group row" *ngFor="let scarto of consumiPrViewContainerIncorporante?.listaScarti">                                                                                                                                   
+                            <div class="col offset-sm-1">
+                                <span>Consumi:</span>
+                                <br>
+                                <span><strong>{{ scarto.consumi | number:'1.2-2' }}</strong></span>
+                            </div>
+                            <div class="col">
+                                <span>Aliq.:</span>
+                                <br>
+                                <span><strong>{{ scarto.aliquota }}</strong></span>
+                            </div>
+                            <div class="col">
+                                <span>Importo:</span>
+                                <br>
+                                <span><strong>{{ scarto.imposta * scarto.aliquota | currency:'EUR':'symbol' }}</strong></span>
+                            </div>                                                                
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Scarti:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                    </div>
+                        
+                    <div class="container" *ngIf="!loaderInfoDichiarazioniIncorporato && consumiPrViewContainerIncorporato?.listaScarti?.length > 0">
+                        <div class="form-group row" *ngFor="let scarto of consumiPrViewContainerIncorporato?.listaScarti">                                                                                                                                   
+                            <div class="col offset-sm-1">
+                                <span>Consumi:</span>
+                                <br>
+                                <span><strong>{{ scarto.consumi | number:'1.2-2' }}</strong></span>
+                            </div>
+                            <div class="col">
+                                <span>Aliq.:</span>
+                                <br>
+                                <span><strong>{{ scarto.aliquota }}</strong></span>
+                            </div>
+                            <div class="col">
+                                <span>Importo:</span>
+                                <br>
+                                <span><strong>{{ scarto.imposta * scarto.aliquota | currency:'EUR':'symbol' }}</strong></span>
+                            </div>                                                                
+                        </div>
+                    </div>
+                </div>
+                <!--END scarti -->
+            </div>
+
+            <!--
+            <div class="row">
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">IBAN:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggettoIncorporante?.iban}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">IBAN:</label>
+                        <div>
+                            {{soggettoIncorporato?.iban}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale dichiarazione:</label>
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            <div *ngIf="!loaderInfoDichiarazioniIncorporante">
+                                {{selTotDichSoggettoIncorporante | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Totale dichiarazione:</label>
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{selTotDichSoggettoIncorporato | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Addizionale liquidata:</label>
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            <div *ngIf="!loaderInfoDichiarazioniIncorporante">
+                                {{selAddLiqSoggettoIncorporante | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Addizionale liquidata:</label>
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{selAddLiqSoggettoIncorporato | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale versato:</label>
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <div class="col-lg-6 col-value">
+                            <div *ngIf="!loaderInfoDichiarazioniIncorporante">
+                                {{selTotVersSoggettoIncorporante | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Totale versato:</label>
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <div *ngIf="!loaderInfoDichiarazioniIncorporato">
+                            {{selTotVersSoggettoIncorporato | currency:'EUR':'symbol'}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        -->
+            <div class="row">
+                <!-- Bottoni province -->
+                <div class="col-lg-5 hight">
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporante"></sigas-spinner-form>
+                        <!-- cambia provincia -->
+                        <label *ngFor="let elIncorporante of consumiSoggettoIncorporante"
+                            [hidden]="elIncorporante.provincia_erogazione == null || loaderInfoDichiarazioniIncorporante"
+                            class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" name="iptProvinciaIncorporante-{{elIncorporante.provincia_erogazione}}"
+                                id="iptProvinciaIncorporante-{{elIncorporante.provincia_erogazione}}"
+                                (click)="onCambiaProvinciaIncorporante(elIncorporante.provincia_erogazione)">{{elIncorporante.provincia_erogazione}}
+                        </label>
+                        <!-- cambia provincia TOTALE -->
+                        <label *ngIf="!loaderInfoDichiarazioniIncorporante"
+                            class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" ref="totaleRef-comparazioneIncorporante" id="iptTotaleIncorporante"
+                                name="iptTotaleIncorporante" (click)="onCambiaProvinciaIncorporante('TOTALE')"> TOTALE
+                        </label>
+                    </div>
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30"
+                            *ngIf="loaderInfoDichiarazioniIncorporato"></sigas-spinner-form>
+                        <!-- cambia provincia -->
+                        <label *ngFor="let elIncorporato of consumiSoggettoIncorporato" 
+                            [hidden]="elIncorporato.provincia_erogazione == null || loaderInfoDichiarazioniIncorporato"
+                            class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" name="iptProvinciaIncorporato-{{elIncorporato.provincia_erogazione}}"
+                                id="iptProvinciaIncorporato-{{elIncorporato.provincia_erogazione}}"
+                                (click)="onCambiaProvinciaIncorporato(elIncorporato.provincia_erogazione)">{{elIncorporato.provincia_erogazione}}
+                        </label>
+                        <!-- cambia provincia TOTALE -->
+                        <label id="lblTotaleIncorporato" *ngIf="!loaderInfoDichiarazioniIncorporato"
+                            class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" ref="totaleRef-comparazione" id="iptTotaleIncorporato"
+                                name="iptTotaleIncorporato" (click)="onCambiaProvinciaIncorporato('TOTALE')"> TOTALE
+                        </label>
+                    </div>
+                </div>
+                <!--END province -->
+            </div>
+        </div>
+        <br />
+        <div class="bs-example" data-example-id="single-button-dropdown">
+            <div class="form-group row col-lg-12">
+                <div class="col-2 offset-3 formfield">
+                    <label id="lblDataFusComparazione" for="dataFusComparazione" class="col-form-label note">Data
+                        fusione:</label>
+                </div>
+                <div class="col-4 formfield">
+                    <div class="input-group">
+                        <input #dataFus="ngbDatepicker" (click)="dataFusComparazione.toggle()" [(ngModel)]="dataFusione"
+                            [footerTemplate]="footerTemplateDataFus" class="form-control" name="dataFusComparazione"
+                            id="dataFusComparazione" aria-labelledby="lblDataFusComparazione" ngbDatepicker
+                            placeholder="gg/mm/aaaa" readonly>
+                        <ng-template #footerTemplateDataFus>
+                            <hr class="my-0">
+                            <!-- BUTTON PULISCI -->
+                            <button (click)="dataFusione = null; dataFusComparazione.close();"
+                                class="btn btn-primary btn-sm m-2 float-left">Pulisci
+                            </button>
+                            <!-- BUTTON CHIUDI -->
+                            <button (click)="dataFusComparazione.close();"
+                                class="btn btn-secondary btn-sm m-2 float-right">Chiudi
+                            </button>
+                        </ng-template>
+                        <div class="input-group-append">
+                            <button (click)="dataFus.toggle()" class="btn btn-outline-secondary calendar" type="button">
+                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true"
+                                    focusable="false" data-prefix="far" data-icon="calendar-alt" role="img"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                                    <title>Calendario</title>
+                                    <path fill="currentColor"
+                                        d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row col-lg-12">
+                <div class="col-2 offset-3 formfield">
+                    <label id="lblNoteFusione" for="noteFusione" class="col-form-label note">Note:</label>
+                </div>
+                <div class="col-4 formfield">
+                    <textarea id="noteFusione" aria-labelledby="lblNoteFuzione" class="note-textarea"
+                        [(ngModel)]='noteFusione' rows="4" [ngModelOptions]="{standalone: true}"></textarea>
+                </div>
+            </div>
+            <div class="form-group row col-lg-12">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                    <div class="btn-group">
+                        <a class="btn btn-default margin-icon btn-standard" (click)="onClose()" role="button">
+                            <i class="fa fa-angle-left"></i>
+                            indietro</a>
+                    </div>
+                    <div class="btn-group">
+                        <!--
+                            <a class="btn btn-default margin-icon btn-primary"
+                               (disabled)="dataFusione == null" 
+                               (click)="onFusione()" 
+                               role="button"><i class="fa fa-angle-left"></i>
+                            Associa Soggetto selezionato</a> 
+                            -->
+
+                        <button type="button" class="btn btn-primary margin-icon" [disabled]="dataFusione == null"
+                            (click)="onFusione()"><i class="fas fa-edit"></i>
+                            Associa Soggetto selezionato
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

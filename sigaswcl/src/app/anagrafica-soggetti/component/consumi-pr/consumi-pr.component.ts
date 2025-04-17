@@ -223,7 +223,8 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
              let totaleDichOrigine = 0;
              let conguaglioDichPrec = 0;
              let rateoDichPrec = 0;
-             let totaleVersato = 0;             
+             let totaleVersato = 0; 
+             let totNuoviAllacciamenti = 0;            
              res.map((elem, idx) => {
                idconsumi = elem.id_consumi;
                totInd1200 += elem.usi_industriali_1200;
@@ -232,7 +233,8 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
                totCiv480 += elem.usi_civili_480;
                totCiv1560 += elem.usi_civili_1560;
                totCivUp += elem.usi_civili_up;
-               totNewAll += elem.tot_nuovi_allacciamenti;
+               //totNewAll += elem.tot_nuovi_allacciamenti;
+               totNewAll += elem.nuoviAllacciamenti.reduce((acc, cur) => acc + cur.importo, 0);
                totInd += elem.tot_industriali;
                totCiv += elem.tot_civili;
                rett += elem.rettifiche;
@@ -287,13 +289,15 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
                });
 
                if (elem.nuoviAllacciamenti != null) {
-                 let totNuoviAllacciamenti = 0;
+                 //let totNuoviAllacciamenti = 0;
+                 /*
                  elem.nuoviAllacciamenti.map(na => {
                    totNuoviAllacciamenti += na.importo;
                  });
-
-                 let nuovoAllacciamentoVO: NuovoAllacciamentoVO = new NuovoAllacciamentoVO(0,0, totNuoviAllacciamenti,'');
-                 elem.nuoviAllacciamenti.push(nuovoAllacciamentoVO);
+                 */                 
+                 //let nuovoAllacciamentoVO: NuovoAllacciamentoVO = new NuovoAllacciamentoVO(0,0, totNuoviAllacciamenti,'');
+                 //elem.nuoviAllacciamenti.push(nuovoAllacciamentoVO);                                  
+                 elem.tot_nuovi_allacciamenti = elem.nuoviAllacciamenti.reduce((acc, cur) => acc + cur.importo, 0);
                }
 
              });
@@ -335,6 +339,8 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
                rateo_dich_prec: rateoDichPrec,
                totaleVersato,
                compensazionePrVO: null,
+               anagraficaSoggettoVO: null,
+               listaScarti: null,
             };
             this.consumiPr.push(consumoPr);
 
@@ -395,7 +401,8 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
           let totaleDichOrigine = 0;
           let conguaglioDichPrec = 0;
           let rateoDichPrec = 0;
-          let totaleVersato = 0;          
+          let totaleVersato = 0;
+          let totNuoviAllacciamenti = 0;          
           res.map((elem, idx) => {
             idconsumi = elem.id_consumi;
             totInd1200 += elem.usi_industriali_1200;
@@ -404,7 +411,8 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
             totCiv480 += elem.usi_civili_480;
             totCiv1560 += elem.usi_civili_1560;
             totCivUp += elem.usi_civili_up;
-            totNewAll += elem.tot_nuovi_allacciamenti;
+            //totNewAll += elem.tot_nuovi_allacciamenti;
+            totNewAll += elem.nuoviAllacciamenti.reduce((acc, cur) => acc + cur.importo, 0);
             totInd += elem.tot_industriali;
             totCiv += elem.tot_civili;
             rett += elem.rettifiche;
@@ -459,13 +467,16 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
             });
 
             if (elem.nuoviAllacciamenti != null) {
-              let totNuoviAllacciamenti = 0;
+              //let totNuoviAllacciamenti = 0;
+              /*
               elem.nuoviAllacciamenti.map(na => {
                 totNuoviAllacciamenti += na.importo;
               });
+              */
+              //let nuovoAllacciamentoVO: NuovoAllacciamentoVO = new NuovoAllacciamentoVO(0,0, totNuoviAllacciamenti,'');
+              //elem.nuoviAllacciamenti.push(nuovoAllacciamentoVO);
 
-              let nuovoAllacciamentoVO: NuovoAllacciamentoVO = new NuovoAllacciamentoVO(0,0, totNuoviAllacciamenti,'');
-              elem.nuoviAllacciamenti.push(nuovoAllacciamentoVO);
+              elem.tot_nuovi_allacciamenti = elem.nuoviAllacciamenti.reduce((acc, cur) => acc + cur.importo, 0);
             }
           });
 
@@ -505,6 +516,8 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
             rateo_dich_prec: rateoDichPrec,
             totaleVersato: totaleVersato,
             compensazionePrVO: null,
+            anagraficaSoggettoVO: null,
+            listaScarti: null,
          };
          this.consumiPr.push(consumoPr);
 
@@ -589,11 +602,11 @@ export class ConsumiPrComponent implements OnInit, AfterViewInit {
 }
 
 aggiornaFormatoNumero(value){
-  if(value===undefined || value===null || value===NaN ||value===0){
+  if(value===undefined || value===null || Number.isNaN(value) ||value===0){
     return 0;
   }
   if(typeof value === 'string' || value instanceof String){
-    if(Number(value)===NaN){
+    if(Number.isNaN(Number(value))){
       return 0;
     }
     var lclVal = value.replace(".","");

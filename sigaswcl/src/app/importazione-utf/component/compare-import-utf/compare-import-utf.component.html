@@ -1,0 +1,538 @@
+<!--div check soggetto -->
+<!--
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+-->
+<div>
+    <!-- SEZIONE ALERT -->
+    <sigas-alert [message]="messageInfo" [type]="'INFO'" *ngIf="showMessageInfo" ></sigas-alert>
+    <sigas-alert [message]="messageError" [type]="'DANGER'" *ngIf="showMessageError"></sigas-alert>          
+    <sigas-alert [message]="messageSuccess" [type]="'SUCCESS'" *ngIf="showMessageSuccess"></sigas-alert>    
+    <!-- FINE ALERT -->
+    <div class="principal-div">
+        <!-- SPINNER -->
+        <sigas-spinner *ngIf="loaderComparazioniSoggettoPage"></sigas-spinner>
+        <div class="contains center-default">
+        <!-- -->            
+            <div class="row">
+                <div class="col-lg-11 hight">
+                    <div class="form-group row">
+                        <div class="col-lg-8">
+                            <span>Per l'annualita' dichiarazione selezionata <strong>{{ annualitaSelezionata }}</strong>, 
+                                  l'ultimo import e' stato eseguito in data <strong>{{ultimoReportCaricatoPerAnno?.dataRiferimento | date: 'dd/MM/yyyy HH:mm:ss'}}</strong>.  
+                                  L'identificativo assegnato e' <strong>{{ultimoReportCaricatoPerAnno?.importId}}</strong>.</span>
+                            <span id="lblDichiarazioniPresenti" *ngIf="listaDichiarazioniPresenti?.length > 1">Sono presenti ulteriori import:</span>
+                        </div>
+                        <div class="col-lg-2">
+                            <select *ngIf="listaDichiarazioniPresenti?.length >= 1 && checkVisualizzaSelectElencoImport == true"
+                                    class="form-control" 
+                                    id="sltDichiarazioniPresenti"
+                                    name="sltDichiarazioniPresenti"  
+                                    aria-labelledby="lblDichiarazioniPresenti" 
+                                    [(ngModel)]="dichirazionePresenteSelezionata"
+                                    (change)="selectDichiarazione(dichiarazione)">                                
+                                <option *ngFor="let dichiarazione of listaDichiarazioniPresenti" [ngValue]="dichiarazione">{{dichiarazione.dataRiferimento | date: 'dd/MM/yyyy HH:mm:ss'}}</option> 
+                            </select>
+                        </div>
+                        <div class="col-lg-1"></div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-lg-11 hight">
+                    <div class="form-group row">
+                        <div class="form-group col-lg-11 text-center">
+                            <h3 class="title">Confronta Import UTF - Globale</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">
+                <div class="col-lg-5 hight">
+                    <div class="form-group border-botton row">
+                        <!--<img alt="Import selected identificativo {{idImportAttuale}}" title="Import selected identificativo {{idImportAttuale}}" *ngIf="importAttualeSelected" src="assets/selected.png" width="30px" height="30px">-->
+                        <!--<label class="col-lg-5 col-form-label">Import del {{ultimoReportCaricatoPerAnno.dataRiferimento | date: 'dd/MM/yyyy HH:mm:ss'}} - id {{ultimoReportCaricatoPerAnno.importId}} </label>-->
+                        <span class="col-lg-5">Import del <strong>{{ultimoReportCaricatoPerAnno?.dataRiferimento | date: 'dd/MM/yyyy HH:mm:ss'}}</strong> - id <strong>{{ultimoReportCaricatoPerAnno?.importId}}</strong></span>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-lg-1 hight" *ngIf="showImportSelezionato">
+                    <div class="form-group border-botton row">
+                        <!--
+                        <img alt="Import selected identificativo {{idImportSelezionato}}" title="Import selected identificativo {{idImportSelezionato}}" *ngIf="importSelezionatoSelected" src="assets/selected.png" width="30px" height="30px">
+                        <label class="col-lg-5 col-form-label">Import selezionato</label>            
+                        -->
+                        <span class="col-lg-5">Import del <strong>{{dichirazionePresenteSelezionata?.dataRiferimento | date: 'dd/MM/yyyy HH:mm:ss'}}</strong> - id <strong>{{dichirazionePresenteSelezionata?.importId}}</strong></span>
+                    </div>                        
+                </div>
+            </div>            
+            <!-- Ind. 1200 -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">                         
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Ind. 1200:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.usi_industriali_1200 | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Ind. 1200:</label>
+                        <div>
+                             <!-- Spinner component -->
+                             <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                             <div *ngIf="!loaderImportSelezionatoItems">
+                                 {{importSelezionatoConsumiPrViewContainer?.usi_industriali_1200 | currency:'EUR':'symbol' }}
+                             </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Ind. 1200 -->
+
+            <!-- Ind > 1200 -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Ind. > 1200:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.usi_industriali_up | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Ind.> 1200:</label>
+                        <div>
+                             <!-- Spinner component -->
+                             <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                             <div *ngIf="!loaderImportSelezionatoItems">
+                                 {{importSelezionatoConsumiPrViewContainer?.usi_industriali_up | currency:'EUR':'symbol' }}
+                             </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Ind. > 1200 -->
+
+            <!-- TOT Ind. -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Tot. Ind.:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.tot_industriali | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Tot. ind.:</label>
+                        <div>
+                             <!-- Spinner component -->
+                             <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                             <div *ngIf="!loaderImportSelezionatoItems">
+                                 {{importSelezionatoConsumiPrViewContainer?.tot_industriali | currency:'EUR':'symbol' }}
+                             </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Tot Ind -->
+
+            <!-- CIV 120 -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Civ. 120:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.usi_civili_120 | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Civ. 120:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.usi_civili_120 | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Civ. 120 -->
+
+            <!-- Civ. 480 -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Civ. 480:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.usi_civili_480 | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Civ. 480:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.usi_civili_480 | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Civ. 480 -->
+
+            <!-- Civ. 1560 -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Civ. 1560:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.usi_civili_1560 | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Civ. 1560:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.usi_civili_1560 | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Civ. 1560 -->
+
+            <!-- Civ. > 1560 -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Civ. > 1560:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.usi_civili_up | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Civ. > 1560:</label>
+                        <div>
+                             <!-- Spinner component -->
+                             <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                             <div *ngIf="!loaderImportSelezionatoItems">
+                                 {{importSelezionatoConsumiPrViewContainer?.usi_civili_up | currency:'EUR':'symbol' }}
+                             </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Civ. > 1560 -->
+
+            <!-- Tot. Civ. -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Tot. Civ.:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.tot_civili | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Tot. Civ.:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.tot_civili | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Tot. Civ. -->
+
+            <!-- Tot. nuovi allac. -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Tot. nuovi allac.:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.tot_nuovi_allacciamenti | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Tot nuovi allac.:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.tot_nuovi_allacciamenti | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Tot. nuovi allac. -->
+
+            <!-- Conguaglio Dichiarato -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Congualglio Dich:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.conguaglio_dich | currency:'EUR':'symbol'}}    
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Conguaglio Dich.:</label>
+                        <div>
+                             <!-- Spinner component -->
+                             <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                             <div *ngIf="!loaderImportSelezionatoItems">
+                                 {{importSelezionatoConsumiPrViewContainer?.conguaglio_dich | currency:'EUR':'symbol' }}
+                             </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            <!--END Conguaglio Dichiarato -->
+
+            <!-- Totale Dichiarato -->
+            <!-- -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Totale Dich.:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.totaleDich | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Totale Dich.:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.totaleDich | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>            
+            <!--END Totale Dichiarato -->
+
+            <!-- Rateo Dichiarato. -->
+            <!--  -->
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Rateo Dich.:</label>
+                        <div class="col-lg-6 col-value">
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportAttualeItems">
+                                {{importAttualeConsumiPrViewContainer?.rateo_dich | currency:'EUR':'symbol'}}
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Rateo Dich.:</label>
+                        <div>
+                            <!-- Spinner component -->
+                            <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoItems"></sigas-spinner-form>
+                            <div *ngIf="!loaderImportSelezionatoItems">
+                                {{importSelezionatoConsumiPrViewContainer?.rateo_dich | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div> 
+                </div>                
+            </div>           
+            <!--END Rett. -->
+
+            <!-- Arr. -->
+            <!--
+            <div class="row">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Arr.:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                TEST
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Arr.:</label>
+                        <div>
+                            TEST
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            -->
+            <!--END Arr -->
+
+            <!-- Tot. -->
+            <!--
+            <div class="row">                 
+                <div class="col-lg-5 hight">                       
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-sm-1 col-form-label">Tot.:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                TEST
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="col-lg-5 offset-sm-1 hight">                        
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-sm-1 col-form-label">Tot.:</label>
+                        <div>
+                            TEST
+                        </div>
+                    </div> 
+                </div>                
+            </div>
+            -->
+            <!--END Tot. -->
+
+            <div class="row" [style.display]="visualizzaSezioneReport ? '' : 'none'">
+                 <!-- Bottoni province -->
+                 <div class="col-lg-5 hight">
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeElencoProvince"></sigas-spinner-form>
+                        <!-- cambia provincia -->                            
+                        <label *ngFor="let provincia of importAttualeElencoProvince" 
+                                [hidden]="provincia.sigla == null" 
+                                class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" 
+                                    name="iptProvinciaImportAttuale-{{provincia.sigla}}" 
+                                    id="iptProvinciaImportAttuale-{{provincia.sigla}}" 
+                                    (click)="onCambiaProvinciaImportAttuale(provincia.sigla)">{{provincia.sigla}}
+                        </label>                                                    
+                    </div>
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderImportAttualeElencoProvince"></sigas-spinner-form>                                                  
+                        <!-- cambia provincia TOTALE -->
+                        <label *ngIf="!loaderImportAttualeElencoProvince" 
+                                class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio"                                    
+                                ref="totaleRef-comparazioneIncorporante" 
+                                id="iptTotaleImportAttuale" 
+                                name="iptTotaleImportAttuale"  
+                                (click)="onCambiaProvinciaImportAttuale('TOTALE')"> TOTALE
+                        </label>
+                    </div>
+                 </div>
+                 <div class="col-lg-5 offset-sm-1 hight" *ngIf="showImportSelezionato">
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoElencoProvince"></sigas-spinner-form>
+                        <!-- cambia provincia -->
+                        <label *ngFor="let provincia of importSelezionatoElencoProvince" 
+                               [hidden]="provincia.sigla == null" 
+                               class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" 
+                                   name="iptProvinciaImportSelezionato-{{provincia.sigla}}" 
+                                   id="iptProvinciaImportSelezionato-{{provincia.sigla}}" 
+                                   (click)="onCambiaProvinciaImportSelezionato(provincia.sigla)">{{provincia.sigla}}
+                        </label>                        
+                    </div>
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">                        
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderImportSelezionatoElencoProvince"></sigas-spinner-form>
+                        <!-- cambia provincia TOTALE -->
+                        <label id="lblTotaleImportSelezionato"
+                               *ngIf="!loaderImportSelezionatoElencoProvince"
+                               [hidden]="importSelezionatoElencoProvince.length === 0"                                   
+                               class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" *ngIf="!loaderImportSelezionatoElencoProvince"                         
+                                   ref="totaleRef-comparazione"
+                                   id="iptTotaleImportSelezionato"
+                                   name="iptTotaleImportSelezionato"                                                                      
+                                   (click)="onCambiaProvinciaImportSelezionato('TOTALE')"> TOTALE
+                        </label>
+                    </div>
+                 </div>                 
+            </div>
+        </div>
+    </div>
+</div>

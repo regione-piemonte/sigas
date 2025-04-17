@@ -4,8 +4,8 @@ export class RateoVO {
         public idRateo: number,
         public idAnag: number,
         public importo: number,
-        public mese: String,        
+        public mese: String,                
         public idProvincia: number,
-        public annualita: String
+        public annualita: String,        
     ) { }
 }

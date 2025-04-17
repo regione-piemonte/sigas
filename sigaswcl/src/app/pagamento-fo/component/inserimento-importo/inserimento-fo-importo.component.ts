@@ -104,7 +104,8 @@ export class PagamentoFoImporto implements OnInit, AfterViewInit {
       this.viewQueryParams = 'add'; 
       return
     };
-    if(stepname == 'popup-no'){            
+    if(stepname == 'popup-no'){  
+      this.foPayService.subjectSelected = null;          
       return this.router.navigate([`home/carrello-fo`], {queryParams: {caller: this.viewQueryParams}});
     };    
     this.pageLoadingInProgress = true;    
@@ -305,7 +306,6 @@ export class PagamentoFoImporto implements OnInit, AfterViewInit {
       this.message = "";            
       this.showMsg = false;
       this.showErrorMessage = null;
-
       if(this.viewQueryParams != 'ins') {
         this.checkCodMeseTipo();
       }
@@ -398,7 +398,11 @@ export class PagamentoFoImporto implements OnInit, AfterViewInit {
   private _caricaComboTipoPagamento(){
     this.foPayService.retrievePaymentTypes().subscribe(resp => 
       { 
-          this.paymentTypes = resp; 
+          let tipoVersamenti = resp;          
+
+          //this.paymentTypes = resp; 
+          this.paymentTypes = tipoVersamenti.filter(tipoVersamento => tipoVersamento.idTipoVersamento != 5 && tipoVersamento.idTipoVersamento != 6);
+
           this.pageLoadingInProgress = false;
       },
       err => { 

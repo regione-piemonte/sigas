@@ -148,6 +148,7 @@
 																<th><b>Provincia</b></th>
 																<th><b>Importo</b></th>
 																<th><b>Tipo</b></th>
+																<th><b>Stato</b></th>
 																<th><b>Azioni</b></th>																
 															</tr>
 														</thead>
@@ -170,7 +171,10 @@
 																<td>{{ getAmount(cartItem.amount) | currency:'EUR':'symbol'}} </td>
 				
 																<!-- Cart Tipo -->
-																<td>{{ cartItem.type }}</td>																
+																<td>{{ cartItem.type }}</td>
+
+																<!-- Stato -->
+																<td>{{getStatus(cartItem.status)}}</td>
 
 																<!-- Azioni -->
 																<td>
@@ -185,7 +189,7 @@
 																		 src="assets/tipologia_versamento_2.png"
 																		 (click)="pagaCarrello(cartItem)"> -->
 
-																	<button
+																	<button *ngIf="showAggiungiPagamento(cartItem.status)"
 																		class="btn btn-primary manage-cart-button" (click)="aggiungiPagamentoCarrello(cartItem)">
 																		<i class="fas fa-plus"></i> Aggiungi pagamento
 																	</button>

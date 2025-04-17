@@ -33,6 +33,8 @@ export class PaymentFoService {
 
   public searchReq: SearchSubjectPaymentFoRequest
 
+  public subjectSelected: PaymentStoreCartRequest;
+
   @Output() loadCardListEvent = new EventEmitter<boolean>();
   emmettiEventoLoadCardList(loadEseguito: boolean) {    
     this.loadCardListEvent.emit(loadEseguito);
@@ -444,4 +446,10 @@ public retrievePaymentTypes() {
     return this.http.post<PaymentRedirectVO>(url,this.cartReq);
   }
 
+  saveSubjectSelected() {
+    this.subjectSelected = new PaymentStoreCartRequest;
+    this.subjectSelected.year = this.cartReq.year;
+    this.subjectSelected.subjectName = this.cartReq.subjectName;
+    this.subjectSelected.codiceFiscalePIva = this.cartReq.codiceFiscalePIva;
+  }
 }

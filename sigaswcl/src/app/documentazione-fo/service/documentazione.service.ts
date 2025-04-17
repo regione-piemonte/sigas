@@ -64,9 +64,8 @@ export class DocumentazioneService {
   }
   
   salvaDocumentazione(fileMaster: File, fileAllegati: Array<AllegatoMultipleFieldVO>) {
-      var url: string = this.config.getBEServer() + '/rest/documentazione/salvaDocumentazione';
+      var url: string = this.config.getBEServer() + '/rest/documentazione/salvaDocumentazione';      
       
-      console.log(url)
       let formData: FormData = new FormData();
       if (null != fileMaster) {
         formData.append('data', fileMaster, fileMaster.name);
@@ -75,8 +74,7 @@ export class DocumentazioneService {
       }
       
       if(fileAllegati!=null){
-          formData.append('numeroAllegati', fileAllegati.length.toString());
-          
+          formData.append('numeroAllegati', fileAllegati.length.toString());  
           
           fileAllegati.forEach((item, index) => {
               formData.append('allegatoDescrizione'+index, item.descrizione);
@@ -84,31 +82,32 @@ export class DocumentazioneService {
               formData.append('allegatoNome'+index, item.filename);
               
           });
-      }
-      
+      }      
       
       formData.append('idAnag', this.confermaDocumentazioneRequest.documentiVO.anagraficaSoggettoVO.idAnag.toString());
       if(this.confermaDocumentazioneRequest.documentiVO.annualita!=null){
           formData.append('annualita', this.confermaDocumentazioneRequest.documentiVO.annualita.toString());
-      }
-      
+      }     
       
       formData.append('cfPiva', this.confermaDocumentazioneRequest.documentiVO.cfPiva);
-      formData.append('nomeFile', fileMaster.name);
+
+      if(this.confermaDocumentazioneRequest.documentiVO.tipoDocumentoVO.codiceTipoDocumento == "DEPO" || this.confermaDocumentazioneRequest.documentiVO.tipoDocumentoVO.codiceTipoDocumento == "DEPO_INT"){
+        formData.append('nomeFile', this.confermaDocumentazioneRequest.documentiVO.anagraficaSoggettoVO.denominazione + "_richiesta_deposito_cauzionale.pdf");
+      } else {
+        formData.append('nomeFile', fileMaster.name);
+      }      
+
       formData.append('note', this.confermaDocumentazioneRequest.documentiVO.note);
       formData.append('rifArchivio', this.confermaDocumentazioneRequest.documentiVO.rifArchivio);
-//      formData.append('idStatoDocumento', this.confermaDocumentazioneRequest.documentiVO.statoDocumentoVO.idStatoDocumento.toString());
       formData.append('idTipoDocumento', this.confermaDocumentazioneRequest.documentiVO.tipoDocumentoVO.idTipoDocumento.toString());
       
       if(this.confermaDocumentazioneRequest.documentiVO.tipoComunicazioneVO!=null){
           formData.append('idTipoComunicazione', this.confermaDocumentazioneRequest.documentiVO.tipoComunicazioneVO.idTipoDocumento.toString());
-      }
-      
+      }      
       
       if(this.confermaDocumentazioneRequest.documentiVO.tipoRimborsoVO!=null){
           formData.append('idTipoRimborso', this.confermaDocumentazioneRequest.documentiVO.tipoRimborsoVO.idTipoDocumento.toString());
       }      
-      
       
       if(this.confermaDocumentazioneRequest.documentiVO.nProtocolloAccertamento!=null){
           formData.append('nProtocolloAccertamento', this.confermaDocumentazioneRequest.documentiVO.nProtocolloAccertamento.toString());          
@@ -118,6 +117,19 @@ export class DocumentazioneService {
           formData.append('annoProtocolloAccertamento', this.confermaDocumentazioneRequest.documentiVO.annoProtocolloAccertamento.toString());          
       }
 
+      if(this.confermaDocumentazioneRequest.codiceProvincia!=null){
+        formData.append('codiceProvincia', this.confermaDocumentazioneRequest.codiceProvincia.toString());          
+      }
+
+      if(this.confermaDocumentazioneRequest.importo!=null){
+        formData.append('importo', this.confermaDocumentazioneRequest.importo.toString());          
+      }
+
+      if(this.confermaDocumentazioneRequest.depCausionaleIndirizzo!=null && 
+         this.confermaDocumentazioneRequest.depCausionaleIndirizzo!="")
+      {
+        formData.append('depCausionaleIndirizzo', this.confermaDocumentazioneRequest.depCausionaleIndirizzo.toString());          
+      }
   
       return this.http.post<Array<DocumentiVO>>(url, formData);
   }

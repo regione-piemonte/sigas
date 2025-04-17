@@ -7,9 +7,13 @@
        id="idAnchorToContPrin">Vai al contenuto principale</a>                                
 </div>
 <div class="principal-div" id="principal-div-id" name="principal-div-id">
+    <!--
     <h1 *ngIf="foPayService" class="title" style="padding-left:15px">Carrello pagamenti mese di competenza {{getMonths()}} {{foPayService.cartReq.year}}
-        della denominazione azienda: {{foPayService.cartReq.subjectName}}</h1>
-        <!-- SPINNER -->
+        della denominazione azienda: {{foPayService.cartReq.subjectName}}
+    </h1>
+    -->
+    <h1 *ngIf="foPayService" class="title" style="padding-left:15px">{{titoloSezioneH1}}</h1>
+    <!-- SPINNER -->
     <sigas-spinner *ngIf="pageLoadingInProgress"></sigas-spinner>
     <!-- FORM DATI -->
     <form *ngIf="!pageLoadingInProgress" #carrelloPagamenti="ngForm" (ngSubmit)="onSubmit()">        
@@ -46,7 +50,10 @@
                                                 <tr>
                                                     <!-- Mese di competenza -->
                                                     <th>Mese di competenza </th>
-                                                    <td>{{getMonths()}}</td>
+                                                    <td><span *ngIf="foPayService.cartReq.type!='5' && foPayService.cartReq.type!='6'">
+                                                            {{getMonths()}}
+                                                        </span>
+                                                    </td>
                                                     <!-- Anno -->
                                                     <th colspan="2">Anno</th>
                                                     <td colspan="2">{{foPayService.cartReq.year}}</td>
@@ -64,7 +71,7 @@
         </div>
         <div style="padding-left: 5px; padding-right: 5px; margin-top: 20px">
             <!-- MAIN CARD -->
-            <div class="card card-primary">
+            <div class="card card-primary" *ngIf="foPayService.cartReq.type!='5' && foPayService.cartReq.type!='6'">
                 <div class="card-header text-white">
                     <h2 class="h2-font"><strong>DETTAGLIO PAGAMENTO</strong></h2>
                 </div>

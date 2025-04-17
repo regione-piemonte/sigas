@@ -143,6 +143,8 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
 
   private elencoRatei: Array<RateoVO> = new Array<RateoVO>();
 
+  private ownerOperazioneCancellazione: String;
+
   constructor(
     private router: Router,
     private logger: LoggerService,
@@ -338,6 +340,18 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
           this.loaderTipoVersamenti = false;
       });
   }
+
+  loadTipoVersamentiPerInserimento() {    
+    this.loaderTipoVersamenti = true;
+    this.subscribers.tipoVersamenti = this.anagraficaSoggettiService.ricercaTipoVersamenti().subscribe(data => {        
+        let elencoTipoVersamento = data.filter(tipoVersamento => tipoVersamento.denominazione.indexOf("Deposito Cauzionale") == -1); 
+        this.tipoVersamentiModel = elencoTipoVersamento;
+        this.loaderTipoVersamenti = false;
+    }, err => {
+        this.logger.error("Errore nel recupero tipo versamento");
+        this.loaderTipoVersamenti = false;
+    });
+}
   
   loadMesiVersamento() {
       this.logger.info("carico i mesi versamenti")
@@ -403,13 +417,14 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
 
   gestioneRicercaVersamentiCalcoli(): void{                                                                                   
     this.elencoVersamentiCalcolati.forEach((versamentoCal,index) => {
-        if (versamentoCal.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+        if (versamentoCal.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' && 
+            versamentoCal.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) {
             if(this.consumi!=null){
                 if((versamentoCal.mese!='Gennaio') || 
                    (versamentoCal.mese ==='Gennaio' && index > 0 ))
                 {                                                                                
                     this.elencoVersamentiStessoMese = this.elencoVersamentiCalcolati.filter(item => this.isEquals(item.mese, versamentoCal.mese));
-                    this.elencoVersamentiStessoMese.map(item => {item.note = moment(item.insDate).format("DD-MM-YYYY")});
+                    this.elencoVersamentiStessoMese.forEach(item => {item.note = moment(item.insDate).format("DD-MM-YYYY")});
                     this.elencoVersamentiStessoMese.sort((a,b) => a.idVersamento - b.idVersamento);
                     if(this.elencoVersamentiStessoMese.length > 1){                                                    
                         if(this.elencoVersamentiStessoMese.indexOf(versamentoCal)===0)
@@ -454,7 +469,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
         }
         this.versato = 0;
         this.elencoVersamenti.forEach(versamento => {
-            if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+            if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' && 
+                versamento.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+            {
                 for (var i = 0 ; i <= 11; i++) {
                     if (versamento.mese === this.mesiAnnuali[i].descrizione ) {
                         this.ultimoMese = this.mesiAnnuali[i].valore;
@@ -590,7 +607,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                                                                             err => {this.logger.error( "errore " );}, 
                                                                             () => {
                                                                                     this.elencoVersamentiCalcolati.forEach(versamento => {
-                                                                                    if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+                                                                                    if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' &&
+                                                                                        versamento.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+                                                                                    {
                                                                                         for (var i = 0 ; i <= 11; i++) {
                                                                                             if (versamento.mese === this.mesiAnnuali[i].descrizione ) {
                                                                                                 this.ultimoMese = this.mesiAnnuali[i].valore;
@@ -829,7 +848,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       this.consumi.totaleDich = rateoCalc*12;
 
       this.elencoVersamentiCalcolati.forEach(versamento => {
-        if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+        if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' && 
+            versamento.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+        {
             for (var i = 0 ; i <= 11; i++) {
                 if (versamento.mese === this.mesiAnnuali[i].descrizione ) {
                     this.ultimoMese = this.mesiAnnuali[i].valore;
@@ -848,13 +869,15 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
             }                                                        
         });
 
-      this.elencoVersamentiCalcolati.map( (versamentoCal, index) => {
-          if (versamentoCal.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+      this.elencoVersamentiCalcolati.forEach( (versamentoCal, index) => {
+          if (versamentoCal.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' && 
+              versamentoCal.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+          {
             if((versamentoCal.mese!='Gennaio') ||
                (versamentoCal.mese ==='Gennaio' && index > 0 ))
             {                                                                
                 this.elencoVersamentiStessoMese = this.elencoVersamentiCalcolati.filter(item => this.isEquals(item.mese, versamentoCal.mese));
-                this.elencoVersamentiStessoMese.map(item => {item.note = moment(item.insDate).format("DD-MM-YYYY")});
+                this.elencoVersamentiStessoMese.forEach(item => {item.note = moment(item.insDate).format("DD-MM-YYYY")});
                 this.elencoVersamentiStessoMese.sort((a,b) => a.idVersamento - b.idVersamento);
                 if(this.elencoVersamentiStessoMese.length > 1){                                                    
                     if(this.elencoVersamentiStessoMese.indexOf(versamentoCal)===0)
@@ -899,7 +922,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
           
           this.versato = 0;
           this.elencoVersamenti.forEach(versamento => {
-            if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+            if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' &&
+                versamento.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+            {
                 for (var i = 0 ; i <= 11; i++) {
                     if (versamento.mese === this.mesiAnnuali[i].descrizione ) {
                         this.ultimoMese = this.mesiAnnuali[i].valore;
@@ -1006,7 +1031,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                             err => {this.logger.error( "errore " );}, 
                             () => {
                                         this.elencoVersamentiCalcolati.forEach(versamento => {
-                                        if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+                                        if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' && 
+                                            versamento.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+                                        {
                                             for (var i = 0 ; i <= 11; i++) {
                                                 if (versamento.mese === this.mesiAnnuali[i].descrizione ) {
                                                     this.ultimoMese = this.mesiAnnuali[i].valore;
@@ -1094,7 +1121,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
                             err => {this.logger.error( "errore " );}, 
                             () => {
                                     this.elencoVersamentiCalcolati.forEach(versamento => {
-                                    if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO') {
+                                    if (versamento.tipo.denominazione.toUpperCase( ) != 'ACCERTAMENTO' && 
+                                        versamento.tipo.denominazione.indexOf('Deposito Cauzionale') == -1) 
+                                    {
                                         for (var i = 0 ; i <= 11; i++) {
                                             if (versamento.mese === this.mesiAnnuali[i].descrizione ) {
                                                 this.ultimoMese = this.mesiAnnuali[i].valore;
@@ -1153,7 +1182,8 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       //CR REQ24
       //this.calcolaAnniRecenti();
       this.loadAnniVersamento() 
-      this.loadTipoVersamenti() ;
+      //this.loadTipoVersamenti() ;
+      this.loadTipoVersamentiPerInserimento();
       this.versamentoToSave.idAnag = this.idAnagSogg;
   }
 
@@ -1340,7 +1370,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
   }
 
   onClickPulsanteElimina(){    
-    this.visualizzaDialogBoxConfernmaCancellazione(this.versamentoToSave)
+    this.visualizzaDialogBoxConfernmaCancellazione(this.versamentoToSave,'btn')
   }
   
   goBackVersamenti() {
@@ -1381,8 +1411,9 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
       return c1 && c2 ? c1.id === c2.id : c1 === c2; 
   }
 
-  visualizzaDialogBoxConfernmaCancellazione(versamento: VersamentiPrVO){
+  visualizzaDialogBoxConfernmaCancellazione(versamento: VersamentiPrVO, ownerOperazione: String){
     this.versamentoDaCancellare = versamento.idVersamento;
+    this.ownerOperazioneCancellazione = ownerOperazione;
     $('#dialogBox').modal('show');
   }
 
@@ -1390,7 +1421,7 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
     if(this.versamentoDaCancellare!=0){
         this.messageErrorModRateo = "";
         this.showMessageErrorModRateo = false;
-        this.subscribers.cancellaVersamento = this.anagraficaSoggettiService.eliminaVersamento(this.versamentoDaCancellare)
+        this.subscribers.cancellaVersamento = this.anagraficaSoggettiService.eliminaVersamento(this.versamentoDaCancellare, this.idAnagSogg)
         .subscribe(resp=>{
             this.nuovoVersamento = false;
             this.updateVersamento = false;                    
@@ -1401,14 +1432,29 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
             this.disabilitaGenerazioneVersamenti = true;
             this.applicaControlloVersamentoSimulato = false;
             this.showMessageError = false;
+            this.showMessageErrorModRateo = false;
             this.changeFilter();
             this.anagraficaSoggettiService.emitRateoRefreshAnniProvincieDispinibili(true);            
         },
         err => {
             this.logger.error( err );
-            this.messageErrorModRateo = "Si è verificato un errore in fase di elminazione versamento";
-            this.showMessageErrorModRateo = true;
-            this.versamentoDaCancellare=0;
+            /*
+            if (err instanceof ExceptionVO && err.status == '200') {
+                console.log("Errore gestito");
+                this.showMessageError = true;
+                this.messageError = err.message;
+            }
+            */
+            
+            if(this.ownerOperazioneCancellazione == 'btn'){
+                this.showMessageError = true;
+                this.messageError = err.message;    
+            } else {
+                this.messageErrorModRateo = err.message;
+                this.showMessageErrorModRateo = true;
+            }            
+
+            this.versamentoDaCancellare = 0;
             this.loaderDT = false;            
         });
     }    
@@ -1416,6 +1462,27 @@ export class VersamentiComponent implements OnInit, AfterViewInit {
 
   annullaCancellaVersamento(){
     this.versamentoDaCancellare=0;
+  }
+
+  determinaProvinciaDaVisualizzzare(versamentiPrVO: VersamentiPrVO){
+    if(versamentiPrVO.tipo.denominazione.indexOf("Deposito Cauzionale") > -1){
+        if(versamentiPrVO.provincia == "ZZ"){
+            return "Tutte";
+        } else {
+            return versamentiPrVO.provincia;
+        }
+
+    } else {
+        return versamentiPrVO.provincia;
+    }
+  }
+
+  determinaMeseDaVisualizzzare(versamentiPrVO: VersamentiPrVO){
+    if(versamentiPrVO.tipo.denominazione.indexOf("Deposito Cauzionale") > -1){
+        return "";
+    } else {
+        return versamentiPrVO.mese;
+    }
   }
 
 }

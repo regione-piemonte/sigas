@@ -1,8 +1,8 @@
 export class FusioneSoggettoVO {
 
     constructor(
-        public idAnagConfluente: number,
-        public idAnagDerivante: number,
+        public idAnagIncorporante: number,
+        public idAnagIncorporato: number,
         public dataFusione: Date,
         public note: string
     ) { }

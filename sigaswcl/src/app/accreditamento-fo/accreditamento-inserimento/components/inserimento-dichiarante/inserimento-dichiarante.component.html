@@ -227,7 +227,7 @@
                                     aria-labelledby="lblProvincia" 
                                     [(ngModel)]="dichiaranteModel.provincia.id"
                                     name="provincia" 
-                                    (change)="loadComuni(dichiaranteModel.provincia.id)">
+                                    (change)="loadComuni(dichiaranteModel.provincia.id)" required>
                                 <option *ngFor="let prov of provinciaModel" [value]="prov.id">{{prov.denominazione}}</option>
                             </select>
                         </ng-template>
@@ -246,7 +246,7 @@
                         <sigas-spinner-form [diameter]="30" *ngIf="!loaderComuni;  else elseComuniCaricati"></sigas-spinner-form>
                         <ng-template #elseComuniCaricati>
                             <select class="form-control" id="comune" [(ngModel)]="dichiaranteModel.comune.id" name="comune"                                
-                                [disabled]="dichiaranteModel.provincia.id==null" aria-labelledby="lblComune">
+                                [disabled]="dichiaranteModel.provincia.id==null" aria-labelledby="lblComune" required>
                                 <option *ngFor="let com of comuniModel" [value]="com.id">{{com.denominazione}}</option>
                             </select>
                         </ng-template>

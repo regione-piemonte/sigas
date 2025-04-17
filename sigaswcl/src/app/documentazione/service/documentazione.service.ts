@@ -24,6 +24,9 @@ export class DocumentazioneService {
     private confermaDocumentazioneRequest: ConfermaDocumentazioneRequest;
     private documentazioneSelect: DocumentiVO;
 
+    //evenutuale nome file lettera risposta
+    private nomeFileLetteraRisposta: string;
+
     constructor(
         private http: HttpClient,
         private config: ConfigService,
@@ -72,6 +75,13 @@ export class DocumentazioneService {
         this.documentazioneSelect = documentazioneSelect;
     }
 
+    public set nomeFileLetteraDiRisposta(nomeFileLetteraRisposta: string) {
+        this.nomeFileLetteraRisposta = nomeFileLetteraRisposta;
+    }
+
+    public get nomeFileLetteraDiRisposta(): string {
+        return this.nomeFileLetteraRisposta;
+    }
     public ricercaAziendeDocumentiInoltrati() {
         var url: string = this.config.getBEServer() + '/rest/documentazione/ricercaAziendeDocumentiInoltrati';
         return this.http.get<Array<AnagraficaSoggettoVO>>(url);
@@ -88,12 +98,15 @@ export class DocumentazioneService {
         return this.http.post<Array<DocumentiVO>>(url, this.ricercaDocumentazioneRequestBo);
     }
 
-    salvaDocumentazioneBO(notaDataInvioPec: string) {
+    salvaDocumentazioneBO(notaDataInvioPec: string, 
+                          annoAccertamento: number, numeroAccertamento: string, 
+                          depCausionaleNumeroDetermina: string,
+                          importoDepositoCausionale: number) 
+    {
         var url: string = this.config.getBEServer() + '/rest/documentazione/salvaDocumentazioneBO';
 
         console.log(url);
         let formData: FormData = new FormData();
-
 
         formData.append('idDocumento', this.confermaDocumentazioneRequest.documentiVO.idDocumento.toString());
         formData.append('idStatoSelezionato', this.confermaDocumentazioneRequest.documentiVO.statoDocumentoVO.idStatoDocumento.toString());
@@ -105,6 +118,21 @@ export class DocumentazioneService {
             formData.append('notaDataInvioPec', notaDataInvioPec);
         }
 
+        if(annoAccertamento != null && annoAccertamento != undefined) {
+            formData.append('annoAccertamento', annoAccertamento.toString());
+        }
+        
+        if(numeroAccertamento != null && numeroAccertamento != undefined) {
+            formData.append('numeroAccertamento', numeroAccertamento);
+        }
+
+        if(depCausionaleNumeroDetermina != null && depCausionaleNumeroDetermina != undefined) {
+            formData.append('numeroDetermina', depCausionaleNumeroDetermina);
+        }
+
+        if(importoDepositoCausionale != null && importoDepositoCausionale != undefined) {            
+            formData.append('importo', importoDepositoCausionale.toString());
+        }        
 
         return this.http.post<string>(url, formData);
     }
@@ -163,6 +191,35 @@ export class DocumentazioneService {
         //const header = new HttpHeaders({ 'Content-Type': 'application/json; charset=utf-8' });
         let params = new HttpParams().set('rifArchivio', rifArchivio);
         return this.http.get<Array<DocumentiVO>>(url, {params: params});
+    }
+
+    public generaProtocollaBollettinoPagamentoDepCausionale(determina: File, 
+                                                            idDocumentoRichiestaDepCausionale: number, importo: number, 
+                                                            annoAccertamento: number, numeroAccertamento: string, 
+                                                            depCausionaleNumeroDetermina: string,
+                                                            codiceTipoDocumento: string) 
+    {
+        var url: string = this.config.getBEServer() + '/rest/deposito-causionale/bollettino-pagamento';
+
+        console.log(url);
+        let formData: FormData = new FormData();
+        if (null != determina) {
+            formData.append('dataFileRisposta', determina, determina.name);            
+            formData.append('fileName', determina.name);
+        }
+
+        if (null != determina) {
+            formData.append('nomeFileLetteraRisposta', determina.name);
+        }
+
+        formData.append('idDocumento', idDocumentoRichiestaDepCausionale.toString());
+        formData.append('importo', importo.toString());
+        formData.append('annoAccertamento', annoAccertamento.toString());
+        formData.append('numeroAccertamento', numeroAccertamento);
+        formData.append('numeroDetermina', depCausionaleNumeroDetermina);
+        formData.append('codiceTipoDocumento', codiceTipoDocumento);
+
+        return this.http.post<String>(url, formData);
     }
 
 

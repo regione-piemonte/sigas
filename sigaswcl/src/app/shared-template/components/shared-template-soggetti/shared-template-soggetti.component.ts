@@ -54,7 +54,7 @@ export class SharedTemplateSoggettiComponent implements OnInit, OnDestroy {
         this.subscribers.province = this.luoghiService.getAllProvince().subscribe(data => {
             this.provinceModel = data;
             this.provinceModel.push(new ProvinceVO(-1, 'Nessuna Provincia Selezionata', ''));
-            this.provinceModel.map(prov => {
+            this.provinceModel.forEach(prov => {
                 if (prov.id == this.anagraficaSoggettoVO.idProvincia) {
                     this.provincia = prov;
                 }
@@ -71,7 +71,7 @@ export class SharedTemplateSoggettiComponent implements OnInit, OnDestroy {
         if (id != null && id != -1) {
             this.subscribers.comuniByIdProvincia = this.luoghiService.getComuneByIdProvincia(id).subscribe(data => {
                 this.comuniModel = data;
-                this.comuniModel.map(com => {
+                this.comuniModel.forEach(com => {
                     if (com.id == this.anagraficaSoggettoVO.idComune) {
                         this.comune = com;
                     }

@@ -12,6 +12,7 @@ import { ErrorComponent } from './component/error/error.component';
 import { SigasAlertComponent } from '../shared/component/sigas-alert/sigas-alert.component';
 import { SharedModule } from '../shared/shared.module';
 import { TemplateModule } from '../template/template.module';
+import { DepositoCauzionaleService } from './services/depositocauzionale.service';
 
 @NgModule({
   imports: [
@@ -33,6 +34,7 @@ SharedModule,
   providers: [
     ConfigService,
     LoggerService,
+    DepositoCauzionaleService,
     { provide: HTTP_INTERCEPTORS, useClass: HandleExceptionInterceptor, multi: true },
     { provide: LOCALE_ID, useValue: 'it-IT' }
   ]

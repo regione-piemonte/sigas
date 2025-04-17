@@ -1,0 +1,75 @@
+/*Import di classe*/
+@import '../../../color.scss';
+
+/* Gestione classi Header */
+.h1-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
+ }
+
+.h1-font-sm {
+  font-size: 1.0em;
+} 
+
+/*Gestione H£*/
+.h3-font {    
+  font-size: 1.2em; /* 40px/16=2.5em */
+}
+
+// Sezione Label
+.pl-5 {
+  padding-left: 15px;
+}
+// ----------------
+
+//----------------
+.note-textarea {
+  width: 100%;
+  resize: none;
+}
+//----------------
+
+ //Accesso main via tab
+.skip-link {
+    //background: $white;
+    //border: 2px solid $primary;
+    color: #000;
+    //padding: 15px;
+    font-weight: 700;
+    left: calc(50% - 125px);
+    width: 250px;
+    //padding: 10px;
+    text-align: center;
+    position: absolute;
+    z-index: 100000;
+    transform: translateY(-110%);
+    transition: transform 0.3s;  
+  }
+  
+  .skip-link {
+    &:focus {
+      transform: translateY(0%);
+      top: 10px;
+    }
+  }
+
+  .bg-color-valore-diverso{
+    background-color: rgba(173, 205, 245, 0.989) !important;
+  }
+
+  //Sezione Tabella  
+  .dt-center {
+    text-align: center;    
+  }
+
+  //Sezione Tabella  
+  .dt-center-sm {
+    text-align: center;
+    width: 5%;    
+  }
+
+  .h2-font {
+    font-size: 1.1em; /* 40px/16=2.5em */
+    color: rgb(0, 76, 153);
+    font-weight: bold;
+  }  
+/**************************/

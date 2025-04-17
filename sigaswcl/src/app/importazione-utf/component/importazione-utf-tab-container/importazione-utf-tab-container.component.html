@@ -1,0 +1,73 @@
+<div role="listbox" aria-label="Navigazione nascosta per screen reader" id="idDivToContPrin" tabindex="-1"></div>
+<div aria-relevant="true">    
+    <a href='#principal-div-id'  
+       class="skip-link" 
+       role="listitem" 
+       id="idAnchorToContPrin">Vai al contenuto principale</a>                                
+</div>
+<div class="principal-div" id="principal-div-id" name="principal-div-id">
+    <div class="card card-primary center-default">
+        <!-- Header block -->
+        <div class="card-header text-white">            
+            <h1 class="h1-font">Gestione importazioni UTF</h1>
+        </div>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+             <!-- Import UTF -->
+             <li class="nav-item">
+                <a class="nav-link nav-link-color active" 
+                   id="importutf-tab" 
+                   data-toggle="tab" 
+                   href="#importUTF" 
+                   role="tab" 
+                   aria-controls="inportUTF" 
+                   aria-selected="true"                   
+                   ><h2 class="h3-font">Importazione UTF</h2></a>
+            </li>
+            <!-- Compare Dettaglio Soggetto -->
+            <li class="nav-item">
+                <a class="nav-link nav-link-color" 
+                   id="compare-dettaglio-soggetto-tab" 
+                   data-toggle="tab"                    
+                   href="#compareDettaglioSoggetto" 
+                   role="tab" 
+                   aria-controls="compareDettaglioSoggetto" 
+                   aria-selected="false"
+                   [ngClass]="isDisabledCheck===true ? 'disabled' : ''"
+                   ><h2 class="h3-font">Confronta importazione UTF - Dettaglio Soggetti</h2></a>
+            </li>
+            <!-- Compare imports -->
+            <li class="nav-item">
+                <a class="nav-link nav-link-color" 
+                   id="compare-imports-tab" 
+                   data-toggle="tab" 
+                   href="#compareImports" 
+                   role="tab" 
+                   aria-controls="compareImports" 
+                   aria-selected="false"
+                   [ngClass]="isDisabledCheck===true ? 'disabled' : ''"
+                   ><h2 class="h3-font">Confronta importazione UTF - Prospetto Globale</h2></a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="importUTF" role="tabpanel" aria-labelledby="importutf-tab">
+                <sigas-alert [message]="'Selezionare l\'annualità di cui si vuole caricare le dichiarazioni. Selezionare il file in formato zip. Premere conferma'" 
+                             [type]="'INFO'"></sigas-alert>
+                <!-- Import UTF component -->
+                <app-importazione-utf></app-importazione-utf>                 
+            </div>
+            <div class="tab-pane fade show" id="compareDettaglioSoggetto" role="tabpanel" aria-labelledby="compare-dettaglio-soggetto-tab">
+                <sigas-alert [message]="'Qualora presenti più import per la stessa annualità, è possibile selezionare, in base alla data, l\'import con il quale si desidera efftuare un confronto in termini di dati dettaglio soggetti.'" 
+                             [type]="'INFO'"></sigas-alert>
+                <!-- Compare Dettaglio Soggetto-->
+                <app-compare-import-utf-dettaglio-soggetti></app-compare-import-utf-dettaglio-soggetti>                  
+            </div>
+            <div class="tab-pane fade show" id="compareImports" role="tabpanel" aria-labelledby="compare-imports-tab">
+                <sigas-alert [message]="'Qualora presenti più import per la stessa annualità, è possibile selezionare, in base alla data, l\'import con il quale si desidera efftuare un confronto in termini di dati import.'" 
+                             [type]="'INFO'"></sigas-alert>
+                <!-- Compare Imports component -->
+                <app-compare-import-utf></app-compare-import-utf>                  
+            </div>
+        </div>    
+    </div>
+</div>

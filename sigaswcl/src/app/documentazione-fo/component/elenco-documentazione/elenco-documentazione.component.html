@@ -146,8 +146,7 @@
                                     <!-- ciclo Elenco Documenti -->
                                     <ng-container *ngFor="let el of elencoDoc; index as i">
                                         <!-- COLONNE DI DEFAULT -->
-                                        <tr [ngStyle]="{'color': (el.statoDocumentoVO== null || el.statoDocumentoVO.codiceStato=='LETT_RISP') ? '#da330d' : ''}"                                           
-                                            class="pointer">
+                                        <tr [ngStyle]="{'color': (el.statoDocumentoVO== null || el.statoDocumentoVO.codiceStato=='LETT_RISP') ? '#da330d' : ''}">
                                             <!-- Data -->
                                             <td class="dt-center">
                                                 <span style="display: none">{{ getDataProtocollazioneByNumeroProtocolloRif(el.rifArchivio, el.dataProtocollazione) | date: 'yyyyMMddhhmmss' }}</span>

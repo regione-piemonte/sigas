@@ -269,7 +269,7 @@ export class DocumentiComponent implements OnInit, AfterViewInit {
             this.subscribers.riceraByAnnoAndTipo = this.anagraficaSoggettiService.ricercaDocumentiByAnnoAndTipologia()
                 .subscribe(res => {
                     this.listaDocumenti = res;
-                    this.listaDocumenti.map(doc => {
+                    this.listaDocumenti.forEach(doc => {
                         this.anagraficaSoggettiService.setIdDoc = doc.idComunicazione;
                         this.anagraficaSoggettiService.ricercaAllarmiByIdDocumentoAndCodiceAzienda()
                             .subscribe(ret => {
@@ -463,7 +463,7 @@ export class DocumentiComponent implements OnInit, AfterViewInit {
                     this.loaderPage = false;
                     this.loaderDT = false;
                     this.listaDocumenti = res;
-                    this.listaDocumenti.map(doc => {
+                    this.listaDocumenti.forEach(doc => {
                         this.anagraficaSoggettiService.setIdDoc = doc.idComunicazione;
                         this.anagraficaSoggettiService.ricercaAllarmiByIdDocumentoAndCodiceAzienda()
                             .subscribe(ret => {
@@ -527,7 +527,7 @@ export class DocumentiComponent implements OnInit, AfterViewInit {
                 .subscribe(response => {
                     console.log('OK');
                     if (this.listaDocumenti != null) {
-                        this.listaDocumenti.map(doc => {
+                        this.listaDocumenti.forEach(doc => {
                             this.anagraficaSoggettiService.setIdDoc = doc.idComunicazione;
                             this.anagraficaSoggettiService.ricercaAllarmiByIdDocumentoAndCodiceAzienda()
                                 .subscribe(ret => {
@@ -570,7 +570,7 @@ export class DocumentiComponent implements OnInit, AfterViewInit {
                     this.loaderPage = false;
                     this.loaderDT = false;
                     this.listaDocumenti = res;
-                    this.listaDocumenti.map(doc => {
+                    this.listaDocumenti.forEach(doc => {
                         this.anagraficaSoggettiService.allarmeDocumento(this.documentoToSave.allarmeOn, this.documentoToSave.idComunicazione)
                             .subscribe(resp => {
                                 console.log('OK');

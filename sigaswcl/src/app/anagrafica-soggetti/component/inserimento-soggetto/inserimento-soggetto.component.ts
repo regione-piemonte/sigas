@@ -59,7 +59,12 @@ export class InserimentoSoggettoComponent implements OnInit, AfterViewInit {
   onSubmitInserisci() {
       console.log("Inserisci");
       this.loaderInserimentoSoggettoPage = true;
-      this.subscribers.confermaInserimentoSoggetto = this.anagraficaSoggettiService.confermaInserimentoSoggetto(this.soggettoToSave).subscribe(
+      this.subscribers.confermaInserimentoSoggetto = this.anagraficaSoggettiService
+                                                         .confermaInserimentoSoggetto(this.soggettoToSave, 
+                                                                                      this.anagraficaSoggettiService.annoDichiarazione, 
+                                                                                      "Operatore")
+                                                         .subscribe
+  (
         resp =>{
             console.log(resp);
             this.ricercaConsumiRequest =  new RicercaConsumiRequest('','NUOVI');

@@ -88,7 +88,7 @@
                                         <!-- Table Body-->
                                         <tbody>
                                             <!-- Ciclo su CartList -->
-                                            <tr class ="pointer" *ngFor="let cartItem of foPayService.cartList | keyvalue">
+                                            <tr class ="pointer" *ngFor="let cartItem of dataSourceTableCartList | keyvalue">
 
                                                 <!-- Payment Code -->
                                                 <td>{{ cartItem.value.paymentCode }}</td>

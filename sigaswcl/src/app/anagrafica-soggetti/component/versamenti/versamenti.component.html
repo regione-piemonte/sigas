@@ -133,10 +133,28 @@
                               {{ (consumi?.totaleDich/12 === 0 ? '' : consumi?.totaleDich/12)| currency:'EUR':'symbol'}}
                           </div>
                       </div> -->
-                      <div class="col-lg-2 col-value" >
-                          <input type="number"  id="importoRateoCalc" aria-labelledby="lblImportoRateoCalc"  [disabled] = "!consumi"
-                       		(change)="onChangeRateoCalc(rateo_calc)" [(ngModel)]="rateo_calc"
-                              name="importoRateoCalc" #importoRateoCalc="ngModel" min="0" required>
+                      <div class="col-lg-2 col-value" >                          
+                          <!--
+                          <input type="number"  
+                                 id="importoRateoCalc" 
+                                 aria-labelledby="lblImportoRateoCalc"  
+                                 [disabled] = "!consumi"
+                       		     (change)="onChangeRateoCalc(rateo_calc)" 
+                                 [(ngModel)]="rateo_calc"
+                                 name="importoRateoCalc" 
+                                 #importoRateoCalc="ngModel" 
+                                 min="0" 
+                                 required>
+                           -->
+                           <input type="number"  
+                                 id="importoRateoCalc" 
+                                 aria-labelledby="lblImportoRateoCalc"  
+                                 [disabled] = "true"
+                       		     (change)="onChangeRateoCalc(rateo_calc)" 
+                                 [(ngModel)]="rateo_calc"
+                                 name="importoRateoCalc" 
+                                 #importoRateoCalc="ngModel" 
+                                 min="0">
                       </div>
                       <label class="col-lg-3 offset-lg-1 col-form-label">Conguaglio calcolato:</label>
                       <div class="col-lg-2 col-value">
@@ -191,9 +209,9 @@
                                   <!--annualita-->
                                   <!--<td>{{ el.annualita }}</td>-->
                                   <!--mese-->
-                                  <td>{{ el.mese }}</td>
-                                  <!--provincia-->
-                                  <td>{{ el.provincia }}</td>
+                                  <td>{{ determinaMeseDaVisualizzzare(el) }}</td>
+                                  <!--provincia-->                                  
+                                  <td>{{ determinaProvinciaDaVisualizzzare(el) }}</td>
                                   <!--denominazione-->
                                   <td>{{ el.tipo.denominazione }}</td>
                                   <!--rateo applicato-->
@@ -211,9 +229,9 @@
                                     <img *ngIf="el.hasPagamentiVersamenti" style="width:25px; height:25px;" alt="pagamento" title="pagamento" src="assets/tipologia_versamento_2.png">
                                   </td>
                                   <td>
-                                    <img *ngIf="el.tipo.idTipoVersamento!=99" style="width:25px; height:25px;" alt="Modifica versamento" title="Modifica versamento" src="assets/pencil-solid-fa-ok.png" (click)="editVersamento(el)">
-                                    <img *ngIf="el.tipo.idTipoVersamento==99" style="width:25px; height:25px;" alt="Impossibile modificare versamento" title="Impossibile modificare versamento" src="assets/pencil-solid fa.png">                                    
-                                    <img *ngIf="!el.hasPagamentiVersamenti && el.tipo.idTipoVersamento!=99" style="width:25px; height:25px;" alt="Cancella versamento" title="Cancella versamento" src="assets/trash_blu.png" (click)="visualizzaDialogBoxConfernmaCancellazione(el)">                                    
+                                    <img *ngIf="el.tipo.idTipoVersamento!=99 && el.tipo.idTipoVersamento!=6 && el.tipo.idTipoVersamento!=7" style="width:25px; height:25px;" alt="Modifica versamento" title="Modifica versamento" src="assets/pencil-solid-fa-ok.png" (click)="editVersamento(el)">
+                                    <img *ngIf="el.tipo.idTipoVersamento==99 || el.tipo.idTipoVersamento==6 || el.tipo.idTipoVersamento==7" style="width:25px; height:25px;" alt="Impossibile modificare versamento" title="Impossibile modificare versamento" src="assets/pencil-solid fa.png">                                    
+                                    <img *ngIf="!el.hasPagamentiVersamenti && el.tipo.idTipoVersamento!=99" style="width:25px; height:25px;" alt="Cancella versamento" title="Cancella versamento" src="assets/trash_blu.png" (click)="visualizzaDialogBoxConfernmaCancellazione(el,'tbl')">                                    
                                     <img *ngIf="el.hasPagamentiVersamenti || el.tipo.idTipoVersamento==99" style="width:25px; height:25px;" alt="Impossibile cancellare pagamento" title="Impossibile cancellare versamento" src="assets/trash_nera.png">
                                   </td> 
                               </tr>
@@ -244,12 +262,13 @@
                           <i class="fas fa-check"></i> Nuovo Versamento</button>
                   </div>
 
-                  <!--Salva-->
+                  <!--Salva
                   <div class="btn-group">
                       <button type="button" class="btn btn-primary margin-icon" (click)="salvaModificaRateo()"
                       [disabled] = "!consumi">
                       <i class="fas fa-check"></i> Salva</button>
                   </div>
+                  -->
                   <div class="btn-group" *ngIf="!disabilitaGenerazioneVersamenti">
                     <button type="button" 
                             class="btn btn-primary margin-icon" 

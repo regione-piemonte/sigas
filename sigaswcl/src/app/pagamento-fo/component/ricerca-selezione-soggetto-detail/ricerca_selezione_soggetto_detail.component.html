@@ -49,7 +49,7 @@
                                             <!--Nome azienda -->
                                             <td tabindex="-1">{{ el.nomeAzienda }}</td>
                                             <!-- Mesi -->
-                                            <td tabindex="-1">{{ el.mesi }}</td>
+                                            <td tabindex="-1"><span *ngIf="el.tipoCarrello!='5' && el.tipoCarrello!='6'">{{ el.mesi }}</span></td>
                                             <!-- Totale -->
                                             <td tabindex="-1">{{ el.totale | currency:'EUR':'symbol' }}</td>
                                             <!--Stato Carrello-->

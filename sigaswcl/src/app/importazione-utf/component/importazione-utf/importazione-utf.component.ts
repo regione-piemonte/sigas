@@ -5,6 +5,8 @@ import { ImportazioneUTFRequest } from '../../../commons/request/importazione-ut
 import { LoggerService } from '../../../core/services/logger.service';
 import { FormGroup } from '@angular/forms';
 import { AnnualitaUTFVO } from '../../../commons/vo/annualita-utf-vo';
+import { ImportUTFVO } from '../../../commons/vo/import-utf-vo';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-importazione-utf',
@@ -16,7 +18,7 @@ import { AnnualitaUTFVO } from '../../../commons/vo/annualita-utf-vo';
 export class ImportazioneUTFComponent implements OnInit, AfterViewInit {
 
   @ViewChild('utfFileRef')
-  utfFileRef: ElementRef;
+  utfFileRef: ElementRef;  
 
   private form: FormGroup;
   private importazioneUTFRequest: ImportazioneUTFRequest;
@@ -34,6 +36,19 @@ export class ImportazioneUTFComponent implements OnInit, AfterViewInit {
   private percNeg: Array<number> = [0, 15, 40, 80];
   
   public subscribers: any = {};
+
+  //idImportAttuale: number = null;
+  idImportSelezionato: number;
+  idDichirazionePresenteSelezionata: number;
+  listaDichiarazioniPresenti: Array<ImportUTFVO>;
+  loaderDichiarazioniPresenti: boolean = false;
+  esitoImportAttuale: number = null;
+
+  importAttualeSelected: boolean;
+  importSelezionatoSelected: boolean;
+  dichirazionePresenteSelezionata: ImportUTFVO;
+
+  eventsSubjectIdImportSelezionato: Subject<number> = new Subject<number>();
 
   constructor(
     private logger: LoggerService,
@@ -53,11 +68,19 @@ export class ImportazioneUTFComponent implements OnInit, AfterViewInit {
     this.showMessageError = false;
     this.showSuccess = false;
     this.showInfo = true;
-  
-    this.getImportState();
     
+    
+    /* 
+     //let marts = new AnnualitaUTFVO("2018", "Errore", 4, "Success");
+     let marts = new AnnualitaUTFVO("2024", "Errore", 4, "Success");
+     let martsList = new Array<AnnualitaUTFVO>();
+     martsList.push(marts);
+     this.listaAnnualita = martsList;
+     */
+    
+     this.getImportState();
+     
   }
-
 
   handleFileInput(event) {
     this.importazioneUTFService.importazioneUTFReq = this.importazioneUTFRequest;
@@ -105,26 +128,82 @@ export class ImportazioneUTFComponent implements OnInit, AfterViewInit {
 
   getImportState() {
     this.loaderAnno = true;
+    this.idDichirazionePresenteSelezionata = null;
+    this.importazioneUTFService.emitImportUTFAnnualitaSelezionataChanged(true);
+    this.showMessageError = false;
+    this.showSuccess = false;    
+
     this.progress = new AnnualitaUTFVO(null, null, 0, null);
     this.subscribers.ricerca = this.importazioneUTFService.ricercaAnnualita().subscribe(
-      data => {
-        this.listaAnnualita = data;
-        this.listaAnnualita.map( annualita => {
-          if (annualita.anno === this.importazioneUTFRequest.annualita) {
-            this.progress = new AnnualitaUTFVO(annualita.anno, annualita.errore, annualita.esito, annualita.success);
-            if (annualita.esito > 0){
-              this.notImportable = true;
-            } else {
-              this.notImportable = false;
+       data => {
+          this.listaAnnualita = data;
+          this.listaAnnualita.forEach( annualita => {
+            if (annualita.anno === this.importazioneUTFRequest.annualita) {
+              this.progress = new AnnualitaUTFVO(annualita.anno, annualita.errore, annualita.esito, annualita.success);
+              if (annualita.esito > 0)
+              {
+                this.importazioneUTFService.emitImportUTFAnnualitaSelezionata(+annualita.anno);
+              } 
             }
-          }
-        })
-        this.loaderAnno = false;
+          })
+          this.loaderAnno = false;
+       }, err => {
+          this.logger.error(err);
+          this.showMessageError = true;
+          this.messageError = err.message;
+          this.loaderAnno = false;
+       }
+    );
+  }
+
+  /*
+  _caricaElencoDichirazioniPresentiAnno(anno:number) {
+    this.loaderDichiarazioniPresenti = true;
+    this.subscribers.elencoDichiarazioni = this.importazioneUTFService.elencoReportUTFByAnno(anno.toString()).subscribe(
+      data => {
+        console.log("_caricaElencoDichirazioniPresentiAnno", data);
+        let tempDichiarazioniPresenti: ImportUTFVO[] = data.filter(importUtf => importUtf.esito == 4 );
+        console.log("tempDichiarazioniPresenti", tempDichiarazioniPresenti);
+        // data[0].selectedImport = false;
+        this.listaDichiarazioniPresenti = [];
+        if(tempDichiarazioniPresenti.length > 0){
+          this.idImportAttuale = tempDichiarazioniPresenti[0].importId;
+          this.esitoImportAttuale = tempDichiarazioniPresenti[0].esito;
+          this.importAttualeSelected = tempDichiarazioniPresenti[0].selectedImport;
+          console.log("idImportAttuale", this.idImportAttuale);
+          console.log("esitoImportAttuale", this.esitoImportAttuale);
+        }       
+
+        this.listaDichiarazioniPresenti = tempDichiarazioniPresenti;       
+        this.loaderDichiarazioniPresenti = false;
       }, err => {
           this.logger.error(err);
           this.messageError = err.message;
-          this.loaderAnno = false;
+          this.loaderDichiarazioniPresenti = false;
       }
     );
   }
+  */
+
+  /*
+  confermaImport() {
+    this.importazioneUTFService.confermaImportUTF(this.importazioneUTFRequest.annualita, this.idImportAttuale).subscribe(
+      result => {
+
+    }, err => {
+        this.logger.error(err);
+        this.messageError = err.message;
+    });
+  }
+  */
+
+  /*
+  selectDichiarazione(event: any) 
+  {    
+    this.idDichirazionePresenteSelezionata = this.dichirazionePresenteSelezionata.importId;
+    this.importSelezionatoSelected = this.dichirazionePresenteSelezionata.selectedImport;    
+    this.importazioneUTFService.emitCompareImportUTFVariazioneIdImportSelezionato(true);
+    document.getElementById('compareUTFComponent').scrollIntoView();
+  }
+  */
 }

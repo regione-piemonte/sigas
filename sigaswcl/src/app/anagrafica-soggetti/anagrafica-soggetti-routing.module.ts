@@ -8,12 +8,14 @@ import { OrdinativiIncassoComponent } from './component/ordinativi-incasso/ordin
 import { AssociaOrdincSoggettoComponent } from './component/associa-ordinc-soggetto/associa-ordinc-soggetto.component';
 
 import { AssociaOrdincVersamentoComponent } from './component/associa-ordinc-versamento/associa-ordinc-versamento.component';
+import { StoricoAnagraficaComponent } from './component/storico-anagrafica/storico-anagrafica.component';
 
 const routes: Routes = [
   {
       path: 'home',
       children: [
           { path: '', redirectTo: 'home', pathMatch: 'full' },
+          { path: 'storico', component: StoricoAnagraficaComponent, data: { breadcrumb: "Storico Anagrafica" }},
           { path: 'soggetti', component: SoggettiComponent, data: { breadcrumb: "Anagrafica Soggetti" }},          
           {
             path: 'soggetti', children:[

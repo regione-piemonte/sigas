@@ -17,6 +17,7 @@ import { Subject } from 'rxjs';
 import { DataTableIt } from '../../../commons/class/commons-data-table';
 import { DichiaranteVO } from '../../../commons/vo/dichiarante-vo';
 import { FusioneSoggettoVO } from '../../../commons/vo/fusione-vo';
+import { GenericResultVO } from '../../../core/commons/vo/generic-result-vo';
 import { SigasDialogComponent } from "../../../shared/component/sigas-dialog/sigas-dialog.component";
 
 import * as moment from 'moment';
@@ -30,6 +31,11 @@ import { ItemSoggettoReport } from '../../../commons/request/ItemSoggettoReport'
 
 import { DOCUMENT } from '@angular/common';
 
+declare var jquery: any;
+declare var $: any;
+
+import { DataTableDirective } from 'angular-datatables/src/angular-datatables.directive';
+import { StoricoAnagraficaSoggettoVO } from '../../../commons/vo/storico-anagrafica-soggetto-vo';
 
 @Component({
   selector: 'app-anagrafica-soggetto',
@@ -89,7 +95,23 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
 
   private messageError: string;
 
+  private showComparazioneSoggetti: boolean = false;
+  private showFusionOKMessage: boolean = false;
+  private showFusionErrorMessage: boolean = false;
+  private fusionMessage: String;
+  private soggettoIncorporatoDenominazione: string;
+  private soggettoIncorporatoCodice: string;
+  private soggettoIncorporatoDataFusione: string;
 
+  private loaderPageStoricoAnagrafica: boolean = false;
+  private storicoAnagraficaList: Array<StoricoAnagraficaSoggettoVO>;
+  private showMessageErrorModStoricoAnagrafica: boolean = false;
+  private messageErrorModStoricoAnagrafica: string;
+
+  private dtTriggerModStorico: Subject<any> = new Subject();
+  private dtOptionsModStorico: any;
+  @ViewChild('tblStoricoAnagrafica') dtElement: DataTableDirective;
+    
   constructor(
     private router: Router,
     private logger: LoggerService,
@@ -158,6 +180,28 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
       ]
     };
 
+    this.dtOptionsModStorico = {
+      //deferRender: true,
+      destroy: true,
+      processing: true,            
+      responsive: {
+          details: false
+      },            
+      head: 20,
+      pageLength: 5,
+      pagingType: 'first_last_numbers',
+      language: DataTableIt.language,
+      //rowReorder: true,
+      columnDefs: [          
+          { orderable: true, targets: 0 },
+          { orderable: true, targets: 1 },
+          { orderable: true, targets: 6 },
+          { orderable: false, targets: '_all' }
+      ],
+      order: [[6, 'desc']],
+      bInfo: false
+    };
+
     this.soggetto = new AnagraficaSoggettoVO(0,0,"","","","","","",0,"","","",0,false,0,"","",0,0,null);
     this.viewAssociaSoggetto = false;
 
@@ -173,6 +217,19 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
           this.soggetto = res;
           this.loadProvince();
           this.loadComuni(res.idProvincia);
+          if(this.soggetto.idFusione > 0){
+            this.subscribers.ricercaSoggettoFusione = this.anagraficaSoggettiService.ricercaSoggettobyIdAnagrafica(this.soggetto.idFusione)
+                .subscribe(
+                  resp =>{
+                    this.soggettoIncorporatoDenominazione = resp.denominazione;
+                    this.soggettoIncorporatoCodice = resp.codiceAzienda;
+                    this.soggettoIncorporatoDataFusione = formatDate(resp.dataFusione, 'dd/MM/yyyy', 'it-IT');
+                  },
+                  error=>{
+                    this.logger.error("errore in caricamento sogetto fusione");
+                  }
+                );
+          }
           this.copFid = res.fideussione ? 'OK' : 'KO';
           this.impFid = res.importoFideussione != null ? res.importoFideussione : 0;
           this.loaderPage = false;
@@ -229,7 +286,7 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
   modButtonFideussione() {
       this.soggettoToSave.fideussione = !this.soggettoToSave.fideussione;
       
-    }
+  }
   
   cambiaProvincia(provincia: string) {       
 
@@ -252,7 +309,7 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
 
         this.selTotDich = 0;
         this.selAddLiq = 0;
-        this.consumiPr.map(consumo => {
+        this.consumiPr.forEach(consumo => {
           if (consumo.provincia_erogazione === provincia){
             this.selTotDich = consumo.totaleDichOrigine;
             this.selAddLiq = consumo.addizionale_liquidata;
@@ -290,6 +347,20 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
          this.copFid = res.fideussione ? 'OK' : 'KO';
          this.impFid = res.importoFideussione != null ? res.importoFideussione : 0;
 
+         if(this.soggetto.idFusione > 0){
+          this.subscribers.ricercaSoggettoFusione = this.anagraficaSoggettiService.ricercaSoggettobyIdAnagrafica(this.soggetto.idFusione)
+              .subscribe(
+                resp =>{
+                  this.soggettoIncorporatoDenominazione = resp.denominazione;
+                  this.soggettoIncorporatoCodice = resp.codiceAzienda;
+                  this.soggettoIncorporatoDataFusione = formatDate(resp.dataFusione, 'dd/MM/yyyy', 'it-IT');
+                },
+                error=>{
+                  this.logger.error("errore in caricamento sogetto fusione");
+                }
+              );
+         }
+
          //update card header dettaglio-soggetto-component         
          this.anagraficaSoggettiService.headerDichiarante.denominazione = this.soggetto.denominazione;
 
@@ -322,7 +393,7 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
         
         this.selTotDich = this.totDich;          
         this.selAddLiq = this.addLiq;
-        this.selTotVers = this.totVers;
+        this.selTotVers = this.totVers;       
 
         this.loaderPage = false;
         this.loaderProvinceDettAna = false;
@@ -475,7 +546,12 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
         {
           this.soggettoToSave.cfPiva = this.soggettoToSave.cfPiva.toUpperCase();
         }        
-        this.subscribers.confermaModificaSoggetto = this.anagraficaSoggettiService.confermaModificaSoggetto(this.soggettoToSave).subscribe(
+        this.subscribers.confermaModificaSoggetto = this.anagraficaSoggettiService
+                                                        .confermaModificaSoggetto(this.soggettoToSave, 
+                                                                                  this.anagraficaSoggettiService.annoDichiarazione, 
+                                                                                  "Operatore")
+                                                        .subscribe
+        (
           resp =>{
               this.showMessageError = false;
               console.log(resp);
@@ -518,7 +594,7 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
           });
       }
 
-
+    /*  
     onSubmitFusione() {
      this.fusioneReq.idAnagConfluente = this.soggetto.idAnag;
      console.log( this.fusioneReq);
@@ -551,6 +627,19 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
           // Move on top
           window.scrollTo(0, 0);
       });
+    }
+    */
+
+    onSubmitFusione() {
+      this.fusioneReq.idAnagIncorporante = this.soggetto.idAnag;
+      console.log( this.fusioneReq);
+      for (var index = 0; index < this.soggettiFusione.length; index++) {
+        if(this.soggettiFusione[index].idAnag === this.fusioneReq.idAnagIncorporato){          
+            this.soggettoDerivante = this.soggettiFusione[index];
+        }        
+      }
+      this.loaderFusionePage = false;
+      this.showComparazioneSoggetti = true;
     }
 
     fusioneSocietaria() {
@@ -612,19 +701,92 @@ export class AnagraficaSoggettoComponent implements OnInit, AfterViewInit {
       );
     }
 
-    calculateArialLabel(el: AnagraficaSoggettoVO){
-      let frase: String;
-      frase = "Seleziona soggetto " + el.denominazione + 
-              " avente il codice " + el.codiceAzienda;
-      return frase;
+    onCloseComparazioneSoggettiEvent(event: boolean) { 
+      this.loaderFusionePage = true;
+      this.showComparazioneSoggetti = !event;
+      setTimeout(() => {
+        this.dtTrigger.next();
+        this.loaderFusionePage = false;
+      },1000);
     }
 
-    calculateArialLabelSoggettoFusione(el: AnagraficaSoggettoVO){
-      let frase: String;
-      frase = "Seleziona soggetto " + el.denominazione + 
-              " avente il codice " + el.codiceAzienda + 
-              " che converge in un Soggetto unico a seguito di una Fusione Societaria";
-      return frase;
+    onFusionExecutionEvent(event: GenericResultVO) {
+      this.showFusionErrorMessage = false;
+      this.showFusionOKMessage = false;
+      this.fusionMessage = event.message;
+      if(event.status === "OK"){
+        this.showFusionOKMessage = true;
+      } else {
+       this.showFusionErrorMessage = true; 
+      }
     }
-  
+
+    onCancellaFusioneSocietaria(){
+      this.showFusionErrorMessage = false;
+      this.fusionMessage = "";
+      this.subscribers.cancellaFusioneSoggetto = this.anagraficaSoggettiService.cancellaFusioneSoggetto(this.soggetto.idAnag)
+            .subscribe(
+                resp =>{              
+                    this.reInitSoggetto();
+                },err => {                
+                  this.fusionMessage = "Si è verificato un errore in fase di cancellazione della fusione societaria. Si prega di riprovare più tardi.";
+                  this.showFusionErrorMessage = true;  
+                }
+            );
+
+    }
+
+    visualizzaDialogBoxConfernmaCancellazioneFusione(){
+      $('#dialogBoxCancellaFusioneSocietaria').modal('show');
+    }
+
+    setupModalStoricoAnagrafica(idAnagRif: number){
+      this.showMessageErrorModStoricoAnagrafica = false;
+      this.loaderPageStoricoAnagrafica = true;
+      this.storicoAnagraficaList =[];
+      this.subscribers.ricercaStoricoAnagraficaSoggetto = this.anagraficaSoggettiService.ricercaStoricoAnagraficaSoggetto(idAnagRif).subscribe(
+        resp =>{            
+            this.storicoAnagraficaList = resp;
+            setTimeout(() => {
+              this.dtTriggerModStorico.next();
+              //this.rerender();
+            })
+            
+            this.loaderPageStoricoAnagrafica = false;
+            this.showMessageErrorModStoricoAnagrafica = false;
+        },err => {
+          this.messageErrorModStoricoAnagrafica="Si è verificato un errore in fase di caricamento storico anagrafica.";
+          this.showMessageErrorModStoricoAnagrafica = true;
+          this.loaderPageStoricoAnagrafica = false;
+      });    
+  }
+
+  rerender(): void {
+    if (this.dtElement != null && this.dtElement.dtInstance != null) {
+        this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+            dtInstance.destroy();
+            this.dtTriggerModStorico.next();
+        });
+    } else {
+        setTimeout(() => {
+            this.dtTriggerModStorico.next();
+        });      
+    }   
+  }
+
+  calculateArialLabel(el: AnagraficaSoggettoVO){
+    let frase: String;
+    frase = "Seleziona soggetto " + el.denominazione + 
+            " avente il codice " + el.codiceAzienda;
+    return frase;
+  }
+
+  calculateArialLabelSoggettoFusione(el: AnagraficaSoggettoVO){
+    let frase: String;
+    frase = "Seleziona soggetto " + el.denominazione + 
+            " avente il codice " + el.codiceAzienda + 
+            " che converge in un Soggetto unico a seguito di una Fusione Societaria";
+    return frase;
+
+  }
 }

@@ -40,7 +40,11 @@
             <!-- Accertamenti --> 
             <li class="nav-item">
                 <a class="nav-link nav-link-color" id="accertamenti-tab" data-toggle="tab" (click) = "refreshAcc()" href="#accertamenti" role="tab" aria-controls="accertamenti" aria-selected="false"><h2 class="h3-font">Accertamenti</h2></a>
-            </li>    
+            </li>
+            <!-- Soggetto incorporato-->
+            <li class="nav-item" >
+                <a class="nav-link nav-link-color" [ngClass]="soggetto?.idFusione == 0 ? 'disabled' : ''" id="soggetto-incorporato-tab" data-toggle="tab" (click)="refreshSoggettoIncorporato()" href="#soggettoIncorporato" role="tab" aria-controls="soggetto incorporato" aria-selected="true"><h2 class="h3-font">Soggetto incorporato</h2></a>
+            </li>
         </ul>
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="soggetto" role="tabpanel" aria-labelledby="soggetto-tab">
@@ -70,6 +74,11 @@
             <div class="tab-pane fade show" id="accertamenti" role="tabpanel" aria-labelledby="accertamenti-tab">
                 <!-- Accertamenti component --> 
                 <app-accertamenti></app-accertamenti>
+            </div>
+
+            <div class="tab-pane fade show" id="soggettoIncorporato" role="tabpanel" aria-labelledby="soggetto-incorporato-tab">
+                <!-- soggetto incorporato --> 
+                <app-anagrafica-soggetto-incorporato></app-anagrafica-soggetto-incorporato>
             </div>
         </div>        
     </div>

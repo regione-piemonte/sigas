@@ -169,6 +169,12 @@ export class SoggettiComponent implements OnInit, AfterViewInit {
     });
 
     this.loaderExcel = false;
+
+    //reset oggetto request ricerca soggetto incorporato
+    this.anagraficaSoggettiService.ricercaSoggettoIncorporatoReq = {
+      idSoggettoIncorporato: null,
+      annualita:  null
+    }
   }
 
   rerender(): void {

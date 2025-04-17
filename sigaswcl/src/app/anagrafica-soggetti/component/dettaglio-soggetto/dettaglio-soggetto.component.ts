@@ -9,6 +9,7 @@ import { DichiaranteVO } from '../../../commons/vo/dichiarante-vo';
 import { RimborsiComponent } from '../rimborsi/rimborsi.component';
 import { AccertamentiComponent } from '../accertamenti/accertamenti.component';
 import { ConsumiPrComponent } from '../consumi-pr/consumi-pr.component';
+import { AnagraficaSoggettoIncorporatoComponent } from '../anagrafica-soggetto-incorporato/anagrafica-soggetto-incorporato.component';
 
 @Component({
   selector: 'app-dettaglio-soggetto',
@@ -22,7 +23,7 @@ export class DettaglioSoggettoComponent implements OnInit, AfterViewInit {
   @ViewChild(RimborsiComponent) rimborsi:RimborsiComponent;
   @ViewChild(AccertamentiComponent) accertamenti:AccertamentiComponent;
   @ViewChild(ConsumiPrComponent) consumi:ConsumiPrComponent;
-
+  @ViewChild(AnagraficaSoggettoIncorporatoComponent) soggettoIncorporato:AnagraficaSoggettoIncorporatoComponent;
 
   private loaderPage: boolean;
   private soggetto: AnagraficaSoggettoVO;
@@ -58,6 +59,12 @@ export class DettaglioSoggettoComponent implements OnInit, AfterViewInit {
           this.loaderPage = false;
           this.dichiarante = this.anagraficaSoggettiService.headerDichiarante;
           this.annoDichiarazione = this.anagraficaSoggettiService.annoDichiarazione;
+
+          //setting ricerca soggetto incorporato request
+          this.anagraficaSoggettiService.ricercaSoggettoIncorporatoReq = {
+            idSoggettoIncorporato: this.soggetto.idFusione,
+            annualita: this.anagraficaSoggettiService.annoDichiarazione
+          }
         }, err => {
           this.logger.error("errore ");
           this.loaderPage = false;
@@ -78,6 +85,10 @@ export class DettaglioSoggettoComponent implements OnInit, AfterViewInit {
   
   refreshConsumi(){
       this.consumi.reInit();
+  }
+
+  refreshSoggettoIncorporato(){
+    this.soggettoIncorporato.reInit();
   }
 
   goBack() {

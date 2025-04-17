@@ -31,6 +31,7 @@ import { AllegatoDocumentazioneVO } from '../../../commons/vo/allegato-documenta
 import {Constants} from '../../../commons/class/constants';
 import {UtilityService} from '../../../core/services/utility/utility.service';
 import {MessageEnum} from '../../../core/services/utility/enum/messageEnum';
+import { PaymentFoService } from '../../../pagamento-fo/service/pagamento-fo.service';
 
 declare var jquery: any;
 declare var $: any;
@@ -70,8 +71,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     private loaderPage: boolean;
     
     public eliminaM : boolean = true;
-    public confermaM : boolean = true;
-    //public maxSize: number = 5242880;
+    public confermaM : boolean = true;    
     public maxSize: number = 20971520;
     public maxAllegati: number = 20;
     public sizeAlert: boolean = false;
@@ -99,12 +99,16 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     public comunicazioniVarie: boolean;
     public rimborso: boolean;
     public accertamento: boolean;
-    
+    public depositoCausionalePrimoDeposito: boolean;    
     private yearsListAccertamento: Number[];
 
     @ViewChild('mainFile')
     iptMainFile: ElementRef;
     
+    public elencoProvince: Array<String>;
+    public depCausionaleProvSelezionata: String;
+    public depCausionaleImporto: Number;
+    public depCausionaleIndirizzo: String;
     
     
   constructor(
@@ -112,7 +116,8 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     private documentazioneService: DocumentazioneService,
     private utilityService: UtilityService,
     private router: Router,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private foPayService: PaymentFoService,
   ) { }
   
   ngAfterViewInit(): void {
@@ -147,6 +152,8 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
       this.calcolaAnniRecenti();
       
       this.initModel();
+
+      this._caricaElencoProvince();
       
     }
   
@@ -156,6 +163,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
       this.comunicazioniVarie = false;
       this.rimborso = false;
       this.accertamento = false;
+      this.depositoCausionalePrimoDeposito= false;
   }
   
   calcolaAnniRecenti() {
@@ -170,7 +178,10 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
 
     salvaDocumentazione() {
         this.sigasAllegatos = new Array<AllegatoDocumentazioneVO>();
-        this.documentazioneService.confermaDocumentazione = new ConfermaDocumentazioneRequest(this.documentoToSave);
+        this.documentazioneService.confermaDocumentazione = new ConfermaDocumentazioneRequest(this.documentoToSave, 
+                                                                                              this.depCausionaleImporto, 
+                                                                                              this.depCausionaleProvSelezionata,
+                                                                                              this.depCausionaleIndirizzo);
         this.loaderPage = true;
         this.documentazioneService.salvaDocumentazione(this.fileToUpload,this.nuovoAllegatoMultiple.allegati ).subscribe(data => {
             this.loaderPage = false;
@@ -208,7 +219,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
  
     
     changeAzienda(event: any) {
-        this.cfPivaEsistente = false;
+        this.cfPivaEsistente = false;        
         this.listaAziende.forEach((item, index) => {
             if(this.documentoToSave.anagraficaSoggettoVO.denominazione!=undefined && item.denominazione==this.documentoToSave.anagraficaSoggettoVO.denominazione){
                 this.documentoToSave.cfPiva= item.cfPiva;
@@ -218,6 +229,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
                 
             }
         });
+        this.depCausionaleIndirizzo = this.documentoToSave.anagraficaSoggettoVO.indirizzo;
     }
     
     handleFileInput(files: FileList) {
@@ -269,25 +281,36 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
             this.comunicazioniVarie = true;
             this.rimborso = false;
             this.accertamento = false;
+            this.depositoCausionalePrimoDeposito = false;
             this.listaTipoComunicazione = this.listaTipoDocumento.filter(tipoDocumento => 
-            tipoDocumento.idTipoDocumentoPadre === this.documentoToSave.tipoDocumentoVO.idTipoDocumento
+                tipoDocumento.idTipoDocumentoPadre === this.documentoToSave.tipoDocumentoVO.idTipoDocumento
             )
         }else if(this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='RIMB'){
             this.rimborso = true;
             this.comunicazioniVarie = false;
             this.accertamento = false;
+            this.depositoCausionalePrimoDeposito = false;
             this.listaTipoRimborso = this.listaTipoDocumento.filter(tipoDocumento => 
-            tipoDocumento.idTipoDocumentoPadre === this.documentoToSave.tipoDocumentoVO.idTipoDocumento
+                tipoDocumento.idTipoDocumentoPadre === this.documentoToSave.tipoDocumentoVO.idTipoDocumento
             )
         }else if(this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='ACCE'){
             this.accertamento = true;
             this.rimborso = false;
             this.comunicazioniVarie = false;
+            this.depositoCausionalePrimoDeposito = false;
             this.yearsListAccertamento = this.yearsList;
+        }else if(this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO' || this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO_INT'){
+                this.eliminaFilePrincipale();
+                this.accertamento = false;
+                this.rimborso = false;
+                this.comunicazioniVarie = false;
+                this.depositoCausionalePrimoDeposito = true;
+                this.fileCaricato = true;
         }else{
             this.comunicazioniVarie = false;
             this.rimborso = false;
             this.accertamento = false;
+            this.depositoCausionalePrimoDeposito = false;
         }
     }
     
@@ -450,5 +473,34 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
         
         this.eliminaFile(null, this.uploaderM);
         this.eliminaFilePrincipale();
+        this.depCausionaleIndirizzo = null;
+        this.depCausionaleImporto = null;
+        this.depCausionaleProvSelezionata = null;
     }
+
+    private _caricaElencoProvince() {
+        this.foPayService.getAllPiemonteCounties()
+        .subscribe(res => {
+            res.push("Tutte le province");
+            this.elencoProvince = res;
+            console.log("this.elencoProvince", this.elencoProvince);
+        }, err => {
+            this.logger.error("errore ");
+        });
+    }
+
+    public changeProvincia(event: any) {
+        console.log("this.depCausionaleProvSelezionata", this.depCausionaleProvSelezionata);
+        // if(this.depCausionaleProvSelezionata=="Tutte le province"){
+        //     this.depCausionaleProvSelezionata = "ZZ";
+        // }
+    }
+
+    public getValueProvincia(provincia: string){
+        if('Tutte le province' == provincia) {
+            return 'ZZ'
+        } else {
+            return provincia;
+        }
+    }    
 }

@@ -7,225 +7,259 @@
        id="idAnchorToContPrin">Vai al contenuto principale</a>                                
 </div>
 <div *ngIf="!updateSoggetto && !fusioneSoggetto && !associateSoggetto">
-<div class="principal-div" id="principal-div-id" name="principal-div-id">
-    <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
-    <div *ngIf="!loaderPage">
-        <div class="contains">
-            <div class="col-lg-12 hight">
-                <div class="form-group row">
-                    <div class="form-group col-lg-12 text-center">
-                        <h3 class="title">Dettaglio Soggetto</h3>
+    <div class="principal-div" id="principal-div-id" name="principal-div-id">
+        <sigas-spinner *ngIf="loaderPage"></sigas-spinner>
+        <div *ngIf="!loaderPage">
+            <div class="contains">
+                <div class="col-lg-12 hight">
+                    <div class="form-group row">
+                        <div class="form-group col-lg-12 text-center">
+                            <h3 class="title">Dettaglio Soggetto</h3>
+                        </div>
                     </div>
+                </div>
+            <div class="row">
+                <div class="col-lg-5 hight">
+                    <!-- Denominazione -->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Denominazione:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.denominazione}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--END Denominazione -->
+                    <!--Codice Azienda-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Codice Azienda:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.codiceAzienda}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--Codice Azienda-->
+                    <!--Indirizzo-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Indirizzo:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.indirizzo}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--Indirizzo-->
+                    <!--Comune-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Comune:</label>
+                        <div class="col-lg-6 col-value">
+                            <div *ngFor="let com of comuniModel" >
+                            <div *ngIf="com.id==soggetto.idComune"> {{com.denominazione}}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <!--Comune-->
+                    <!--Provincia-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Provincia:</label>
+                        <div class="col-lg-6 col-value">
+                            <div *ngFor="let prov of provinceModel" >
+                            <div *ngIf="prov.id==soggetto.idProvincia"> {{prov.sigla}}
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <!--Provincia-->                
+                    <!--IBAN-->
+                    <div class="form-group border-botton row ">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">IBAN:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.iban}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--IBAN-->
+                    <!--Telefono-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Telefono:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.telefono}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--Telefono-->
+                    <!--PEC-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">PEC:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.pec}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--PEC-->
+                    <!-- Mail -->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-5 offset-lg-1 col-form-label">Email:</label>
+                        <div class="col-lg-6 col-value">
+                            <div>
+                                {{soggetto.email}}
+                            </div>
+                        </div>
+                    </div>
+                    <!--mail-->
+                </div>
+                <div class="col-lg-5 offset-lg-1 hight">
+                    <!--Bottoni Province-->                
+                    <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
+                        <!-- Spinner component -->
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                        <!-- cambia provincia -->
+                        <label *ngFor="let el of consumiPr" [hidden]="el.provincia_erogazione == null" class="btn btn-secondary pointer margin-icon margin-bottom-toggle" >
+                            <input type="radio" name="province" id="btn-{{el.provincia_erogazione}}" (click)="cambiaProvincia(el.provincia_erogazione)">{{el.provincia_erogazione}}
+                        </label>
+                        <!-- cambia provincia TOTALE -->
+                        <label *ngIf="!loaderProvinceDettAna" class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
+                            <input type="radio" ref="totaleRef" id="totale" name="province"  (click)="cambiaProvincia('TOTALE')"> TOTALE
+                        </label>
+                    </div>
+                    <!--Bottoni Province-->
+                    <!--Totale Dichiarazione-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-lg-1 col-form-label">Totale Dichiarazione:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                        <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
+                            <div>
+                                {{selTotDich | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div>                
+                    <!--Addizionale liquidata-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-lg-1 col-form-label">Addizionale liquidata:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                        <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
+                            <div>
+                                {{selAddLiq | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div>
+                    <!--Addizionale liquidata-->                
+                    <!--Totale versato
+                        ----------------------------------------
+                        Come da CR Totale versato (anno) = Sommatoria Versamenti(anno) - Conguaglio Calcolato(anno precedente)
+                    -->
+                    <div class="form-group border-botton row ">
+                    
+                        <label class="col-lg-6 offset-lg-1 col-form-label">Totale versato:</label>
+                        <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                        <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
+                            <div>
+                                {{selTotVers | currency:'EUR':'symbol' }}
+                            </div>
+                        </div>
+                    </div>
+                    <!--Totale versato-->
+                    <!--Copertura fidejussoria:-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-6 offset-lg-1 col-form-label">Copertura fidejussoria:</label>
+                        <div class="col-lg-5 col-value">
+                            <div>
+                                {{copFid}} ({{ impFid | currency:'EUR':'symbol'}})
+                            </div>
+                        </div>
+                    </div>
+                    <!--Copertura fidejussoria:-->
+                    <!--note-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-3 offset-lg-1 col-form-label" for="note">Note:</label>
+                        <div class="col-lg-8 col-value">
+                            <textarea id="note" class="note-textarea" rows="4" [(ngModel)]="soggetto.note" readonly>
+                            </textarea>
+                        </div>
+                    </div>
+                    <!--note-->
+                    <!--CF / PIVA-->
+                    <div class="form-group border-botton row">
+                        <label class="col-lg-3 offset-lg-1 col-form-label" for="note">Codice Fiscale / P.IVA:</label>
+                        <div class="col-lg-8 col-value">
+                            {{ soggetto.cfPiva }}                        
+                        </div>
+                    </div>
+                    <!--CF / PIVA-->
+                    <!--Fusione societaria-->
+                <div class="form-group row" *ngIf="soggetto.idFusione > 0">                    
+                    <label class="col-lg-6 offset-lg-1 col-form-label">Fusione societaria:</label>
+                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                    <div class="col-lg-5 col-value" *ngIf="!loaderProvinceDettAna">
+                        <div>
+                            {{ soggettoIncorporatoDenominazione }} ({{ soggettoIncorporatoCodice }})                                                         
+                        </div>
+                    </div>                    
+                </div>
+                <div  class="form-group row" *ngIf="soggetto.idFusione > 0">                    
+                    <label class="col-lg-6 offset-lg-1 col-form-label">In data:</label>
+                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
+                    <div class="col-lg-5 col-value" *ngIf="!loaderProvinceDettAna">                           
+                        {{ soggetto.dataFusione | date:'dd/MM/yyyy' }}
+                    </div>
+                </div>
+                <!--Fusione societaria-->
                 </div>
             </div>
-        <div class="row">
-            <div class="col-lg-5 hight">
-                 <!-- Denominazione -->
-                 <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Denominazione:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.denominazione}}
-                        </div>
-                    </div>
-                </div>
-                <!--END Denominazione -->
-                <!--Codice Azienda-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Codice Azienda:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.codiceAzienda}}
-                        </div>
-                    </div>
-                </div>
-                <!--Codice Azienda-->
-                <!--Indirizzo-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Indirizzo:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.indirizzo}}
-                        </div>
-                    </div>
-                </div>
-                <!--Indirizzo-->
-                <!--Comune-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Comune:</label>
-                    <div class="col-lg-6 col-value">
-                        <div *ngFor="let com of comuniModel" >
-                         <div *ngIf="com.id==soggetto.idComune"> {{com.denominazione}}
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <!--Comune-->
-                <!--Provincia-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Provincia:</label>
-                    <div class="col-lg-6 col-value">
-                        <div *ngFor="let prov of provinceModel" >
-                         <div *ngIf="prov.id==soggetto.idProvincia"> {{prov.sigla}}
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <!--Provincia-->                
-                <!--IBAN-->
-                <div class="form-group border-botton row ">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">IBAN:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.iban}}
-                        </div>
-                    </div>
-                </div>
-                <!--IBAN-->
-                <!--Telefono-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Telefono:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.telefono}}
-                        </div>
-                    </div>
-                </div>
-                <!--Telefono-->
-                <!--PEC-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">PEC:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.pec}}
-                        </div>
-                    </div>
-                </div>
-                <!--PEC-->
-                <!-- Mail -->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-5 offset-lg-1 col-form-label">Email:</label>
-                    <div class="col-lg-6 col-value">
-                        <div>
-                            {{soggetto.email}}
-                        </div>
-                    </div>
-                </div>
-                <!--mail-->
             </div>
-            <div class="col-lg-5 offset-lg-1 hight">
-                <!--Bottoni Province-->                
-                <div class="btn-group-toggle form-group border-botton row margin-top-toggle" data-toggle="buttons">
-                    <!-- Spinner component -->
-                	<sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
-                    <!-- cambia provincia -->
-                    <label *ngFor="let el of consumiPr" [hidden]="el.provincia_erogazione == null" class="btn btn-secondary pointer margin-icon margin-bottom-toggle" >
-                        <input type="radio" name="province" id="btn-{{el.provincia_erogazione}}" (click)="cambiaProvincia(el.provincia_erogazione)">{{el.provincia_erogazione}}
-                    </label>
-                    <!-- cambia provincia TOTALE -->
-                    <label *ngIf="!loaderProvinceDettAna" class="btn btn-secondary pointer margin-icon margin-bottom-toggle">
-                        <input type="radio" ref="totaleRef" id="totale" name="province"  (click)="cambiaProvincia('TOTALE')"> TOTALE
-                    </label>
+        </div>
+    </div>
+    <div class="bs-example" data-example-id="single-button-dropdown">
+        <div class="form-group row col-lg-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
+                <div class="btn-group">
+                    <a class="btn btn-default margin-icon btn-standard" (click)="goBackSoggetti()" role="button">
+                        <i class="fa fa-angle-left"></i> indietro</a>
                 </div>
-                <!--Bottoni Province-->
-                <!--Totale Dichiarazione-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-6 offset-lg-1 col-form-label">Totale Dichiarazione:</label>
-                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
-                    <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
-                        <div>
-                            {{selTotDich | currency:'EUR':'symbol' }}
-                        </div>
-                    </div>
-                </div>                
-                <!--Addizionale liquidata-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-6 offset-lg-1 col-form-label">Addizionale liquidata:</label>
-                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
-                    <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
-                        <div>
-                            {{selAddLiq | currency:'EUR':'symbol' }}
-                        </div>
-                    </div>
+                <!-- INIBIZIONE MOMENTANEA DELLA FUNZIONALITA
+                <div class="btn-group" *ngIf="!soggetto.codiceAzienda.startsWith('NEW') && !viewAssociaSoggetto && soggetto.idFusione==0">
+                    <button type="button" class="btn btn-primary margin-icon" (click)="fusioneSocietaria()" >
+                        <i class="fas fa-check"></i> Fusione Societaria</button>
                 </div>
-                <!--Addizionale liquidata-->                
-                <!--Totale versato
-                    ----------------------------------------
-                    Come da CR Totale versato (anno) = Sommatoria Versamenti(anno) - Conguaglio Calcolato(anno precedente)
+                <div class="btn-group" *ngIf="soggetto.idFusione > 0">
+                    <button type="button" class="btn btn-primary margin-icon" (click)="visualizzaDialogBoxConfernmaCancellazioneFusione()" >
+                        <i class="fas fa-check"></i> Cancella Fusione Societaria</button>
+                </div>
                 -->
-                <div class="form-group border-botton row ">
-                
-                    <label class="col-lg-6 offset-lg-1 col-form-label">Totale versato:</label>
-                    <sigas-spinner-form [diameter]="30" *ngIf="loaderProvinceDettAna"></sigas-spinner-form>
-                    <div *ngIf="!loaderProvinceDettAna"  class="col-lg-5 col-value">
-                        <div>
-                            {{selTotVers | currency:'EUR':'symbol' }}
-                        </div>
-                    </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary margin-icon btn-standard" (click)="modificaSoggetto()" >
+                    <i class="fas fa-edit"></i> Modifica</button>
                 </div>
-                <!--Totale versato-->
-                <!--Copertura fidejussoria:-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-6 offset-lg-1 col-form-label">Copertura fidejussoria:</label>
-                    <div class="col-lg-5 col-value">
-                        <div>
-                            {{copFid}} ({{ impFid | currency:'EUR':'symbol'}})
-                        </div>
-                    </div>
+                <div class="btn-group" *ngIf="soggetto.codiceAzienda.startsWith('NEW') || viewAssociaSoggetto">
+                    <button type="button" class="btn btn-primary margin-icon" (click)="associaSoggetto()">
+                    <i class="fas fa-check"></i> Associa soggetto</button>
                 </div>
-                <!--Copertura fidejussoria:-->
-                <!--note-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-3 offset-lg-1 col-form-label" for="note">Note:</label>
-                    <div class="col-lg-8 col-value">
-                        <textarea id="note" class="note-textarea" rows="4" [(ngModel)]="soggetto.note" readonly>
-                        </textarea>
-                    </div>
-                </div>
-                <!--note-->
-                <!--CF / PIVA-->
-                <div class="form-group border-botton row">
-                    <label class="col-lg-3 offset-lg-1 col-form-label" for="note">Codice Fiscale / P.IVA:</label>
-                    <div class="col-lg-8 col-value">
-                        {{ soggetto.cfPiva }}                        
-                    </div>
-                </div>
-                <!--note-->
+                <div class="btn-group">
+                    <button type="button" 
+                            class="btn btn-primary margin-icon" 
+                            data-toggle="modal" 
+                            data-target="#mdlStoricoAnagrafica" 
+                            (click)="setupModalStoricoAnagrafica(soggetto.idAnag)" >
+                            <i class="fa fa-list"></i>
+                            Storico modifiche                        
+                    </button>
+                </div>            
+                <div class="btn-group">
+                    <button type="button" *ngIf="!loaderExcel" class="btn btn-success btn-excel pointer excel margin-icon" (click)="goExcelSoggetto()">
+                        <i class="far fa-file-excel"></i> Scarica in Excel
+                    </button>
+                    <button type="button" *ngIf="loaderExcel" class="btn btn-excel pointer excel margin-icon">
+                        <sigas-spinner-form [diameter]="20"></sigas-spinner-form>    
+                    </button>
+                </div> 
             </div>
-        </div>
         </div>
     </div>
-</div>
-<div class="bs-example" data-example-id="single-button-dropdown">
-    <div class="form-group row col-lg-12">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-            <div class="btn-group">
-                <a class="btn btn-default margin-icon btn-standard" (click)="goBackSoggetti()" role="button">
-                    <i class="fa fa-angle-left"></i> indietro</a>
-            </div>
-            <div class="btn-group" *ngIf="!soggetto.codiceAzienda.startsWith('NEW') && !viewAssociaSoggetto">
-                <button type="button" class="btn btn-primary margin-icon" (click)="fusioneSocietaria()" >
-                    <i class="fas fa-check"></i> Fusione Societaria</button>
-            </div>
-            <div class="btn-group">
-                  <button type="button" class="btn btn-primary margin-icon btn-standard" (click)="modificaSoggetto()" >
-                   <i class="fas fa-edit"></i> Modifica</button>
-            </div>
-            <div class="btn-group" *ngIf="soggetto.codiceAzienda.startsWith('NEW') || viewAssociaSoggetto">
-                  <button type="button" class="btn btn-primary margin-icon" (click)="associaSoggetto()">
-                   <i class="fas fa-check"></i> Associa soggetto</button>
-            </div>
-            <div class="btn-group">
-                <button type="button" *ngIf="!loaderExcel" class="btn btn-success btn-excel pointer excel margin-icon" (click)="goExcelSoggetto()">
-                    <i class="far fa-file-excel"></i> Scarica in Excel
-                </button>
-                <button type="button" *ngIf="loaderExcel" class="btn btn-excel pointer excel margin-icon">
-                    <sigas-spinner-form [diameter]="20"></sigas-spinner-form>    
-                </button>
-            </div> 
-        </div>
-    </div>
-</div>
 </div>
 <!--end div check soggetto -->
 <div *ngIf="associateSoggetto">
@@ -251,7 +285,7 @@
                                             <th></th>
                                             <th class="dichiarante">Dichiarante</th>
                                             <th>Cod.Az.</th>
-                                            <th>Tot. Versato</th>
+                                            <!--<th>Tot. Versato</th>-->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -531,13 +565,16 @@
 <sigas-dialog [titolo]="'Attenzione'" [testo]="messageDialog" [buttonConfirmText]="buttonConfirmText" [buttonAnnullaText]="buttonAnnullaText"></sigas-dialog>
 <div *ngIf="fusioneSoggetto">
     <!-- SEZIONE ALERT -->
-    <sigas-alert [message]="'Selezionare il Soggetto che converge in un Soggetto unico a seguito di una Fusione Societaria ed inserire la data di Fusione'" [type]="'INFO'" *ngIf="!showMessageError" ></sigas-alert>
-    <sigas-alert [message]="'Si è verificato un errore nell\'operzione di fusione'" *ngIf="showMessageError" [type]="'DANGER'"></sigas-alert>
+    <sigas-alert [message]="'Selezionare il Soggetto che converge in un Soggetto unico a seguito di una Fusione Societaria ed inserire la data di Fusione'" 
+                 [type]="'INFO'" 
+                 *ngIf="!showFusionMessageError && !showFusionOKMessage" ></sigas-alert>
+    <sigas-alert [message]="fusionMessage" *ngIf="showFusionMessageError" [type]="'DANGER'"></sigas-alert>
+    <sigas-alert [message]="fusionMessage" *ngIf="showFusionOKMessage" [type]="'SUCCESS'"></sigas-alert>
     <!-- FINE ALERT -->
     <div class="principal-div">
         <!-- SPINNER -->
         <sigas-spinner *ngIf="loaderFusionePage"></sigas-spinner>
-        <div *ngIf="!loaderFusionePage">
+        <div *ngIf="!loaderFusionePage && !showComparazioneSoggetti">
             <form #fusione="ngForm" (ngSubmit)="onSubmitFusione()">
                 <div class="form-group row">
                     <div class="col-lg-12">
@@ -561,15 +598,16 @@
                                         <tr *ngFor="let el of soggettiFusione">
                                             <td>
                                                 <input [attr.aria-label]="calculateArialLabelSoggettoFusione(el)" 
-                                                       type="radio"  
-                                                       name="selection" 
-                                                       (change)="fusioneReq.idAnagDerivante = (el.idAnag);">
+                                                    type="radio"  
+                                                    name="selection" 
+                                                    (change)="fusioneReq.idAnagIncorporato = (el.idAnag);">
                                             </td>
                                             <!-- DENOMINAZIONE -->
                                             <td tabindex="-1">{{ el.denominazione }}</td>
                                             <!-- COD AZIENDA -->
                                             <td tabindex="-1">{{ el.codiceAzienda }}</td>
                                             <!-- TOTALE -->
+                                            <!--<td>{{ el.totVersato | currency:'EUR':'symbol' }}</td>-->
                                             <td tabindex="-1">{{ el.totVersato | currency:'EUR':'symbol' }}</td>
                                         </tr>
                                     </tbody>
@@ -577,65 +615,61 @@
                             </div>
                         </div>
                     </div>
-                </div>        
-                <div class="col-12 form-group">
+                </div>
+                <!-- TOGLIERE NGIF -->                        
+                <div class="col-12 form-group">                    
                     <div class="row">
                         <div class="col-2 offset-3 formfield">
                             <label id="lblDataFus" for="dataFus" class="col-form-label note">Data fusione:</label>
                         </div>
-                        <div class="col-2 formfield">
-                            <!-- <input type="date" [(ngModel)]='fusioneReq.dataFusione'  [ngModelOptions]="{standalone: true}"/> -->
-                            <!-- <div class="col-lg-6 col-value"> -->
-                            <div class="input-group">
-                                                    
-                                                            
-                                                          <input #dataFus="ngbDatepicker"
-				                                               (click)="dataFus.toggle()"
-				                                               [(ngModel)]="dataFusione"
-				                                               [footerTemplate]="footerTemplateDataFus"
-				                                               class="form-control col-mg-8 col-lg-6 "
-				                                               class="form-control"
-				                                               name="dataFus"
-				                                               id="dataFus"
-                                                               aria-labelledby="lblDataFus"
-				                                               ngbDatepicker
-				                                               placeholder="gg/mm/aaaa"
-				                                               readonly>
-				                                        <ng-template #footerTemplateDataFus>
-				                                            <hr class="my-0">
-                                                            <!-- BUTTON PULISCI -->
-				                                            <button (click)="dataFusione = null; dataFus.close();"
-				                                                    class="btn btn-primary btn-sm m-2 float-left">Pulisci
-				                                            </button>
-                                                            <!-- BUTTON CHIUDI -->
-				                                            <button (click)="dataFus.close();"
-				                                                    class="btn btn-secondary btn-sm m-2 float-right">Chiudi
-				                                            </button>
-				                                        </ng-template>
-				                                        <div class="input-group-append">
-				                                            <button (click)="dataFus.toggle()" class="btn btn-outline-secondary calendar"
-				                                                    type="button">
-				                                                <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" 
-                                                                focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" 
-                                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
-                                                                <title>Calendario</title>
-                                                                <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
-				                                                <!--<i class="far fa-calendar-alt"></i>-->
-				                                            </button>
-				                                        </div>  
-                                                    </div>
-                                                    </div>
-                     <!-- </div> -->   
-                     
-                    </div>
+                        <div class="col-2 formfield">                            
+                            <div class="input-group">                                                            
+                                <input #dataFus="ngbDatepicker"
+                                        (click)="dataFus.toggle()"
+                                        [(ngModel)]="dataFusione"
+                                        [footerTemplate]="footerTemplateDataFus"
+                                        class="form-control col-mg-8 col-lg-6 "
+                                        class="form-control"
+                                        name="dataFus"
+                                        id="dataFus"
+                                        aria-labelledby="lblDataFus"
+                                        ngbDatepicker
+                                        placeholder="gg/mm/aaaa"
+                                        readonly>
+                                <ng-template #footerTemplateDataFus>
+                                    <hr class="my-0">
+                                    <!-- BUTTON PULISCI -->
+                                    <button (click)="dataFusione = null; dataFus.close();"
+                                            class="btn btn-primary btn-sm m-2 float-left">Pulisci
+                                    </button>
+                                    <!-- BUTTON CHIUDI -->
+                                    <button (click)="dataFus.close();"
+                                            class="btn btn-secondary btn-sm m-2 float-right">Chiudi
+                                    </button>
+                                </ng-template>
+                                <div class="input-group-append">
+                                    <button (click)="dataFus.toggle()" class="btn btn-outline-secondary calendar"
+                                            type="button">
+                                        <svg _ngcontent-c4="" class="svg-inline--fa fa-calendar-alt fa-w-14" aria-hidden="true" 
+                                        focusable="false" data-prefix="far" data-icon="calendar-alt" role="img" 
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                                        <title>Calendario</title>
+                                        <path fill="currentColor" d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path></svg>
+                                        <!--<i class="far fa-calendar-alt"></i>-->
+                                    </button>
+                                </div>  
+                            </div>
+                        </div>                     
+                    </div>                    
                     <div class="row">
                         <div class="col-2 offset-3 formfield">
                             <label id="lblNoteFusione" for="noteFusione" class="col-form-label note">Note:</label>
                         </div>
                         <div class="col-4 formfield">
-                            <textarea id="noteFusione" aria-labelledby="lblNoteFuzione" class="note-textarea" [(ngModel)]='fusioneReq.note' rows="4" [ngModelOptions]="{standalone: true}"></textarea>
+                            <textarea id="noteFusione" 
+                                      aria-labelledby="lblNoteFuzione" class="note-textarea" [(ngModel)]='fusioneReq.note' rows="4" [ngModelOptions]="{standalone: true}"></textarea>
                         </div>
-                    </div>
+                    </div>                   
                 </div>
                 <div class="bs-example" data-example-id="single-button-dropdown">
                     <div class="form-group row col-lg-12">
@@ -646,14 +680,152 @@
                                     indietro</a>
                             </div>
                                 <div class="btn-group">
-                                    <button type="submit"  class="btn btn-primary margin-icon btn-standard"  [disabled]="fusioneReq.idAnagDerivante == 0 || dataFusione == null">
+                                    <!--
+                                    <button type="submit"  
+                                            class="btn btn-primary margin-icon btn-standard"  
+                                            [disabled]="fusioneReq.idAnagDerivante == 0 || dataFusione == null">
                                     <i class="fas fa-check"></i> Associa Soggetto selezionato</button>
+                                    -->
+                                    <button type="submit"  
+                                            class="btn btn-primary margin-icon btn-standard">
+                                    <i class="fas fa-check"></i> Confronta</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            
+                </div>            
             </form>
+        </div>
+        <div class="col-lg-11 offset-lg-1">
+            <div class="col-lg-12">                                    
+                <app-comparazione-soggetti *ngIf="showComparazioneSoggetti" 
+                                            [soggettoIncorporante] = "soggetto" 
+                                            [soggettoIncorporato] = "soggettoDerivante"
+                                            (closeComponentEvent)="onCloseComparazioneSoggettiEvent($event)"
+                                            (fusioneExecutionEvent)="onFusionExecutionEvent($event)">
+                </app-comparazione-soggetti>                                                   
+            </div>            
+        </div>        
+    </div>
+</div>
+<!-- DIALOG BOX -->
+<div class="modal fade" id="dialogBoxCancellaFusioneSocietaria" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Carrello -->
+            <div class="modal-header">
+                <h4 class="modal-title">Anagrafica Soggetti</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <span>L'operazione prevede la cancellazione della fusione societaria. Si desidera continuare?</span>
+                </p>
+            </div>
+            <!-- Buttons -->
+            <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="annullaCancellaFusioneSocietaria()">No</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" (click)="onCancellaFusioneSocietaria()">S&igrave;</button>                
+            </div>
+            <!-- end Buttons -->
         </div>
     </div>
 </div>
+<!--FINE DIALOG BOX -->
+<!-- Modal Storico anagrafica -->
+<div class="modal fade" 
+     id="mdlStoricoAnagrafica" 
+     tabindex="-1" 
+     data-backdrop="static" 
+     data-keyboard="false" 
+     role="dialog" 
+     aria-labelledby="Storico Anagrafica" 
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">        
+        <div class="modal-content">
+            <div class="modal-header">                
+                <span class="modal-title h5-font" id="storicoAnagraficaTitle"><b>Storico cambiamenti anagrafica</b></span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>                
+            </div>            
+            <sigas-spinner *ngIf="loaderPageStoricoAnagrafica"></sigas-spinner>
+            <div class="modal-body overflow-x-scroll">                
+                <sigas-alert class="inlinea" [message]="messageErrorModStoricoAnagrafica" *ngIf="showMessageErrorModStoricoAnagrafica" [type]="'DANGER'"></sigas-alert>
+                <table class="display responsive table-striped"
+                       [dtOptions]="dtOptionsModStorico"
+                       [dtTrigger]="dtTriggerModStorico"                       
+                       id="tblStoricoAnagrafica"
+                       #tblStoricoAnagrafica
+                       datatable
+                       [style.display]="!loaderPageStoricoAnagrafica ? '' : 'none'"
+                       width="100%">
+                    <thead>
+                        <tr class="storico-anag-header">        
+                            <th class="align-left padding-right-15" scope="col">Info</th>
+                            <!-- <th class="align-left padding-right-15" scope="col">Denominazione</th>                                                
+                            <th class="align-left padding-right-15" scope="col">Codice Azienda</th> -->
+                            <th class="align-left padding-right-15" scope="col">CF / P.Iva</th>
+                            <th class="align-left padding-right-15" scope="col">IBAN</th>
+                            <th class="align-left padding-right-15" scope="col">Indirizzo</th>
+                            <th class="align-left padding-right-15" scope="col">Email/PEC</th>
+                            <!-- <th class="align-left padding-right-15" scope="col">Email</th>
+                            <th class="align-left padding-right-15" scope="col">PEC</th> -->
+                            <th class="align-left padding-right-15" scope="col">Anno tributo</th>                            
+                            <th class="align-left padding-right-15" scope="col">Data modifica</th>
+                            <th class="align-left padding-right-15" scope="col">Tip.</th>                                                       
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let el of storicoAnagraficaList; let last = last;">  
+
+                            <td class="storico-anag-align-left padding-right-15">Denominazione: {{ el.denominazione }}
+                                <br>Cod. azienda: {{ el.codiceAzienda }}
+                            </td>
+                            <!-- <td class="storico-anag-align-left padding-right-15">{{ el.codiceAzienda }}</td>
+                            <td class="storico-anag-align-left padding-right-15">{{ el.denominazione }}</td> -->
+
+                            <td class="storico-anag-align-left padding-right-15">{{ el.cfPiva }}</td>
+                            <td class="storico-anag-align-left padding-right-15">{{ el.iban }}</td>
+                            <td class="storico-anag-align-left padding-right-15">{{ el.indirizzo }}</td>
+                            <td class="storico-anag-align-left padding-right-15">Email:{{ el.email}}
+                                <br>PEC: {{ el.pec }}
+                            </td>
+                            <!-- <td class="storico-anag-align-left padding-right-15">{{ el.email }}</td>
+                            <td class="storico-anag-align-left padding-right-15">{{ el.pec }}</td> -->
+
+                            <td class="storico-anag-align-left padding-right-15">{{ el.annualita }}</td>
+                            <td class="storico-anag-align-left padding-right-15">{{ el.dataRiferimento  | date:'dd/MM/yyyy HH:mm:ss' }}</td> 
+                            <td class="storico-anag-align-center padding-right-15">                                
+                                <img *ngIf="el.ownerOperazione == 'OPERATORE'" style="width:25px; height:25px;" 
+                                     alt="Operazione eseguita da un operatore" 
+                                     title="Operazione eseguita da un operatore" src="assets/operatore-black.png">
+                                <img *ngIf="el.ownerOperazione == 'IMPORT'" style="width:25px; height:25px;" 
+                                     alt="Operazione eseguita mediante import UTF" 
+                                     title="Operazione eseguita mediante import UTF" src="assets/importUTF-black.png">
+                                <div *ngIf="el.ownerOperazione == 'IMPORT'">
+                                    <br>
+                                    <span>Id: {{el.idImport}}</span>
+                                </div>
+                            </td>                                                     
+                        </tr>
+                    </tbody>
+                    <ng-template #noData>
+                    <tbody >
+                            <tr>
+                                <td colspan="5" style="text-align: center;">
+                                    Nessuna modifica trovata
+                                </td>
+                            </tr>
+                    </tbody>
+                    </ng-template>
+                </table>
+            </div>
+            <!--
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" (click)="chiudiModalStoricoAnagrafica()">Close</button>
+            </div>
+            -->
+        </div>
+    </div>
+</div>
+<!--fine Storico anagrafica -->

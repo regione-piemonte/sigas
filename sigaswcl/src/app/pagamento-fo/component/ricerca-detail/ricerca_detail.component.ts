@@ -10,6 +10,7 @@ import { SubjectVO } from "../../commons/vo/subject-vo";
 
 import { PaymentFoService } from '../../service/pagamento-fo.service';
 import { TipoVersamentiVO } from "../../../commons/vo/tipo-versamenti-vo";
+import { PaymentStoreCartRequest } from '../../commons/request/payment-store-cart-request';
 
 declare var $: any;
 
@@ -40,6 +41,8 @@ export class SearchDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     execDownloadExcel: boolean = false;
     
     private paymentTypes: Array<TipoVersamentiVO>;
+
+    public dataSourceTableCartList: Array<{ [key: string]: PaymentStoreCartRequest }> = [];
 
     constructor(
         private logger: LoggerService,
@@ -75,6 +78,66 @@ export class SearchDetailComponent implements OnInit, OnDestroy, AfterViewInit {
                         this.foPayService.cartReq.paymentCode = res[0].paymentCode;
                         this.setFirstCart()
                     }
+                    if(this.foPayService.cartReq.type !="5" && this.foPayService.cartReq.type !="6"){
+                        Object.keys(this.foPayService.cartList).forEach((key, index) => {          
+                            let cartItem:PaymentStoreCartRequest = new PaymentStoreCartRequest(
+                                this.foPayService.cartList[key].id,
+                                this.foPayService.cartList[key].amount,
+                                this.foPayService.cartList[key].year,
+                                this.foPayService.cartList[key].area,
+                                this.foPayService.cartList[key].subjectName,
+                                this.foPayService.cartList[key].idAnag,
+                                this.foPayService.cartList[key].subjectCode,
+                                this.foPayService.cartList[key].status,
+                                this.foPayService.cartList[key].paymentCode,
+                                this.foPayService.cartList[key].paymentType,
+                                this.foPayService.cartList[key].currentDate,
+                                this.foPayService.cartList[key].payDate,
+                                this.foPayService.cartList[key].email,
+                                (this.foPayService.cartList[key].month!=null)?this.foPayService.cartList[key].month.toString():null,
+                                this.foPayService.cartList[key].type,
+                                0,
+                                this.foPayService.cartList[key].codiceFiscalePIva,
+                                this.foPayService.cartList[key].iuv)
+                                this.dataSourceTableCartList[cartItem.cartKey] = cartItem;                                        
+                        });
+                    } else {
+                        var elencoProvince: String = "";
+                        var sommaImportoListaDepositiCauzionali:number = 0;                       
+                        Object.keys(this.foPayService.cartList).forEach((key, index) => {
+                            elencoProvince = elencoProvince + this.foPayService.cartList[key].area;
+                            sommaImportoListaDepositiCauzionali += parseFloat((''+this.foPayService.cartList[key].amount).replace(',','.'));
+                            if(index == 0){
+                                let cartItem:PaymentStoreCartRequest = new PaymentStoreCartRequest(
+                                    this.foPayService.cartList[key].id,
+                                    null,
+                                    this.foPayService.cartList[key].year,
+                                    null,
+                                    this.foPayService.cartList[key].subjectName,
+                                    this.foPayService.cartList[key].idAnag,
+                                    this.foPayService.cartList[key].subjectCode,
+                                    this.foPayService.cartList[key].status,
+                                    this.foPayService.cartList[key].paymentCode,
+                                    this.foPayService.cartList[key].paymentType,
+                                    this.foPayService.cartList[key].currentDate,
+                                    this.foPayService.cartList[key].payDate,
+                                    this.foPayService.cartList[key].email,
+                                    null,
+                                    this.foPayService.cartList[key].type,
+                                    0,
+                                    this.foPayService.cartList[key].codiceFiscalePIva,
+                                    this.foPayService.cartList[key].iuv)
+                                    this.dataSourceTableCartList[cartItem.cartKey] = cartItem;
+                            }                                                                              
+                        });
+                        if(elencoProvince.length > 2){
+                            elencoProvince = "Tutte le province";
+                        }
+                        Object.keys(this.dataSourceTableCartList).forEach((key, index) => {
+                            this.dataSourceTableCartList[key].area = elencoProvince;
+                            this.dataSourceTableCartList[key].amount = sommaImportoListaDepositiCauzionali.toString();
+                        });
+                    }                                      
                     this.pageLoadingInProgress = false;
                 },
                 err => { this.logger.error("-------errore " + err); });
@@ -113,6 +176,9 @@ export class SearchDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     getAmount(v){
+        if(v=='' || v==null || v==undefined){
+            return '';
+        }        
         return parseFloat((''+v).replace(',','.'));
     }    
 

@@ -96,7 +96,7 @@ export class TemplateLetteraRispostaComponent implements OnInit, OnDestroy {
         this.subscribers.province = this.luoghiService.getAllProvince().subscribe(data => {
             this.provinceModel = data;
             this.provinceModel.push(new ProvinceVO(-1, 'Nessuna Provincia Selezionata', ''));
-            this.provinceModel.map(prov => {
+            this.provinceModel.forEach(prov => {
                 if (prov.id == this.data.anagraficaSoggettoVO.idProvincia) {
                     this.provincia = prov;
                 }
@@ -113,7 +113,7 @@ export class TemplateLetteraRispostaComponent implements OnInit, OnDestroy {
         if (id != null && id != -1) {
             this.subscribers.comuniByIdProvincia = this.luoghiService.getComuneByIdProvincia(id).subscribe(data => {
                 this.comuniModel = data;
-                this.comuniModel.map(com => {
+                this.comuniModel.forEach(com => {
                     if (com.id == this.data.anagraficaSoggettoVO.idComune) {
                         this.comune = com;
                     }

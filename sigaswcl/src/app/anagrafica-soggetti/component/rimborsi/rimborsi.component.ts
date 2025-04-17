@@ -139,69 +139,48 @@ export class RimborsiComponent implements OnInit, AfterViewInit {
     if (this.elencoTassi != null && this.rimborso.dataRimborso != null) {
       let dataIstanza =  new Date(this.rimborso.dataIstanza);
       let dataRimborso =  new Date(this.rimborso.dataRimborso);
-//      const _dataIstanza = moment(this.rimborso.dataIstanza);
-//      this.dataIstanza = {
-//              year: _dataIstanza.year(),
-//              month: Number(_dataIstanza.format('MM')),
-//              day: Number(_dataIstanza.format('DD'))
-//          };
-//      const _dataRimborso = moment(this.rimborso.dataRimborso);
-//      this.dataRimborso = {
-//              year: _dataRimborso.year(),
-//              month: Number(_dataRimborso.format('MM')),
-//              day: Number(_dataRimborso.format('DD'))
-//          };
-//      const _dataVersamento = moment(this.rimborso.dataVersamento);
-//      this.dataVersamento = {
-//              year: _dataVersamento.year(),
-//              month: Number(_dataVersamento.format('MM')),
-//              day: Number(_dataVersamento.format('DD'))
-//          };
-//      if ( dataIstanza.getTime() > dataRimborso.getTime()) {
-//        this.disableDetermina = true;
-//        this.errorMsg = true;
-//        this.eMsg = "La \'Data Istanza Rimborso\' non può essere superiore alla \'Data Pagamento Rimborso\'";
-//        return;
-//      } else {
-//        this.disableDetermina = false;
-//        this.errorMsg = false;
-//      }
       this.totaleInteressi = 0;
       this.totaleRimborso = 0;
-      this.elencoTassi.map(tasso => {
+      this.elencoTassi.forEach(tasso => {
         tasso.numGiorni = 0;
         let tassoStartDate = new Date(tasso.dataStart);
         let tassoEndDate = new Date(tasso.dataEnd);
-        if ( tassoStartDate.getTime() <= dataIstanza.getTime() && tassoEndDate.getTime() >= dataIstanza.getTime()
-              && tassoEndDate.getTime() <= dataRimborso.getTime()) {
+        if ( tassoStartDate.getTime() <= dataIstanza.getTime() && 
+             tassoEndDate.getTime() >= dataIstanza.getTime() && 
+             tassoEndDate.getTime() <= dataRimborso.getTime()) 
+        {
           tasso.numGiorni = Math.floor(Date.UTC(tassoEndDate.getFullYear(), tassoEndDate.getMonth(), tassoEndDate.getDate()) -
-                                Date.UTC(dataIstanza.getFullYear(), dataIstanza.getMonth(), dataIstanza.getDate())) /(1000 * 60 * 60 * 24);
+                                       Date.UTC(dataIstanza.getFullYear(), dataIstanza.getMonth(), dataIstanza.getDate())) /(1000 * 60 * 60 * 24);
 
         }
-        if ( tassoStartDate.getTime() >= dataIstanza.getTime() && tassoEndDate.getTime() <= dataRimborso.getTime()) {
+        if (tassoStartDate.getTime() >= dataIstanza.getTime() && 
+            tassoEndDate.getTime() <= dataRimborso.getTime()) 
+        {
           tasso.numGiorni = Math.floor(Date.UTC(tassoEndDate.getFullYear(), tassoEndDate.getMonth(), tassoEndDate.getDate()) -
-                                Date.UTC(tassoStartDate.getFullYear(), tassoStartDate.getMonth(), tassoStartDate.getDate())) /(1000 * 60 * 60 * 24);
+                                       Date.UTC(tassoStartDate.getFullYear(), tassoStartDate.getMonth(), tassoStartDate.getDate())) /(1000 * 60 * 60 * 24);
 
         }
-        if ( tassoStartDate.getTime() >= dataIstanza.getTime() &&
-             tassoStartDate.getTime() <= dataRimborso.getTime() && tassoEndDate.getTime() >= dataRimborso.getTime()) {
+        if (tassoStartDate.getTime() >= dataIstanza.getTime() &&
+            tassoStartDate.getTime() <= dataRimborso.getTime() && 
+            tassoEndDate.getTime() >= dataRimborso.getTime()) 
+        {
           tasso.numGiorni = Math.floor(Date.UTC(dataRimborso.getFullYear(), dataRimborso.getMonth(), dataRimborso.getDate()) -
-                                Date.UTC(tassoStartDate.getFullYear(), tassoStartDate.getMonth(), tassoStartDate.getDate())) /(1000 * 60 * 60 * 24);
+                                       Date.UTC(tassoStartDate.getFullYear(), tassoStartDate.getMonth(), tassoStartDate.getDate())) /(1000 * 60 * 60 * 24);
 
         }
 
-        if ( tassoStartDate.getTime() <= dataIstanza.getTime() && tassoEndDate.getTime() >= dataIstanza.getTime() &&
-             tassoStartDate.getTime() <= dataRimborso.getTime() && tassoEndDate.getTime() >= dataRimborso.getTime()) {
+        if (tassoStartDate.getTime() <= dataIstanza.getTime() && tassoEndDate.getTime() >= dataIstanza.getTime() &&
+            tassoStartDate.getTime() <= dataRimborso.getTime() && tassoEndDate.getTime() >= dataRimborso.getTime()) 
+        {
           tasso.numGiorni = Math.floor(Date.UTC(dataRimborso.getFullYear(), dataRimborso.getMonth(), dataRimborso.getDate()) -
-                                Date.UTC(dataIstanza.getFullYear(), dataIstanza.getMonth(), dataIstanza.getDate())) /(1000 * 60 * 60 * 24);
+                                       Date.UTC(dataIstanza.getFullYear(), dataIstanza.getMonth(), dataIstanza.getDate())) /(1000 * 60 * 60 * 24);
 
         }
 
         tasso.totInteresse = ((this.rimborso.importo * tasso.valore)/365/100) * tasso.numGiorni;
       
         this.totaleInteressi += tasso.totInteresse;
-      });
-    
+      });    
 
       this.totaleRimborso = this.totaleInteressi + this.rimborso.importo;
     }
@@ -281,7 +260,7 @@ export class RimborsiComponent implements OnInit, AfterViewInit {
       this.subscribers.ricercaListaRimborsi = this.anagraficaSoggettiService.ricercaListaRimborsi()    
         .subscribe(res => {
           this.elencoRimborso = res;
-          this.elencoRimborso.map(el => { 
+          this.elencoRimborso.forEach(el => { 
             if (el.statoPratica != 'DETERMINA') {
               el.allarme = true;
             } else {

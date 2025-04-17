@@ -1,12 +1,16 @@
 import { CompensazioniPrVO } from './compensazioni-pr-vo';
 import { NuovoAllacciamentoVO } from './nuovo-allacciamento-vo';
+import { ScartoVO } from './scarto-vo';
+import { AnagraficaSoggettoVO } from './soggetti-vo';
 
 export class ConsumiPrVO {
     public concilia: boolean;
     public scarti: boolean;
     public conguaglio_dich_prec: number;
     public rateo_dich_prec: number;
-    public compensazionePrVO: CompensazioniPrVO;       
+    public compensazionePrVO: CompensazioniPrVO;
+    public anagraficaSoggettoVO: AnagraficaSoggettoVO;
+    public listaScarti: Array<ScartoVO>;       
 
     constructor(
         public id_consumi: number,
@@ -37,5 +41,5 @@ export class ConsumiPrVO {
         public nuoviAllacciamenti: Array<NuovoAllacciamentoVO>,
         public compensazione: number,
         public totaleVersato: number,        
-    ) { }
+    ) { }    
 }

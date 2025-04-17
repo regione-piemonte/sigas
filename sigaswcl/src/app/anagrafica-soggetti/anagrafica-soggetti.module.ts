@@ -19,6 +19,10 @@ import { OrdinativiIncassoComponent } from './component/ordinativi-incasso/ordin
 import { AssociaOrdincSoggettoComponent } from './component/associa-ordinc-soggetto/associa-ordinc-soggetto.component';
 import { AssociaOrdincVersamentoComponent } from './component/associa-ordinc-versamento/associa-ordinc-versamento.component';
 import { RateoComponent } from './component/rateo/rateo.component';
+import { ComparazioneSoggettiComponent } from './component/fusione-societa/comparazione-soggetti/comparazione-soggetti.component';
+import { StoricoAnagraficaComponent } from './component/storico-anagrafica/storico-anagrafica.component';
+import { AnagraficaSoggettoIncorporatoComponent } from './component/anagrafica-soggetto-incorporato/anagrafica-soggetto-incorporato.component';
+
 
 @NgModule({
   imports: [
@@ -45,6 +49,9 @@ import { RateoComponent } from './component/rateo/rateo.component';
                  OrdinativiIncassoComponent, 
                  AssociaOrdincSoggettoComponent, 
                  AssociaOrdincVersamentoComponent,
-                 RateoComponent]
+                 RateoComponent,
+                 ComparazioneSoggettiComponent,
+                 StoricoAnagraficaComponent,
+                 AnagraficaSoggettoIncorporatoComponent]
 })
 export class AnagraficaSoggettiModule { }

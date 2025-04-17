@@ -169,7 +169,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                                           codiceStatoDocumento: string}[] = JSON.parse(data[11]);                                                        
             
             lettereRispostaHTML = lettereRipostaJSONFormat.map((data) => {                                                    
-                                                        return '<tr class="pointer" style="background-color:#F9F9F4">' +
+                                                        return '<tr style="background-color:#F9F9F4">' +
                                                                     '<span class="sr-only">Lettera di risposta con protocollo ' + data.nprotocollo + '</span>' +                                                                    
                                                                     '<td style="dt-center">' + data.dataProtocollazione + '</td>' +                                                                                                                                                                                                                        
                                                                     '<td style="trunk20 dt-left" title="' + data.nomeFile + '">' + data.nomeFile + '</td>' +
@@ -348,7 +348,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                                                   codiceStatoDocumento: string}[] = JSON.parse(data[11]);                                                        
                     
                     lettereRispostaHTML = lettereRipostaJSONFormat.map((data) => {
-                                                            return '<tr class="pointer" style="background-color:#F9F9F4">' +
+                                                            return '<tr style="background-color:#F9F9F4">' +
                                                                         '<span class="sr-only">Lettera di risposta con protocollo ' + data.nprotocollo + '</span>' +                                                                                
                                                                         '<td style="dt-center">' + data.dataProtocollazione + '</td>' +                                                                                                                                                                                                                        
                                                                         '<td style="trunk20 dt-left" title="' + data.nomeFile + '">' + data.nomeFile + '</td>' +
@@ -373,11 +373,15 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                         };                        
                     }                    
                     for (var itemL of lettereRispostaHTML) {
+                        /*
                         if(!checkAllegati){                            
                             rowHTML = rowHTML + itemL; 
                         } else {
                             rowHTML = rowHTML + itemL; 
-                        }                    
+                        }
+                        */
+                        
+                        rowHTML = rowHTML + itemL;
                     }                    
                     rowHTML = rowHTML + '</table></div>';                    
                     var row =  $('#elencoDocumentiTBL').DataTable().row(index);

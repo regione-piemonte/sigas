@@ -62,16 +62,16 @@ export class CalcoloAccertamentoComponent implements OnInit {
     this.allarmeVersamento = false;
     this.provinceSel = [];
     console.log(this.accertamenti);
-    this.accertamenti.map(acc => {
-        this.subscribers.elencoProvince = this.luoghiService.provinciaBySigla(acc.provincia)
-          .subscribe(resp => {
-            console.log(resp);
-            this.provinceSel.push(resp);
-          }, err => {
-            this.logger.error('error');
-          });
-      }
-    );
+
+    this.accertamenti.forEach(acc => {
+      this.subscribers.elencoProvince = this.luoghiService.provinciaBySigla(acc.provincia)
+      .subscribe(resp => {
+        console.log(resp);
+        this.provinceSel.push(resp);
+      }, err => {
+        this.logger.error('error');
+      });
+    });    
 
     this.subscription = this.tassiService.tassiByAccertamenti().subscribe(
       res => {
@@ -170,7 +170,7 @@ export class CalcoloAccertamentoComponent implements OnInit {
 
   calcolaInteressi(acc: VersamentiPrVO): number {
     let totaleInteressi = 0;
-    this.elencoTassi.map( tasso => {
+    this.elencoTassi.forEach( tasso => {
       let tassoStartDate = new Date(tasso.dataStart);
       let tassoEndDate = new Date (tasso.dataEnd);
       let dataAccertamento = new Date(this.dataAccertamento.year, this.dataAccertamento.month - 1, this.dataAccertamento.day);

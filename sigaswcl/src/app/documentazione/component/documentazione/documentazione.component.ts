@@ -14,6 +14,9 @@ import {ConfermaDocumentazioneRequest} from '../../../commons/request/conferma-d
 import {RoutingDocumentazioneBO} from '../../../commons/routing';
 import {UtilityService} from '../../../core/services/utility/utility.service';
 import {MessageEnum} from '../../../core/services/utility/enum/messageEnum';
+import { FileItem } from 'ng2-file-upload';
+import { ExceptionVO } from "../../../core/commons/vo/exceptionVO";
+import { ElencoDocumentazioneComponent } from '../elenco-documentazione/elenco-documentazione.component';
 
 declare var jquery: any;
 declare var $: any;
@@ -31,7 +34,7 @@ const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
 export class DocumentazioneComponent implements OnInit, AfterViewInit {
     @ViewChild(SigasDialogComponent) sharedDialog: SigasDialogComponent;
     public subscribers: any = {};
-    allowedFilesType = ['pdf', 'tiff', 'jpg', 'jpeg', 'p7m'];
+    allowedFilesType = ['pdf'];
     allowedFilesTypeMessage: string;
     dialogMsg: string;
     dataInvioPec: Date;
@@ -54,6 +57,18 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     private RIFIUTATO = 4;
 
     private isPecEnabled: boolean;
+
+    private importoDepositoCausionale: number;
+    private depositoCausionaleProvincia: String;
+    private maxSize: number = 20971520;
+    private sizeAlert: boolean = false;
+    private fileToUpload: File = null;
+    private fileCaricato: boolean = false;
+    private depCausionaleNumeroAccertamento: string;
+    private depCausionaleAnnoAccertamento: number;
+    private depCausionaleNumeroDetermina: string;
+    private showMessageSuccess: boolean = false;
+    private messageSuccess: string = '';
 
     constructor(
         private logger: LoggerService,
@@ -85,6 +100,10 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
             } else {
                 this.listaStatoDocumento = data.filter(stato => stato.codiceStato !== 'LETT_RISP');
             }
+            if((this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento == 'DEPO' || this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento == 'DEPO_INT' ) && 
+               this.documentoToSave.statoDocumentoVO.codiceStato != 'ACC'){
+               this.listaStatoDocumento = this.listaStatoDocumento.filter(stato => stato.codiceStato != 'ACC');
+            }           
             setTimeout(() => {
                 this.loaderDT = false;
             }, 1000);
@@ -134,6 +153,57 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
         } else {
             this.letteraRisposta = true;
         }
+
+        if(this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento == 'DEPO' || this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento == 'DEPO_INT') 
+        {
+            if(this.documentoToSave.depositoCausionaleVOs!=null && this.documentoToSave.depositoCausionaleVOs != undefined)
+            {
+                if(this.documentoToSave.depositoCausionaleVOs[0].numeroAccertamento!=null && 
+                   this.documentoToSave.depositoCausionaleVOs[0].numeroAccertamento != undefined)
+                {
+                    this.depCausionaleNumeroAccertamento = this.documentoToSave.depositoCausionaleVOs[0].numeroAccertamento.toString();
+                }
+                
+                if(this.documentoToSave.depositoCausionaleVOs[0].annoAcccertamento!=null && 
+                   this.documentoToSave.depositoCausionaleVOs[0].annoAcccertamento != undefined)
+                {
+                    this.depCausionaleAnnoAccertamento = +this.documentoToSave.depositoCausionaleVOs[0].annoAcccertamento;
+                }
+
+                if(this.documentoToSave.depositoCausionaleVOs[0].numeroDetermina!=null && 
+                   this.documentoToSave.depositoCausionaleVOs[0].numeroDetermina != undefined)
+                {
+                    this.depCausionaleNumeroDetermina = this.documentoToSave.depositoCausionaleVOs[0].numeroDetermina.toString();
+                }      
+
+
+                this.importoDepositoCausionale = this.documentoToSave.depositoCausionaleVOs.reduce((acc, itemFilter) => { 
+                                                                                                            return acc + itemFilter.importo; 
+                                                                                                    }, 0);                                                                                                    
+                
+                this.importoDepositoCausionale = Math.round(this.importoDepositoCausionale * 100) / 100;
+
+                let elencoProvinciaArray = this.documentoToSave.depositoCausionaleVOs.map((value) => value.provinciaVO.sigla);
+                
+                if(elencoProvinciaArray !=null && elencoProvinciaArray!=undefined)
+                {
+                    if(elencoProvinciaArray.length > 1)
+                    {
+                        this.depositoCausionaleProvincia = "Tutte le province";
+
+                    } else {
+                        this.depositoCausionaleProvincia = elencoProvinciaArray.filter((value, index, self) => self.indexOf(value) === index)
+                                                                               .join(', ');
+                    }
+                }
+                /*
+                this.depositoCausionaleProvincia = elencoProvinciaArray.filter((value, index, self) => self.indexOf(value) === index)
+                                                                        .join(', ');
+                */
+
+            }
+        }
+
         this.loaded = true;
     }
 
@@ -145,17 +215,38 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
             notaDataPec = 'PEC inviata il ' + this.dataInvioPecString;
         }
 
-        this.documentazioneService.confermaDocumentazione = new ConfermaDocumentazioneRequest(this.documentoToSave);
+        //Setting a null del valore importo e codiceProvincia utilizzati in fase di richiesta Deposito Causionale da parte
+        //dell'utente NON BackOffice
+        this.documentazioneService.confermaDocumentazione = new ConfermaDocumentazioneRequest(this.documentoToSave, null, null,null);
         this.loaderPage = true;
         this.loaded = false;
-        this.documentazioneService.salvaDocumentazioneBO(notaDataPec).subscribe(data => {
+        this.documentazioneService.salvaDocumentazioneBO(notaDataPec, 
+                                                         this.depCausionaleAnnoAccertamento,
+                                                         this.depCausionaleNumeroAccertamento,
+                                                         this.depCausionaleNumeroDetermina,
+                                                         this.importoDepositoCausionale).subscribe(data => 
+        {
             this.loaderPage = false;
             this.loaded = true;
-            this.showMessage = true;
-            this.levelMessage = 'SUCCESS';
-            this.message = 'Operazione avvenuta con successo';
+            
+            //this.showMessage = true;
+            //this.levelMessage = 'SUCCESS';
+            //this.message = 'Operazione avvenuta con successo';
+
+            this.showMessage = false;
+            this.showMessageSuccess = true;
+            this.messageSuccess = 'Operazione avvenuta con successo';
+
             this.documentoToSave.statoDocumentoVO.codiceStato = data;
+            if((this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento == 'DEPO' || this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento == 'DEPO_INT' )&& 
+               this.documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP') {            
+               this.listaStatoDocumento = this.listaStatoDocumento.filter(stato => stato.codiceStato == 'RIF');
+            }
         }, err => {
+
+            this.showMessageSuccess = false;
+            this.messageSuccess = '';
+
             this.logger.error(err);
             this.loaderPage = false;
             this.loaded = true;
@@ -172,7 +263,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     }
 
     goBack() {
-        this.router.navigate([RoutingDocumentazioneBO.DOCUMENTI_IN_ARRIVO]);
+        this.router.navigate([RoutingDocumentazioneBO.DOCUMENTI_IN_ARRIVO], { queryParams: { caller:'arrivo'}});
     }
 
     completaLetteraOrdinanza() {
@@ -202,6 +293,7 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
      */
     public apriInfoPopup() {
         this.notaSalvata = false;
+        this.loaded = false;
         this.documentazioneService.ricercaLetteraRisposta(this.documentoToSave.nprotocollo).subscribe(data => {
             if (data.length > 0) {
                 this.salvaPraticaDocumentazione();
@@ -209,8 +301,11 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
                     this.notaSalvata = true;
                 }
             } else {
-                if (this.documentoToSave.statoDocumentoVO.idStatoDocumento == this.ACCETTATO
-                    || this.documentoToSave.statoDocumentoVO.idStatoDocumento == this.RIFIUTATO) {
+                if ((this.documentoToSave.statoDocumentoVO.idStatoDocumento == this.ACCETTATO || 
+                    this.documentoToSave.statoDocumentoVO.idStatoDocumento == this.RIFIUTATO ) &&
+                    (this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento != 'DEPO' && 
+                     this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento != 'DEPO_INT')) 
+                {
                     this.utilityService.getMessageByKey(MessageEnum.CONFERMA_LETTERA)
                         .subscribe(msg => {
                             this.dialogMsg = msg.message || '';
@@ -248,4 +343,95 @@ export class DocumentazioneComponent implements OnInit, AfterViewInit {
     resetDataInvioPec() {
         this.dataInvioPec = null;
     }
+
+    handleFileInput(files: FileList) {
+        //gestione messaggi alert
+        this.message = "";
+        this.levelMessage = "";
+        this.showMessage = false;
+        
+        let type : string = "";
+        let array :string[] = files.item(0).name.split(".");
+        if(array.length > 1){
+            type = array[array.length-1];
+        }
+        if (files.item(0).size > this.maxSize) {
+            this.sizeAlert = true;
+            this.utilityService.getMessageByKey(MessageEnum.DOCDIMMAX)
+                                .subscribe(msg => {
+                                this.message = msg.message || '';
+                                }, error => {
+                                    this.logger.error(error);
+                                });            
+        } else {  
+                if(this.allowedFilesType.filter(x => x==type.toLowerCase()).length==0)
+                {                    
+                    this.message = "I documenti caricati non sono idonei all'archiviazione su Doqui ACTA. Si prega di ricontrollare l'estensione dei file selezionati";
+                    this.levelMessage = "DANGER";
+                    this.showMessage = true;
+                    // setTimeout(() => {
+                    //     this.message = "";
+                    //     this.levelMessage = "";
+                    //     this.showMessage = false;
+                    // }, 5000);
+                } else {
+                    this.fileToUpload = files.item(0);                    
+                    this.fileCaricato = true;                                        
+                }
+        }
+        
+      }
+
+      eliminaFilePrincipale(){
+        this.fileToUpload = null;
+        this.fileCaricato = false;
+        $("#mainFile").val('');
+      }
+
+      confermaAvvisoPagamento(){
+        this.chiudiConfermaAvvisoPagamentoModal()
+        this.loaded = false;
+        this.documentazioneService
+            .generaProtocollaBollettinoPagamentoDepCausionale(this.fileToUpload, this.documentoToSave.idDocumento, 
+                                                             this.importoDepositoCausionale, this.depCausionaleAnnoAccertamento,
+                                                             this.depCausionaleNumeroAccertamento, this.depCausionaleNumeroDetermina,
+                                                             this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento)
+            .subscribe(data => {               
+                this.listaStatoDocumento.push(new StatoDocumentoVO(3,"Accettata","ACC"))                        
+                let statoDocAccettato = this.listaStatoDocumento.filter(stato => stato.codiceStato == 'ACC')[0];
+                this.documentoToSave.statoDocumentoVO = statoDocAccettato;                           
+                this.loaded = true;
+
+                //this.showMessage = true;
+                //this.levelMessage = 'SUCCESS';
+                //this.message = 'Operazione avvenuta con successo';
+
+                this.showMessage = false;
+                this.showMessageSuccess = true;
+                this.messageSuccess = 'Operazione avvenuta con successo';
+            }, 
+            error => {
+                this.showMessageSuccess = false;
+                this.messageSuccess = '';
+
+                this.message = "E' già stata presentata una richiesta di Deposito Cauzionale per il soggetto selezionato e periodo selezionato";
+                this.levelMessage = "DANGER";
+                this.showMessage = true;
+                this.loaded = true;                
+        });
+      }
+
+      showDeterminaDepositoCauzionale() {
+        return (this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO' || 
+                this.documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO_INT')&& 
+               (this.documentoToSave.statoDocumentoVO.codiceStato=='IN_LAV' || this.documentoToSave.statoDocumentoVO.codiceStato=='ACC');
+      }
+
+      apriConfermaAvvisoPagamentoModal() {
+        $('#confermaAvvisoPagamentoModal').modal('show');
+      }
+
+      chiudiConfermaAvvisoPagamentoModal() {
+        $('#confermaAvvisoPagamentoModal').modal('hide');
+      }
 }

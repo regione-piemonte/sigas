@@ -39,13 +39,17 @@ import { RimborsoVO } from '../../commons/vo/rimborso-vo';
 import { RicercaAnaComunicazioniRequest } from '../../commons/request/ricerca-anaComunicazioni-request';
 import { AllarmeDocumentoRequest } from '../../commons/request/allarme-documento-request';
 import { MessaggiVO } from '../../commons/vo/messaggi-vo';
-import { DownloadDettaglioSoggettoReport } from 'src/app/commons/request/DownloadDettaglioSoggettoReport-request';
-import { UpdateAllarmeAccertamentoRequest } from 'src/app/commons/request/update-allarme-accertamento-request';
-import { CompensazioniPrVO } from 'src/app/commons/vo/compensazioni-pr-vo';
-import { SalvaCompensazioneRequest } from 'src/app/commons/request/salva-compensazione-request';
-import { AnnualitaVersamentoVO } from 'src/app/commons/vo/annualita-versamenti-vo';
-import { RateoVO } from 'src/app/commons/vo/rateo-vo';
-import { RicercaRateoRequest } from 'src/app/commons/request/ricerca-rateo-request';
+import { DownloadDettaglioSoggettoReport } from '../../commons/request/DownloadDettaglioSoggettoReport-request';
+import { UpdateAllarmeAccertamentoRequest } from '../../commons/request/update-allarme-accertamento-request';
+import { CompensazioniPrVO } from '../../commons/vo/compensazioni-pr-vo';
+import { SalvaCompensazioneRequest } from '../../commons/request/salva-compensazione-request';
+import { AnnualitaVersamentoVO } from '../../commons/vo/annualita-versamenti-vo';
+import { StoricoAnagraficaSoggettoVO } from '../../commons/vo/storico-anagrafica-soggetto-vo';
+import { RateoVO } from '../../commons/vo/rateo-vo';
+import { RicercaRateoRequest } from '../../commons/request/ricerca-rateo-request';
+import { RicercaStoricoSoggettiRequest } from '../../commons/request/ricerca-storico-soggetti-riquest';
+import { RicercaSoggettoIncorporatoRequest } from '../../commons/request/ricerca-soggetto-incorporato-request';
+
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +76,7 @@ export class AnagraficaSoggettiService {
   private requestAcc: Array<DownloadVersamentiReport>;
   listaAccertamentiRequest: Array<ConfermaVersamentoRequest>;
   private subscribers: any = {};
+  private ricercaSoggettoIncorporatoRequest: RicercaSoggettoIncorporatoRequest
 
   /**
    * Evolutiva 202107-01 
@@ -301,6 +306,12 @@ export class AnagraficaSoggettiService {
     return this.http.post<AnagraficaSoggettoVO>(url, this.dichiarante.idAnag);
   }
 
+  public ricercaSoggettobyIdAnagrafica(idAnag: number) {
+    var url: string = this.config.getBEServer() + '/rest/home/ricercaSoggettoByID';
+    let params = new HttpParams().set('id', idAnag.toString());
+    return this.http.get<AnagraficaSoggettoVO>(url, { params: params });
+  }
+
   public ricercaSoggettoMock() {
     var url: string = 'assets/mock/soggetto.json';
     return this.http.get<AnagraficaSoggettoVO>(url);
@@ -314,11 +325,23 @@ export class AnagraficaSoggettiService {
   public ricercaListaSoggetti() {
     var url: string = this.config.getBEServer() + '/rest/home/ricercaListaSoggetti';
     return this.http.post<Array<AnagraficaSoggettoVO>>(url, this.ricercaConsumiRequest);
-  }
+  }  
   
   public ricercaSoggettoByID() {
     var url: string = this.config.getBEServer() + '/rest/home/ricercaSoggettoByID';
     let params = new HttpParams().set('id', this.dichiarante.idAnag.toString());
+    return this.http.get<AnagraficaSoggettoVO>(url, { params: params });
+  }
+
+  public ricercaSoggettoByCode(codice: string) {
+    var url: string = this.config.getBEServer() + '/rest/home/ricercaSoggettoByCode';
+    let params = new HttpParams().set('codice', codice);
+    return this.http.get<AnagraficaSoggettoVO>(url, { params: params });
+  }
+
+  public ricercaSoggettoByIdAnag(idAnag: number) {
+    var url: string = this.config.getBEServer() + '/rest/home/ricercaSoggettoByID';
+    let params = new HttpParams().set('id', idAnag.toString());
     return this.http.get<AnagraficaSoggettoVO>(url, { params: params });
   }
 
@@ -337,6 +360,13 @@ export class AnagraficaSoggettiService {
     var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvince';
     let params = new HttpParams().set('id', this.dichiarante.idAnag.toString())
     .set('anno', this.anno);
+    return this.http.get<Array<ConsumiPrVO>>(url, { params: params });
+  }
+
+  public ricercaConsumiForProvinceByIdAnag(idAnag: number) {
+    var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvince';
+    let params = new HttpParams().set('id', idAnag.toString())
+                                 .set('anno', this.anno);
     return this.http.get<Array<ConsumiPrVO>>(url, { params: params });
   }
   
@@ -377,20 +407,7 @@ export class AnagraficaSoggettiService {
       (res) => {
         return new Blob([res], { type: 'application/xls' })
       });
-  }
-
-  /*
-  public scaricaExcelSoggetto() {
-    var url: string = this.config.getBEServer() + '/rest/home/salvaSoggetto';
-    let request = new DownloadReport(this.dichiarante.idAnag, this.annoDichiarazione);
-    console.log(request);
-    const body = request;
-    return this.http.post(url, body, { responseType: 'blob' }).map(
-      (res) => {
-        return new Blob([res], { type: 'application/xls' })
-      });
-  }
-  */
+    }
 
   public scaricaExcelSoggetto(request: DownloadDettaglioSoggettoReport) {
     var url: string = this.config.getBEServer() + '/rest/home/salvaSoggetto';    
@@ -449,17 +466,17 @@ export class AnagraficaSoggettiService {
       });
   }
 
-  public confermaModificaSoggetto(soggettoUpdate: AnagraficaSoggettoVO) {
+  public confermaModificaSoggetto(soggettoUpdate: AnagraficaSoggettoVO, annualita: String, ownerOperazione: String) {
       var url: string = this.config.getBEServer() + '/rest/home/updateSoggetto';
 
-      const body = new ConfermaSoggettoRequest(soggettoUpdate);
+      const body = new ConfermaSoggettoRequest(soggettoUpdate, annualita, ownerOperazione);
       return this.http.post<AnagraficaSoggettoVO>(url, body);
   }
 
-  public confermaInserimentoSoggetto(soggettoInsert: AnagraficaSoggettoVO) {
+  public confermaInserimentoSoggetto(soggettoInsert: AnagraficaSoggettoVO, annualita: String, ownerOperazione: String) {
       var url: string = this.config.getBEServer() + '/rest/home/insertSoggetto';
 
-      const body = new ConfermaSoggettoRequest(soggettoInsert);
+      const body = new ConfermaSoggettoRequest(soggettoInsert, annualita, ownerOperazione);
       return this.http.post<AnagraficaSoggettoVO>(url, body);
   }
 
@@ -474,6 +491,11 @@ export class AnagraficaSoggettiService {
     var url: string = this.config.getBEServer() + '/rest/home/fusioneSoggetto';
 
     return this.http.post<AnagraficaSoggettoVO>(url, fusioneReq);
+  }
+
+  public cancellaFusioneSoggetto(idAnagIncorporante: number){
+    var url: string = this.config.getBEServer() + '/rest/home/cancella-fusione-soggetto/' + idAnagIncorporante;
+    return this.http.post<String>(url, null);
   }
 
   public ricercaScartiByIdConsumi() {
@@ -658,8 +680,7 @@ export class AnagraficaSoggettiService {
   
   public getUrlScaricaDocumentoAllegato(descComunicazione: string, fileName: string): String {
       return this.config.getBEServer() + '/rest/home/stampaDocumentoAllegato/'+descComunicazione+'/'+fileName;
-    }
-  
+  }  
   
   public getUrlScaricaPacchetto(descComunicazione: string) {
       console.log('call ricercaAccertamenti');
@@ -667,13 +688,11 @@ export class AnagraficaSoggettiService {
       let params = new HttpParams().set('descComunicazione', descComunicazione);
       
       return this.http.get(url,{params : params})
-    }
+  }
   
   public getUrlScaricaDocumentoMaster(): String {
       return this.config.getBEServer() + '/rest/home/stampaDocumentoMaster/';
-    }
-  
-  
+  }  
 
   fileChange(file: File): Observable<AnaComunicazioniVO> {
     var url: string = this.config.getBEServer() + '/rest/home/salvaAllegatoVerbale';
@@ -750,6 +769,18 @@ export class AnagraficaSoggettiService {
                                   .set('anno', annualita.toString())
                                   .set('provincia', provincia);
      return this.http.get<ConsumiPrVO>(url, { params: params });
+  }
+
+  public ricercaConsumiByIdAnagProvinceAndAnnualita(idAnag: number, 
+                                                    annualita: number, 
+                                                    provincia:string ) 
+  {
+      var url: string = this.config.getBEServer() + '/rest/home/ricercaConsumiPerProvinceAndAnnualita';
+      let params = new HttpParams().set('id', idAnag.toString())
+                                  .set('anno', annualita.toString())
+                                  .set('provincia', provincia);
+                                  
+      return this.http.get<ConsumiPrVO>(url, { params: params });
   }
 
   public get ricercaVersamentiReq(): RicercaVersamentiRequest {
@@ -849,15 +880,27 @@ export class AnagraficaSoggettiService {
         const url = this.config.getBEServer() + '/rest/home/delete/' + idDocumento;
         return this.http.delete(url, {});
     }
+    
+    /**
+     * Ricerca la lista degli storici di un soggetto anagrafica.
+     *
+     * @param idAnagRif
+     */
+    public ricercaStoricoAnagraficaSoggetto(idAnagRif: number) {
+      var url: string = this.config.getBEServer() + '/rest/home/ricerca-lista-storico-soggetto';    
+      let params = new HttpParams().set('id', idAnagRif.toString())      
+      return this.http.get<Array<StoricoAnagraficaSoggettoVO>>(url, { params: params });    
+    }
 
     /**
      * Consente di eliminare un versamento.
      *
      * @param idVersamento
      */    
-    public eliminaVersamento(idVersamento: number) {
+    public eliminaVersamento(idVersamento: number, idAnag: number) {
       var url: string = this.config.getBEServer() + '/rest/versamenti/delete/' + idVersamento;      
-      return this.http.delete(url, {});
+      let params = new HttpParams().set('idAnag', idAnag.toString())      
+      return this.http.delete(url, { params: params });
     }
     
     public inserisciElencoVersamenti(versamentoList: Array<VersamentiPrVO>) {
@@ -909,4 +952,35 @@ export class AnagraficaSoggettiService {
       const body = rateo;
       return this.http.post<String>(url, body);
     }
+
+    /**
+     * Servizio ricerca storico anagrafica POST con oggetto request
+    */  
+    public ricercaStoricoAnagraficaSoggetti(ricercaStoricoSoggettiRequest: RicercaStoricoSoggettiRequest) {
+      var url: string = this.config.getBEServer() + '/rest/home/ricerca-lista-storico-soggetti';
+      const body = ricercaStoricoSoggettiRequest;
+      return this.http.post<Array<StoricoAnagraficaSoggettoVO>>(url, body);    
+    }
+
+    /**
+     * Creazione oggetto request per servizio ricerca soggetto incorporato
+     */
+    public set ricercaSoggettoIncorporatoReq(ricercaSoggettoIncorporatoRequest: RicercaSoggettoIncorporatoRequest) {
+      this.ricercaSoggettoIncorporatoRequest = ricercaSoggettoIncorporatoRequest;
+    }
+
+    public get ricercaSoggettoIncorporatoReq(): RicercaSoggettoIncorporatoRequest {
+      return this.ricercaSoggettoIncorporatoRequest;
+    }
+
+    /**
+     * Serivizio ricerca soggetto incorporato (fusione) POST on oggetto request
+     */
+    public ricercaSoggettoIncorporato(ricercaSoggettoIncorporatoRequest: RicercaSoggettoIncorporatoRequest) {
+      var url: string = this.config.getBEServer() + '/rest/home/ricerca-soggetto-incorporato';
+      const body = ricercaSoggettoIncorporatoRequest;
+      console.log("Request ws", ricercaSoggettoIncorporatoRequest);
+      return this.http.post<Array<ConsumiPrVO>>(url, body);    
+    }
+
 }

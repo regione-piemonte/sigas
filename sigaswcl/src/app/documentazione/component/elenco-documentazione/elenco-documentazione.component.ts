@@ -9,7 +9,7 @@ import {Subject} from 'rxjs';
 import {RicercaDocumentazioneRequestBo} from '../../../commons/request/ricerca-documentazione-request-bo';
 import {NgbDateParserFormatter} from '@ng-bootstrap/ng-bootstrap';
 import {NgbDateCustomParserFormatter} from '../../../commons/class/dateformat';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AnagraficaSoggettoVO} from '../../../commons/vo/soggetti-vo';
 import {DocumentiVO} from '../../../commons/vo/documenti-vo';
 import {StatoDocumentoVO} from '../../../commons/vo/stato-documento-vo';
@@ -76,7 +76,8 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
     private dataProtocollazioneDal: Date;
     private dataProtocollazioneAl: Date;
     private documentCount: number;
-    private btnClickedMap : Map<String, boolean>;    
+    private btnClickedMap : Map<String, boolean>;
+    private viewQueryParams: string;
 
     constructor(
         private logger: LoggerService,
@@ -84,8 +85,8 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
         private router: Router,
         private sharedCache: SharedCacheService,
         @Inject(DOCUMENT) private document: Document,
-        private renderer: Renderer2
-
+        private renderer: Renderer2,
+        private route: ActivatedRoute,
     ) {
     }
 
@@ -360,6 +361,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
     }
  
     ngOnInit(): void {
+        this.viewQueryParams = this.route.snapshot.queryParamMap.get('caller');
         this.btnClickedMap  = new Map<String, boolean>();    
         sessionStorage.clear();        
         this.dtOptions = {
@@ -452,12 +454,16 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                         };                        
                     }                    
                     for (var itemL of lettereRispostaHTML) {
+                        /*
                         if(!checkAllegati){
                             //rowHTML = rowHTML + itemL.replace('background-color:#F9F9F4','');
                             rowHTML = rowHTML + itemL;
                         } else {
                             rowHTML = rowHTML + itemL; 
-                        }                    
+                        }
+                        */
+
+                        rowHTML = rowHTML + itemL;                     
                     }                    
                     rowHTML = rowHTML + '</table></div>';                    
                     var row =  $('#elencoDocumentiTBL').DataTable().row(index);
@@ -489,7 +495,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                 
             }
         };
-        this.loaderDT = true;
+        //this.loaderDT = true;
         this.documentazioneService.ricercaAziendeDocumentiInoltrati()
             .subscribe(aziende => {
                 this.listaAziende = aziende;
@@ -508,7 +514,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
             this.dtTrigger.next();
         });
         setTimeout(() => {
-            this.loaderDT = false;
+            //this.loaderDT = false;
         },2000);                
     }   
 
@@ -538,11 +544,22 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                 }else{
                     this.documentCount = 0;
                 };                
+
                 this.elencoLettereRisposta = data.filter(doc => doc.statoDocumentoVO.codiceStato === 'LETT_RISP');
-                if ((this.elencoDoc === null || this.elencoDoc.length === 0)
-                 && (this.elencoLettereRisposta !== null && this.elencoLettereRisposta.length > 0)) {
+                if ((this.elencoDoc === null || this.elencoDoc.length === 0) && 
+                    (this.elencoLettereRisposta !== null && this.elencoLettereRisposta.length > 0)) 
+                {
                     this.elencoDoc = this.elencoLettereRisposta;                    
                 }
+
+                let codiceStatoDocPerRicerca = (this.statoDocumentoVO !== null && this.statoDocumentoVO !== undefined) ? 
+                                               this.statoDocumentoVO.idStatoDocumento : 
+                                               null;
+                if(codiceStatoDocPerRicerca!=null && codiceStatoDocPerRicerca!=undefined && codiceStatoDocPerRicerca==5)
+                {
+                    this.documentCount = this.elencoDoc.length;
+                }
+
                 /*
                 this.elencoDoc.forEach(doc => {
                     var tmpDocFlat :iElencoDoc;
@@ -565,7 +582,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                     this.tableData.push(tmpDocFlat);
                 })
                 */                
-                this.cacheFilterAndData();                                ;
+                this.cacheFilterAndData();                                
                 setTimeout(() => {
                     this.loaderDT = false;
                 },2000);               
@@ -627,6 +644,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
     documentazioneSelect(documentazioneSel: DocumentiVO) {
         this.isRowSelected = true;
         this.documentazioneService.documentazioneSel = documentazioneSel;
+        this.documentazioneService.nomeFileLetteraDiRisposta = this.determinaNomeFileLetteraRisposta(documentazioneSel.nprotocollo);
         sessionStorage.removeItem('letteraSelezionata');
     }
 
@@ -660,7 +678,7 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
 
     private restoreFilterAndDataCached() {
         const cachedData = this.sharedCache.get(this.COMPONENT_KEY);
-        if (cachedData !== null && cachedData !== undefined) {
+        if (cachedData !== null && cachedData !== undefined && this.viewQueryParams == 'arrivo') {
             this.statoDocumentoVO = null;
             this.dataProtocollazioneDal = null;
             this.dataProtocollazioneAl = null;
@@ -683,12 +701,12 @@ export class ElencoDocumentazioneComponent implements OnInit, AfterViewInit {
                 this.dataProtocollazioneAl = cachedData.filter.dataAl;
                 this.dataProtAl = this.getObjDateFromDate(cachedData.filter.dataAl);
             }
-            this.elencoDoc = cachedData.data;
-            this.loaderDT = true;
-            this.sharedCache.clean();
-            this.logger.info('Clean cache');
             this.ricarcaDocumenti();
-            this.rerender();
+            //this.elencoDoc = cachedData.data;
+            //this.loaderDT = true;
+            //this.sharedCache.clean();
+            this.logger.info('Clean cache');
+            //this.rerender();
         }
     }
 

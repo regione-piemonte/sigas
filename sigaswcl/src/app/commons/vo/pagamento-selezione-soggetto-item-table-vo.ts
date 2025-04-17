@@ -4,4 +4,5 @@ export interface PagamentoSelezioneSoggettoItemTableVO {
 	area?: String;
     amount?: number;
 	type?: String;
+	status?: number;
 }

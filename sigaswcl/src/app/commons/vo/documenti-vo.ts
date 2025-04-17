@@ -4,6 +4,7 @@ import { AllegatoVO } from './allegato-vo';
 import { StatoDocumentoVO } from './stato-documento-vo';
 import { AllegatoDocumentazioneVO } from './allegato-documentazione-vo';
 import { StatoArchiviazioneVO } from './stato-archiviazione-vo';
+import { DepositoCausionaleVO } from './deposito-causionale-vo';
 
 export class DocumentiVO {
 
@@ -28,7 +29,8 @@ export class DocumentiVO {
         public sigasAllegatos: Array<AllegatoDocumentazioneVO>,
         public sigasStatoArchiviazioneVO:StatoArchiviazioneVO,
         public nProtocolloAccertamento: string,
-        public annoProtocolloAccertamento: string
+        public annoProtocolloAccertamento: string,
+        public depositoCausionaleVOs?: Array<DepositoCausionaleVO>,
         
         ) { }
 }

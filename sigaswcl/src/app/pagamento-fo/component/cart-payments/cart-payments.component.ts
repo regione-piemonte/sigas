@@ -50,6 +50,7 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit
     private paymentNoticeErrorText: string;
     private viewQueryParams: string;
     private flagCancellazioneInEsecuzione: boolean = false;
+    private titoloSezioneH1: string;
 
     constructor(
         private logger: LoggerService,
@@ -67,6 +68,8 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     ngOnInit(): void {
+        this.caricaTitoloSezioneH1();
+
         if(!this.foPayService.cartReq.year || !this.foPayService.cartReq.subjectName)
             this.router.navigateByUrl("home/selezione-soggetto-pagamento");
 
@@ -76,7 +79,8 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit
 
             //Marst
             const lst = this.foPayService.cartList;              
-            let filterKeyList = Object.keys(lst).filter((key, index) => {return lst[key].status!="45"});
+            //let filterKeyList = Object.keys(lst).filter((key, index) => {return lst[key].status!="45"});
+            let filterKeyList = Object.keys(lst);
             let filterCardList: PaymentStoreCartRequest[]=[];
             filterKeyList.forEach((key) => {
                 let cartItem:PaymentStoreCartRequest = new PaymentStoreCartRequest(
@@ -412,5 +416,17 @@ export class CartPaymentComponent implements OnInit, OnDestroy, AfterViewInit
                 }
             )                        
         }           
+    }
+
+    private caricaTitoloSezioneH1(){    
+        if(this.foPayService.cartReq.type=="5" || this.foPayService.cartReq.type=="6")
+        {
+            this.titoloSezioneH1 = "Carrello pagamenti anno di competenza " + this.foPayService.cartReq.year + " " +
+            "della denominazione azienda: " + this.foPayService.cartReq.subjectName; 
+           
+        } else {
+            this.titoloSezioneH1 = "Carrello pagamenti mese di competenza " + this.getMonths() + " " + this.foPayService.cartReq.year + " " +
+            "della denominazione azienda: " + this.foPayService.cartReq.subjectName; 
+        }        
     }
 }

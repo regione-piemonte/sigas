@@ -14,6 +14,9 @@ import { DataTableIt } from '../../commons/class/commons-data-table';
 import { PagamentoSelezioneSoggettoItemTableVO } from '../../../commons/vo/pagamento-selezione-soggetto-item-table-vo';
 import { PaymentStoreCartRequest } from '../../commons/request/payment-store-cart-request';
 import { TipoVersamentiVO } from "../../../commons/vo/tipo-versamenti-vo";
+import { DepositoCauzionaleService } from "../../../core/services/depositocauzionale.service";
+import { RigeneraBollettinoPagamentoRequestVO } from '../../../core/commons/vo/RigeneraBollettinoPagamentoRequestVO';
+
 declare var $: any;
 
 @Component({
@@ -66,7 +69,8 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
     private logger: LoggerService,
     private foPayService: PaymentFoService,
     private renderer: Renderer2,
-    private utilsService: UtilsService,    
+    private utilsService: UtilsService,
+    private depositoCauzionaleService: DepositoCauzionaleService,    
   ) { 
       if(this.route.queryParams) {
           //url_chiamante_esterno?idPagamento={identificativoPagamento}&digest={digest}&codEsito=[000|100]
@@ -122,10 +126,11 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
         { className: 'dt-center'},
         { orderable: false, width: '10%', targets: 0 },
         { orderable: false, width: '15%', targets: 1 },
-        { orderable: false, width: '15%', targets: 2 },
+        { orderable: false, width: '10%', targets: 2 },
         { orderable: false, width: '10%', targets: 3 },
         { orderable: false, width: '15%', targets: 4 },
-        { orderable: false, width: '35%', targets: 5 },
+        { orderable: false, width: '10%', targets: 5 },
+        { orderable: false, width: '30%', targets: 6 },
       ]
     };
 
@@ -139,14 +144,22 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
     }); 
 
     this.clearMes();
+
+
+    /********************************************************
+     * GESTIONE ERRORE PAGAMENTO - REDIRECT DA PPAY
+     ********************************************************/
     //if(this.idPagamento && this.digest && this.codEsito){
-      if(this.idPagamento && this.codEsito){
+    if(this.idPagamento && this.codEsito){
         console.log('Sono in redirect ppay');
         this.paymentSuccess = this.codEsito == '000';
         if(!this.paymentSuccess) {
             this.storeCodEsito();
         }
-    }      
+    }
+    /********************************************************
+     * GESTIONE ERRORE PAGAMENTO - REDIRECT DA PPAY - FINE
+     ********************************************************/      
       
     this.loadingPageFlag = true;
     this.loaderAzienda = true;
@@ -197,16 +210,37 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
 
     this.yearDisabled = this.subjectDisabled = this.cfPivaDisabled = !!this.foPayService.cartReq.subjectName;
  
+    if(this.foPayService.subjectSelected != null) {
+      this.foPayService.cartReq.year = this.foPayService.subjectSelected.year;
+      this.changeYear(true);
+      this.foPayService.cartReq.subjectName = this.foPayService.subjectSelected.subjectName;
+      this.foPayService.cartReq.codiceFiscalePIva = this.foPayService.subjectSelected.codiceFiscalePIva;
+      
+      setTimeout(() => {
+        this.changeSubject(null);
+        this.foPayService.subjectSelected = null;
+      }, 1500);
+    }
+      
   }  
   
   storeCodEsito() {
       this.foPayService.cartReq.status = "ERROR";
       this.foPayService.cartReq.paymentCode = this.idPagamento;
 
-      this.foPayService.savePaymentCart(() => {
-          this.messageWarning = "Il pagamento non è stato completato con successo.";
-          this.showMsgWarning = true;
-          this.levelMessage = 'WARNING';
+      this.foPayService.savePaymentCart(() => {                    
+          this.depositoCauzionaleService.rigeneraBollettinoPagamento(this.idPagamento).subscribe(
+              res => {
+                this.messageWarning = "Il pagamento non è stato completato con successo.";
+                this.showMsgWarning = true;
+                this.levelMessage = 'WARNING';
+              },
+              error => {
+                if(error.errorCode == 'BUSSINESS EXCEPTION')
+                  this.showErrorMessage = error.message;
+                else
+                    this.showErrorMessage = 'Errore generico durante la registrazione dello stato del carrello.';
+              });         
       }, 
       (error) => {
           if(error.errorCode == 'BUSSINESS EXCEPTION')
@@ -319,13 +353,14 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
     const lst = this.foPayService.cartList;    
     Object.keys(lst).forEach((key, index) => {          
       //if( parseInt(lst[key].status) >= 20 && parseInt(lst[key].status) <= 30){
-      if( parseInt(lst[key].status) >= 10 && parseInt(lst[key].status) <= 30){
+      if( (parseInt(lst[key].status) >= 10 && parseInt(lst[key].status) <= 30) || parseInt(lst[key].status) == 45){
         let pagamentoSelezioneSoggettoItemTableVO = <PagamentoSelezioneSoggettoItemTableVO>{};
         pagamentoSelezioneSoggettoItemTableVO.paymentCode = lst[key].paymentCode;
         pagamentoSelezioneSoggettoItemTableVO.amount = parseFloat((''+lst[key].amount).replace(',','.'));
         pagamentoSelezioneSoggettoItemTableVO.month = lst[key].monthString();
         pagamentoSelezioneSoggettoItemTableVO.area = lst[key].area
         pagamentoSelezioneSoggettoItemTableVO.type = lst[key].type;
+        pagamentoSelezioneSoggettoItemTableVO.status = parseInt(lst[key].status);
         this.pagamentoSelezioneSoggettoItemTableVOList.push(Object.assign({}, pagamentoSelezioneSoggettoItemTableVO));
       }            
     });
@@ -353,14 +388,14 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
                                 .reduce((acc, itemFilter) => { 
                                   return acc + itemFilter.amount; 
                                 }, 0);
-              var totalMonth = pagamentoSelezioneSoggettoItemTableVO
-                                .filter((itemPagamentoSelezionato) => { 
-                                  return itemPagamentoSelezionato.paymentCode == item; 
-                                })
-                                .map((filterItem) => { 
-                                  return filterItem.month; 
-                                })
-                                .join(', ');              
+              var totalMonth: String = pagamentoSelezioneSoggettoItemTableVO
+                                      .filter((itemPagamentoSelezionato) => { 
+                                        return itemPagamentoSelezionato.paymentCode == item; 
+                                      })
+                                      .map((filterItem) => { 
+                                        return filterItem.month; 
+                                      })
+                                      .join(', ');              
               
               /*
               var provincia = pagamentoSelezioneSoggettoItemTableVO
@@ -375,11 +410,11 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
                               })
                               .map((filterItem) => { 
                                 return filterItem.area; 
-                              })                              
+                              })
                               
               var provinciaUniqueList = provincia                                        
                                         .filter((value, index, self) => self.indexOf(value) === index)
-                                        .join(', ');
+                                        .join(', ');              
              
               var tipo = pagamentoSelezioneSoggettoItemTableVO
                           .filter((itemPagamentoSelezionato) => { 
@@ -389,6 +424,31 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
                             return this._getTipoVersamentoByCode(+filterItem.type); 
                           })
                           .join(', ');
+
+              if(tipo.indexOf("Deposito Cauzionale") >= 0){
+                tipo =  pagamentoSelezioneSoggettoItemTableVO
+                        .filter((itemPagamentoSelezionato) => { 
+                          return itemPagamentoSelezionato.paymentCode == item; 
+                        })
+                        .map((filterItem) => { 
+                          return this._getTipoVersamentoByCode(+filterItem.type); 
+                        })[0];
+                /*
+                totalMonth =  pagamentoSelezioneSoggettoItemTableVO.filter((itemPagamentoSelezionato) => { 
+                                return itemPagamentoSelezionato.paymentCode == item; 
+                              })[0].month;
+                */
+                totalMonth = '';
+
+                if(provincia != null && provincia != undefined && provincia.length > 1){
+                  provinciaUniqueList = "Tutte le province";
+                }
+              }
+
+              var status = pagamentoSelezioneSoggettoItemTableVO
+                          .filter((itemPagamentoSelezionato) => { 
+                          return itemPagamentoSelezionato.paymentCode == item; 
+                          })[0].status;
                               
               var itemTable : PagamentoSelezioneSoggettoItemTableVO = <PagamentoSelezioneSoggettoItemTableVO>{};
               itemTable.paymentCode = item;
@@ -396,6 +456,7 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
               itemTable.month = totalMonth;
               itemTable.area = provinciaUniqueList;
               itemTable.type = tipo;
+              itemTable.status = status;
               return itemTable;
           });    
   }
@@ -408,7 +469,7 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
       return tipoVersamentoArray[0].denominazione;
     } else {
       return ""
-    }   
+    }
   }
 
   changeArea(event: any) {
@@ -458,6 +519,8 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
     //   this.levelMessage = 'WARNING';
     //   return;
     // }
+
+    this.foPayService.saveSubjectSelected();
 
     this.foPayService.retrieveSubjectPaymentFoById(this.subjectKeys[this.foPayService.cartReq.subjectName]).subscribe(
       res => {
@@ -509,6 +572,7 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
   }
 
   pagaCarrello(cartItem: PagamentoSelezioneSoggettoItemTableVO){
+    this.foPayService.saveSubjectSelected();
       this.foPayService.loadCart(() => {       
         const lst = this.foPayService.cartList;              
         let filterKeyList = Object.keys(lst).filter((key, index) => {return lst[key].paymentCode==cartItem.paymentCode});
@@ -586,4 +650,26 @@ export class SelezioneSoggetto implements OnInit, AfterViewInit {
     }
   }
 
+  showAggiungiPagamento(status: number) {
+    return status >= 10 && status <= 30;
+  }
+
+  getStatus(status: number) {
+    switch(status) {
+      case 10: /*APERTO                */
+          return "Bozza";
+      case 20: /*COMPLETO              */
+          return "Completato";
+      case 30: /*PAGAMENTO AVVIATO     */
+          return "In pagamento";
+      case 40: /*PAGAMENTO NOTIFICATO  */
+          return "In elaborazione";
+      case 45: /*CREATO AVVISO PAGAMENTO  */
+          return "Generato avviso pagamento";
+      case 50: /*PAGATO                */
+          return "Pagato";
+      case 51: /*ERRORE PAGAMENTO      */
+          return "Errore pagamento";
+      }
+  }
 }

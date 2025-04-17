@@ -41,6 +41,8 @@ export class PaymentStoreCartRequest {
     public monthString(): string {
         if(!this.month) return '';
 
+        if(this.month == '') return '';
+
         return this.months[this.month];
     }
 
@@ -48,7 +50,9 @@ export class PaymentStoreCartRequest {
         return {
             1: 'Rateo', 
             2: 'Conguaglio', 
-            3: 'Ravvedimento'
+            3: 'Ravvedimento',
+            4: 'Accertamento',
+            5: 'Deposito cauzionale',
           };
     }
 

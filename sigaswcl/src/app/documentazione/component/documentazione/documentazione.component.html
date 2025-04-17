@@ -13,9 +13,7 @@
         </div>
         <form #praticaAccreditamento="ngForm">
             <!-- SESSION ALERT -->
-            <sigas-alert [message]="'Gestione documentazione '"
-                         [type]="'INFO'">
-            </sigas-alert>
+            <sigas-alert [message]="'Gestione documentazione '" [type]="'INFO'"></sigas-alert>
             <!-- FINE SESSION ALERT -->
 
             <!-- CARD CONATAINER -->
@@ -23,6 +21,7 @@
                 <!-- SHOW ALERT MESSAGES -->
                 <sigas-alert *ngIf="showMessage" [message]="message" [type]="levelMessage"></sigas-alert>
                 <sigas-alert *ngIf="showMessageError" [message]="messageError" [type]="'DANGER'"></sigas-alert>
+                <sigas-alert *ngIf="showMessageSuccess" [message]="messageSuccess" [type]="'SUCCESS'"></sigas-alert>
                 <!--END SHOW ALERT MESSAGES -->
 
                 <!-- FORM CONTAINER -->
@@ -36,7 +35,7 @@
                                         <!-- COLLAPSE BUTTON -->
                                         <button aria-controls="collapseOne" aria-expanded="true" class="btn btn-link"
                                                 data-target="#collapseOne" data-toggle="collapse">
-                                            Dati Documento Principale
+                                                <h2 class="h2-font">Dati Documento Principale</h2>
                                         </button>
                                         <!--END COLLAPSE BUTTON -->
                                     </span>
@@ -48,6 +47,7 @@
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-lg-8 hight">
+
                                                 <!--cognome-->
                                                 <div class="form-group border-botton row">
                                                     <label class="col-lg-5 offset-lg-1 col-form-label">Azienda:</label>
@@ -58,6 +58,7 @@
                                                     </div>
                                                 </div>
                                                 <!--cognome-->
+
                                                 <!--nome-->
                                                 <div class="form-group border-botton row">
                                                     <label class="col-lg-5 offset-lg-1 col-form-label">Data:</label>
@@ -68,6 +69,7 @@
                                                     </div>
                                                 </div>
                                                 <!--nome-->
+
                                                 <!--codiceFiscale-->
                                                 <div class="form-group border-botton row">
                                                     <label class="col-lg-5 offset-lg-1 col-form-label">Annualità:</label>
@@ -115,10 +117,42 @@
                                                         <a class="btn btn-success mb-1"
                                                            download="{{ documentoToSave.nomeFile }}"
                                                            href="{{this.documentazioneService.getUrlScaricaDocumentoMaster()+documentoToSave.idDocumento}}"
-                                                           style="width: 100px;height: 30px;">Scarica </a>
+                                                           style="width: 100px;height: 30px; background-color: #1e7e34;">Scarica </a>
                                                     </div>
                                                 </div>
                                                 <!-- FINE SAVE DOCUMENT  -->
+
+                                                <!--  Provincia -->
+                                                <div class="form-group border-botton row" *ngIf="documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO' || documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO_INT'">
+                                                    <label class="col-lg-5 offset-lg-1 col-form-label">Provincia:</label>
+                                                    <div class="col-lg-6 col-value">
+                                                        <div>
+                                                            {{depositoCausionaleProvincia}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--  fine Provincia-->
+
+                                                <!--  Importo -->
+                                                <div class="form-group border-botton row" 
+                                                     *ngIf="(documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO' || documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO_INT') && documentoToSave.statoDocumentoVO.codiceStato != 'LETT_RISP' ">
+                                                    <label id="lblImportoDepositoCausionale" class="col-lg-5 offset-lg-1 col-form-label">Importo:</label>
+                                                    <div class="col-lg-6 col-value">
+                                                        <div>
+                                                            <input type="number"
+                                                                   [(ngModel)]="importoDepositoCausionale" 
+                                                                   [ngModelOptions]="{standalone: true}"
+                                                                   [disabled]="documentoToSave.statoDocumentoVO.codiceStato == 'ACC' || documentoToSave.statoDocumentoVO.codiceStato == 'RIF' || documentoToSave.statoDocumentoVO.codiceStato == 'PRESEN'"
+                                                                   class="form-control"
+                                                                   id="txtImportoDepositoCausionale"
+                                                                   name="txtImportoDepositoCausionale"
+                                                                   aria-labelledby="lblImportoDepositoCausionale"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- fine Importo -->  
+
                                                 <!--FORM NOTE SAVE-->
                                                 <div class="form-group row">
                                                     <div class="col-lg-7 offset-lg-1 hight">
@@ -142,19 +176,212 @@
                                                                    class="btn btn-success"
                                                                    download="{{documentoToSave.tipoDocumentoVO.codiceTipoDocumento}}_{{documentoToSave.insDate}}.zip"
                                                                    href="{{this.documentazioneService.getUrlScaricaPacchetto()+documentoToSave.idDocumento}}"
-                                                                   style="width: 100px;">Scarica
+                                                                   style="width: 100px; background-color: #1e7e34;">Scarica
                                                                     pacchetto </a>
                                                             </div>
                                                         </div>
                                                     </div>
-
-
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- ACCORDION ALLEGA DETERMINA PER DEP CAUSIONALE -->
+								<div class="card" *ngIf="showDeterminaDepositoCauzionale()">
+                                    <div class="card-header" id="headingTwo">
+                                        <span class="mb-0">
+                                            <button aria-controls="collapseTwo" aria-expanded="false"
+                                                    class="btn btn-link collapsed" data-target="#collapseTwo"
+                                                    data-toggle="collapse">
+                                                    <h2 class="h2-font">Allega determina deposito cauzionale</h2>
+                                            </button>
+                                        </span>
+                                    </div>
+                                    <div aria-labelledby="headingTwo" class="collapse" data-parent="#accordion"
+                                         id="collapseTwo">
+                                         <div class="card-body" *ngIf="documentoToSave.statoDocumentoVO.codiceStato=='ACC'">
+                                            <div class="col-lg-8 hight">
+                                                <div class="form-group row">
+                                                    <label class="col-lg-5 offset-lg-1 col-form-label"
+                                                        id="label-file"><strong>{{documentazioneService.nomeFileLetteraDiRisposta != null ? 'Lettera di risposta:' 
+                                                            : 'File allegato:'}}</strong></label> 
+                                                    <div class="col-lg-6 col-value">
+                                                        {{documentazioneService.nomeFileLetteraDiRisposta || fileToUpload?.name}}
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row" *ngIf="documentazioneService.nomeFileLetteraDiRisposta == null">
+                                                    <p>
+                                                        <span>Nota: La determina verrà inserita all'interno della lettera di risposta alla fine del processo di protocollazione.</span>
+                                                    </p>
+                                                </div>
+                                            </div>                                                                                               
+                                         </div>
+                                        <div class="card-body" *ngIf="documentoToSave.statoDocumentoVO.codiceStato=='ACC'">
+                                            <div class="form-group row" style="padding-top: 40px">
+                                                <!-- Dep Causionale Numero Accertamento -->
+                                                <div class="col-lg-4 hight">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-6 col-form-label" 
+                                                               id="lblDepCausionaleNumeroAccertamentoView" 
+                                                               for="depCausionaleNumeroAccertamentoView">Num. Accertamento:</label>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" 
+                                                                   id="depCausionaleNumeroAccertamentoView"
+                                                                   aria-labelledby="lblDepCausionaleNumeroAccertamentoView" 
+                                                                   class="form-control" 												
+                                                                   [(ngModel)]="depCausionaleNumeroAccertamento" 
+                                                                   name="depCausionaleNumeroAccertamentoView"  
+                                                                   disabled="true">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Dep Causionale Numero Accertamento Fine -->
+                
+                                                <!-- Dep Causionale Anno Accertamento -->
+                                                <div class="col-lg-6 hight">
+                                                    <div class="form-group row">
+                                                        <label for="depCausionaleAnnoAccertamentoView" 
+                                                               id="lblDepCausionaleAnnoAccertamentoView" 
+                                                               class="col-lg-4 col-form-label">Anno Accertamento:</label>
+                                                        <div class="col-lg-8">
+                                                            <input type="text" 
+                                                                   class="form-control"
+                                                                   id="depCausionaleAnnoAccertamentoView" 
+                                                                   aria-labelledby="lblDepCausionaleAnnoAccertamentoView" 
+                                                                   placeholder="esempio formato 2024" 
+                                                                   [(ngModel)]="depCausionaleAnnoAccertamento" 
+                                                                   name="depCausionaleAnnoAccertamentoView"												     
+                                                                   disabled="true">						                            
+                                                        </div>
+                                                    </div>																		                     
+                                                </div>
+                                                <!--fine  Dep Causionale Anno Accertamento -->
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-4 hight">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-6 col-form-label" 
+                                                               id="lblDepCausionaleNumeroDeterminaView" 
+                                                               for="depCausionaleNumeroDeterminaView">Num. Determina:</label>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" 
+                                                                   id="depCausionaleNumeroDeterminaView"
+                                                                   aria-labelledby="lblDepCausionaleNumeroDeterminaView" 
+                                                                   class="form-control" 												
+                                                                   [(ngModel)]="depCausionaleNumeroDetermina" 
+                                                                   name="depCausionaleNumeroDeterminaView"
+                                                                   disabled="true">
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
+                                            </div>                                            
+                                        </div>
+                                        <div class="card-body" *ngIf="documentoToSave.statoDocumentoVO.codiceStato!='ACC'">
+                                            <label class="label-file" 
+                                                   id="label-file" 
+                                                   for="file">File allegato: </label>
+                                            <div class="form-group upload-div upload-btn-wrapper" style="padding-top: 20px">
+                                                <input #mainFile 
+                                                        accept="application/pdf"
+                                                        class="input-upload" 
+                                                        type="file" 
+                                                        id="mainFile" 
+                                                        aria-labelledby="label-file"
+                                                        (change)="handleFileInput($event.target.files)" 
+                                                required>												
+                                                <button class="btn btn-primary pull-right" (click)="mainFile.click()">
+                                                <i class="fas fa-check"></i>  Carica documento</button>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-4">
+                                                    <!-- Check File caricato -->
+                                                    <div *ngIf="fileCaricato" class="row  text-center">										
+                                                        <table class="table" *ngIf="fileCaricato" >											
+                                                            <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <span > {{ fileToUpload ? fileToUpload.name : '' }}</span>
+                                                                </td>												
+                                                                <td nowrap class="text-right">
+                                                                    <!-- Pulsante elimina -->
+                                                                    <button type="button" 
+                                                                            class="btn-sigas button-garnet btn-xs"
+                                                                            (click)="eliminaFilePrincipale()"><i class="fas fa-trash-alt"></i> Elimina
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>										
+                                                    </div>
+                                                    <!--Fine Check File caricato -->
+                                                </div>              
+                                            </div>
+                                            <div class="form-group row" style="padding-top: 40px">
+                                                <!-- Dep Causionale Numero Accertamento -->
+                                                <div class="col-lg-4 hight">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-6 col-form-label" 
+                                                               id="lblDepCausionaleNumeroAccertamento" 
+                                                               for="depCausionaleNumeroAccertamento">Num. Accertamento:</label>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" 
+                                                                   id="depCausionaleNumeroAccertamento"
+                                                                   aria-labelledby="lblDepCausionaleNumeroAccertamento" 
+                                                                   class="form-control" 												
+                                                                   [(ngModel)]="depCausionaleNumeroAccertamento" 
+                                                                   name="depCausionaleNumeroAccertamento"  required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Dep Causionale Numero Accertamento Fine -->
+                
+                                                <!-- Dep Causionale Anno Accertamento -->
+                                                <div class="col-lg-6 hight">
+                                                    <div class="form-group row">
+                                                        <label for="depCausionaleAnnoAccertamento" 
+                                                               id="lblDepCausionaleAnnoAccertamento" 
+                                                               class="col-lg-4 col-form-label">Anno Accertamento:</label>
+                                                        <div class="col-lg-8">
+                                                            <input type="text" 
+                                                                   class="form-control"
+                                                                   id="depCausionaleAnnoAccertamento" 
+                                                                   aria-labelledby="lblDepCausionaleAnnoAccertamento" 
+                                                                   placeholder="esempio formato 2024" 
+                                                                   [(ngModel)]="depCausionaleAnnoAccertamento" 
+                                                                   name="depCausionaleAnnoAccertamento"												     
+                                                                   required>						                            
+                                                        </div>
+                                                    </div>																		                     
+                                                </div>
+                                                <!--fine  Dep Causionale Anno Accertamento -->
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-lg-4 hight">
+                                                    <div class="form-group row">
+                                                        <label class="col-lg-6 col-form-label" 
+                                                               id="lblDepCausionaleNumeroDetermina" 
+                                                               for="depCausionaleNumeroDetermina">Num. Determina:</label>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" 
+                                                                   id="depCausionaleNumeroDetermina"
+                                                                   aria-labelledby="lblDepCausionaleNumeroDetermina" 
+                                                                   class="form-control" 												
+                                                                   [(ngModel)]="depCausionaleNumeroDetermina" 
+                                                                   name="depCausionaleNumeroDetermina"  required>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                    <!-- Sezione Alert -->
+                                    <div *ngIf="sizeAlert" class="alert alert-danger" role="alert">
+                                        <i class="fas fa-exclamation-triangle"></i><strong>Attenzione!</strong> {{message}}
+                                    </div>                                    
+                                    <!-- Sezione Alert FINE -->
+                                </div>
+                                <!-- ACCORDION ALLEGA DETERMINA PER DEP CAUSIONALE -->
 
 								<!-- ACCORDION ALLEGATI -->
 								<div class="card">
@@ -163,7 +390,7 @@
                                             <button aria-controls="collapseTwo" aria-expanded="false"
                                                     class="btn btn-link collapsed" data-target="#collapseTwo"
                                                     data-toggle="collapse">
-                                                Allegati
+                                                    <h2 class="h2-font">Allegati</h2>
                                             </button>
                                         </span>
                                     </div>
@@ -171,11 +398,7 @@
                                          id="collapseTwo">
                                         <div class="card-body">
                                             <div *ngFor="let al of documentoToSave.sigasAllegatos">
-
-
                                                 <div class="form-group row">
-
-
                                                     <div class="col-lg-4 hight">
                                                         <div class="form-group row">
                                                             <label class="col-lg-6 col-form-label">Descrizione:</label>
@@ -184,7 +407,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
                                                     <div class="col-lg-8 hight">
                                                         <div class="form-group row">
                                                             <label class="col-lg-4 col-form-label">Nome
@@ -198,16 +420,11 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-
                                                 </div>
-
-
-                                            </div>
+                                            </div>                                            
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
 
 							<!-- LISTA STATI / NOTA -->
@@ -225,9 +442,7 @@
                                                     name="statoDocumento"
                                                     required>
                                                 <option *ngFor="let statoDocumento of listaStatoDocumento"
-                                                        [value]="statoDocumento.idStatoDocumento">
-                                                    {{statoDocumento.descrizione}}
-                                                </option>
+                                                        [value]="statoDocumento.idStatoDocumento">{{statoDocumento.descrizione}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -254,7 +469,7 @@
 
 							<!-- DATA INVIO PEC -->
                             <div class="row">
-                                <div *ngIf="documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP' || isPecEnabled" class="col-lg-4 hight">
+                                <div *ngIf="(documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP' || isPecEnabled) && (documentoToSave.tipoDocumentoVO.codiceTipoDocumento!='DEPO' && documentoToSave.tipoDocumentoVO.codiceTipoDocumento!='DEPO_INT')" class="col-lg-4 hight">
                                     <div class="form-group row">
                                         <label id="lblDataPec" class="col-lg-5 col-form-label" for="dataPec">Data Invio Pec</label>
                                         <div class="col-lg-7 col-value">
@@ -303,7 +518,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -330,12 +544,25 @@
                             <!-- CONFERMA -->
 							<div *ngIf="loaded" class="btn-group">
                                 <button (click)="apriPopUpAggiornaStato()"
-                                        [disabled]="!praticaAccreditamento.form.valid
-                                        || ((documentoToSave.statoDocumentoVO.codiceStato == 'ACC' || documentoToSave.statoDocumentoVO.codiceStato == 'RIF') && notaSalvata)"
+                                        [disabled]="!praticaAccreditamento.form.valid  || ((documentoToSave.statoDocumentoVO.codiceStato == 'ACC' || documentoToSave.statoDocumentoVO.codiceStato == 'RIF') && notaSalvata || ((documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO' || documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO_INT' ) && documentoToSave.statoDocumentoVO.codiceStato == 'LETT_RISP'))"
                                         class="btn btn-primary margin-icon btn-standard"
 										type="submit">
                                     <i class="fa fa-angle-right glyphicon glyphicon-ok"></i>
 									Conferma
+                                </button>
+                            </div>
+                            <!-- FINE CONFERMA -->
+
+                            <!-- CONFERMA -->
+							<div *ngIf="loaded && (documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO' || documentoToSave.tipoDocumentoVO.codiceTipoDocumento=='DEPO_INT' ) && documentoToSave.statoDocumentoVO.codiceStato=='IN_LAV'" 
+                                 class="btn-group">
+                                <button 
+                                        [disabled]="fileCaricato == false || !praticaAccreditamento.form.valid"
+                                        (click)="apriConfermaAvvisoPagamentoModal()"                                        
+                                        class="btn btn-primary margin-icon btn-standard"
+										type="submit">
+                                    <i class="fa fa-angle-right glyphicon glyphicon-ok"></i>
+									Genera avviso pagamento
                                 </button>
                             </div>
                             <!-- FINE CONFERMA -->
@@ -376,3 +603,33 @@
     </div>
 </div>
 <!-- END MODAL DIALOG BOX -->
+
+<!-- Modal genera avviso pagamento -->
+<div class="modal fade" id="confermaAvvisoPagamentoModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+             
+            <!-- Header --> 
+             <div class="modal-header">
+               <span class="modal-title h5-font">Conferma</span>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Body --> 
+            <div class="modal-body">
+                <p>
+                    <span>Si desidera aggiornare il documento?</span>
+                </p>
+            </div>
+            <!-- Bottoni --> 
+            <div class="modal-footer">
+                <!-- Close --> 
+                <button type="button" class="btn btn-default" (click)="chiudiConfermaAvvisoPagamentoModal()">No</button>
+                <!-- Save --> 
+                <button type="button" class="btn btn-primary" (click)="confermaAvvisoPagamento()">Si</button>
+            </div>
+        </div>
+
+    </div>
+</div>

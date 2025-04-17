@@ -105,7 +105,24 @@
 
             <!-- Navbar Anagrafica -->
             <li class="nav-item dropdown" *ngIf="abilitatoBaseMenu('ANAGRAFICA')" aria-label="Anagrafica soggetti">
-                <a class="nav-link" routerLink="/home/soggetti">Anagrafica soggetti</a>
+                <a href="#" class="nav-link dropdown-toggle"
+                    id="anagHeader" 
+                    data-toggle="dropdown" 
+                    role="button" 
+                    aria-haspopup="true"
+                    aria-expanded="false">Anagrafica soggetti
+                    <span class="caret"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pagaHeader">
+                    <!-- Consulta -->
+                    <div>
+                        <a class="dropdown-item" routerLink="/home/soggetti">Consulta</a>
+                    </div>
+                    <!-- Scarica ricevuta -->
+                    <div>
+                        <a class="dropdown-item" routerLink="/home/storico">Storico anagrafica</a>
+                    </div>
+                </div>
             </li>
 
             <!-- Navbar Anagrafica Ordinativi incasso -->

@@ -110,7 +110,6 @@
                 </div>
                 <!--END CARD BODY CONTAINER -->
             </div>
-
             <!-- Gestione modifca / nuova aliquota -->
             <div [ngStyle]="{'display': updateAliquota || nuovaAliquota ? 'block' : 'none'}" >
                 <sigas-alert [message]="errorMsg" [type]="'DANGER'" *ngIf="errorShow" ></sigas-alert>

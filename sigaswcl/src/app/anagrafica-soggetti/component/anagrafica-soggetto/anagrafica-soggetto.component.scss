@@ -234,3 +234,60 @@
     top: 10px;
   }
 }
+
+// Sezione Label
+.pl-50 {
+  padding-left: 50px;
+}
+
+.comparazione-component-w{
+  width: 100%;
+} 
+// ----------------
+
+.storico-anag-align-rigth {
+  padding-top: 20px;
+  text-align: right;  
+}
+
+.storico-anag-align-left {
+  padding-top: 20px;
+  text-align: left;  
+}
+
+.storico-anag-align-center {
+  padding-top: 20px;
+  text-align: center;  
+}
+
+.storico-anag-header {
+  //line-height: 0;
+  white-space: normal;
+  //border-top-width: 2px;
+}
+
+//Gestione modal
+.modal-lg {
+  max-width: 90%;
+}
+
+.padding-right-15 {
+  padding-right: 15px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+//Gestione sostituzione h5
+.h5-font {
+  font-size: 1.5em; /* 40px/16=2.5em */
+}
+
+.align-left {
+  text-align: left;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

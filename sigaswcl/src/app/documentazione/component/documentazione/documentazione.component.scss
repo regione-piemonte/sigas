@@ -34,6 +34,7 @@
 //Input
 .input-upload {
   margin-left: 6%;
+  display: none;
 }
 // -------------------------------
   
@@ -253,6 +254,12 @@ td.trunk30 {
     transform: translateY(0%);
     top: 10px;
   }
+}
+
+.h2-font {
+  font-size: 1.1em; /* 40px/16=2.5em */
+  color: rgb(0, 76, 153);
+  font-weight: bold;
 }
   
 
