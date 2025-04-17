@@ -16,8 +16,10 @@ import it.csi.sigas.sigasbl.integration.doqui.service.*;
 import it.csi.sigas.sigasbl.integration.doqui.utils.DateFormat;
 import it.csi.sigas.sigasbl.model.entity.CsiLogAudit;
 import it.csi.sigas.sigasbl.model.entity.SigasAllegato;
+import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasDocumenti;
 import it.csi.sigas.sigasbl.model.entity.SigasStatoDocumento;
+import it.csi.sigas.sigasbl.model.entity.SigasStoricoAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasTipoDocumento;
 import it.csi.sigas.sigasbl.model.mapper.entity.*;
 import it.csi.sigas.sigasbl.model.repositories.*;
@@ -136,6 +138,16 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
 
 	@Autowired
 	private CsiLogAuditRepository csiLogAuditRepository;
+	
+	@Autowired
+	private SigasLegaleRappresentRepository sigasLegaleRappresentRepository;
+	
+	@Autowired
+	private SigasStoricoAnagraficaSoggettiRepository sigasStoricoAnagraficaSoggettiRepository;
+	
+	@Autowired 
+	private SigasOperatoreRepository sigasOperatoreRepository;
+	
     ///OPERATORE BO
 
     @Override
@@ -215,6 +227,7 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
     }
 
     @Override
+    @Transactional
     public DocumentiVO protocollaLetteraRisp(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) {
         if (confermaDocumentazioneRequest.getLetteraRisposta().getFileMaster() != null) {
             confermaDocumentazioneRequest.getLetteraRisposta().setAnagraficaSoggettoVO(confermaDocumentazioneRequest.getDocumentiVO().getAnagraficaSoggettoVO());
@@ -237,7 +250,7 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             try {
                 keyDocumentoActa = protocollaDocumentoFisico(false, confermaDocumentazioneRequest.getLetteraRisposta());
             } catch (IntegrationException | FruitoreException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             if (keyDocumentoActa != null) {
                 confermaDocumentazioneRequest.getLetteraRisposta().setNProtocollo(keyDocumentoActa.getNumeroProtocollo());
@@ -279,12 +292,49 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
     	List<String> listKeyOperAll = new ArrayList<>();
     	CsiLogAudit csiLogAudit = null;
     	
+    	//SIGAS-ISSUES#35
+    	//---
+    	// ACL su Legale Rappresentante
+    	//----------------------------------------------------
+    	/*
+    	List<String> elencoCFPerRicerca = null;
+    	if(codFiscale != null) {
+    		elencoCFPerRicerca = new ArrayList<>();
+    		elencoCFPerRicerca.add(codFiscale);    	
+        	List<String> elencoCFOperatoriAziendeLegaleRappresentante = this.sigasLegaleRappresentRepository.findElencoCFOperatoreAziendeLegaleRappresentante(codFiscale);
+        	if(elencoCFOperatoriAziendeLegaleRappresentante != null && !elencoCFOperatoriAziendeLegaleRappresentante.isEmpty()) {
+        		elencoCFPerRicerca.addAll(elencoCFOperatoriAziendeLegaleRappresentante);
+        	}
+    		
+    	}    	
+    	Long idAnag = ricercaDocumentazioneRequest.getAnagraficaSoggettoVO() != null ? ricercaDocumentazioneRequest.getAnagraficaSoggettoVO().getIdAnag() : 0L;
+    	String numProtocollo = ricercaDocumentazioneRequest.getNprotocollo() != null ? ricercaDocumentazioneRequest.getNprotocollo() : "";
+    	String annualita = ricercaDocumentazioneRequest.getAnnualita() != null ? ricercaDocumentazioneRequest.getAnnualita().toString() : "";
+    	Integer tipoDocumento = ricercaDocumentazioneRequest.getTipoDocumentoVO() != null ? ricercaDocumentazioneRequest.getTipoDocumentoVO().getIdTipoDocumento() : 0;
+    	List<SigasDocumenti> listDoc = this.sigasDocumentiRepository.ricercaDocumentiPerLegaleRappresentante(idAnag, numProtocollo, 
+    																										 annualita, tipoDocumento, 
+    																										 elencoCFPerRicerca);
+    	*/
+    	//----------------------------------------------------
+    	
+    	//OLD CODE
+    	/*
         List<SigasDocumenti> listDoc =sigasDocumentiRepository.ricercaDocumenti(
                 ricercaDocumentazioneRequest.getAnagraficaSoggettoVO() != null ? ricercaDocumentazioneRequest.getAnagraficaSoggettoVO().getIdAnag() : 0L,
                 ricercaDocumentazioneRequest.getNprotocollo() != null ? ricercaDocumentazioneRequest.getNprotocollo() : "",
                 ricercaDocumentazioneRequest.getAnnualita() != null ? ricercaDocumentazioneRequest.getAnnualita().toString() : "",
                 ricercaDocumentazioneRequest.getTipoDocumentoVO() != null ? ricercaDocumentazioneRequest.getTipoDocumentoVO().getIdTipoDocumento() : 0,
                 codFiscale != null ? codFiscale : "");
+        */
+    	
+    	//SIGAS-ISSUES#35
+    	List<SigasDocumenti> listDoc =sigasDocumentiRepository.ricercaDocumenti(
+                ricercaDocumentazioneRequest.getAnagraficaSoggettoVO() != null ? ricercaDocumentazioneRequest.getAnagraficaSoggettoVO().getIdAnag() : 0L,
+                ricercaDocumentazioneRequest.getNprotocollo() != null ? ricercaDocumentazioneRequest.getNprotocollo() : "",
+                ricercaDocumentazioneRequest.getAnnualita() != null ? ricercaDocumentazioneRequest.getAnnualita().toString() : "",
+                ricercaDocumentazioneRequest.getTipoDocumentoVO() != null ? ricercaDocumentazioneRequest.getTipoDocumentoVO().getIdTipoDocumento() : 0);
+        
+        
     	for (SigasDocumenti doc : listDoc) {
     		listKeyOperDoc.add(String.valueOf(doc.getIdDocumento()) );
     		List<SigasAllegato> listAll = doc.getSigasAllegatos();
@@ -307,8 +357,9 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
     }
 
     @Override
-    public void salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException {
+    public DocumentiVO salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException {
     	List<String> listKeyOperAll = new ArrayList<>();
+    	DocumentiVO documentiVO = null;
         try {
             salvaDocumentazioneIndex(confermaDocumentazioneRequest.getDocumentiVO());
             confermaDocumentazioneRequest.getDocumentiVO().setInsDate(new Timestamp(new Date().getTime()));
@@ -343,9 +394,14 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
     			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
      				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
     		}
+    		
+    		documentiVO = this.documentiEntityMapper.mapEntityToVO(sigasDocumenti);
+    		
         } catch (IOException e) {
             log.error(e);
         }
+        
+		return documentiVO;
     }
 
     public void salvaDocumentazioneIndex(DocumentiVO documentiVO) throws IOException, BusinessException, ServiceException {
@@ -376,10 +432,15 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
         SigasFruitoreVO sigasFruitore = getFruitore();
         UtenteActa utenteActa = new UtenteActa();
         DocumentoElettronicoActa documentoElettronicoActa = new DocumentoElettronicoActa();
-        DocumentoElettronicoActa documentoElettronicoActaAllegato = null;
+        //DocumentoElettronicoActa documentoElettronicoActaAllegato = null;
         List<DocumentoElettronicoActa> listDocumentoElettronicoActaAllegato = new ArrayList<DocumentoElettronicoActa>();
         
-        this.valorizzaDocumentoElettronicoActaUtenteActa(utenteActa, documentoElettronicoActa, sigasFruitore, documentiVO, documentoElettronicoActaAllegato, listDocumentoElettronicoActaAllegato);
+        this.valorizzaDocumentoElettronicoActaUtenteActa(utenteActa, 
+        												 documentoElettronicoActa, 
+        												 sigasFruitore, 
+        												 documentiVO, 
+        												 //documentoElettronicoActaAllegato, 
+        												 listDocumentoElettronicoActaAllegato);
         
         ObjectIdType repositoryId = null;
         PrincipalIdType principalId = null;
@@ -411,9 +472,13 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             log.debug(method + ". getStatoDiEfficacia...");            
             Integer idStatoDiEfficacia = null;
             try {
-                idStatoDiEfficacia = Long.valueOf(getStatoEfficaciaByDescrizione(repositoryId, principalId, utenteActa.getDescrizioneStatoDiEfficacia()).getValue()).intValue();
+            	IdStatoDiEfficaciaType idStatoDiEfficaciaType = getStatoEfficaciaByDescrizione(repositoryId, principalId, utenteActa.getDescrizioneStatoDiEfficacia());
+            	if(idStatoDiEfficaciaType!=null) {
+            		idStatoDiEfficacia = (int)idStatoDiEfficaciaType.getValue();
+            	}
+                //idStatoDiEfficacia = Long.valueOf(getStatoEfficaciaByDescrizione(repositoryId, principalId, utenteActa.getDescrizioneStatoDiEfficacia()).getValue()).intValue();
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             Integer idFormaDocumentaria = null;
             log.debug(method + ". Running Servizio recuperaIdAOO...");
@@ -458,12 +523,23 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             
             // CREA DOCUMENTO ELETTRONICO
             identificatoreDocumentoFisico = acarisDocumentService.creaDocumentoElettronico(repositoryId, principalId, strutturaId, vitalRecordCodeType, idStatoDiEfficacia, idFormaDocumentaria, null, null, documentoElettronicoActa, isProtocollazioneInUscitaSenzaDocumento);
-            if (identificatoreDocumentoFisico != null)
+            if (identificatoreDocumentoFisico != null) {
                 log.debug(method + ". identificatoreDocumentoFisico = " + identificatoreDocumentoFisico.getObjectIdDocumento().hashCode());
+            }
             
             //GESTIONE ALLEGATI
             for (DocumentoElettronicoActa documentoElettronicoAllegatoActa : listDocumentoElettronicoActaAllegato) {            	
-                identificatoreDocumentoFisicoAllegato = acarisDocumentService.creaDocumentoElettronico(repositoryId, principalId, identificatoreDocumentoFisico.getObjectIdClassificazione(), vitalRecordCodeType, idStatoDiEfficacia, idFormaDocumentaria, null, "", documentoElettronicoAllegatoActa, isProtocollazioneInUscitaSenzaDocumento);
+                identificatoreDocumentoFisicoAllegato = acarisDocumentService
+                										.creaDocumentoElettronico(repositoryId, 
+                																  principalId, 
+                																  (identificatoreDocumentoFisico!=null) ? identificatoreDocumentoFisico.getObjectIdClassificazione() : null, 
+                												  			      vitalRecordCodeType, 
+                																  idStatoDiEfficacia, 
+                																  idFormaDocumentaria, 
+                																  null, 
+                																  "", 
+                																  documentoElettronicoAllegatoActa, 
+                																  isProtocollazioneInUscitaSenzaDocumento);
             }
             log.debug(method + ". Running Servizio getUUIDDocumento...");            
             
@@ -484,11 +560,25 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             log.debug(method + ". isMittente() = " + documentoElettronicoActa.getSoggettoActa().isMittente());
             if (documentoElettronicoActa.getSoggettoActa().isMittente()) {
                 //Arrivo (Mittente)
-                identificazioneRegistrazione = acarisOfficialBookService.creaRegistrazioneInArrivoDaDocumentoElettronicoEsistente(repositoryId, principalId, identificatoreDocumentoFisico.getObjectIdClassificazione(), idStruttura, idNodo, idAOO, documentoElettronicoActa);
+                identificazioneRegistrazione = acarisOfficialBookService
+                							   .creaRegistrazioneInArrivoDaDocumentoElettronicoEsistente(repositoryId, 
+                									   													 principalId, 
+                									   													 (identificatoreDocumentoFisico!=null) ? identificatoreDocumentoFisico.getObjectIdClassificazione() : null, 
+                									   													 idStruttura, 
+                									   													 idNodo, 
+                									   													 idAOO, 
+                									   													 documentoElettronicoActa);
             } else {
                 //Partenza (Destinatario)
                 log.debug(method + ". Running Servizio creaRegistrazioneInPartenzaDaDocumentoElettronicoEsistente...");
-                identificazioneRegistrazione = acarisOfficialBookService.creaRegistrazioneInPartenzaDaDocumentoElettronicoEsistente(repositoryId, principalId, identificatoreDocumentoFisico.getObjectIdClassificazione(), idStruttura, idNodo, idAOO, documentoElettronicoActa);
+                identificazioneRegistrazione = acarisOfficialBookService
+                							   .creaRegistrazioneInPartenzaDaDocumentoElettronicoEsistente(repositoryId, 
+                									   													   principalId, 
+                									   													   (identificatoreDocumentoFisico!=null) ? identificatoreDocumentoFisico.getObjectIdClassificazione() : null, 
+                									   													   idStruttura, 
+                									   													   idNodo, 
+                									   													   idAOO, 
+                									   													   documentoElettronicoActa);
             }
 
             if (identificazioneRegistrazione != null) {
@@ -643,7 +733,8 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
     
 
     private void valorizzaDocumentoElettronicoActaUtenteActa(UtenteActa utenteActa, DocumentoElettronicoActa documentoElettronicoActa,
-                                                             SigasFruitoreVO sigasFruitore, DocumentiVO documentiVO, DocumentoElettronicoActa documentoElettronicoActaAllegato,
+                                                             SigasFruitoreVO sigasFruitore, DocumentiVO documentiVO, 
+                                                             //DocumentoElettronicoActa documentoElettronicoActaAllegato,
                                                              List<DocumentoElettronicoActa> listDocumentoElettronicoActaAllegato) {
         //POJO
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
@@ -656,9 +747,11 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
         utenteActa.setIdStruttura(new Integer(sigasFruitore.getIdStrutturaActa()));
         utenteActa.setApplicationKeyActa(sigasCParametroRepository.findByDescParametro(DoquiConstants.APPLICATION_KEY_ACTA).getValoreString());
         utenteActa.setRepositoryName(sigasCParametroRepository.findByDescParametro(DoquiConstants.REPOSITORY_ACTA).getValoreString());
+        
         utenteActa.setRootActa(calcolaSerieFascicoloRoot(documentiVO.getTipoDocumentoVO()));
         utenteActa.setDescrizioneVitalrecordcodetype(documentiVO.getTipoDocumentoVO().getDescVitalRecordCodeType());
-        boolean isDocSigned = DocumentUtils.isDocumentSigned(documentiVO.getFileMaster(), documentiVO.getNomeFile());
+        
+        boolean isDocSigned = DocumentUtils.isDocumentSigned(documentiVO.getFileMaster(), documentiVO.getNomeFile());        
         if (isDocSigned) {
             utenteActa.setDescrizioneStatoDiEfficacia("PERFETTO ED EFFICACE");
         } else {
@@ -671,9 +764,20 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
         }
         if (documentiVO.getTipoDocumentoVO().getIdTipoDocumentoPadre() != null) {
             TipoDocumentoVO tipoDocumento = tipoDocumentoEntityMapper.mapEntityToVO(sigasTipoDocumentoRepository.findOne(documentiVO.getTipoDocumentoVO().getIdTipoDocumentoPadre()));
-            documentoElettronicoActa.setFolder(tipoDocumento.getCodiceTipoDocumento() + "-" + year);
+            
+            if(DoquiConstants.DEPOSITI_CAUZIONALI_INTEGRAZIONE.equalsIgnoreCase(tipoDocumento.getCodiceTipoDocumento())) {
+            	documentoElettronicoActa.setFolder(DoquiConstants.DEPOSITI_CAUZIONALI + "-" + year);
+            } else {
+            	documentoElettronicoActa.setFolder(tipoDocumento.getCodiceTipoDocumento() + "-" + year);
+            }            
+            
         } else {
-            documentoElettronicoActa.setFolder(documentiVO.getTipoDocumentoVO().getCodiceTipoDocumento() + "-" + year);
+        	
+        	if(DoquiConstants.DEPOSITI_CAUZIONALI_INTEGRAZIONE.equalsIgnoreCase(documentiVO.getTipoDocumentoVO().getCodiceTipoDocumento())) {
+            	documentoElettronicoActa.setFolder(DoquiConstants.DEPOSITI_CAUZIONALI + "-" + year);
+            } else {
+            	documentoElettronicoActa.setFolder(documentiVO.getTipoDocumentoVO().getCodiceTipoDocumento() + "-" + year);
+            }        	
         }
         documentoElettronicoActa.setApplicativoAlimentante(sigasFruitore.getCodFruitore());
         documentoElettronicoActa.setStream(documentiVO.getFileMaster());
@@ -726,33 +830,33 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
         SoggettoActa soggettoActaAllegato;
         if (documentiVO.getSigasAllegatos() != null) {
             for (AllegatoDocumentazioneVO allegato : documentiVO.getSigasAllegatos()) {
-                documentoElettronicoActaAllegato = new DocumentoElettronicoActa();
-                documentoElettronicoActaAllegato.setIdDocumento(allegato.getDescrizione());
-                documentoElettronicoActaAllegato.setFolder(documentiVO.getTipoDocumentoVO().getCodiceTipoDocumento() + "-" + year);
-                documentoElettronicoActaAllegato.setApplicativoAlimentante(sigasFruitore.getCodFruitore());
-                documentoElettronicoActaAllegato.setStream(allegato.getFile());
-                documentoElettronicoActaAllegato.setNomeFile(allegato.getNomeFile());
-                documentoElettronicoActaAllegato.setDescrizione(documentiVO.getTipoDocumentoVO().getDescrizione());//cnmDTipoDocumento.getDescrTipoDocumento()
+            	DocumentoElettronicoActa documentoElettronicoActaAllegatoInternal = new DocumentoElettronicoActa();
+            	documentoElettronicoActaAllegatoInternal.setIdDocumento(allegato.getDescrizione());
+            	documentoElettronicoActaAllegatoInternal.setFolder(documentiVO.getTipoDocumentoVO().getCodiceTipoDocumento() + "-" + year);
+            	documentoElettronicoActaAllegatoInternal.setApplicativoAlimentante(sigasFruitore.getCodFruitore());
+            	documentoElettronicoActaAllegatoInternal.setStream(allegato.getFile());
+            	documentoElettronicoActaAllegatoInternal.setNomeFile(allegato.getNomeFile());
+            	documentoElettronicoActaAllegatoInternal.setDescrizione(documentiVO.getTipoDocumentoVO().getDescrizione());//cnmDTipoDocumento.getDescrTipoDocumento()
                 	
                 //SIGAS-225
                 //documentoElettronicoActaAllegato.setMimeType(URLConnection.guessContentTypeFromName(allegato.getNomeFile()));
-                documentoElettronicoActaAllegato.setMimeType(mimeType);
+            	documentoElettronicoActaAllegatoInternal.setMimeType(mimeType);
                 //------------------
                 
-                documentoElettronicoActaAllegato.setNumeroAllegati(0);
-                documentoElettronicoActaAllegato.setTipoStrutturaRoot(1);        // 20200630_LC
-                documentoElettronicoActaAllegato.setTipoStrutturaFolder(1);    // 20200630_LC
+            	documentoElettronicoActaAllegatoInternal.setNumeroAllegati(0);
+            	documentoElettronicoActaAllegatoInternal.setTipoStrutturaRoot(1);        // 20200630_LC
+            	documentoElettronicoActaAllegatoInternal.setTipoStrutturaFolder(1);    // 20200630_LC
                 soggettoActaAllegato = new SoggettoActa();
                 soggettoActa.setMittente(true);
                 soggettoActaAllegato.setCognome(DoquiConstants.COGNOME_SOGGETTO_MITTENTE);
                 soggettoActaAllegato.setNome(DoquiConstants.NOME_SOGGETTO_MITTENTE);
-                documentoElettronicoActaAllegato.setSoggettoActa(soggettoActaAllegato);
-                documentoElettronicoActaAllegato.setAutoreGiuridico(documentiVO.getAnagraficaSoggettoVO().getDenominazione() + " - " + documentiVO.getCfPiva());
-                documentoElettronicoActaAllegato.setDestinatarioGiuridico(DoquiConstants.DESTINATARIO_GIURIDICO);
+                documentoElettronicoActaAllegatoInternal.setSoggettoActa(soggettoActaAllegato);
+                documentoElettronicoActaAllegatoInternal.setAutoreGiuridico(documentiVO.getAnagraficaSoggettoVO().getDenominazione() + " - " + documentiVO.getCfPiva());
+                documentoElettronicoActaAllegatoInternal.setDestinatarioGiuridico(DoquiConstants.DESTINATARIO_GIURIDICO);
                 
-                documentoElettronicoActaAllegato.setAutoreFisico("NULL_VALUE");
+                documentoElettronicoActaAllegatoInternal.setAutoreFisico("NULL_VALUE");
                 
-                listDocumentoElettronicoActaAllegato.add(documentoElettronicoActaAllegato);
+                listDocumentoElettronicoActaAllegato.add(documentoElettronicoActaAllegatoInternal);
             }
         }
         
@@ -769,7 +873,9 @@ public class DocumentazioneServiceImpl extends CommonManageDocumentoHelperImpl i
             return sigasCParametroRepository.findByDescParametro("DICHIARAZIONI_SERIE_FASCICOLI_CODICE").getValoreString();
         } else if (tipoDocumento.getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.RIMBORSI)) {
             return sigasCParametroRepository.findByDescParametro("RIMBORSI_SERIE_FASCICOLI_CODICE").getValoreString();
-        } else if (tipoDocumento.getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.DEPOSITI_CAUZIONALI)) {
+        } else if (tipoDocumento.getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.DEPOSITI_CAUZIONALI) || 
+        		   tipoDocumento.getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.DEPOSITI_CAUZIONALI_INTEGRAZIONE)) 
+        {
             return sigasCParametroRepository.findByDescParametro("DEPOSITI_CAUZIONALI_SERIE_FASCICOLI_CODICE").getValoreString();
         } else if (tipoDocumento.getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.COMUNICAZIONI_VARIE)) {
             return sigasCParametroRepository.findByDescParametro("COMUNICAZIONI_VARIE_SERIE_FASCICOLI_CODICE").getValoreString();

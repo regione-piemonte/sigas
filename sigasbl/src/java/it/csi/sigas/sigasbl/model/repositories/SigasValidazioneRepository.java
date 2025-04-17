@@ -21,6 +21,11 @@ public interface SigasValidazioneRepository extends CrudRepository<SigasValidazi
 	@Query(value="INSERT INTO sigas_validazione (id_valid, codice_azienda, anno, stato) VALUES(nextval('SEQ_VALIDAZIONE'), ?1, ?2, ?3) ON CONFLICT ON CONSTRAINT ak_validazione_02 DO NOTHING ", nativeQuery=true)
 	void saveOrUpdate(String codiceDitta, String anno, String stato);
 	
+	@Transactional
+	@Modifying
+	@Query(value="DELETE FROM sigas_validazione WHERE id_valid = ?1 ", nativeQuery=true)
+	public void cancellaValidazione(Long idValid);
+	
 	public SigasValidazione findByAnnoAndCodiceAzienda(String anno, String codiceAzienda);
 
 }

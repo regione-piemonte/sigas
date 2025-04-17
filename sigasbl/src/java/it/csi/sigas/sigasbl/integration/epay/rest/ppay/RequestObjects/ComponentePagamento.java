@@ -17,11 +17,11 @@ public class ComponentePagamento implements Serializable {
 	
 	private String causale;
 	
-	private String datiSpecificRiscossione;
+	private String datiSpecificiRiscossione;
 	
 	private String numeroAccertamento;
 	
-	private Integer progessivo;
+	private Integer progressivo;
 	
 	private BigDecimal importo;
 	
@@ -43,13 +43,13 @@ public class ComponentePagamento implements Serializable {
 		this.causale = causale;
 	}
 	
-	@JsonProperty("datiSpecificRiscossione")
-	public String getDatiSpecificRiscossione() {
-		return datiSpecificRiscossione;
+	@JsonProperty("datiSpecificiRiscossione")
+	public String getDatiSpecificiRiscossione() {
+		return datiSpecificiRiscossione;
 	}
 
-	public void setDatiSpecificRiscossione(String datiSpecificRiscossione) {
-		this.datiSpecificRiscossione = datiSpecificRiscossione;
+	public void setDatiSpecificiRiscossione(String datiSpecificiRiscossione) {
+		this.datiSpecificiRiscossione = datiSpecificiRiscossione;
 	}
 	
 	@JsonProperty("numeroAccertamento")
@@ -61,13 +61,13 @@ public class ComponentePagamento implements Serializable {
 		this.numeroAccertamento = numeroAccertamento;
 	}
 	
-	@JsonProperty("progessivo")
-	public Integer getProgessivo() {
-		return progessivo;
+	@JsonProperty("progressivo")
+	public Integer getProgressivo() {
+		return progressivo;
 	}
 
-	public void setProgessivo(Integer progessivo) {
-		this.progessivo = progessivo;
+	public void setProgressivo(Integer progressivo) {
+		this.progressivo = progressivo;
 	}
 	
 	@JsonProperty("importo")

@@ -38,7 +38,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import it.csi.sigas.sigasbl.common.Constants;
 import it.csi.sigas.sigasbl.common.ErrorCodes;
 import it.csi.sigas.sigasbl.common.StatoRimborso;
 import it.csi.sigas.sigasbl.common.StatoValidazione;
@@ -65,10 +67,13 @@ import it.csi.sigas.sigasbl.model.entity.SigasPagamentiVersamenti;
 import it.csi.sigas.sigasbl.model.entity.SigasProvincia;
 import it.csi.sigas.sigasbl.model.entity.SigasQuadroM;
 import it.csi.sigas.sigasbl.model.entity.SigasRimborso;
+import it.csi.sigas.sigasbl.model.entity.SigasStoricoAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasTipoAllarmi;
 import it.csi.sigas.sigasbl.model.entity.SigasTipoComunicazioni;
 import it.csi.sigas.sigasbl.model.entity.SigasTipoVersamento;
 import it.csi.sigas.sigasbl.model.entity.SigasValidazione;
+import it.csi.sigas.sigasbl.model.entity.custom.ConsumiSoggettoIncorporatoEntityCustom;
+import it.csi.sigas.sigasbl.model.entity.custom.SigasStoricoAnagraficaSoggettiCustom;
 import it.csi.sigas.sigasbl.model.entity.custom.SoggettoEntityCustom;
 import it.csi.sigas.sigasbl.model.mapper.entity.AliquoteEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.AllarmiSoggettoEntityMapper;
@@ -82,6 +87,7 @@ import it.csi.sigas.sigasbl.model.mapper.entity.OrdinativoEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.PagamentiVersamentiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.RimborsoEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.SoggettoEntityMapper;
+import it.csi.sigas.sigasbl.model.mapper.entity.StoricoAnagraficaSoggettiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.StoricoConsumiEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.TipoComunicazioniEntityMapper;
 import it.csi.sigas.sigasbl.model.repositories.CsiLogAuditRepository;
@@ -89,6 +95,7 @@ import it.csi.sigas.sigasbl.model.repositories.SigasAliquoteRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasAllarmiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasAnaComunicazioniRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasAnagraficaSoggettiRepository;
+import it.csi.sigas.sigasbl.model.repositories.SigasAnagraficaSoggettoIncorporatoStandaloneRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasCMessaggiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasCParametroRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasDichCompensazioniRepository;
@@ -102,12 +109,15 @@ import it.csi.sigas.sigasbl.model.repositories.SigasPagamentiVersamentiRepositor
 import it.csi.sigas.sigasbl.model.repositories.SigasProvinciaRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasQuadroMRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasRimborsoRepository;
+import it.csi.sigas.sigasbl.model.repositories.SigasStoricoAnagraficaSoggettiCustomRepository;
+import it.csi.sigas.sigasbl.model.repositories.SigasStoricoAnagraficaSoggettiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasTipoAllarmiRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasTipoComunicazioniRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasTipoVersamentoRepository;
 import it.csi.sigas.sigasbl.model.repositories.SigasValidazioneRepository;
 import it.csi.sigas.sigasbl.model.repositories.SoggettoRepository;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.StoricoAnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.CompensazionePrVO;
@@ -133,6 +143,8 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaSoggettoIncorporatoRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaStoricoSoggettiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
@@ -253,10 +265,7 @@ public class HomeServiceImpl implements IHomeService {
 	private SigasPagamentiRepository sigasPagamentiRepository;
 	
 	@Autowired
-	private SigasPagamentiCrudRepository sigasPagamentiCrudRepository;
-	
-	@Autowired
-	private PagamentiVersamentiEntityMapper pagamentiVersamentiEntityMapper;
+	private SigasPagamentiCrudRepository sigasPagamentiCrudRepository;	
 	
 	@Autowired
 	private SigasCMessaggiRepository sigasCMessaggiRepository;
@@ -268,24 +277,31 @@ public class HomeServiceImpl implements IHomeService {
 	private DoquiServiceFactory acarisServiceFactory;
 	
 	@Autowired
-	@Qualifier("codiceFiscalePartitaIvaValidator")
-	protected InputValidator codiceFiscalePartitaIvaValidator;
+	SigasStoricoAnagraficaSoggettiRepository sigasStoricoAnagraficaSoggettiRepository;
 	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	@Autowired
+	StoricoAnagraficaSoggettiEntityMapper storicoAnagraficaSoggettiEntityMapper;
+	
+	@Autowired
+	SigasAnagraficaSoggettoIncorporatoStandaloneRepository sigasAnagraficaSoggettoIncorporatoStandaloneRepository;
+	
+	@Autowired
+	SigasStoricoAnagraficaSoggettiCustomRepository sigasStoricoAnagraficaSoggettiCustomRepository;
+	
+
+	@Qualifier("codiceFiscalePartitaIvaValidator")
+	@Autowired
+	protected InputValidator codiceFiscalePartitaIvaValidator;
+		
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());	
+	
 	    
     @Transactional
     @Override
     public List<String> ricercaAnnualita () {
     	
-    	List<SigasImportUTF> sigasImportUTFList = sigasImportRepository.findImported();
-    	List<String> annualitaList = new ArrayList<String>(); 
-    	annualitaList.add("");
-		for(SigasImportUTF sigasImportUTF : sigasImportUTFList) {
-			annualitaList.add(sigasImportUTF.getAnnualita());
-		}
-    	
-		return annualitaList;
-    	
+    	List<String> annualitaList = this.sigasImportRepository.cercaAnnualitaImport();    	
+		return annualitaList;    	
     }
     
     @Transactional
@@ -297,12 +313,9 @@ public class HomeServiceImpl implements IHomeService {
     	annualitaList.add("");
 		for(String annoVersamento: listaAnnualitaVersamenti) {
 			annualitaList.add(annoVersamento);
-		}
-    	
-		return annualitaList;
-    	
-    }
-    
+		}    	
+		return annualitaList;    	
+    }    
     
     @Transactional
     @Override
@@ -311,8 +324,10 @@ public class HomeServiceImpl implements IHomeService {
     	List<SoggettiVO> soggettiVOList = new ArrayList<SoggettiVO>();
     	List<SoggettoEntityCustom> soggettoEntityCustomList = null;
     	
-		if (ricercaConsumiRequest != null && ricercaConsumiRequest.getAnno() != null
-				&& (!ricercaConsumiRequest.getAnno().isEmpty()) && (!ricercaConsumiRequest.getValidato().equals("NUOVI"))) {
+		if (ricercaConsumiRequest != null && 
+			ricercaConsumiRequest.getAnno() != null && 
+			(!ricercaConsumiRequest.getAnno().isEmpty()) && (!ricercaConsumiRequest.getValidato().equals("NUOVI"))) 
+		{
 
 			logger.debug("Ricerca per soggetti con filtro " + ricercaConsumiRequest.getValidato());
 			soggettoEntityCustomList = soggettoRepository.findListaSoggetti(ricercaConsumiRequest.getValidato(), ricercaConsumiRequest.getAnno() );
@@ -332,10 +347,8 @@ public class HomeServiceImpl implements IHomeService {
     	
     	logger.debug("I soggetti ritornati sono " + (soggettiVOList == null? 0:soggettiVOList.size()));
     	
-		return soggettiVOList;
-    	
-    }
-    
+		return soggettiVOList;    	
+    }    
     
     
     @Transactional
@@ -381,10 +394,8 @@ public class HomeServiceImpl implements IHomeService {
     	
     	logger.debug("Gli ordinativi ritornati sono " + (ordinativoVOList == null? 0:ordinativoVOList.size()));
     	
-		return ordinativoVOList;
-    	
+		return ordinativoVOList;    	
     }
-
 
 	private List<SoggettoEntityCustom> estraiNuoviSoggetti() {
 		List<SoggettoEntityCustom> soggettoEntityCustomList;
@@ -415,17 +426,60 @@ public class HomeServiceImpl implements IHomeService {
 	@Override
 	public AnagraficaSoggettoVO ricercaSoggettoByID(Long id) {
 		AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
-		SigasAnagraficaSoggetti anagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(id);
+		
+		//SigasAnagraficaSoggetti anagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(id);
+		SigasAnagraficaSoggetti anagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(id);
 		if(anagraficaSoggetti!=null) {
-			anagraficaSoggettoVO = anagraficaSoggettiEntityMapper.mapEntityToVO(anagraficaSoggetti);
-		}
+			String noteSoggettoIncorporrato = null;
+			if(anagraficaSoggetti.getIdFusione() > 0) {
+				
+				//SigasAnagraficaSoggetti sigasAnagraficaSoggettiIncorporata = sigasAnagraficaSoggettiRepository.findOne(anagraficaSoggetti.getIdFusione());
+				SigasAnagraficaSoggetti sigasAnagraficaSoggettiIncorporata = sigasAnagraficaSoggettiRepository.findByIdAnag(anagraficaSoggetti.getIdFusione());
+				
+				if(sigasAnagraficaSoggettiIncorporata != null && 
+				   sigasAnagraficaSoggettiIncorporata.getNote() != null && 
+				   sigasAnagraficaSoggettiIncorporata.getNote().length() > 0) 
+				{
+					noteSoggettoIncorporrato = sigasAnagraficaSoggettiIncorporata.getNote();
+				}
+			}			 
 			
-		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaSoggettoByID", "sigas_anagrafica_soggetti", String.valueOf(anagraficaSoggetti.getIdAnag()));
-//		csiLogAuditRepository.save(csiLogAudit);
-		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+			anagraficaSoggettoVO = anagraficaSoggettiEntityMapper.mapEntityToVO(anagraficaSoggetti);
+			if(anagraficaSoggettoVO.getNote()!=null && noteSoggettoIncorporrato != null) {
+				anagraficaSoggettoVO.setNote(anagraficaSoggettoVO.getNote() + " - " + noteSoggettoIncorporrato);
+			}
+			
+			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+					 "READ - ricercaSoggettoByID", 
+				 	 "sigas_anagrafica_soggetti", 
+				 	 String.valueOf(anagraficaSoggetti.getIdAnag()));
+			
+			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+											   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
+		}			
+			
 		return anagraficaSoggettoVO;
 	}
+	
+	@Override
+	public AnagraficaSoggettoVO ricercaSoggettoByCode(String codice) {
+		
+		AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
+		SigasAnagraficaSoggetti anagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByCodiceAzienda(codice);
+		
+		if(anagraficaSoggetti!=null) {
+			anagraficaSoggettoVO = anagraficaSoggettiEntityMapper.mapEntityToVO(anagraficaSoggetti);
+			
+			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaSoggettoByCode", 
+					 "sigas_anagrafica_soggetti", String.valueOf(anagraficaSoggetti.getCodiceAzienda()));
+			
+			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+											   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+											   csiLogAudit.getId().getKeyOper());
+		}		
+			
+		return anagraficaSoggettoVO;
+	}	
 
 	@Override
 	public List<AnagraficaSoggettoVO> ricercaSoggetti() {
@@ -437,12 +491,11 @@ public class HomeServiceImpl implements IHomeService {
 		return anagraficaSoggettoVOList;
 	}
 	
-	@Override
-	public List<ConsumiPrVO> ricercaConsumiPerProvince(Long idAnag, String anno) {
-		List<NuovoAllacciamentoVO> nuovoAllacciamentoVOList = null;
-		List<ConsumiPrVO> consumiPrVO_TempList = new ArrayList<ConsumiPrVO>();
+	private List<ConsumiPrVO> gestioneNuoviAllacci(List<SigasDichConsumi> dichConsumiListDB, String anno){
 		
-		List<SigasDichConsumi> dichConsumiListDB = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiAndProvinciaErogazioneIsNotNullOrderByProvinciaErogazioneAsc(idAnag, anno, 0L);
+		List<NuovoAllacciamentoVO> nuovoAllacciamentoVOList = null;
+		List<ConsumiPrVO> consumiPrVO_TempList = new ArrayList<>();		
+		
 		
 		for (SigasDichConsumi sigasDichConsumi: dichConsumiListDB) {
 			List<SigasQuadroM> sigasQuadroMList = sigasQuadroMRepository.findByAnnoAndCodiceDittaAndProvincia(sigasDichConsumi.getAnnualita(),
@@ -469,23 +522,30 @@ public class HomeServiceImpl implements IHomeService {
 			consumiPrVO.setNuoviAllacciamenti(nuovoAllacciamentoVOList);
 			
 			consumiPrVO_TempList.add(consumiPrVO);
-		}
-		
-		List<ConsumiPrVO> ConsumiPrVOList = dichConsumiEntityMapper.mapListEntityToListVO(dichConsumiListDB);
-		
+		}		
+		return consumiPrVO_TempList;
+	}
+	
+	private void mappaNuoviAllacciSettaTotaleVersatoConguaglioCalcolato(List<ConsumiPrVO> consumiPrVOListRicevente, List<ConsumiPrVO> consumiPrVOListDiLettura, Long idAnag, 
+																		boolean forzaCalcolo) 
+	{
 		int i = 0;
-		for (ConsumiPrVO consumiPrVO : ConsumiPrVOList) {			
+		for (ConsumiPrVO consumiPrVO : consumiPrVOListRicevente) {			
 			
-			consumiPrVO.setNuoviAllacciamenti(consumiPrVO_TempList.get(i).getNuoviAllacciamenti());
+			consumiPrVO.setNuoviAllacciamenti(consumiPrVOListDiLettura.get(i).getNuoviAllacciamenti());
 			i++;			
 						
 			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, 
 																										  consumiPrVO.getAnnualita(), 
-																										  (consumiPrVO.getProvincia_erogazione()==null) ? "" : consumiPrVO.getProvincia_erogazione());
+																										  (consumiPrVO.getProvincia_erogazione()==null) ? "" : consumiPrVO.getProvincia_erogazione(),
+																										  forzaCalcolo);
+
 			Double totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato");			
 			Double conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato");
+			Double conguaglioDichiarato = totaleVersatoConguaglioCalcMap.get("conguaglioDichiarato");
 			consumiPrVO.setConguaglio_calc(conguaglioCalcolato);						
 			consumiPrVO.setTotaleVersato(totaleVersato);
+			consumiPrVO.setConguaglio_dich(conguaglioDichiarato);
 			
 			consumiPrVO.setCompensazione(0D);
 			
@@ -498,8 +558,112 @@ public class HomeServiceImpl implements IHomeService {
 			}
 			
 		}
+	}	
+	
+	@Override
+	public List<ConsumiPrVO> ricercaConsumiPerProvince(Long idAnag, String anno) {
+		List<NuovoAllacciamentoVO> nuovoAllacciamentoVOList = null;
+		List<ConsumiPrVO> consumiPrVO_TempList = new ArrayList<ConsumiPrVO>();
 		
-		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		//Lettura oggetto società
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
+		
+		//Gestione societa incorporata (qualora presente)
+		//------------------------------------------------------------------
+		SigasAnagraficaSoggetti sigasAnagraficaSoggettiIncorporata = null;
+		List<ConsumiPrVO> consumiPrVO_TempListIncorporata = new ArrayList<ConsumiPrVO>();
+		List<ConsumiPrVO> consumiPrVOListIncorporata = null; 
+		if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			
+			//sigasAnagraficaSoggettiIncorporata = sigasAnagraficaSoggettiRepository.findOne(sigasAnagraficaSoggetti.getIdFusione());
+			sigasAnagraficaSoggettiIncorporata = sigasAnagraficaSoggettiRepository.findByIdAnag(sigasAnagraficaSoggetti.getIdFusione());
+			
+			List<SigasDichConsumi> dichConsumiListDBIncorporata = sigasDichConsumiRepository
+																	.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiAndProvinciaErogazioneIsNotNullOrderByProvinciaErogazioneAsc(sigasAnagraficaSoggetti.getIdFusione(), anno, 0L);
+			consumiPrVO_TempListIncorporata = this.gestioneNuoviAllacci(dichConsumiListDBIncorporata, anno);
+			consumiPrVOListIncorporata = dichConsumiEntityMapper.mapListEntityToListVO(dichConsumiListDBIncorporata);
+			
+			boolean forzaCalcolo = false;
+			mappaNuoviAllacciSettaTotaleVersatoConguaglioCalcolato(consumiPrVOListIncorporata,consumiPrVO_TempListIncorporata,sigasAnagraficaSoggetti.getIdFusione(),forzaCalcolo);
+			
+			
+		}		
+		//-----------------------------------------------------------------
+		
+		List<SigasDichConsumi> dichConsumiListDB = sigasDichConsumiRepository
+													.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiAndProvinciaErogazioneIsNotNullOrderByProvinciaErogazioneAsc(idAnag, anno, 0L);		
+		consumiPrVO_TempList = this.gestioneNuoviAllacci(dichConsumiListDB, anno);		
+		List<ConsumiPrVO> ConsumiPrVOList = dichConsumiEntityMapper.mapListEntityToListVO(dichConsumiListDB);		
+		int i = 0;
+		for (ConsumiPrVO consumiPrVO : ConsumiPrVOList) {			
+			
+			consumiPrVO.setNuoviAllacciamenti(consumiPrVO_TempList.get(i).getNuoviAllacciamenti());
+			i++;		
+			
+			//Gestione fusione - soggetto incorporato
+			//-------------------------------------------------------------
+			Double totaleVersatoIncorporato = 0D;			
+			Double conguaglioCalcolatoIncorporato = 0D;
+			Double conguaglioDichiaratoIncorporato = 0D;
+			if(sigasAnagraficaSoggetti.getIdFusione()>0) {
+				boolean forzaCalcolo = false;
+				Map <String, Double> totaleVersatoConguaglioCalcMapSoggettoIncorporato = this.calcolaTotaleVersatoAPartiredaAnno(sigasAnagraficaSoggetti.getIdFusione(), 
+																															  	 consumiPrVO.getAnnualita(), 
+																																 (consumiPrVO.getProvincia_erogazione() == null) 
+																																 ? "" 
+																																 : consumiPrVO.getProvincia_erogazione(),
+																																 forzaCalcolo);
+				totaleVersatoIncorporato = totaleVersatoConguaglioCalcMapSoggettoIncorporato.get("totaleVersato");			
+				conguaglioCalcolatoIncorporato = totaleVersatoConguaglioCalcMapSoggettoIncorporato.get("conguaglioCalcolato");
+				conguaglioDichiaratoIncorporato = totaleVersatoConguaglioCalcMapSoggettoIncorporato.get("conguaglioDichiarato");
+			}
+			//-------------------------------------------------------------
+			
+			boolean forzaCalcolo = true;
+			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, 
+																										  consumiPrVO.getAnnualita(), 
+																										  (consumiPrVO.getProvincia_erogazione()==null) ? "" : consumiPrVO.getProvincia_erogazione(),
+																										  forzaCalcolo);			
+			Double totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato") + totaleVersatoIncorporato;			
+			Double conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato") + conguaglioCalcolatoIncorporato;
+			Double conguaglioDichiarato = totaleVersatoConguaglioCalcMap.get("conguaglioDichiarato") + conguaglioDichiaratoIncorporato;
+			consumiPrVO.setConguaglio_calc(conguaglioCalcolato);						
+			consumiPrVO.setTotaleVersato(totaleVersato);
+			consumiPrVO.setConguaglio_dich(conguaglioDichiarato);
+			
+			consumiPrVO.setCompensazione(0D);
+			
+			SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(consumiPrVO.getId_consumi());
+			consumiPrVO.setCompensazionePrVO(this.dichCompensazioniEntityMapper.mapEntityToVO(sigasDichCompensazioni));
+			
+			if(consumiPrVOListIncorporata!=null) {				
+				Iterator<ConsumiPrVO> iterator = consumiPrVOListIncorporata.iterator();
+				while(iterator.hasNext()) {
+					ConsumiPrVO consumiPrVOIternal = iterator.next();
+					
+					if(consumiPrVOIternal.getProvincia_erogazione()!=null && 
+					   consumiPrVOIternal.getProvincia_erogazione().equalsIgnoreCase(consumiPrVO.getProvincia_erogazione())) 
+					{
+						consumiPrVO.setUsi_civili_120(consumiPrVO.getUsi_civili_120() + consumiPrVOIternal.getUsi_civili_120());
+						consumiPrVO.setUsi_civili_480(consumiPrVO.getUsi_civili_480() + consumiPrVOIternal.getUsi_civili_480());
+						consumiPrVO.setUsi_civili_1560(consumiPrVO.getUsi_civili_1560() + consumiPrVOIternal.getUsi_civili_1560());
+						consumiPrVO.setUsi_civili_up(consumiPrVO.getUsi_civili_up() + consumiPrVOIternal.getUsi_civili_up());
+						consumiPrVO.setUsi_industriali_1200(consumiPrVO.getUsi_industriali_1200() + consumiPrVOIternal.getUsi_industriali_1200());
+						consumiPrVO.setUsi_industriali_up(consumiPrVO.getUsi_industriali_up() + consumiPrVOIternal.getUsi_industriali_up());
+						consumiPrVO.setTot_civili(consumiPrVO.getTot_civili() + consumiPrVOIternal.getTot_civili());
+						consumiPrVO.setTot_industriali(consumiPrVO.getTot_industriali() + consumiPrVOIternal.getTot_industriali());
+						
+												
+						iterator.remove();
+					}
+				}
+			}			
+		}
+		
+		if(consumiPrVOListIncorporata!=null && !consumiPrVOListIncorporata.isEmpty()) {
+			ConsumiPrVOList.addAll(consumiPrVOListIncorporata);
+		}
 		
 		// Aggiorno la visita sulla tabella validazione
 		if (StringUtils.isNotEmpty(anno)) {
@@ -521,22 +685,31 @@ public class HomeServiceImpl implements IHomeService {
 	public void insertSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) {		
 		SigasAnagraficaSoggetti sigasAnagraficaSoggettiInsert = anagraficaSoggettiEntityMapper.mapVOtoEntity(confermaSoggettoRequest.getSoggetto());
 		sigasAnagraficaSoggettiInsert.setInsUser(user);
-		sigasAnagraficaSoggettiInsert.setInsDate(new Date());
-		
+		sigasAnagraficaSoggettiInsert.setInsDate(new Date());		
 		
 	    String codAzienda = "NEW_" +  Calendar.getInstance().getTimeInMillis();	    
 		sigasAnagraficaSoggettiInsert.setCodiceAzienda(codAzienda);
-		
+
+
+		sigasAnagraficaSoggettiInsert.setSelectedImport(true);
 		SigasAnagraficaSoggetti sigasAnagraficaSoggettiNuova = sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettiInsert);
-		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertSoggetto", "sigas_anagrafica_soggetti",String.valueOf(sigasAnagraficaSoggettiNuova.getIdAnag()) );
-//		csiLogAuditRepository.save(csiLogAudit);
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+															 "INSERT - insertSoggetto", 
+															 "sigas_anagrafica_soggetti",
+															 String.valueOf(sigasAnagraficaSoggettiNuova.getIdAnag()));
+
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
 	}
+	
 	
 	@Override
 	@Transactional
 	public AnagraficaSoggettoVO updateSoggetto(ConfermaSoggettoRequest confermaSoggettoRequest, String user) throws BusinessException {
+		
+		
+		
 		SigasAnagraficaSoggetti sigasAnagraficaSoggettiUpdate = anagraficaSoggettiEntityMapper.mapVOtoEntity(confermaSoggettoRequest.getSoggetto());
 		
 		try {
@@ -548,13 +721,58 @@ public class HomeServiceImpl implements IHomeService {
 		sigasAnagraficaSoggettiUpdate.setModUser(user);
 		sigasAnagraficaSoggettiUpdate.setModDate(new Date());
 		
-		sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettiUpdate);
+		//MODIFICA ESEGUITA DA OPERATORE -> ID IMPORT NON NECESSARIO 
+		Long idImport = null;		
+		SigasAnagraficaSoggetti sigasAnagraficaSoggettiBeforeUpdate = sigasAnagraficaSoggettiRepository.findByIdAnag(sigasAnagraficaSoggettiUpdate.getIdAnag());
+		storicizzaModificaAnagrafica(sigasAnagraficaSoggettiBeforeUpdate,Constants.OWNER_UPDATE_SOGGETTO_ANAG,idImport,confermaSoggettoRequest.getAnnualita());
 		
-		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - updateSoggetto", "sigas_anagrafica_soggetti",String.valueOf(sigasAnagraficaSoggettiUpdate.getIdAnag()));
+		sigasAnagraficaSoggettiUpdate.setSelectedImport(true);
+		sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettiUpdate);		
+		
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+															 "UPDATE - updateSoggetto", 
+															 "sigas_anagrafica_soggetti",
+															 String.valueOf(sigasAnagraficaSoggettiUpdate.getIdAnag()));
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
 		
 		return new AnagraficaSoggettoVO();
+	}
+	
+	private void storicizzaModificaAnagrafica(SigasAnagraficaSoggetti sigasAnagraficaSoggettiBeforeUpdate, String ownerOperazione, Long idImport, String annualita) {
+		if(sigasAnagraficaSoggettiBeforeUpdate == null) {
+			return;
+		}	
+		
+		SigasStoricoAnagraficaSoggetti sigasStoricoAnagraficaSoggetti = new SigasStoricoAnagraficaSoggetti();
+		sigasStoricoAnagraficaSoggetti.setCodiceAzienda(sigasAnagraficaSoggettiBeforeUpdate.getCodiceAzienda());
+		sigasStoricoAnagraficaSoggetti.setDataRiferimento(Calendar.getInstance().getTime());
+		sigasStoricoAnagraficaSoggetti.setDenominazione(sigasAnagraficaSoggettiBeforeUpdate.getDenominazione());
+		sigasStoricoAnagraficaSoggetti.setEmail(sigasAnagraficaSoggettiBeforeUpdate.getEmail());
+		sigasStoricoAnagraficaSoggetti.setIban(sigasAnagraficaSoggettiBeforeUpdate.getIban());
+		sigasStoricoAnagraficaSoggetti.setIdAnag(sigasAnagraficaSoggettiBeforeUpdate.getIdAnag());
+		sigasStoricoAnagraficaSoggetti.setIndirizzo(sigasAnagraficaSoggettiBeforeUpdate.getIndirizzo());
+		sigasStoricoAnagraficaSoggetti.setPec(sigasAnagraficaSoggettiBeforeUpdate.getPec());
+		sigasStoricoAnagraficaSoggetti.setCfPiva(sigasAnagraficaSoggettiBeforeUpdate.getCfPiva());
+		sigasStoricoAnagraficaSoggetti.setOwnerOperazione(ownerOperazione);
+		if(idImport != null) {
+			sigasStoricoAnagraficaSoggetti.setIdImport(idImport);
+		}		
+		sigasStoricoAnagraficaSoggetti.setAnnualita(annualita);
+		if(Constants.OWNER_UPDATE_SOGGETTO_ANAG.equalsIgnoreCase(ownerOperazione)) {
+			sigasStoricoAnagraficaSoggetti.setSelectedImport(true);
+		}
+		
+		if(sigasAnagraficaSoggettiBeforeUpdate.getSigasComune()!=null) {
+			sigasStoricoAnagraficaSoggetti.setSigasComune(sigasAnagraficaSoggettiBeforeUpdate.getSigasComune());
+		}
+		
+		if(sigasAnagraficaSoggettiBeforeUpdate.getSigasProvincia()!=null) {
+			sigasStoricoAnagraficaSoggetti.setSigasProvincia(sigasAnagraficaSoggettiBeforeUpdate.getSigasProvincia());
+		}
+		
+		this.sigasStoricoAnagraficaSoggettiRepository.save(sigasStoricoAnagraficaSoggetti);		
 	}
 
 	@Override
@@ -563,48 +781,85 @@ public class HomeServiceImpl implements IHomeService {
 		String notaSogetto = null;
 		SimpleDateFormat simpleformat = new SimpleDateFormat("dd/MM/yyyy");
 		
-		SigasAnagraficaSoggetti sigasAnagraficaSoggetto = sigasAnagraficaSoggettiRepository.findOne(fusioneSoggettoRequest.getIdAnagConfluente());
+		// Aggionamento note soggeto derivante
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggettoIncorporato = sigasAnagraficaSoggettiRepository.findOne(fusioneSoggettoRequest.getIdAnagIncorporato());
+		SigasAnagraficaSoggetti sigasAnagraficaSoggettoIncorporato = sigasAnagraficaSoggettiRepository.findByIdAnag(fusioneSoggettoRequest.getIdAnagIncorporato());
 		
-		sigasAnagraficaSoggetto.setIdFusione(fusioneSoggettoRequest.getIdAnagDerivante());
-		sigasAnagraficaSoggetto.setDataFusione(fusioneSoggettoRequest.getDataFusione());
-		if (StringUtils.isNotEmpty(sigasAnagraficaSoggetto.getNote()) )
-			notaSogetto = sigasAnagraficaSoggetto.getNote() + "\n";
-		else
-			notaSogetto = "";
+		String noteIncorporato = (sigasAnagraficaSoggettoIncorporato.getNote() == null) ? "" : sigasAnagraficaSoggettoIncorporato.getNote(); 
 		
-		sigasAnagraficaSoggetto.setNote(notaSogetto + fusioneSoggettoRequest.getNote());
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetto = sigasAnagraficaSoggettiRepository.findOne(fusioneSoggettoRequest.getIdAnagIncorporante());
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetto = sigasAnagraficaSoggettiRepository.findByIdAnag(fusioneSoggettoRequest.getIdAnagIncorporante());
+		
+		sigasAnagraficaSoggetto.setIdFusione(fusioneSoggettoRequest.getIdAnagIncorporato());
+		sigasAnagraficaSoggetto.setDataFusione(fusioneSoggettoRequest.getDataFusione());		
+		//sigasAnagraficaSoggetto.setNote(fusioneSoggettoRequest.getNote());
 		sigasAnagraficaSoggetto.setModUser(user);
 		sigasAnagraficaSoggetto.setModDate(new Date());
 		
 		sigasAnagraficaSoggetto = sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggetto);
 		
-		// Aggionamento note soggeto derivante
-		SigasAnagraficaSoggetti sigasAnagraficaSoggettoDerivante = sigasAnagraficaSoggettiRepository.findOne(fusioneSoggettoRequest.getIdAnagDerivante());
-		if (StringUtils.isNotEmpty(sigasAnagraficaSoggettoDerivante.getNote()) )
-			notaSogetto = sigasAnagraficaSoggettoDerivante.getNote() + "\n";
-		else
-			notaSogetto = "";
 		
-		sigasAnagraficaSoggettoDerivante.setNote(notaSogetto + "Fusione con il soggetto " + sigasAnagraficaSoggetto.getDenominazione() + 
-											" in data " + simpleformat.format(fusioneSoggettoRequest.getDataFusione()));
-		sigasAnagraficaSoggettoDerivante.setModUser(user);
-		sigasAnagraficaSoggettoDerivante.setModDate(new Date());
+		/*
+		sigasAnagraficaSoggettoIncorporato.setNote(notaSogetto + "Fusione con il soggetto " + sigasAnagraficaSoggetto.getDenominazione() + 
+												   " in data " + simpleformat.format(fusioneSoggettoRequest.getDataFusione()));
+		*/
+		sigasAnagraficaSoggettoIncorporato.setModUser(user);
+		sigasAnagraficaSoggettoIncorporato.setModDate(new Date());		
+		sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettoIncorporato);
 		
-		sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettoDerivante);
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+															 "UPDATE - fusioneSoggetto - id_fusione", 
+															 "sigas_anagrafica_soggetti",
+															 String.valueOf(fusioneSoggettoRequest.getIdAnagIncorporato()));		
+		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
 		
-		return anagraficaSoggettiEntityMapper.mapEntityToVO(sigasAnagraficaSoggetto);
-		
+		return anagraficaSoggettiEntityMapper.mapEntityToVO(sigasAnagraficaSoggetto);		
 	}
-
+	
+	@Override
+	@Transactional
+	public void cancellaFusioneSoggetto(Long idAnagraficaIncorporante, String user) {
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetto = sigasAnagraficaSoggettiRepository.findOne(idAnagraficaIncorporante);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetto = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnagraficaIncorporante);
+		
+		if(sigasAnagraficaSoggetto != null) 
+		{
+			Long idFusione = sigasAnagraficaSoggetto.getIdFusione();
+			
+			/*
+			sigasAnagraficaSoggetto.setIdFusione(0);
+			sigasAnagraficaSoggetto.setDataFusione(null);
+			sigasAnagraficaSoggetto.setNote(null);			
+			sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggetto);
+			*/
+			
+			sigasAnagraficaSoggettiRepository.ripristinoDopoCancellazioneFusione(sigasAnagraficaSoggetto.getIdAnag());
+			
+			//Rirpirtino VERSAMENTI Incorporato
+			if(idFusione > 0) {
+				sigasDichVersamentiRepository.ripristinoModUserDopoCancellazioneFusione(idFusione);
+			}			
+			
+			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+																 "UPDATE - cancellaFusioneSoggetto - id_incorporante", 
+																 "sigas_anagrafica_soggetti",
+																 String.valueOf(idAnagraficaIncorporante));		
+			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+											   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+											   csiLogAudit.getId().getKeyOper());
+		}				
+	}
 	
 	@Override
 	@Transactional
 	public AnagraficaSoggettoVO associateSoggetto(AssociaSoggettoRequest associaSoggettoRequest, String user) {
 		
 		SigasAnagraficaSoggetti sigasAnagSoggAssociateNew =
-				anagraficaSoggettiEntityMapper.mapVOtoEntity(associaSoggettoRequest.getSoggettoNew());
+					anagraficaSoggettiEntityMapper.mapVOtoEntity(associaSoggettoRequest.getSoggettoNew());
 		SigasAnagraficaSoggetti sigasAnagSoggAssociateSelezionato =
-				anagraficaSoggettiEntityMapper.mapVOtoEntity(associaSoggettoRequest.getSoggettoSelezionato());
+					anagraficaSoggettiEntityMapper.mapVOtoEntity(associaSoggettoRequest.getSoggettoSelezionato());
 		
 		List<SigasAnaComunicazioni> listaComunicazioni = sigasAnaComunicazioniRepository.findBySigasAnagraficaSoggettiIdAnagAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(sigasAnagSoggAssociateNew.getIdAnag());
 		for (SigasAnaComunicazioni s : listaComunicazioni) {
@@ -623,27 +878,66 @@ public class HomeServiceImpl implements IHomeService {
 		}		
 		sigasAnagSoggAssociateSelezionato.setModUser(user);
 		sigasAnagSoggAssociateSelezionato.setModDate(new Date());
-		sigasAnagSoggAssociateSelezionato = sigasAnagraficaSoggettiRepository.save(sigasAnagSoggAssociateSelezionato);
+		sigasAnagSoggAssociateSelezionato.setSelectedImport(true);
+		sigasAnagSoggAssociateSelezionato = sigasAnagraficaSoggettiRepository.save(sigasAnagSoggAssociateSelezionato);		
+		
 		sigasAnagraficaSoggettiRepository.delete(sigasAnagSoggAssociateNew);
 		
 		AnagraficaSoggettoVO anagraficaSoggettoVO = anagraficaSoggettiEntityMapper.mapEntityToVO(sigasAnagSoggAssociateSelezionato);
 		
 		return anagraficaSoggettoVO;
-	}
+	}	
 	
 	@Override
 	@Transactional
 	public List<AnagraficaSoggettoVO> ricercaListaSoggetti(RicercaConsumiRequest ricercaConsumiRequest) {
+		
 		List<AnagraficaSoggettoVO> anagraficaSoggettoVOList = new ArrayList<AnagraficaSoggettoVO>();
-		double totaleVersato;
+		List<SoggettoEntityCustom> soggettoEntityCustomList = null;
+		
+		logger.debug("Ricerca per soggetti con filtro " + ricercaConsumiRequest.getValidato());
+		soggettoEntityCustomList = soggettoRepository.findListaSoggettiPerFusione(ricercaConsumiRequest.getAnno() );
+		logger.debug("Trovati " + soggettoEntityCustomList.size() + " soggetti");
+		
+		for (SoggettoEntityCustom soggettoEntityCustom : soggettoEntityCustomList) {
+			AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
+			anagraficaSoggettoVO.setIdAnag(soggettoEntityCustom.getIdAnag());
+			anagraficaSoggettoVO.setDenominazione(soggettoEntityCustom.getDenominazione());
+			anagraficaSoggettoVO.setCodiceAzienda(soggettoEntityCustom.getCodiceAzienda());
+			anagraficaSoggettoVO.setTotVersato(soggettoEntityCustom.getTotVersamenti());
+			anagraficaSoggettoVOList.add(anagraficaSoggettoVO);
+		}				
+
+		return anagraficaSoggettoVOList;
+	}
+	/*
+	public List<AnagraficaSoggettoVO> ricercaListaSoggetti(RicercaConsumiRequest ricercaConsumiRequest) {
+		List<AnagraficaSoggettoVO> anagraficaSoggettoVOList = new ArrayList<AnagraficaSoggettoVO>();
+		Double totaleVersato = 0D;
 		List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettiList = sigasAnagraficaSoggettiRepository.newFindFilterCodiceAzienda();
 
 		logger.debug("Trovati " + sigasAnagraficaSoggettiList.size() + " soggetti");
 
 		for (SigasAnagraficaSoggetti sigasAnagraficaSoggetti : sigasAnagraficaSoggettiList) {
-
-			totaleVersato = sigasDichVersamentiRepository.sumByAnnoAndProvinciaAndSoggetto(ricercaConsumiRequest.getAnno(), 
-					sigasAnagraficaSoggetti.getSigasProvincia().getSiglaProvincia(), sigasAnagraficaSoggetti);
+			
+			
+			List<SigasDichConsumi> dichConsumiListDB = sigasDichConsumiRepository
+													   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndModIdConsumiAndProvinciaErogazioneIsNotNullOrderByProvinciaErogazioneAsc(sigasAnagraficaSoggetti.getIdAnag(), ricercaConsumiRequest.getAnno(), 0L);
+			List<ConsumiPrVO> ConsumiPrVOList = dichConsumiEntityMapper.mapListEntityToListVO(dichConsumiListDB);
+			for (ConsumiPrVO consumiPrVO : ConsumiPrVOList) {
+				Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(sigasAnagraficaSoggetti.getIdAnag(), 
+																											  consumiPrVO.getAnnualita(), 
+																											  (consumiPrVO.getProvincia_erogazione()==null) 
+																											   ? "" : 
+																											   consumiPrVO.getProvincia_erogazione());			
+				Double totaleVersatoSingoloItem = totaleVersatoConguaglioCalcMap.get("totaleVersato");			
+				Double conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato");
+				Double conguaglioDichiarato = totaleVersatoConguaglioCalcMap.get("conguaglioDichiarato");
+				
+				totaleVersato += totaleVersatoSingoloItem;
+				
+			}
+						
 
 			AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
 			anagraficaSoggettoVO.setIdAnag(sigasAnagraficaSoggetti.getIdAnag());
@@ -657,6 +951,7 @@ public class HomeServiceImpl implements IHomeService {
 
 		return anagraficaSoggettoVOList;
 	}
+	*/
 	
 	@Override
 	@Transactional
@@ -681,8 +976,8 @@ public class HomeServiceImpl implements IHomeService {
 		return anagraficaNuoviSoggettoVOList;
 	}
 	
-	@Override
-	@RequestMapping("/SigasAnagraficaSoggetti/count")
+	@Override	
+	@RequestMapping(value = "/SigasAnagraficaSoggetti/count", method = RequestMethod.GET)
 	public Long getNumberOfSoggetti(){
 	    return sigasAnagraficaSoggettiRepository.count();
 	}
@@ -763,19 +1058,19 @@ public class HomeServiceImpl implements IHomeService {
 		double totaleVersamenti = 0;
 		if (null != sigasProvincia) {
 			List<Long> idConsumoPadreList = calcolaIdConsumoPadre(confermaConsumiRequest.getConsumi().getId_consumi());
-			List<SigasDichVersamenti> sigasDichVersamentiList = new ArrayList<SigasDichVersamenti>();
-			if(idConsumoPadreList!=null && !idConsumoPadreList.isEmpty()) {
+			List<SigasDichVersamenti> sigasDichVersamentiList = new ArrayList<>();
+			if(idConsumoPadreList!=null && !idConsumoPadreList.isEmpty()) 
+			{
 				for (Long longTmp : idConsumoPadreList) {
 					sigasDichVersamentiList.addAll(sigasDichVersamentiRepository.findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(
-							longTmp.longValue(),
-							sigasProvincia.getIdProvincia()) );
+																				 longTmp,
+																				 sigasProvincia.getIdProvincia()));
 				}					
 			} else {
 				sigasDichVersamentiList.addAll(sigasDichVersamentiRepository.findBySigasDichConsumiIdConsumiAndSigasProvinciaIdProvincia(
-						confermaConsumiRequest.getConsumi().getId_consumi(),
-						sigasProvincia.getIdProvincia()) );
-			}
-			
+																			 confermaConsumiRequest.getConsumi().getId_consumi(),
+																			 sigasProvincia.getIdProvincia()));
+			}			
 			
 			for (SigasDichVersamenti sigasDichVersamenti : sigasDichVersamentiList) {
 				if (!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName())) {
@@ -783,8 +1078,8 @@ public class HomeServiceImpl implements IHomeService {
 				}
 			}
 		}
-		sigasDichConsumiUpdate.setConguaglioCalcolato(confermaConsumiRequest.getConsumi().getConguaglio_calc() + totaleVersamenti);		
-				
+		
+		sigasDichConsumiUpdate.setConguaglioCalcolato(confermaConsumiRequest.getConsumi().getConguaglio_calc() + totaleVersamenti);				
 		sigasDichConsumiUpdate.setDataPresentazione(sigasDichConsumiStorico.getDataPresentazione());
 		sigasDichConsumiUpdate.setProvinciaErogazione(sigasDichConsumiStorico.getProvinciaErogazione());
 		sigasDichConsumiUpdate.setRateoDich(sigasDichConsumiStorico.getRateoDich());
@@ -793,11 +1088,13 @@ public class HomeServiceImpl implements IHomeService {
 		sigasDichConsumiUpdate.setTotaleDich(sigasDichConsumiStorico.getTotaleDich());
 		sigasDichConsumiUpdate.setTotaleDichOrigine(sigasDichConsumiStorico.getTotaleDichOrigine());
 		
+		sigasDichConsumiUpdate.setSelectedImport(true);
+		
 		sigasDichConsumiUpdate = sigasDichConsumiRepository.save(sigasDichConsumiUpdate);
 		
 		if(confermaConsumiRequest.getConsumi()!= null && confermaConsumiRequest.getConsumi().getCompensazionePrVO()!=null) { 
 			
-			CompensazionePrVO compensazione = new CompensazionePrVO();    		
+			CompensazionePrVO compensazione = new CompensazionePrVO();   		
     	        	    
     	    compensazione.setCompensazione(confermaConsumiRequest.getConsumi().getCompensazionePrVO().getCompensazione());
     	    compensazione.setConguaglio_compensato(confermaConsumiRequest.getConsumi().getCompensazionePrVO().getConguaglio_compensato());
@@ -805,6 +1102,7 @@ public class HomeServiceImpl implements IHomeService {
     	    Calendar cal = Calendar.getInstance();
     	    compensazione.setData_compensazione(cal.getTime());
     	    compensazione.setId_consumi(sigasDichConsumiUpdate.getIdConsumi());
+    	    
     		sigasDichCompensazioniRepository.save(this.dichCompensazioniEntityMapper.mapVOtoEntity(compensazione));    		
     	}
 		
@@ -838,8 +1136,7 @@ public class HomeServiceImpl implements IHomeService {
 				sigasAllarmi.setStatus(StatusAllarme.NON_ATTIVO.getName());
 			} else {
 				sigasAllarmi.setStatus(StatusAllarme.ATTIVO.getName());
-			}
-			
+			}			
 			sigasAllarmi.setSigasDichConsumi(sigasDichConsumiUpdate);
 			sigasAllarmiRepository.save(sigasAllarmi);
 		}
@@ -874,8 +1171,7 @@ public class HomeServiceImpl implements IHomeService {
 			sigasAllarmiCompensazione.setStatus(isAlarmActive);
 		
 			sigasAllarmiRepository.save(sigasAllarmiCompensazione);
-		}
-		
+		}		
 		
 		return dichConsumiEntityMapper.mapEntityToVO(sigasDichConsumiUpdate);
 	}
@@ -981,13 +1277,15 @@ public class HomeServiceImpl implements IHomeService {
 		sigasConsumiRipristina.setUsiCiviliUp(sigasStoricoConsumi.getUsiCiviliUp());
 		sigasConsumiRipristina.setUsiIndustriali1200(sigasStoricoConsumi.getUsiIndustriali1200());
 		sigasConsumiRipristina.setUsiIndustrialiUp(sigasStoricoConsumi.getUsiIndustrialiUp());
-
+		
+		sigasConsumiRipristina.setSelectedImport(true);
+		
 		sigasConsumiRipristina = sigasDichConsumiRepository.save(sigasConsumiRipristina);
 		
 		sigasConsumi.setModIdConsumi(sigasConsumiRipristina.getIdConsumi());
 		sigasConsumi.setModdate(new Date());
 		sigasConsumi.setModUser(user);
-		
+				
 		sigasDichConsumiRepository.save(sigasConsumi);
 		
 		// Scarti
@@ -1014,7 +1312,11 @@ public class HomeServiceImpl implements IHomeService {
 		
 		SigasTipoAllarmi sigasTipoAllarmeScarti = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(TipoAllarme.SCARTI.getName());
 		
-		SigasAllarmi sigasAllarmi = sigasAllarmiRepository.findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(sigasConsumiRipristina.getIdConsumi(), sigasTipoAllarmeScarti.getIdTipoAllarme()!=null ? sigasTipoAllarmeScarti.getIdTipoAllarme().intValue():0);
+		SigasAllarmi sigasAllarmi = sigasAllarmiRepository
+									.findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(sigasConsumiRipristina.getIdConsumi(), 
+																									 (sigasTipoAllarmeScarti.getIdTipoAllarme() != null)
+																									 ? sigasTipoAllarmeScarti.getIdTipoAllarme().intValue()
+																									 : 0);
 		
 		if (sigasAllarmi != null) {
 			if(sigasDichScartiStoricoList.size() == scartiDaConciliare) {
@@ -1028,7 +1330,11 @@ public class HomeServiceImpl implements IHomeService {
 		
 		SigasTipoAllarmi sigasTipoAllarmeCompensazione = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(TipoAllarme.COMPENSAZIONE.getName());
 		
-		SigasAllarmi sigasAllarmiCompensazione = sigasAllarmiRepository.findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(sigasConsumiRipristina.getIdConsumi(), sigasTipoAllarmeCompensazione.getIdTipoAllarme()!=null ? sigasTipoAllarmeCompensazione.getIdTipoAllarme().intValue():0);
+		SigasAllarmi sigasAllarmiCompensazione = sigasAllarmiRepository
+												 .findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(sigasConsumiRipristina.getIdConsumi(), 
+														 														  (sigasTipoAllarmeCompensazione.getIdTipoAllarme() != null)
+														 														  ? sigasTipoAllarmeCompensazione.getIdTipoAllarme().intValue()
+														 														  : 0);
 		if (sigasAllarmiCompensazione != null) {
 			sigasAllarmiCompensazione.setSigasDichConsumi(sigasConsumiRipristina);
 			sigasAllarmiRepository.save(sigasAllarmiCompensazione);	
@@ -1042,7 +1348,8 @@ public class HomeServiceImpl implements IHomeService {
 	@Override
 	public void validaSoggetto(Long idAnag, String anno, boolean validato) {
 		
-		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
 		
 		SigasValidazione  sigasValidazione = sigasValidazioneRepository.findByAnnoAndCodiceAzienda(anno, sigasAnagraficaSoggetti.getCodiceAzienda());
 		
@@ -1063,8 +1370,7 @@ public class HomeServiceImpl implements IHomeService {
 				sigasValidazione.setStato(StatoValidazione.NON_VALIDATO.getName());
 		}
 		
-		sigasValidazioneRepository.save(sigasValidazione);
-		
+		sigasValidazioneRepository.save(sigasValidazione);		
 	}
 	
     @Transactional
@@ -1074,13 +1380,36 @@ public class HomeServiceImpl implements IHomeService {
     	List<AnaComunicazioniVO> anaComunicazioniVOList = new ArrayList<AnaComunicazioniVO>();
     	List<SigasAnaComunicazioni> sigasAnaComunicazioniEntityList = null;
     	List<String> listKeyOper = new ArrayList<>();
+    	
+    	long idFusione = 0;
+    	//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(ricercaAnaComunicazioniRequest.getIdAnag());
+    	SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(ricercaAnaComunicazioniRequest.getIdAnag());    	
+		if(sigasAnagraficaSoggetti != null && sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			idFusione = sigasAnagraficaSoggetti.getIdAnag();
+		}
+    	
     	if(ricercaAnaComunicazioniRequest != null &&
     			(ricercaAnaComunicazioniRequest.getTipologia().equalsIgnoreCase("Tutte")) &&
     			(ricercaAnaComunicazioniRequest.getAnnoDocumento().equalsIgnoreCase("Tutti")) ) {
     		
         	//Entrambi sono valorizzati a 'tutti'
 			logger.debug("Ricerca per tutti i documenti");
-			sigasAnaComunicazioniEntityList = sigasAnaComunicazioniRepository.findBySigasAnagraficaSoggettiIdAnagAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(ricercaAnaComunicazioniRequest.getIdAnag());
+			
+			sigasAnaComunicazioniEntityList = sigasAnaComunicazioniRepository
+											  .findBySigasAnagraficaSoggettiIdAnagAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(ricercaAnaComunicazioniRequest.getIdAnag());
+			
+			
+			if(idFusione > 0) {
+				List<SigasAnaComunicazioni> sigasAnaComunicazioniEntityListIncorporata = sigasAnaComunicazioniRepository
+						  																 .findBySigasAnagraficaSoggettiIdAnagAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(idFusione);
+				if(sigasAnaComunicazioniEntityList!=null && !sigasAnaComunicazioniEntityList.isEmpty()) {
+					sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+				} else {
+					sigasAnaComunicazioniEntityList = new ArrayList<>();
+					sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+				}
+			}
+			
 			logger.debug("Trovati " + sigasAnaComunicazioniEntityList.size() + " documenti");
 
     	} else if (ricercaAnaComunicazioniRequest != null &&
@@ -1090,8 +1419,24 @@ public class HomeServiceImpl implements IHomeService {
 
         	//Soltanto Anno è valorizzato
 			logger.debug("Ricerca per documenti con filtro " + ricercaAnaComunicazioniRequest.getAnnoDocumento());
-			sigasAnaComunicazioniEntityList = sigasAnaComunicazioniRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(
-					ricercaAnaComunicazioniRequest.getIdAnag(), ricercaAnaComunicazioniRequest.getAnnoDocumento());
+			sigasAnaComunicazioniEntityList = sigasAnaComunicazioniRepository
+											  .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(
+													  ricercaAnaComunicazioniRequest.getIdAnag(), 
+													  ricercaAnaComunicazioniRequest.getAnnoDocumento());
+			if(idFusione > 0) {
+				List<SigasAnaComunicazioni> sigasAnaComunicazioniEntityListIncorporata = sigasAnaComunicazioniRepository
+						  																 .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(
+																							 idFusione, 
+																							 ricercaAnaComunicazioniRequest.getAnnoDocumento());
+				if(sigasAnaComunicazioniEntityList!=null && !sigasAnaComunicazioniEntityList.isEmpty()) {
+					sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+				} else {
+					sigasAnaComunicazioniEntityList = new ArrayList<>();
+					sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+				}
+			}
+			
+			
 			logger.debug("Trovati " + sigasAnaComunicazioniEntityList.size() + " documenti");
 		} else if (ricercaAnaComunicazioniRequest != null &&
     			(ricercaAnaComunicazioniRequest.getTipologia() != null && (!ricercaAnaComunicazioniRequest.getTipologia().isEmpty())) &&
@@ -1102,6 +1447,20 @@ public class HomeServiceImpl implements IHomeService {
 				logger.debug("Ricerca per documenti con filtro " + ricercaAnaComunicazioniRequest.getTipologia());
 				sigasAnaComunicazioniEntityList = sigasAnaComunicazioniRepository.findBySigasAnagraficaSoggettiIdAnagAndSigasTipoComunicazioniIdTipoComunicazioneAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(
 				ricercaAnaComunicazioniRequest.getIdAnag(), Long.parseLong(ricercaAnaComunicazioniRequest.getTipologia()));
+				
+				if(idFusione > 0) {
+					List<SigasAnaComunicazioni> sigasAnaComunicazioniEntityListIncorporata = sigasAnaComunicazioniRepository
+																							 .findBySigasAnagraficaSoggettiIdAnagAndSigasTipoComunicazioniIdTipoComunicazioneAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(
+																									 idFusione, 
+																									 Long.parseLong(ricercaAnaComunicazioniRequest.getTipologia()));
+					if(sigasAnaComunicazioniEntityList!=null && !sigasAnaComunicazioniEntityList.isEmpty()) {
+						sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+					} else {
+						sigasAnaComunicazioniEntityList = new ArrayList<>();
+						sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+					}
+				}
+				
 				logger.debug("Trovati " + sigasAnaComunicazioniEntityList.size() + " documenti");
     	} else if (ricercaAnaComunicazioniRequest != null &&
     			(ricercaAnaComunicazioniRequest.getTipologia() != null && (!ricercaAnaComunicazioniRequest.getTipologia().isEmpty())) &&
@@ -1114,6 +1473,22 @@ public class HomeServiceImpl implements IHomeService {
 					ricercaAnaComunicazioniRequest.getIdAnag(),
 					ricercaAnaComunicazioniRequest.getAnnoDocumento(),
 					Long.parseLong(ricercaAnaComunicazioniRequest.getTipologia()));
+			
+			if(idFusione > 0) {
+				List<SigasAnaComunicazioni> sigasAnaComunicazioniEntityListIncorporata = sigasAnaComunicazioniRepository
+																						 .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasTipoComunicazioniIdTipoComunicazioneAndDelUserIsNullAndDelDateIsNullOrderByDataDocumentoAsc(
+																									idFusione,
+																									ricercaAnaComunicazioniRequest.getAnnoDocumento(),
+																									Long.parseLong(ricercaAnaComunicazioniRequest.getTipologia()));
+				if(sigasAnaComunicazioniEntityList!=null && !sigasAnaComunicazioniEntityList.isEmpty()) {
+					sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+				} else {
+					sigasAnaComunicazioniEntityList = new ArrayList<>();
+					sigasAnaComunicazioniEntityList.addAll(sigasAnaComunicazioniEntityListIncorporata);
+				}
+			}
+			
+			
 			logger.debug("Trovati " + sigasAnaComunicazioniEntityList.size() + " documenti");
     	}
     	
@@ -1132,19 +1507,15 @@ public class HomeServiceImpl implements IHomeService {
 					}
         			catch (BusinessException be) {
         				// TODO Auto-generated catch block
-						be.printStackTrace();
+						//be.printStackTrace();
         			}
         			catch (AcarisException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
-        		}
-        		
-        		
-    		}
-			
-		}
-    	
+        		}        		
+    		}			
+		}    	
     	
     	if(ricercaAnaComunicazioniRequest.getIdAnag()!=null) {
         	listKeyOper.add(ricercaAnaComunicazioniRequest.getIdAnag().toString());
@@ -1154,13 +1525,15 @@ public class HomeServiceImpl implements IHomeService {
     		listKeyOper.add(String.valueOf(anaComunTmp.getIdComunicazione()) );
 		}
     	
-    	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaDocumentiByAnnoAndTipologia", "sigas_ana_comunicazioni", String.join("_", listKeyOper));
+    	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+    														 "READ - ricercaDocumentiByAnnoAndTipologia", 
+    														 "sigas_ana_comunicazioni", 
+    														 String.join("_", listKeyOper));
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
 										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
 										   csiLogAudit.getId().getKeyOper());	
     	
-		return anaComunicazioniVOList;
-    	
+		return anaComunicazioniVOList;    	
     }
 	
 	@Override
@@ -1247,7 +1620,8 @@ public class HomeServiceImpl implements IHomeService {
     					(testEntityUid != null && testEntityUid.getRifArchivio().equals(""))) {
     				SigasAnaComunicazioni doc = new SigasAnaComunicazioni();
     				SigasAnagraficaSoggetti soggetto = new SigasAnagraficaSoggetti();
-    				soggetto = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+    				//soggetto = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+    				soggetto = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
 
     				SigasTipoComunicazioni tipoComunicazioni = new SigasTipoComunicazioni();
     			
@@ -1343,7 +1717,7 @@ public class HomeServiceImpl implements IHomeService {
     			throw new BusinessException("Esiste gia un file '"+ nomeFile + " per l'anno '" + anno);
     		}
     	} catch (IOException | ParseException e) {
-    		e.printStackTrace();
+    		//e.printStackTrace();
     	}
     	
     	if(anaComunicazioniEntity!=null) {
@@ -1364,12 +1738,15 @@ public class HomeServiceImpl implements IHomeService {
     	if(istanzaAllarmeUtf!=null) {
     		listKeyOper.add(String.valueOf(istanzaAllarmeUtf.getIdAllarme()));
     		oggOper += "sigas_allarmi ";
-    	}
+    	}    	
     	
-    	
-    	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - salvaAllegatoVerbale", oggOper, String.join("_", listKeyOper));
+    	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+    														 "INSERT - salvaAllegatoVerbale", 
+    														 oggOper, 
+    														 String.join("_", listKeyOper));
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
 		
     	return anaComunicazioniEntityMapper.mapEntityToVO(anaComunicazioniEntity);
     }
@@ -1425,17 +1802,22 @@ public class HomeServiceImpl implements IHomeService {
 						}
 					}
 				}
+				
+				CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+					  	 "UPDATE - aggiornaAllegatoVerbale", 
+					  	 "sigas_ana_comunicazioni",
+					  	 String.valueOf(anaComunicazioniEntity.getIdComunicazione()));
+				
+				csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+												   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+												   csiLogAudit.getId().getKeyOper());
 
     		} else {
     			throw new BusinessException("Il documento non esiste nel sistema");
     		}
     	} catch (IOException | ParseException e) {
-    		e.printStackTrace();
-    	}
-
-    	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - aggiornaAllegatoVerbale", "sigas_ana_comunicazioni",String.valueOf(anaComunicazioniEntity.getIdComunicazione())  );
-		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+    		//e.printStackTrace();
+    	}    		
 		
     	return anaComunicazioniEntityMapper.mapEntityToVO(anaComunicazioniEntity);
     }
@@ -1684,12 +2066,13 @@ public class HomeServiceImpl implements IHomeService {
 	}	
 	
 	//CR Totale versato	
-	private Map <String, Double> calcolaTotaleVersatoAPartiredaAnno(Long idAnag, String anno, String prov) {
+	private Map <String, Double> calcolaTotaleVersatoAPartiredaAnno(Long idAnag, String anno, String prov, boolean forzaCalcolo) {
 		Map<String,Double> mappaTotaleDichiarato = new HashMap<String,Double>();
 		Map<String,Double> mappaSommatoriaVersamenti = new HashMap<String,Double>();
 		Map<String,Double> mappaTotaleVersato = new HashMap<String,Double>();
 		Map<String,Double> mappaConguaglioCalcolato = new HashMap<String,Double>();
 		Map<String,Double> mappaCompensazioni = new HashMap<String,Double>();
+		Map<String,Double> mappaConguaglioDichiarato = new HashMap<String,Double>();
 		
 		//Determinazione Totale Dichiarato e Totale Versato per ogni annualita
 		List<SigasDichConsumi> dichConsumiDBList = sigasDichConsumiRepository.findConsumiFinoAnnoByIdAnagProv(idAnag,prov, anno);
@@ -1705,8 +2088,19 @@ public class HomeServiceImpl implements IHomeService {
 					Iterator<SigasDichVersamenti> iterVer = sigasDichVersamentiList.iterator();
 					while(iterVer.hasNext()) {
 						SigasDichVersamenti sigasDichVersamenti = iterVer.next();
-						if (!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName())) {
+						/*
+						if (!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName()) && 
+							(!Constants.OWNER_UPDATE_VERSAMENTI_FUSIONE.equalsIgnoreCase(sigasDichVersamenti.getModUser()))) {
 							totaleVersamenti += sigasDichVersamenti.getImporto();
+						}
+						*/
+						
+						if(!sigasDichVersamenti.getSigasTipoVersamento().getDenominazione().equals((TipoVersamenti.ACCERTAMENTO).getName())) {
+							if(!Constants.OWNER_UPDATE_VERSAMENTI_FUSIONE.equalsIgnoreCase(sigasDichVersamenti.getModUser())) {
+								totaleVersamenti += sigasDichVersamenti.getImporto();
+							} else if(forzaCalcolo) {
+								totaleVersamenti += sigasDichVersamenti.getImporto();
+							}
 						}
 					}
 					mappaSommatoriaVersamenti.put(digasDichConsumi.getAnnualita(), totaleVersamenti);
@@ -1714,7 +2108,9 @@ public class HomeServiceImpl implements IHomeService {
 					SigasDichCompensazioni sigasDichCompensazioni = sigasDichCompensazioniRepository.cercaUltimaCompensazioneAssociataAlConsumo(digasDichConsumi.getIdConsumi());
 					if(sigasDichCompensazioni!=null) {
 						mappaCompensazioni.put(digasDichConsumi.getAnnualita(), sigasDichCompensazioni.getConguaglio_compensato());
-					}					
+					}
+					
+					mappaConguaglioDichiarato.put(digasDichConsumi.getAnnualita(), digasDichConsumi.getConguaglioDich());
 				}				
 			}			
 		}
@@ -1752,24 +2148,132 @@ public class HomeServiceImpl implements IHomeService {
 		Double conguaglioCalcolatoAnnoRichiesto = (mappaConguaglioCalcolato.get(anno) == null) ? 0D : mappaConguaglioCalcolato.get(anno);
 		output.put("conguaglioCalcolato", conguaglioCalcolatoAnnoRichiesto);
 		
+		Double conguaglioDichiaratoAnnoRichiesto = (mappaConguaglioDichiarato.get(anno) == null) ? 0D : mappaConguaglioDichiarato.get(anno);
+		output.put("conguaglioDichiarato", conguaglioDichiaratoAnnoRichiesto);
+		
 		return output;		
 	}
-	//Marts
+	
 	@Override
 	public ConsumiPrVO ricercaConsumiPerProvinceAndAnnualita(Long idAnag, String anno, String prov) {
 		Double totaleVersato = 0D;
 		Double conguaglioCalcolato = 0D;
+		Double conguaglioDichiarato = 0D;
+		long usiCivili120 = 0L;
+		long usiCivili480 = 0L;
+		long usiCivili1560 = 0L;
+		long usiCivili1Up = 0L;
+		long usiIndustriali1200 = 0L;
+		long usiIndustrialiUp = 0L;
+		double totCivili = 0D;
+		double totIndustriali = 0D;
 		ConsumiPrVO consumiPrVO = null;
-		SigasDichConsumi dichConsumiDB = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndProvinciaErogazioneAndModIdConsumi(idAnag, anno, prov, 0L);		
-		if(dichConsumiDB!=null) {			
-						
-			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, anno, prov);
-			totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato");
-			conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato");			
+		
+		//Lettura oggetto società
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
+		
+		//Gestione societa incorporata (qualora presente)
+		Double totaleVersatoIncorporato = 0D;			
+		Double conguaglioCalcolatoIncorporato = 0D;
+		Double conguaglioDichiaratoIncorporato = 0D;
+		long usiCivili120Incorparata = 0L;
+		long usiCivili480Incorparata = 0L;
+		long usiCivili1560Incorparata = 0L;
+		long usiCivili1UpIncorparata = 0L;
+		long usiIndustriali1200Incorparata = 0L;
+		long usiIndustrialiUpIncorparata = 0L;
+		double totCiviliIncorparata = 0D;
+		double totIndustrialiIncorparata = 0D;
+		SigasDichConsumi dichConsumiIncorporata = null;
+		if(sigasAnagraficaSoggetti.getIdFusione() > 0) 
+		{	
+			boolean forzaCalcolo = false;
+			Map <String, Double> totaleVersatoConguaglioCalcMapSoggettoIncorporato = this.calcolaTotaleVersatoAPartiredaAnno(sigasAnagraficaSoggetti.getIdFusione(), 
+																														 	 anno, 
+																															 prov,
+																															 forzaCalcolo);
+			totaleVersatoIncorporato = totaleVersatoConguaglioCalcMapSoggettoIncorporato.get("totaleVersato");			
+			conguaglioCalcolatoIncorporato = totaleVersatoConguaglioCalcMapSoggettoIncorporato.get("conguaglioCalcolato");
+			conguaglioDichiaratoIncorporato = totaleVersatoConguaglioCalcMapSoggettoIncorporato.get("conguaglioDichiarato");
 			
+			dichConsumiIncorporata = sigasDichConsumiRepository
+									 .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndProvinciaErogazioneAndModIdConsumi(sigasAnagraficaSoggetti.getIdFusione(), 
+				 																					 					   anno,prov,0L);
+			if(dichConsumiIncorporata!=null) {
+				ConsumiPrVO consumiPrVOIncorporata = null;
+				consumiPrVOIncorporata = dichConsumiEntityMapper.mapEntityToVO(dichConsumiIncorporata);				
+				
+				usiCivili120Incorparata = consumiPrVOIncorporata.getUsi_civili_120();				
+				
+				usiCivili480Incorparata = consumiPrVOIncorporata.getUsi_civili_480();				
+				
+				usiCivili1560Incorparata = consumiPrVOIncorporata.getUsi_civili_1560();				
+				
+				usiCivili1UpIncorparata = consumiPrVOIncorporata.getUsi_civili_up();				
+				
+				usiIndustriali1200Incorparata = consumiPrVOIncorporata.getUsi_industriali_1200();				
+				
+				usiIndustrialiUpIncorparata = consumiPrVOIncorporata.getUsi_industriali_up();				
+				
+				totCiviliIncorparata = consumiPrVOIncorporata.getTot_civili();				
+				
+				totIndustrialiIncorparata = consumiPrVOIncorporata.getTot_industriali();					
+				
+			}			
+		}
+		
+		
+		SigasDichConsumi dichConsumiDB = sigasDichConsumiRepository.findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndProvinciaErogazioneAndModIdConsumi(idAnag, anno, prov, 0L);		
+		if(dichConsumiDB!=null) {
+			boolean forzaCalcolo = true;
+			Map <String, Double> totaleVersatoConguaglioCalcMap = this.calcolaTotaleVersatoAPartiredaAnno(idAnag, anno, prov, forzaCalcolo);
+			totaleVersato = totaleVersatoConguaglioCalcMap.get("totaleVersato") + totaleVersatoIncorporato;
+			conguaglioCalcolato = totaleVersatoConguaglioCalcMap.get("conguaglioCalcolato") + conguaglioCalcolatoIncorporato;
+			conguaglioDichiarato = totaleVersatoConguaglioCalcMap.get("conguaglioDichiarato") + conguaglioDichiaratoIncorporato;
+			
+			
+			usiCivili120 = dichConsumiDB.getUsiCivili120() + usiCivili120Incorparata;			
+			
+			usiCivili480 = dichConsumiDB.getUsiCivili480() + usiCivili480Incorparata;			
+			
+			usiCivili1560 = dichConsumiDB.getUsiCivili1560() + usiCivili1560Incorparata;			
+			
+			usiCivili1Up = dichConsumiDB.getUsiCiviliUp() + usiCivili1UpIncorparata;			
+			
+			usiIndustriali1200 = dichConsumiDB.getUsiIndustriali1200() + usiIndustriali1200Incorparata;			
+			
+			usiIndustrialiUp = dichConsumiDB.getUsiIndustrialiUp() + usiIndustrialiUpIncorparata;			
+			
+			totCivili = dichConsumiDB.getTotCivili() + totCiviliIncorparata;			
+			
+			totIndustriali = dichConsumiDB.getTotIndustriali() + totIndustrialiIncorparata;					
+				
+			
+		} else if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			dichConsumiDB = sigasDichConsumiRepository
+						   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndProvinciaErogazioneAndModIdConsumi(sigasAnagraficaSoggetti.getIdFusione(), 
+							 																					 anno,prov,0L);
+			totaleVersato = totaleVersatoIncorporato;
+			conguaglioCalcolato = conguaglioCalcolatoIncorporato;
+			conguaglioDichiarato = conguaglioDichiaratoIncorporato;			
+		}
+		
+		
+		if(dichConsumiDB!=null) {
+
 			consumiPrVO = dichConsumiEntityMapper.mapEntityToVO(dichConsumiDB);
 			consumiPrVO.setTotaleVersato(totaleVersato);
 			consumiPrVO.setConguaglio_calc(conguaglioCalcolato);
+			consumiPrVO.setConguaglio_dich(conguaglioDichiarato);
+			consumiPrVO.setUsi_civili_120(usiCivili120);
+			consumiPrVO.setUsi_civili_480(usiCivili480);
+			consumiPrVO.setUsi_civili_1560(usiCivili1560);
+			consumiPrVO.setUsi_civili_up(usiCivili1Up);
+			consumiPrVO.setUsi_industriali_1200(usiIndustriali1200);
+			consumiPrVO.setUsi_civili_up(usiIndustrialiUp);
+			consumiPrVO.setTot_civili(totCivili);
+			consumiPrVO.setTot_industriali(totIndustriali);		
 			
 			consumiPrVO.setCompensazione(0D);
 			
@@ -1780,8 +2284,8 @@ public class HomeServiceImpl implements IHomeService {
 			if(consumiPrVO.getCompensazionePrVO()!=null) {
 				consumiPrVO.getCompensazionePrVO().setConguaglio_di_riferimento_t0(sigasDichCompensazioniTempoT0.getConguaglio_di_riferimento());
 			}
-		}	
-		
+
+		}		
 		return consumiPrVO;
 	}
 
@@ -1797,12 +2301,12 @@ public class HomeServiceImpl implements IHomeService {
 		return sigasStoricoConsumiList;
 	}
 
-
 	@Override
 	@Transactional
 	public RimborsoVO salvaRimborso(SalvaRimborsoRequest salvaRimborsoRequest) {
 		SigasRimborso sigasRimborso = rimborsoEntityMapper.mapVOtoEntity(salvaRimborsoRequest.getRimborso());
 		sigasRimborsoRepository.save(sigasRimborso);
+		
 		return rimborsoEntityMapper.mapEntityToVO(sigasRimborso);
 	}
 	
@@ -1819,8 +2323,10 @@ public class HomeServiceImpl implements IHomeService {
 				.findByDenominazioneIgnoreCase(TipoAllarme.RIMBORSO.getName());
 
 		SigasAllarmi sigasAllarmi = sigasAllarmiRepository
-				.findBySigasAnaComunicazioniIdComunicazioneAndSigasTipoAllarmeIdTipoAllarme(idComunicazione,
-						sigasTipoAllarmeRimborso.getIdTipoAllarme()!=null ? sigasTipoAllarmeRimborso.getIdTipoAllarme().intValue():0);
+									.findBySigasAnaComunicazioniIdComunicazioneAndSigasTipoAllarmeIdTipoAllarme(idComunicazione,
+																												(sigasTipoAllarmeRimborso.getIdTipoAllarme() != null) 
+																												? sigasTipoAllarmeRimborso.getIdTipoAllarme().intValue()
+																												: 0);
 
 		if (null != sigasAllarmi) {
 			sigasAllarmi.setStatus(StatusAllarme.NON_ATTIVO.getName());
@@ -1851,8 +2357,7 @@ public class HomeServiceImpl implements IHomeService {
 					id,tipoAccertamento.getIdTipoVersamento());
 		}
 		
-		List<VersamentiPrVO> accertamentoVo = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDB);
-			
+		List<VersamentiPrVO> accertamentoVo = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDB);			
 		for(VersamentiPrVO accertamento : accertamentoVo ) {
 			List<SigasAllarmi> listAllarmDB = sigasAllarmiRepository.findBySigasDichVersamentiIdVersamentoAndSigasTipoAllarmeIdTipoAllarme(
 							accertamento.getIdVersamento(), sigasTipoAllarmeVersamento.getIdTipoAllarme()!=null ? sigasTipoAllarmeVersamento.getIdTipoAllarme().intValue():0);
@@ -1870,9 +2375,13 @@ public class HomeServiceImpl implements IHomeService {
 			listKeyOper.add(String.valueOf(versamentiPrVOTmp.getIdVersamento()) );
 		}
 		
-		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - elencoAccertamentiByIdAnag", "sigas_dich_versamenti", String.join("_", listKeyOper));
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+															 "READ - elencoAccertamentiByIdAnag", 
+															 "sigas_dich_versamenti", 
+															 String.join("_", listKeyOper));
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
 		
 		return accertamentoVo;
 	}
@@ -1895,14 +2404,16 @@ public class HomeServiceImpl implements IHomeService {
 			listKeyOper.add(String.valueOf(sigasDichVersamenti.getIdVersamento()) );			
 			if(sigasAllarmi!=null) {
 				listKeyOper.add(String.valueOf(sigasAllarmi.getIdAllarme()) );
-			}
-			
-		}
-	
+			}			
+		}	
 		
-		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"UPDATE - updateAccertamenti", "sigas_dich_versamenti sigas_allarmi", String.join("_", listKeyOper));
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+															 "UPDATE - updateAccertamenti", 
+															 "sigas_dich_versamenti sigas_allarmi", 
+															 String.join("_", listKeyOper));
 		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+										   csiLogAudit.getId().getKeyOper());	
 	}
 	
 	@Override
@@ -1912,31 +2423,35 @@ public class HomeServiceImpl implements IHomeService {
 			
 			
 			sigasAllarmiRepository.updateStatoAllarmeAccertamento(updateAllarmeAccertamentoRequest.getIdAllarme(),
-																  updateAllarmeAccertamentoRequest.getStatoAllarme() );
+																  updateAllarmeAccertamentoRequest.getStatoAllarme());
 			
 			CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
 																 "UPDATE - UpdateAllarmeAccertamentoRequest", 
 																 "sigas_allarmi", 
 																 String.join("_", "id allarme: " + updateAllarmeAccertamentoRequest.getIdAllarme()));
 			csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
-					csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
+											   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+											   csiLogAudit.getId().getKeyOper());
 			
 		}		
 	}
 	
 	
-	private SigasAllarmi allarmeAccertamento(VersamentiPrVO versamento, String user) {
-		SigasTipoAllarmi sigasTipoAllarmeAccertamento = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(TipoAllarme.ACCERTAMENTO.getName());
-		SigasAnagraficaSoggetti sogg = sigasAnagraficaSoggettiRepository.findByIdAnag(versamento.getIdAnag());
-	    
+	private SigasAllarmi allarmeAccertamento(VersamentiPrVO versamento, String user) 
+	{
 		SigasDichConsumi consumo = null;
+		SigasTipoAllarmi sigasTipoAllarmeAccertamento = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(TipoAllarme.ACCERTAMENTO.getName());
+		SigasAnagraficaSoggetti sogg = sigasAnagraficaSoggettiRepository.findByIdAnag(versamento.getIdAnag());		
 		
 		if (versamento.getConsumo() != null) {
 			consumo = sigasDichConsumiRepository.findOne(versamento.getConsumo().getId_consumi());
 		}
 			    
-	    List<SigasAllarmi> sigasAllarmiList = sigasAllarmiRepository.findBySigasDichVersamentiIdVersamentoAndSigasTipoAllarmeIdTipoAllarme(
-	    		versamento.getIdVersamento(), sigasTipoAllarmeAccertamento.getIdTipoAllarme()!=null ? sigasTipoAllarmeAccertamento.getIdTipoAllarme().intValue():0);
+	    List<SigasAllarmi> sigasAllarmiList = sigasAllarmiRepository
+	    									  .findBySigasDichVersamentiIdVersamentoAndSigasTipoAllarmeIdTipoAllarme(versamento.getIdVersamento(), 
+	    											  																 (sigasTipoAllarmeAccertamento.getIdTipoAllarme() != null)
+	    											  																 ? sigasTipoAllarmeAccertamento.getIdTipoAllarme().intValue()
+	    											  																 : 0);
 
 		SigasAllarmi sigasAllarmi = null;
 		if (null == sigasAllarmiList || sigasAllarmiList.size()==0) {
@@ -2023,9 +2538,8 @@ public class HomeServiceImpl implements IHomeService {
 				aliquotaUsiIndustrialiUp = sigasAliquote.getAliquota();
 			}
 		}
-		double importoUsiIndustrialiUp = Long.valueOf(sigasDichConsumi.getUsiIndustrialiUp()).doubleValue()*aliquotaUsiIndustrialiUp;
-		
-		
+		//double importoUsiIndustrialiUp = Long.valueOf(sigasDichConsumi.getUsiIndustrialiUp()).doubleValue()*aliquotaUsiIndustrialiUp;
+		double importoUsiIndustrialiUp = (double)sigasDichConsumi.getUsiIndustrialiUp() * aliquotaUsiIndustrialiUp;
 		
 		//////////////////////////////////////////////////////////
 		// Calcola i consumi su quadro M
@@ -2124,6 +2638,7 @@ public class HomeServiceImpl implements IHomeService {
 		if(confermaConsumiRequest.getConsumi()!=null) {
 			SigasDichConsumi sigasDichConsumiUpdate = sigasDichConsumiRepository.findOne(confermaConsumiRequest.getConsumi().getId_consumi());
 			sigasDichConsumiUpdate.setTotaleDich(confermaConsumiRequest.getConsumi().getTotaleDich());
+			sigasDichConsumiUpdate.setSelectedImport(true);
 			sigasDichConsumiUpdate = sigasDichConsumiRepository.save(sigasDichConsumiUpdate);
 			
 			
@@ -2203,6 +2718,390 @@ public class HomeServiceImpl implements IHomeService {
     		output = true;
     	}
     	return output;    	
+	}
+    
+    @Override
+	public List<StoricoAnagraficaSoggettoVO> ricercaListaStoricoSoggettoByIdAngaRif(Long idAnagRif)
+    {
+    	if(idAnagRif == null) {
+    		return null;
+    	}
+    	
+    	List<StoricoAnagraficaSoggettoVO> output = null;
+    	//List<SigasStoricoAnagraficaSoggetti> sigasStoricoAnagraficaSoggettiEntityList = sigasStoricoAnagraficaSoggettiRepository.findByIdAnag(idAnagRif);
+    	List<SigasStoricoAnagraficaSoggetti> sigasStoricoAnagraficaSoggettiEntityList = sigasStoricoAnagraficaSoggettiRepository.findByIdAnagConfermati(idAnagRif);    	
+    	if(sigasStoricoAnagraficaSoggettiEntityList!=null && !sigasStoricoAnagraficaSoggettiEntityList.isEmpty()) {
+    		/*
+    		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = this.sigasAnagraficaSoggettiRepository.findByIdAnag(idAnagRif);
+    		Iterator<SigasStoricoAnagraficaSoggetti> iterator = sigasStoricoAnagraficaSoggettiEntityList.iterator();
+    		while(iterator.hasNext()) {
+    			SigasStoricoAnagraficaSoggetti sigasStoricoAnagraficaSoggetti = iterator.next();
+    			if(sigasStoricoAnagraficaSoggetti.getDenominazione().equalsIgnoreCase(sigasAnagraficaSoggetti.getDenominazione()) &&
+    			   sigasStoricoAnagraficaSoggetti.getCodiceAzienda().equalsIgnoreCase(sigasAnagraficaSoggetti.getCodiceAzienda()) &&
+    			   sigasStoricoAnagraficaSoggetti.getIndirizzo().equalsIgnoreCase(sigasAnagraficaSoggetti.getIndirizzo()) &&
+    			   sigasStoricoAnagraficaSoggetti.getSigasComune().getDenomComune().equalsIgnoreCase(sigasAnagraficaSoggetti.getSigasComune().getDenomComune())
+    			   ) 
+    			{
+    				sigasStoricoAnagraficaSoggettiEntityList.remove(sigasStoricoAnagraficaSoggetti);
+    			}
+    		}
+    		*/
+    		
+    		output = this.storicoAnagraficaSoggettiEntityMapper.mapListEntityToListVO(sigasStoricoAnagraficaSoggettiEntityList);
+    		
+    		
+    		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+    															 "READ - ricercaListaStoricoSoggettoByIdAngaRif", 
+    															 "sigas_storico_anagrafica_soggetti", 
+    															 String.valueOf(idAnagRif));
+    		
+    		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+    										   csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+    										   csiLogAudit.getId().getKeyOper());
+    	}
+    	return output;    	
+    }
+
+	@Override
+	public List<SigasStoricoAnagraficaSoggettiCustom> ricercaListaStoricoSoggetti(RicercaStoricoSoggettiRequest ricercaStoricoSoggettiRequest) {
+		
+		List<StoricoAnagraficaSoggettoVO> output = null;
+		
+		String denominazioneSoggettoQueryParam = (ricercaStoricoSoggettiRequest.getDenominazioneSoggetto() == null) 
+												 ? "''" 
+												 : "'" + ricercaStoricoSoggettiRequest.getDenominazioneSoggetto() + Constants.QUERY_LIKE_WILDCARDS + "'";
+		String annualita = (ricercaStoricoSoggettiRequest.getAnnualita() == null) 
+				 ? "''" 
+				 : "'" + ricercaStoricoSoggettiRequest.getAnnualita() + "'";
+		String indirizzoQueryParam = (ricercaStoricoSoggettiRequest.getIndirizzo() == null) 
+									 ? "''" 
+									 : "'" + ricercaStoricoSoggettiRequest.getIndirizzo() + Constants.QUERY_LIKE_WILDCARDS + "'";
+		String codiceAziendaQueryParam = (ricercaStoricoSoggettiRequest.getCodiceAzienda() == null) 
+										 ? "''" 
+										 : "'" + ricercaStoricoSoggettiRequest.getCodiceAzienda() + Constants.QUERY_LIKE_WILDCARDS + "'";
+		
+		String codiceFiscale = "''";
+		if(ricercaStoricoSoggettiRequest.getCfPiva() != null) {
+			try {
+				codiceFiscalePartitaIvaValidator.validate("codice fiscale / partita IVA", ricercaStoricoSoggettiRequest.getCfPiva());
+				codiceFiscale = "'" + ricercaStoricoSoggettiRequest.getCfPiva() + "'";
+			} catch (Exception e) {
+				throw new BusinessException("C.F / P.IVA formato non valido.", ErrorCodes.BUSSINESS_EXCEPTION);
+			}
+		}
+		
+//    	List<SigasStoricoAnagraficaSoggetti> sigasStoricoAnagraficaSoggettiEntityList = sigasStoricoAnagraficaSoggettiRepository
+//    																					.findStoricoAnagraficaSoggetti(denominazioneSoggettoQueryParam,
+//    																												   annualita, 
+//    																												   indirizzoQueryParam, 
+//    																												   codiceAziendaQueryParam, 
+//    																												   codiceFiscale);
+    	List<SigasStoricoAnagraficaSoggettiCustom> sigasStoricoAnagraficaSoggettiCustomList = sigasStoricoAnagraficaSoggettiCustomRepository
+    																						  .findStoricoAnagraficaSoggettiCustom(denominazioneSoggettoQueryParam,
+														   																		   annualita, 
+														   																		   indirizzoQueryParam, 
+														   																		   codiceAziendaQueryParam, 
+														   																		   codiceFiscale);
+    	/*
+    	if(sigasStoricoAnagraficaSoggettiCustomList!=null && !sigasStoricoAnagraficaSoggettiCustomList.isEmpty()) 
+    	{
+    		 
+    		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = this.sigasAnagraficaSoggettiRepository.findByIdAnag(sigasStoricoAnagraficaSoggettiCustomList.get(0).getIdAnag().longValue());
+    		Iterator<SigasStoricoAnagraficaSoggettiCustom> iterator = sigasStoricoAnagraficaSoggettiCustomList.iterator();
+    		while(iterator.hasNext()) {
+    			SigasStoricoAnagraficaSoggettiCustom sigasStoricoAnagraficaSoggetti = iterator.next();
+    			if(sigasStoricoAnagraficaSoggetti.getDenominazione().equalsIgnoreCase(sigasAnagraficaSoggetti.getDenominazione()) &&
+    			   sigasStoricoAnagraficaSoggetti.getCodiceAzienda().equalsIgnoreCase(sigasAnagraficaSoggetti.getCodiceAzienda()) &&
+    			   sigasStoricoAnagraficaSoggetti.getIndirizzo().equalsIgnoreCase(sigasAnagraficaSoggetti.getIndirizzo())) 
+    			{
+    				sigasStoricoAnagraficaSoggettiCustomList.remove(sigasStoricoAnagraficaSoggetti);
+    			}
+    		}    		
+    	} 
+    	*/   	
+    	
+    	if(sigasStoricoAnagraficaSoggettiCustomList.size() > Constants.MAX_RESULT_SIZE_RICERCA) {
+    		throw new BusinessException("La ricerca ha restituito piu' di " + 
+    									Constants.MAX_RESULT_SIZE_RICERCA + 
+    									" elementi. Si prega di impostare oppurtuni filtri di ricerca per ridurre il numero di elementi restituiti.", 
+    									ErrorCodes.BUSSINESS_EXCEPTION);
+    	}    	
+    	
+    	CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,
+				 "READ - ricercaListaStoricoSoggetti", 
+				 "sigas_storico_anagrafica_soggetti", 
+				 String.valueOf(sigasStoricoAnagraficaSoggettiCustomList));
+
+    	csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+    			csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
+    			csiLogAudit.getId().getKeyOper());
+    	
+		return sigasStoricoAnagraficaSoggettiCustomList;
+	}
+
+	@Override
+	@Transactional
+	public List<ConsumiPrVO> ricercaSoggettoIncorporato(RicercaSoggettoIncorporatoRequest ricercaSoggettoIncorporatoRequest) {
+		
+		if(ricercaSoggettoIncorporatoRequest.getIdSoggettoIncorporato()==null) {
+    		throw new BusinessException("Parametro idFusione mancante", ErrorCodes.BUSSINESS_EXCEPTION);
+    	}
+		
+		if(ricercaSoggettoIncorporatoRequest.getAnnualita()==null) {
+    		throw new BusinessException("Parametro annualita mancante", ErrorCodes.BUSSINESS_EXCEPTION);
+    	}
+		
+		//Lettura oggetto società
+		List<ConsumiSoggettoIncorporatoEntityCustom> consumiSoggettoIncorporatoPostFusioneList = null;
+		Map<String, ConsumiPrVO> consumiSoggettoIncorporatoPostFusioneMap = null;
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(ricercaSoggettoIncorporatoRequest.getIdSoggettoIncorporato());
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(ricercaSoggettoIncorporatoRequest.getIdSoggettoIncorporato());
+		if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			consumiSoggettoIncorporatoPostFusioneList = sigasAnagraficaSoggettoIncorporatoStandaloneRepository
+														.getDettaglioConsumiSoggettoIncorporatoByIdFusioneAndAnnualita(sigasAnagraficaSoggetti.getIdFusione(), 
+																													   ricercaSoggettoIncorporatoRequest.getAnnualita());
+			if(consumiSoggettoIncorporatoPostFusioneList!=null && !consumiSoggettoIncorporatoPostFusioneList.isEmpty()) {
+				consumiSoggettoIncorporatoPostFusioneMap = new HashMap<>();
+				
+				Iterator<ConsumiSoggettoIncorporatoEntityCustom> iterator  = consumiSoggettoIncorporatoPostFusioneList.iterator();
+				while(iterator.hasNext()) {
+					
+					ConsumiSoggettoIncorporatoEntityCustom consumiSoggettoIncorporatoEntityCustomItem = iterator.next();
+					ConsumiPrVO consumiPrVO = new ConsumiPrVO();   
+									
+					//setting consumi
+					consumiPrVO.setProvincia_erogazione(consumiSoggettoIncorporatoEntityCustomItem.getProvErogazione());
+    				
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_1200()!=null) {
+    					consumiPrVO.setUsi_industriali_1200(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_1200().longValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up()!=null) {
+    					consumiPrVO.setUsi_industriali_up(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up().longValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_120()!=null) {
+    					consumiPrVO.setUsi_civili_120(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_120().longValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_480()!=null) {    					
+    					consumiPrVO.setUsi_civili_480(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_480().longValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_1560()!=null) {    					
+    					consumiPrVO.setUsi_civili_1560(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_1560().longValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up()!=null) {    					
+    					consumiPrVO.setUsi_civili_up(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up().longValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTot_nuovi_allacciamenti()!=null) {    					
+    					consumiPrVO.setTot_nuovi_allacciamenti(consumiSoggettoIncorporatoEntityCustomItem.getTot_nuovi_allacciamenti().doubleValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTot_industriali()!=null) {    					
+    					consumiPrVO.setTot_industriali(consumiSoggettoIncorporatoEntityCustomItem.getTot_industriali().doubleValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTot_civili()!=null) {    					
+    					consumiPrVO.setTot_civili(consumiSoggettoIncorporatoEntityCustomItem.getTot_civili().doubleValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getConguaglio_dich()!=null) {    					
+    					consumiPrVO.setConguaglio_dich(consumiSoggettoIncorporatoEntityCustomItem.getConguaglio_dich().doubleValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTotaleDich()!=null) {    					
+    					consumiPrVO.setTotaleDich(consumiSoggettoIncorporatoEntityCustomItem.getTotaleDich().doubleValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getRateo_dich()!=null) {    					
+    					consumiPrVO.setRateo_dich(consumiSoggettoIncorporatoEntityCustomItem.getRateo_dich().doubleValue());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getProvErogazione()!=null){
+    					consumiPrVO.setProvincia_erogazione(consumiSoggettoIncorporatoEntityCustomItem.getProvErogazione());
+    				}
+    				List<ScartoVO> scartiList =	ricercaScartiByIdConsumi(consumiSoggettoIncorporatoEntityCustomItem.getIdConsumi().longValue());
+    				if(scartiList!=null) {
+    					consumiPrVO.setListaScarti(scartiList);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getRettifiche()!=null){
+    					consumiPrVO.setRettifiche(consumiSoggettoIncorporatoEntityCustomItem.getRettifiche());
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getArrotondamenti()!=null) {
+    					consumiPrVO.setArrotondamenti(consumiSoggettoIncorporatoEntityCustomItem.getArrotondamenti());
+    				}
+    				
+    				consumiSoggettoIncorporatoPostFusioneMap.put(consumiPrVO.getProvincia_erogazione(), consumiPrVO);					
+				}
+			}			
+		}
+		
+		
+		List<ConsumiPrVO> dettaglioConsumiSoggettoIncorporatoList = new ArrayList<>();		
+		try {
+			List<ConsumiSoggettoIncorporatoEntityCustom> consumiSoggettoIncorporatoEntityCustomList = 
+					sigasAnagraficaSoggettoIncorporatoStandaloneRepository.getDettaglioConsumiSoggettoIncorporatoByIdFusioneAndAnnualita(ricercaSoggettoIncorporatoRequest.getIdSoggettoIncorporato(), 
+																																		 ricercaSoggettoIncorporatoRequest.getAnnualita());
+			if(consumiSoggettoIncorporatoEntityCustomList != null && consumiSoggettoIncorporatoEntityCustomList.size() > 0) {
+				
+				//dettaglioConsumiSoggettoIncorporatoList = new ArrayList<>();
+				Iterator<ConsumiSoggettoIncorporatoEntityCustom> iterator  = consumiSoggettoIncorporatoEntityCustomList.iterator();
+				
+				while(iterator.hasNext()) {
+					ConsumiSoggettoIncorporatoEntityCustom consumiSoggettoIncorporatoEntityCustomItem = iterator.next();
+					ConsumiPrVO consumiPrVOPostFusione = null;
+					ConsumiPrVO consumiPrVO = new ConsumiPrVO();   
+					AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
+					
+					//setting anagrafica soggetto fusione
+					anagraficaSoggettoVO.setIdAnag(consumiSoggettoIncorporatoEntityCustomItem.getIdAnag().longValue());
+					anagraficaSoggettoVO.setDenominazione(consumiSoggettoIncorporatoEntityCustomItem.getDenominazione());
+					anagraficaSoggettoVO.setCodiceAzienda(consumiSoggettoIncorporatoEntityCustomItem.getCodiceAzienda());
+					anagraficaSoggettoVO.setIndirizzo(consumiSoggettoIncorporatoEntityCustomItem.getIndirizzo());
+					anagraficaSoggettoVO.setIdComune(consumiSoggettoIncorporatoEntityCustomItem.getFkComune().longValue());
+					anagraficaSoggettoVO.setIdProvincia(consumiSoggettoIncorporatoEntityCustomItem.getFkProvincia().longValue());
+					
+					//setting consumi
+					consumiPrVO.setProvincia_erogazione(consumiSoggettoIncorporatoEntityCustomItem.getProvErogazione());
+					if(consumiSoggettoIncorporatoPostFusioneMap!=null) {
+						consumiPrVOPostFusione = consumiSoggettoIncorporatoPostFusioneMap.get(consumiPrVO.getProvincia_erogazione());
+						consumiSoggettoIncorporatoPostFusioneMap.remove(consumiPrVO.getProvincia_erogazione());
+					}
+    				
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_1200()!=null) {
+    					long valoreSoggettoPostFusione = 0l;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getUsi_industriali_1200();
+    					}
+    					consumiPrVO.setUsi_industriali_1200(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_1200().longValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up()!=null) {
+    					long valoreSoggettoPostFusione = 0l;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getUsi_industriali_up();
+    					}
+    					consumiPrVO.setUsi_industriali_up(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up().longValue()+ valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_120()!=null) {
+    					long valoreSoggettoPostFusione = 0l;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getUsi_civili_120();
+    					}
+    					consumiPrVO.setUsi_civili_120(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_120().longValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_480()!=null) {
+    					long valoreSoggettoPostFusione = 0l;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getUsi_civili_480();
+    					}
+    					consumiPrVO.setUsi_civili_480(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_480().longValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_1560()!=null) {
+    					long valoreSoggettoPostFusione = 0l;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getUsi_civili_1560();
+    					}
+    					consumiPrVO.setUsi_civili_1560(consumiSoggettoIncorporatoEntityCustomItem.getUsi_civili_1560().longValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up()!=null) {
+    					long valoreSoggettoPostFusione = 0l;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getUsi_industriali_up();
+    					}
+    					consumiPrVO.setUsi_civili_up(consumiSoggettoIncorporatoEntityCustomItem.getUsi_industriali_up().longValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTot_nuovi_allacciamenti()!=null) {
+    					double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getTot_nuovi_allacciamenti();
+    					}
+    					consumiPrVO.setTot_nuovi_allacciamenti(consumiSoggettoIncorporatoEntityCustomItem.getTot_nuovi_allacciamenti().doubleValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTot_industriali()!=null) {
+    					double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getTot_industriali();
+    					}
+    					consumiPrVO.setTot_industriali(consumiSoggettoIncorporatoEntityCustomItem.getTot_industriali().doubleValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTot_civili()!=null) {
+    					double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getTot_civili();
+    					}
+    					consumiPrVO.setTot_civili(consumiSoggettoIncorporatoEntityCustomItem.getTot_civili().doubleValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getConguaglio_dich()!=null) {
+    					double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getConguaglio_dich();
+    					}
+    					consumiPrVO.setConguaglio_dich(consumiSoggettoIncorporatoEntityCustomItem.getConguaglio_dich().doubleValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getTotaleDich()!=null) {
+    					double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getTotaleDich();
+    					}
+    					consumiPrVO.setTotaleDich(consumiSoggettoIncorporatoEntityCustomItem.getTotaleDich().doubleValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getRateo_dich()!=null) {
+    					double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getRateo_dich();
+    					}
+    					consumiPrVO.setRateo_dich(consumiSoggettoIncorporatoEntityCustomItem.getRateo_dich().doubleValue() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getProvErogazione()!=null){
+    					consumiPrVO.setProvincia_erogazione(consumiSoggettoIncorporatoEntityCustomItem.getProvErogazione());
+    				}
+    				List<ScartoVO> scartiList =	ricercaScartiByIdConsumi(consumiSoggettoIncorporatoEntityCustomItem.getIdConsumi().longValue());
+    				if(scartiList!=null) {
+    					List<ScartoVO> scartiListPostFusione = null;
+    					if(consumiPrVOPostFusione!=null) {
+    						scartiListPostFusione = consumiPrVOPostFusione.getListaScarti();
+    						if(scartiListPostFusione!=null && !scartiListPostFusione.isEmpty()) {
+    							scartiList.addAll(scartiListPostFusione);
+    						}
+    					}
+    					consumiPrVO.setListaScarti(scartiList);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getRettifiche()!=null){
+    					Double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getRettifiche();
+    					}
+    					consumiPrVO.setRettifiche(consumiSoggettoIncorporatoEntityCustomItem.getRettifiche() + valoreSoggettoPostFusione);
+    				}
+    				if(consumiSoggettoIncorporatoEntityCustomItem.getArrotondamenti()!=null) {
+    					Double valoreSoggettoPostFusione = 0d;
+    					if(consumiPrVOPostFusione!=null) {
+    						valoreSoggettoPostFusione = consumiPrVOPostFusione.getArrotondamenti();
+    					}
+    					consumiPrVO.setArrotondamenti(consumiSoggettoIncorporatoEntityCustomItem.getArrotondamenti() + valoreSoggettoPostFusione);
+    				}
+										
+					consumiPrVO.setAnagraficaSoggettoVO(anagraficaSoggettoVO);
+					dettaglioConsumiSoggettoIncorporatoList.add(consumiPrVO);
+				}
+			} else {
+				ConsumiPrVO consumiPrVO = new ConsumiPrVO(); 
+				AnagraficaSoggettoVO anagraficaSoggettoVO = new AnagraficaSoggettoVO();
+				
+				anagraficaSoggettoVO = ricercaSoggettoByID(ricercaSoggettoIncorporatoRequest.getIdSoggettoIncorporato());
+				
+				consumiPrVO.setAnagraficaSoggettoVO(anagraficaSoggettoVO);
+				dettaglioConsumiSoggettoIncorporatoList.add(consumiPrVO);
+				
+			}
+			if(consumiSoggettoIncorporatoPostFusioneMap != null && consumiSoggettoIncorporatoPostFusioneMap.size() > 0) {
+				List<ConsumiPrVO> elencoConsumiPostFusioneRimanenti = new ArrayList<>();
+				for (Map.Entry<String, ConsumiPrVO> entry : consumiSoggettoIncorporatoPostFusioneMap.entrySet()) {
+					elencoConsumiPostFusioneRimanenti.add(entry.getValue());
+				}
+				dettaglioConsumiSoggettoIncorporatoList.addAll(elencoConsumiPostFusioneRimanenti);
+			}
+		} catch (Exception e) {			
+			throw new BusinessException(e.getMessage(), ErrorCodes.BUSSINESS_EXCEPTION);
+		}
+				
+		CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"READ - ricercaSoggettoIncorporato", "sigas_anagrafica_soggetti", String.valueOf(ricercaSoggettoIncorporatoRequest.getIdSoggettoIncorporato()));
+
+		csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
+				csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());	
+		
+		return dettaglioConsumiSoggettoIncorporatoList;
 	}
 
 }

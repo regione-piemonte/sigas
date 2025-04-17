@@ -13,5 +13,7 @@ import it.csi.sigas.sigasbl.model.entity.custom.SoggettoEntityCustom;
 public interface SoggettoRepository extends Repository<SoggettoEntityCustom, Long> {
 
 	List<SoggettoEntityCustom> findListaSoggetti(String filter, String anno);
+	
+	List<SoggettoEntityCustom> findListaSoggettiPerFusione(String anno);
 
 }

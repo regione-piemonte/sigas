@@ -74,7 +74,7 @@ public class UserServiceImpl implements IUserService {
 			ruoli = irideServFacade.findRuoliForPersonaInApplication(userDetails.getIdentita(), new Application(irideAppId.getValoreString()));
 			/* <[/REPLACE_HERE]> */
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		SigasCParametro operatoreFO = sigasCParametroRepository.findByDescParametro(Constants.operatoreFO);

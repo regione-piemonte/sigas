@@ -539,25 +539,44 @@ public class ActaManagementServiceImpl extends ActaManagementBase implements Act
 				log.debug(method + ". idStruttura = " + idStruttura.hashCode());
 
 			//identificazioneRegistrazione
+			
 			if (documentoActa.getSoggettoActa().isMittente()) 
 			{
 				//Arrivo (Mittente)
 				log.debug(method + ". Running Servizio creaRegistrazioneInArrivoDaDocumentoLogicoEsistente...");
-				identificazioneRegistrazione = acarisOfficialBookService.creaRegistrazioneInArrivoDaDocumentoLogicoEsistente(repositoryId, principalId, identificatoreDocumento.getObjectIdClassificazione(), idStruttura, idNodo, idAOO, documentoActa);
+				identificazioneRegistrazione = acarisOfficialBookService
+											   .creaRegistrazioneInArrivoDaDocumentoLogicoEsistente(repositoryId, 
+													   												principalId, 
+													   												(identificatoreDocumento != null) ? identificatoreDocumento.getObjectIdClassificazione() : null, 
+													   												idStruttura, 
+													   												idNodo, 
+													   												idAOO, 
+													   												documentoActa);
 			}
 			else 
 			{
 				//Partenza (Destinatario)
 				log.debug(method + ". Running Servizio creaRegistrazioneInPartenzaDaDocumentoLogicoEsistente...");
-				identificazioneRegistrazione = acarisOfficialBookService.creaRegistrazioneInPartenzaDaDocumentoLogicoEsistente(repositoryId, principalId, identificatoreDocumento.getObjectIdClassificazione(), idStruttura, idNodo, idAOO, documentoActa);
+				identificazioneRegistrazione = acarisOfficialBookService
+											   .creaRegistrazioneInPartenzaDaDocumentoLogicoEsistente(repositoryId, 
+													   												  principalId, 
+													   												  (identificatoreDocumento != null) ? identificatoreDocumento.getObjectIdClassificazione() : null, 
+													   												  idStruttura, 
+													   												  idNodo, 
+													   												  idAOO, 
+													   												  documentoActa);
 			}
 			
 			if (identificazioneRegistrazione != null)
 				log.debug(method + ". identificazioneRegistrazione Numero = " + identificazioneRegistrazione.getNumero());
 			
 			//INSERIRE CODICE CHE REPERISCE INDICE CLASSIFICAZIONE
-			String indiceDiClassificazione = acarisObjectService.getIdIndiceClassificazione(repositoryId, principalId, identificatoreDocumento.getObjectIdClassificazione());
+			String indiceDiClassificazione = acarisObjectService
+											 .getIdIndiceClassificazione(repositoryId, 
+													 					 principalId, 
+													 					(identificatoreDocumento != null) ? identificatoreDocumento.getObjectIdClassificazione() : null);
 			log.debug(method + ". ***********************************************************************indiceDiClassificazione: " + indiceDiClassificazione);
+			
 			return ottengoKeyActa(documentoActa, UUIDDocumento, indiceDiClassificazione, identificazioneRegistrazione, identificatoreDocumento);
 		}
 		finally
@@ -797,21 +816,36 @@ public class ActaManagementServiceImpl extends ActaManagementBase implements Act
 			if (documentoElettronicoActa.getSoggettoActa().isMittente())
 			{
 				//Arrivo (Mittente)
-				identificazioneRegistrazione = acarisOfficialBookService.creaRegistrazioneInArrivoDaDocumentoElettronicoEsistente(repositoryId, principalId, identificatoreDocumentoFisico.getObjectIdClassificazione(), idStruttura, idNodo, idAOO, documentoElettronicoActa);
+				identificazioneRegistrazione = acarisOfficialBookService
+											   .creaRegistrazioneInArrivoDaDocumentoElettronicoEsistente(repositoryId, 
+													   													 principalId, 
+													   													 (identificatoreDocumentoFisico != null)?identificatoreDocumentoFisico.getObjectIdClassificazione():null, 
+													   													 idStruttura, 
+													   													 idNodo, 
+													   													 idAOO, 
+													   													 documentoElettronicoActa);
 			}
 			else
 			{
 				//Partenza (Destinatario)
 				log.debug(method + ". Running Servizio creaRegistrazioneInPartenzaDaDocumentoElettronicoEsistente...");
-				identificazioneRegistrazione = acarisOfficialBookService.creaRegistrazioneInPartenzaDaDocumentoElettronicoEsistente(repositoryId, principalId, identificatoreDocumentoFisico.getObjectIdClassificazione(), idStruttura, idNodo, idAOO, documentoElettronicoActa);
+				identificazioneRegistrazione = acarisOfficialBookService
+											   .creaRegistrazioneInPartenzaDaDocumentoElettronicoEsistente(repositoryId, 
+													   													   principalId, 
+													   													   (identificatoreDocumentoFisico != null)?identificatoreDocumentoFisico.getObjectIdClassificazione():null, 
+													   													   idStruttura, 
+													   													   idNodo, 
+													   													   idAOO, 
+													   													   documentoElettronicoActa);
 			}
 			
+			String numeroProtocollo = null;
 			if (identificazioneRegistrazione != null){
 				log.debug(method + ". identificazioneRegistrazione Numero = " + identificazioneRegistrazione.getNumero());
+				numeroProtocollo = " - " + identificazioneRegistrazione.getNumero() + "/" + String.valueOf(DateFormat.getCurrentYear());
 			}
-			if(identificatoreDocumentoFisico != null){
-
-				String numeroProtocollo = " - " + identificazioneRegistrazione.getNumero()+"/"+String.valueOf(DateFormat.getCurrentYear());
+			
+			if(identificatoreDocumentoFisico != null){				
 				log.debug(method + ". Running updatePropertiesOggettoDocumento...numeroProtocollo: " + numeroProtocollo);
 				try {
 					acarisObjectService.updatePropertiesOggettoDocumentoConProtocollo(repositoryId, identificatoreDocumentoFisico.getObjectIdClassificazione(), identificatoreDocumentoFisico.getObjectIdDocumento(), principalId, numeroProtocollo);

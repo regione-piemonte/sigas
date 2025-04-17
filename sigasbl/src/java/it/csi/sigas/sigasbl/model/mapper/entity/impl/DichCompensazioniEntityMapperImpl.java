@@ -60,15 +60,9 @@ public class DichCompensazioniEntityMapperImpl implements DichCompensazioniEntit
 
 	@Override
 	public List<CompensazionePrVO> mapListEntityToListVO(List<SigasDichCompensazioni> en) {
-		if(en==null || en.isEmpty()) {
-			return null;
-		}
 		
-		/*
-		return en.stream()
-				 .map(this::_mapEntityToVO)
-				 .collect(Collectors.toList());
-		*/
+		//TO DO
+		
 		return null;
 		
 	}

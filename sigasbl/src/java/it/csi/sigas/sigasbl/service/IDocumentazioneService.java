@@ -29,7 +29,7 @@ public interface IDocumentazioneService {
 
 	public List<DocumentiVO> ricercaDocumenti(RicercaDocumentazioneRequest ricercaDocumentazioneRequest, String codFiscale);
 
-	public void salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException;
+	public DocumentiVO salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException;
 
 	public List<StatoDocumentoVO> listaStatoDocumenti();
 

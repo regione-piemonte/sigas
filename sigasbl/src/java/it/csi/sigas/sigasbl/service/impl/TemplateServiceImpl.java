@@ -131,7 +131,9 @@ public class TemplateServiceImpl implements ITemplateService {
     	codiceClassificazione+= sigasCParametroRepository.findByDescParametro("DICHIARAZIONI_SERIE_FASCICOLI_CODICE").getValoreString() + "/"+codiceAOO+" 4/"+anno+"A/"+codiceAOO;
     } else if (sigasDocumenti.getSigasTipoDocumento().getCodiceTipoDocumento().contains(DoquiConstants.RIMBORSI)) {
     	codiceClassificazione+= sigasCParametroRepository.findByDescParametro("RIMBORSI_SERIE_FASCICOLI_CODICE").getValoreString() + "/"+codiceAOO+" 5/"+anno+"A/"+codiceAOO;
-    } else if (sigasDocumenti.getSigasTipoDocumento().getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.DEPOSITI_CAUZIONALI)) {
+    } else if (sigasDocumenti.getSigasTipoDocumento().getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.DEPOSITI_CAUZIONALI) ||
+    		   sigasDocumenti.getSigasTipoDocumento().getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.DEPOSITI_CAUZIONALI_INTEGRAZIONE)) 
+    {
     	codiceClassificazione+= sigasCParametroRepository.findByDescParametro("DEPOSITI_CAUZIONALI_SERIE_FASCICOLI_CODICE").getValoreString() + "/"+codiceAOO+" 3/"+anno+"A/"+codiceAOO;
     } else if (sigasDocumenti.getSigasTipoDocumento().getCodiceTipoDocumento().equalsIgnoreCase(DoquiConstants.ACCERTAMENTI)) {
     	codiceClassificazione+= sigasCParametroRepository.findByDescParametro("ACCERTAMENTI_VARIE_SERIE_FASCICOLI_CODICE").getValoreString() + "/"+codiceAOO+" 1/"+anno+"A/"+codiceAOO;

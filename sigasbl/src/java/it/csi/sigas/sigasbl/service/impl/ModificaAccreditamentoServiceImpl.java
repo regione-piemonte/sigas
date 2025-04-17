@@ -85,10 +85,12 @@ public class ModificaAccreditamentoServiceImpl implements IModificaAccreditament
         }
         SigasLegaleRappresent irbaTLegaleRappresentDB = irbaTLegaleRappresentRepository.findBySigasDichiarante(sigasDichiarante);
         SigasLegaleRappresent legaleRappresentanteNew = legaleRappresentanteEntityMapper.mapVOtoEntity(legaleRappresentanteVoPerAggiornamento);
+        
         legaleRappresentanteNew.setSigasDichiarante(sigasDichiarante);
         legaleRappresentanteNew.setDataInsert(irbaTLegaleRappresentDB.getDataInsert());
         legaleRappresentanteNew.setDataUpdate(new Timestamp(new Date().getTime()));
         legaleRappresentanteNew.setIdLegaleRappresent(irbaTLegaleRappresentDB.getIdLegaleRappresent());
+        
         // Eseguo il salvataggio dell'entity con i campi aggiornati
         irbaTLegaleRappresentRepository.save(legaleRappresentanteNew);
     }

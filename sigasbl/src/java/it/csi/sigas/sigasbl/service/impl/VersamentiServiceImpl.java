@@ -29,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.csi.sigas.sigasbl.common.Constants;
 import it.csi.sigas.sigasbl.common.StatusAllarme;
 import it.csi.sigas.sigasbl.common.TipoAllarme;
 import it.csi.sigas.sigasbl.common.TipoVersamenti;
@@ -144,9 +145,48 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	
 	/* Versamenti per Soggetto*/
 	@Override
-    public List<String> annualitaVersamentiPerRicerca(Long idAnag) {   	
+    public List<String> annualitaVersamentiPerRicerca(Long idAnag) {
+		
+		//Lettura oggetto società
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
+		Map<String, String> elencoAnnualitaIncorporatoMap = null;
+		if(sigasAnagraficaSoggetti!=null && sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			List<String> elencoAnnualitaIncorporato = sigasDichVersamentiRepository
+													  .findDistinctBySigasAnagraficaSoggettiIdAnag(sigasAnagraficaSoggetti.getIdFusione());
+			
+			if(elencoAnnualitaIncorporato!=null && !elencoAnnualitaIncorporato.isEmpty()) {
+				elencoAnnualitaIncorporatoMap = new HashMap<>();
+				Iterator<String> iterator = elencoAnnualitaIncorporato.iterator();
+				while(iterator.hasNext()) {
+					String annualita = iterator.next();
+					elencoAnnualitaIncorporatoMap.put(annualita, annualita);					
+				}
+			}			
+		}
+		
+		List<String> elencoAnnualitaTotale = sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
+		if(elencoAnnualitaTotale!=null && !elencoAnnualitaTotale.isEmpty() ) {
+			
+			Iterator<String> iterator = elencoAnnualitaTotale.iterator();
+			while(iterator.hasNext()) {
+				String annualita = iterator.next();
+				if(elencoAnnualitaIncorporatoMap!=null && 
+				   !elencoAnnualitaIncorporatoMap.isEmpty() && 
+				   elencoAnnualitaIncorporatoMap.containsKey(annualita)) 
+				{
+					elencoAnnualitaIncorporatoMap.remove(annualita);
+				}
+			}
+			if(elencoAnnualitaIncorporatoMap!=null && !elencoAnnualitaIncorporatoMap.isEmpty()) {
+				elencoAnnualitaTotale.addAll(new ArrayList<>(elencoAnnualitaIncorporatoMap.values()));
+			}
+		} else if(elencoAnnualitaIncorporatoMap!=null && !elencoAnnualitaIncorporatoMap.isEmpty()) {
+			elencoAnnualitaTotale = new ArrayList<>(elencoAnnualitaIncorporatoMap.values());
+		}
     	    	
-		return sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
+		//return sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
+		return elencoAnnualitaTotale;
     }
 	
     @Override
@@ -175,7 +215,7 @@ public class VersamentiServiceImpl implements IVersamentiService {
     	output.setLista_annualita(anniPresenti);
     	
     	List<String> annualitaVersamentiList = sigasDichVersamentiRepository.findDistinctBySigasAnagraficaSoggettiIdAnag(idAnag);
-    	if(annualitaVersamentiList!=null & !annualitaVersamentiList.isEmpty()) {
+    	if(annualitaVersamentiList!=null && !annualitaVersamentiList.isEmpty()) {
     		output.setAnno_ultimo_versamento(annualitaVersamentiList.get(0));
     	}    	
     	return output;		
@@ -186,12 +226,57 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		List<SigasProvincia> sigasProvinciaDB = sigasDichVersamentiRepository.findDistinctProvBySigasAnagraficaSoggettiIdAnag(id);
 		List<ProvinciaVO> provinceList = new ArrayList<ProvinciaVO>();
 		provinceList = provinciaEntityMapper.mapListEntityToListVO(sigasProvinciaDB);
+		
+		//Lettura oggetto società
+		
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(id);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(id);
+		Map<String, ProvinciaVO> elencoProvinciaIncorporatoMap = null;
+		if(sigasAnagraficaSoggetti!=null && sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			List<SigasProvincia> elencoProvinciaEntityIncorporato = sigasDichVersamentiRepository
+													  		        .findDistinctProvBySigasAnagraficaSoggettiIdAnag(sigasAnagraficaSoggetti.getIdFusione());
+			
+			if(elencoProvinciaEntityIncorporato!=null && !elencoProvinciaEntityIncorporato.isEmpty()) {
+				elencoProvinciaIncorporatoMap = new HashMap<>();
+				Iterator<SigasProvincia> iterator = elencoProvinciaEntityIncorporato.iterator();
+				while(iterator.hasNext()) {
+					SigasProvincia sigasProvincia = iterator.next();
+					elencoProvinciaIncorporatoMap.put(sigasProvincia.getSiglaProvincia(), provinciaEntityMapper.mapEntityToVO(sigasProvincia));					
+				}
+			}		
+		}
+		
+		if(provinceList!=null && !provinceList.isEmpty()) {
+			Iterator<ProvinciaVO> iterator = provinceList.iterator();
+			while(iterator.hasNext()) {
+				ProvinciaVO provinciaVO = iterator.next();
+				if(elencoProvinciaIncorporatoMap!=null && 
+				   !elencoProvinciaIncorporatoMap.isEmpty() &&
+				   elencoProvinciaIncorporatoMap.get(provinciaVO.getSigla())!=null) 
+				{
+					elencoProvinciaIncorporatoMap.remove(provinciaVO.getSigla());
+				}
+			}
+			
+			if(elencoProvinciaIncorporatoMap!=null && 
+			   !elencoProvinciaIncorporatoMap.isEmpty()) 
+			{
+				provinceList.addAll(new ArrayList<>(elencoProvinciaIncorporatoMap.values()));
+			}			
+		} else if(elencoProvinciaIncorporatoMap!=null && 
+				  !elencoProvinciaIncorporatoMap.isEmpty()) 
+		{
+			provinceList = new ArrayList<ProvinciaVO>();
+			provinceList.addAll(new ArrayList<>(elencoProvinciaIncorporatoMap.values()));
+		}
+		
+		
 		return provinceList;
 	}
 
 	@Override
 	public List<TipoVersamentoVO> ricercaTipoVersamenti() {
-		List<SigasTipoVersamento> tipoVersamentoDBList = sigasTipoVersamentoRepository.findAll();
+		List<SigasTipoVersamento> tipoVersamentoDBList = sigasTipoVersamentoRepository.findAll();		
 		return	tipoVersamentoEntityMapper.mapListEntityToListVO(tipoVersamentoDBList);
 	}
 	
@@ -272,7 +357,45 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		for(String meseCurr : mesiDBList) {
 			mesiVersamentoList.add(meseCurr);
 		}
-		 return this.creaMappaOridnataMesi(mesiVersamentoList);
+		
+		//Lettura oggetto società
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(id);
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(id);
+		Map<String, String> elencoMesiIncorporatoMap = null;
+		if(sigasAnagraficaSoggetti!=null && sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			List<String> elencoMesiIncorporato = sigasDichVersamentiRepository
+												 .findDistinctMonthBySigasAnagraficaSoggettiIdAnag(sigasAnagraficaSoggetti.getIdFusione(), annualita);
+			
+			if(elencoMesiIncorporato!=null && !elencoMesiIncorporato.isEmpty()) {
+				elencoMesiIncorporatoMap = new HashMap<>();
+				Iterator<String> iterator = elencoMesiIncorporato.iterator();
+				while(iterator.hasNext()) {
+					String meseIncorporato = iterator.next();
+					elencoMesiIncorporatoMap.put(meseIncorporato, meseIncorporato);					
+				}
+			}			
+		}		
+		
+		if(mesiVersamentoList!=null && !mesiVersamentoList.isEmpty()) {
+			Iterator<String> iterator = mesiVersamentoList.iterator();
+			while(iterator.hasNext()) {
+				String mese = iterator.next();
+				
+				if(elencoMesiIncorporatoMap!=null && 
+				   !elencoMesiIncorporatoMap.isEmpty() && 
+				   elencoMesiIncorporatoMap.containsKey(mese)) 
+				{
+					elencoMesiIncorporatoMap.remove(mese);
+				}				
+			}
+			if(elencoMesiIncorporatoMap!=null && !elencoMesiIncorporatoMap.isEmpty()) {				
+				mesiVersamentoList.addAll(new ArrayList<>(elencoMesiIncorporatoMap.values()));				
+			}
+		} else if(elencoMesiIncorporatoMap!=null && !elencoMesiIncorporatoMap.isEmpty()) {
+			mesiVersamentoList = new ArrayList<>(elencoMesiIncorporatoMap.values());
+		}		
+		
+		return this.creaMappaOridnataMesi(mesiVersamentoList);
 	}
 
 	 @Override
@@ -280,25 +403,49 @@ public class VersamentiServiceImpl implements IVersamentiService {
 
 			List<VersamentiPrVO> versamentiVOList = new ArrayList<VersamentiPrVO>();
 			List<SigasDichVersamenti> dichVersamentiListDB = new ArrayList<SigasDichVersamenti>();
+			
+			//Controllo presenza fusione
+			List<SigasDichVersamenti> dichVersamentiListDBSoggettoIncorporato = null;
+			List<VersamentiPrVO> versamentiVOListSoggettoIncorporato = null;
+			long idFusione = 0;
+			Date dataFusione = null;
+			//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(ricercaVersamentiRequest.getIdAnag());
+			SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(ricercaVersamentiRequest.getIdAnag());
+			if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+				idFusione = sigasAnagraficaSoggetti.getIdFusione();
+				dataFusione = sigasAnagraficaSoggetti.getDataFusione();
+			}
 
 			if (ricercaVersamentiRequest.getProvincia() != null && ricercaVersamentiRequest.getProvincia() == 0) {
 				dichVersamentiListDB = sigasDichVersamentiRepository
 									   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaOrderByDataVersamentoAsc(ricercaVersamentiRequest.getIdAnag(), 
 											   																	ricercaVersamentiRequest.getAnno());
+				if(idFusione > 0) {
+					dichVersamentiListDBSoggettoIncorporato = sigasDichVersamentiRepository
+							   			   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaOrderByDataVersamentoAsc(idFusione, 
+									   																				ricercaVersamentiRequest.getAnno());
+				}
+				
 			} else {
 				dichVersamentiListDB = sigasDichVersamentiRepository
 									   .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasProvinciaIdProvinciaOrderByDataVersamentoAsc(ricercaVersamentiRequest.getIdAnag(), 
 											   																								ricercaVersamentiRequest.getAnno(),
 											   																								ricercaVersamentiRequest.getProvincia());
+				
+				if(idFusione > 0) {
+					dichVersamentiListDBSoggettoIncorporato = sigasDichVersamentiRepository
+							   			   					  .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndSigasProvinciaIdProvinciaOrderByDataVersamentoAsc(idFusione, 
+									   																															   ricercaVersamentiRequest.getAnno(),
+									   																															   ricercaVersamentiRequest.getProvincia());
+				}
 			}
 				
 			if (dichVersamentiListDB.size() > 0) {
 				logger.debug("Trovati " + dichVersamentiListDB.size() + " versamenti");
 				versamentiVOList = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDB);
-			}
+			}			
 			
-			Map<VersamentiPrVO, Integer> map = new HashMap<>();
-			
+			Map<VersamentiPrVO, Integer> map = new HashMap<>();			
 			for (VersamentiPrVO versamento : versamentiVOList) {
 				switch (StringUtils.upperCase(versamento.getMese())) {
 					case "GENNAIO":
@@ -361,12 +508,64 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	            { 
 	                return (o1.getValue()).compareTo(o2.getValue()); 
 	            } 
-	        }); 
+	        });
+	        
+	        //GESTIONE SOGGETTO INCORPORATO
+	        Map<String,  VersamentiPrVO> mappaVersamentiSoggettoIncorporato = null;
+	        if (dichVersamentiListDBSoggettoIncorporato != null && dichVersamentiListDBSoggettoIncorporato.size() > 0) {
+				logger.debug("Trovati " + dichVersamentiListDBSoggettoIncorporato.size() + " versamenti");
+				versamentiVOListSoggettoIncorporato = dichVersamentiEntityMapper.mapListEntityToListVO(dichVersamentiListDBSoggettoIncorporato);
+				mappaVersamentiSoggettoIncorporato = this._creaMappaVersamenti(versamentiVOListSoggettoIncorporato);				
+			}
 	        
 	        HashMap<VersamentiPrVO, Integer> temp = new LinkedHashMap<VersamentiPrVO, Integer>(); 
-	        for (Map.Entry<VersamentiPrVO, Integer> aa : list) { 
-	            temp.put(aa.getKey(), aa.getValue()); 
+	        for (Map.Entry<VersamentiPrVO, Integer> aa : list) {
+	        	
+	        	VersamentiPrVO versamentoPrVO =  aa.getKey();
+	        		        		
+        		String searchKey= String.valueOf(versamentoPrVO.getAnnualita()) + 
+		      					  versamentoPrVO.getProvincia() + 
+		      					  versamentoPrVO.getTipo().getIdTipoVersamento().toString() +
+		      					  versamentoPrVO.getCodMese();
+        		
+		      	if(mappaVersamentiSoggettoIncorporato != null && !mappaVersamentiSoggettoIncorporato.isEmpty()) {
+		      		VersamentiPrVO versamentoPrVOIncorporato = mappaVersamentiSoggettoIncorporato.get(searchKey);
+		      		if(versamentoPrVOIncorporato!=null) 
+		      		{	        			
+		      			if(_checkApplicabilitaCalcoliFusione(versamentoPrVO, dataFusione)) 
+			        	{
+		      				versamentoPrVO.setImporto(versamentoPrVO.getImporto() + versamentoPrVOIncorporato.getImporto());
+					        versamentoPrVO.setImporto_prec(versamentoPrVO.getImporto_prec() + versamentoPrVOIncorporato.getImporto_prec());
+					        versamentoPrVO.setInteressi(versamentoPrVO.getInteressi() + versamentoPrVOIncorporato.getInteressi());
+					        versamentoPrVO.setInteressiMora(versamentoPrVO.getInteressiMora() + versamentoPrVOIncorporato.getInteressiMora());
+					        versamentoPrVO.setDifferenza(versamentoPrVO.getDifferenza()+ versamentoPrVOIncorporato.getDifferenza());
+					        versamentoPrVO.setImportoComplessivo(versamentoPrVO.getImportoComplessivo() +versamentoPrVOIncorporato.getImportoComplessivo());
+			        	}			      			        				        			
+			        		
+			        	mappaVersamentiSoggettoIncorporato.remove(searchKey);
+		      		}	        			        		
+		      	}    			        		        	
+	        	
+	        	temp.put(versamentoPrVO, aa.getValue());
+	        	
+	        	//OLD CODE
+	            //temp.put(aa.getKey(), aa.getValue()); 
 	        }	        
+	        
+	        List<VersamentiPrVO> versamentiPrVOListRimanenti = null;
+	        List<VersamentiPrVO> versamentiPrVOListTotale = new ArrayList<VersamentiPrVO>(temp.keySet());
+	        if(mappaVersamentiSoggettoIncorporato!=null && !mappaVersamentiSoggettoIncorporato.isEmpty()) {
+	        	versamentiPrVOListRimanenti = new ArrayList<>(mappaVersamentiSoggettoIncorporato.values());
+	        	versamentiPrVOListTotale.addAll(versamentiVOListSoggettoIncorporato);
+	        	
+	        	// Sort the list 
+		        Collections.sort(versamentiPrVOListTotale, new Comparator<VersamentiPrVO>() {
+					@Override
+					public int compare(VersamentiPrVO o1, VersamentiPrVO o2) {						
+						return Integer.valueOf(o1.getCodMese()).compareTo(Integer.valueOf(o2.getCodMese()));
+					} 
+		        });
+	        }
 	        
 	        List<String> listKeyOper = new ArrayList<String>();
 	        if(ricercaVersamentiRequest.getIdAnag()!=null) {
@@ -387,7 +586,89 @@ public class VersamentiServiceImpl implements IVersamentiService {
 											   csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), 
 											   csiLogAudit.getId().getKeyOper());	
 
-			return new ArrayList<VersamentiPrVO>(temp.keySet());
+			//return new ArrayList<VersamentiPrVO>(temp.keySet());
+			return versamentiPrVOListTotale;
+	 }
+	 
+	 private boolean _checkApplicabilitaCalcoliFusione(VersamentiPrVO versamentiPrVOIncorporante, Date dataFusione) {
+		 if(dataFusione==null || versamentiPrVOIncorporante == null) {
+			 return false;
+		 } 
+		 
+		 
+		 if(versamentiPrVOIncorporante.getInsDate()!=null && 
+			(versamentiPrVOIncorporante.getInsDate().equals(dataFusione) ||	versamentiPrVOIncorporante.getInsDate().after(dataFusione))) 
+		 {
+			 return false;
+		 }		 
+		 
+		 if(versamentiPrVOIncorporante.getModDate()!=null && 
+			(versamentiPrVOIncorporante.getModDate().equals(dataFusione) ||	versamentiPrVOIncorporante.getModDate().after(dataFusione))) 
+		 {
+			 return false;
+		 }
+		 
+		 return true;
+	 }
+	 
+	 private Map<String, VersamentiPrVO> _creaMappaVersamenti(List<VersamentiPrVO> versamentiVOList){
+	 	Map<String,  VersamentiPrVO> map = new HashMap<>();			
+		for (VersamentiPrVO versamento : versamentiVOList) {
+			String partialKey = String.valueOf(versamento.getAnnualita()) + 
+								versamento.getProvincia() + 
+								versamento.getTipo().getIdTipoVersamento().toString();
+			switch (StringUtils.upperCase(versamento.getMese())) {				 
+				case "GENNAIO":
+					versamento.setCodMese(1);
+					map.put(partialKey + "1" ,versamento);
+					break;
+				case "FEBBRAIO": 
+					versamento.setCodMese(2);
+					map.put(partialKey + "2" ,versamento);
+					break;
+				case "MARZO": 
+					versamento.setCodMese(3);
+					map.put(partialKey + "3" ,versamento);
+					break;
+				case "APRILE":
+					versamento.setCodMese(4);
+					map.put(partialKey + "4" ,versamento);
+					break;
+				case "MAGGIO": 
+					versamento.setCodMese(5);
+					map.put(partialKey + "5" ,versamento);
+					break;
+				case "GIUGNO": 
+					versamento.setCodMese(6);
+					map.put(partialKey + "6" ,versamento);
+					break;
+				case "LUGLIO":
+					versamento.setCodMese(7);
+					map.put(partialKey + "7" ,versamento);
+					break;
+				case "AGOSTO": 
+					versamento.setCodMese(8);
+					map.put(partialKey + "8" ,versamento);
+					break;
+				case "SETTEMBRE":
+					versamento.setCodMese(9);
+					map.put(partialKey + "9" ,versamento);
+					break;
+				case "OTTOBRE":
+					versamento.setCodMese(10);
+					map.put(partialKey + "10" ,versamento);
+					break;
+				case "NOVEMBRE": 
+					versamento.setCodMese(11);
+					map.put(partialKey + "11" ,versamento);
+					break;
+				case "DICEMBRE":
+					versamento.setCodMese(12);
+					map.put(partialKey + "12" ,versamento);
+					break;
+			}
+		}		        
+        return map;
 	 }
 	 
 	@Override
@@ -426,12 +707,30 @@ public class VersamentiServiceImpl implements IVersamentiService {
 
 	@Override
 	public List<AllarmiSoggettoVO> ricercaAllarmi(Long idAnag, Long idTipoAllarme) {
-	    SigasAnagraficaSoggetti anagSogg = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+	    //SigasAnagraficaSoggetti anagSogg = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+		SigasAnagraficaSoggetti anagSogg = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
 	    List<AllarmiSoggettoVO> listAllarmiVo = new ArrayList<AllarmiSoggettoVO>();
 		if(anagSogg!=null) {
 	    	List<SigasAllarmi> allarmDBList = sigasAllarmiRepository.findByCodiceAziendaAndSigasTipoAllarmeIdTipoAllarme(anagSogg.getCodiceAzienda(), idTipoAllarme!=null ? idTipoAllarme.intValue():0);
 	    	listAllarmiVo =  allarmiSoggettoEntityMapper.mapListEntityToListVO(allarmDBList);
-	    }
+	    	
+	    	//Gestione Fusione
+			//----------------------------------------------------
+			if(anagSogg.getIdFusione() > 0) {
+				//SigasAnagraficaSoggetti anagSoggIncorporato = sigasAnagraficaSoggettiRepository.findOne(anagSogg.getIdFusione());
+				SigasAnagraficaSoggetti anagSoggIncorporato = sigasAnagraficaSoggettiRepository.findByIdAnag(anagSogg.getIdFusione());
+				List<SigasAllarmi> allarmDBListIncorporato = sigasAllarmiRepository.findByCodiceAziendaAndSigasTipoAllarmeIdTipoAllarme(anagSoggIncorporato.getCodiceAzienda(), 
+																																		idTipoAllarme!=null ? idTipoAllarme.intValue():0);
+				if(allarmDBListIncorporato!=null && !allarmDBListIncorporato.isEmpty()) {
+					List<AllarmiSoggettoVO> listAllarmiVoIncorporato = new ArrayList<AllarmiSoggettoVO>();
+					listAllarmiVoIncorporato =  allarmiSoggettoEntityMapper.mapListEntityToListVO(allarmDBListIncorporato);
+					listAllarmiVo.addAll(listAllarmiVoIncorporato);
+				}
+		    	
+			}		
+			//----------------------------------------------------
+	    }	
+		
 	    return listAllarmiVo;
 	}
 	
@@ -439,7 +738,13 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	@Override
 	public AllarmiSoggettoVO ricercaAllarmiVersamento(Long idConsumi) {
 		SigasTipoAllarmi sigasTipoAllarmeVersamento = sigasTipoAllarmeRepository.findByDenominazioneIgnoreCase(TipoAllarme.VERSAMENTO.getName());
-    	SigasAllarmi allarmDB = sigasAllarmiRepository.findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(idConsumi, sigasTipoAllarmeVersamento.getIdTipoAllarme()!=null ? sigasTipoAllarmeVersamento.getIdTipoAllarme().intValue():0);
+    	SigasAllarmi allarmDB = sigasAllarmiRepository
+    							.findBySigasDichConsumiIdConsumiAndSigasTipoAllarmeIdTipoAllarme(idConsumi, 
+    																							 sigasTipoAllarmeVersamento.getIdTipoAllarme()!=null 
+    																							 ? sigasTipoAllarmeVersamento.getIdTipoAllarme().intValue()
+    																							 :0);   	
+    	
+    	
     	return allarmiSoggettoEntityMapper.mapEntityToVO(allarmDB);
 	}
 	
@@ -559,9 +864,10 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		SigasPagamenti sigasPagamenti = sigasPagamentiCrudRepository.findOne(confermaVersamentoContabiliaRequest.getPagamento().getIdPagamento());
 		if(sigasPagamentiVersamenti!=null && sigasPagamenti!=null && sigasPagamenti.getSigasPagamentiVersamentis()!=null) {
 			sigasPagamenti.getSigasPagamentiVersamentis().add(sigasPagamentiVersamenti);
+			return pagamentiVersamentiEntityMapper.mapListEntityToListVO(sigasPagamenti.getSigasPagamentiVersamentis());
 		}
 		
-		return pagamentiVersamentiEntityMapper.mapListEntityToListVO(sigasPagamenti.getSigasPagamentiVersamentis());
+		return null;
 		
 	}
 
@@ -585,6 +891,42 @@ public class VersamentiServiceImpl implements IVersamentiService {
 			throw new BusinessException("Versamento gia' presente");
 		}
 		
+		//GESTIONE FUSIONE
+		long idFusione = 0;
+		Date dataFusione = null;
+		List<SigasDichVersamenti> dichiarazioneVersamentiIncorporatoList = null;
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(confermaVersamentoRequest.getVersamento().getIdAnag());
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(confermaVersamentoRequest.getVersamento().getIdAnag());
+		if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			idFusione = sigasAnagraficaSoggetti.getIdFusione();
+			dataFusione = sigasAnagraficaSoggetti.getDataFusione();
+			SigasDichVersamenti versamentoIncorporato = sigasDichVersamentiRepository.findById(confermaVersamentoRequest.getVersamento().getIdVersamento());
+			if(versamentoIncorporato!=null && versamentoIncorporato.getSigasAnagraficaSoggetti().getIdAnag() == idFusione) {
+				throw new BusinessException("Versamento associato a Soggetto coinvolto in un'azione di FUSIONE. Impossibile portare a termine l'operazione di aggiornamento.");
+			}
+			
+			/*
+			 * ATTENZIONE
+			 * -----------------------------------------------------------------
+			 * 
+			 * CI POSSONO ESSERE PIU' Versamenti per stessa combinazione di idAnag, Annualità, Prov, idTipologiaVersamento
+			 * 
+			 * -----------------------------------------------------------------
+			 */
+			
+			
+			dichiarazioneVersamentiIncorporatoList = sigasDichVersamentiRepository
+												     .findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndMeseAndSigasTipoVersamentoIdTipoVersamentoAndSigasProvinciaIdProvincia(
+												    		idFusione, 
+															String.valueOf(confermaVersamentoRequest.getVersamento().getAnnualita()), 
+															confermaVersamentoRequest.getVersamento().getMese(), 
+															confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento(), 
+															provVersamento.getIdProvincia());
+			
+		}		
+		//-----------------
+		
+		
 		SigasTipoVersamento tipoVersamento = sigasTipoVersamentoRepository.findOne(confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento());
 		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.CONGUAGLIO.getName())){
 			//Data fine versamento a conguaglio
@@ -596,6 +938,21 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		sigasVersamento.setModDate(new Date());
 		sigasVersamento.setModUser(codFiscale);
 		SigasDichVersamenti versamentoSavedDB = sigasDichVersamentiRepository.save(sigasVersamento);
+		
+		//GESTIONE FUSIONE
+		//----------------------------------------------------
+		if(dichiarazioneVersamentiIncorporatoList!=null && !dichiarazioneVersamentiIncorporatoList.isEmpty()) {
+			Iterator<SigasDichVersamenti> iterator = dichiarazioneVersamentiIncorporatoList.iterator();
+			while(iterator.hasNext()) {
+				SigasDichVersamenti sigasDichVersamentiIncorparatoDaEscludere = iterator.next();
+				
+				sigasDichVersamentiIncorparatoDaEscludere.setModDate(new Date());
+				sigasDichVersamentiIncorparatoDaEscludere.setModUser(Constants.OWNER_UPDATE_VERSAMENTI_FUSIONE);			
+				
+				sigasDichVersamentiRepository.save(sigasDichVersamentiIncorparatoDaEscludere);
+			}
+		}		
+		//----------------------------------------------------
 		
 		oggOper += "sigas_dich_versamenti ";
 		listKeyOper.add(String.valueOf(versamentoSavedDB.getIdVersamento()) );		
@@ -653,6 +1010,21 @@ public class VersamentiServiceImpl implements IVersamentiService {
 		if(versamento != null) {
 			throw new BusinessException("Versamento gia' presente");
 		}
+		
+		//GESTIONE FUSIONE
+		long idFusione = 0;
+		Date dataFusione = null;		
+		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(confermaVersamentoRequest.getVersamento().getIdAnag());
+		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(confermaVersamentoRequest.getVersamento().getIdAnag());
+		if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+			idFusione = sigasAnagraficaSoggetti.getIdFusione();
+			dataFusione = sigasAnagraficaSoggetti.getDataFusione();
+			SigasDichVersamenti versamentoIncorporato = sigasDichVersamentiRepository.findById(confermaVersamentoRequest.getVersamento().getIdVersamento());
+			if(versamentoIncorporato!=null && versamentoIncorporato.getSigasAnagraficaSoggetti().getIdAnag() == idFusione) {
+				throw new BusinessException("Versamento associato a Soggetto coinvolto in un'azione di FUSIONE. Impossibile portare a termine l'operazione di cancellazione.");
+			}			
+		}		
+		//-----------------
 		
 		SigasTipoVersamento tipoVersamento = sigasTipoVersamentoRepository.findOne(confermaVersamentoRequest.getVersamento().getTipo().getIdTipoVersamento());
 		if(tipoVersamento.getDenominazione().equalsIgnoreCase(TipoVersamenti.CONGUAGLIO.getName())){
@@ -727,13 +1099,28 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	
 	@Override
 	@Transactional
-	public boolean deleteVersamento(Long idVersamento,String user, String codFiscale) {
+	public boolean deleteVersamento(Long idVersamento,Long idAnag, String user, String codFiscale) {
 		
 		 try {
 	            SigasDichVersamenti versamentoToDelete= this.sigasDichVersamentiRepository.findById(idVersamento);
 	            if (versamentoToDelete == null) {
 	                throw new BusinessException("Nessun versamento trovato per l'ID: " + idVersamento);
-	            }	            
+	            }
+	            
+	            //GESTIONE FUSIONE
+	    		long idFusione = 0;
+	    		Date dataFusione = null;
+	    		//SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findOne(idAnag);
+	    		SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByIdAnag(idAnag);
+	    		if(sigasAnagraficaSoggetti.getIdFusione() > 0) {
+	    			idFusione = sigasAnagraficaSoggetti.getIdFusione();
+	    			dataFusione = sigasAnagraficaSoggetti.getDataFusione();
+	    			SigasDichVersamenti versamentoIncorporato = sigasDichVersamentiRepository.findById(idVersamento);
+	    			if(versamentoIncorporato!=null && versamentoIncorporato.getSigasAnagraficaSoggetti().getIdAnag() == idFusione) {
+	    				throw new BusinessException("Versamento associato a Soggetto coinvolto in un'azione di FUSIONE. Impossibile portare a termine l'operazione.");
+	    			}
+	    		}		
+	    		//-----------------
 	            
 	            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    		Object principal = auth.getPrincipal();
@@ -748,7 +1135,8 @@ public class VersamentiServiceImpl implements IVersamentiService {
 	            return true;
 	        } catch (Exception e) {
 	            this.logger.error("deleteVersamento: {}", e.getMessage());
-	            return false;
+	            //return false;
+	            throw e;
 	        }
 		
 	}

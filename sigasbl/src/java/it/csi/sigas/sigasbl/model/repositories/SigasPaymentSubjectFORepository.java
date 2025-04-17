@@ -23,10 +23,20 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 	@Query(value="SELECT codice_fiscale FROM sigas_utenti WHERE id_utente = :id ", nativeQuery = true)
 	String retrieveCF(@Param("id") Integer id);
 	
+	/*
 	@Query(value="SELECT c.annualita " +
-			"	FROM sigas_dich_consumi c  " +
-			"	GROUP BY c.annualita" +
-			"	ORDER BY c.annualita DESC" ,nativeQuery = true)
+			  	 "FROM sigas_dich_consumi c " +
+			  	 	"INNER JOIN sigas_import_utf siu " +
+			  	 	 	"ON c.id_import = siu.id_import " +
+			  	 "WHERE siu.selected_import = true " +
+				 "GROUP BY c.annualita " +
+				 "ORDER BY c.annualita DESC" ,nativeQuery = true)
+	*/
+	@Query(value="SELECT c.annualita " +
+			  	 "FROM sigas_dich_consumi c " +
+			  	 "WHERE selected_import = true " +
+				 "GROUP BY c.annualita " +
+				 "ORDER BY c.annualita DESC" ,nativeQuery = true)
 	List<String> findListaYearsPaymentFO();
 
 	@Query(value="SELECT mese FROM sigas_mesi WHERE id=:id" ,nativeQuery = true)
@@ -45,7 +55,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"		AND x.annualita = ?2" ,nativeQuery = true)
 	List<String> getUserAmountsForPrevYear(Long idAnag, String year);
 	
-	@Query(value="SELECT sigla_provincia FROM sigas_provincia WHERE fk_regione=1" ,nativeQuery = true)
+	@Query(value="SELECT sigla_provincia FROM sigas_provincia WHERE fk_regione=1 AND sigla_provincia NOT LIKE 'ZZ'" ,nativeQuery = true)
 	List<String> getAllPiemonteCounties();	
 
 	@Query(value=
@@ -65,7 +75,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			" from sigas_utenti u" + 
 			"	inner join sigas_utente_provvisorio up on (u.id_utente_provv = up.id_utente_provv AND up.stato='ACCETTATA')" +
 			"	inner join sigas_anagrafica_utente us on u.id_utente_provv = us.id_utente_provv" + 
-			"	inner join sigas_anagrafica_soggetti s on (s.id_anag = us.id_anag)" + 
+			"	inner join sigas_anagrafica_soggetti s on s.id_anag = us.id_anag AND s.selected_import = true " + 
 			"	left join sigas_comune sc on s.fk_comune = sc.id_comune" + 
 			"	LEFT join sigas_provincia spc on s.fk_provincia = spc.id_provincia" + 
 			" where" + 
@@ -88,7 +98,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			" FROM	sigas_anagrafica_soggetti s" +
 			"		left join sigas_provincia sp on	s.fk_provincia = sp.id_provincia" +
 			"		left join sigas_comune sc on s.fk_comune = sc.id_comune" +
-			"		inner join sigas_carrello_pagamenti c on c.fk_anag_soggetto = s.id_anag" +
+			"		inner join sigas_carrello_pagamenti c on c.fk_anag_soggetto = s.id_anag AND s.selected_import = true" +
 			" WHERE" +
 			"	c.fk_anag_soggetto = :idanag" +
 			"	and c.anno = :year",nativeQuery = true)
@@ -109,7 +119,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"				FROM sigas_anagrafica_soggetti s " + 
 			"					LEFT JOIN sigas_provincia sp on s.fk_provincia=sp.id_provincia " + 
 			"					LEFT JOIN sigas_comune sc on s.fk_comune = sc.id_comune " + 
-			"				WHERE	s.id_anag = :idanag", nativeQuery = true)
+			"				WHERE	s.id_anag = :idanag AND s.selected_import = true ", nativeQuery = true)
 	List<PaymentSubjectFODetailEntityCustom> getPaymentSubjectsFOByIdAnag(@Param("idanag") Integer idAnag);	
 	
 	@Query(value="SELECT DISTINCT " +
@@ -128,7 +138,7 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"	FROM sigas_utenti u " +
 			"		inner join sigas_utente_provvisorio up on (u.id_utente_provv = up.id_utente_provv AND up.stato='ACCETTATA')" +
 			"		INNER JOIN sigas_anagrafica_utente us on u.id_utente_provv=us.id_utente_provv" +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag " +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag AND s.selected_import = true " +
 			"		LEFT JOIN sigas_provincia sp on s.fk_provincia=sp.id_provincia " +
 			"		LEFT JOIN sigas_comune sc on s.fk_comune = sc.id_comune " +
 			"		INNER JOIN sigas_carrello_pagamenti c on c.fk_anag_soggetto=s.id_anag " +
@@ -147,11 +157,11 @@ public interface SigasPaymentSubjectFORepository extends CrudRepository<PaymentS
 			"				(denominazione||' - '||s.codice_azienda) as Denominazione," + 
 			"				m.months AS mesi, " +
 			"				counties as provincie, " +
-			"				totalAmount as totale " + 
+			"				totalAmount as totale " +			
 			"		FROM sigas_utenti u" + 
 			"			inner join sigas_utente_provvisorio up on (u.id_utente_provv = up.id_utente_provv AND up.stato='ACCETTATA')" +
 			"			INNER JOIN sigas_anagrafica_utente us on u.id_utente_provv=us.id_utente_provv" + 
-			"			INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag" + 
+			"			INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=us.id_anag AND s.selected_import = true " + 
 			"			INNER JOIN sigas_carrello_pagamenti c on c.fk_anag_soggetto=s.id_anag" + 
 			"			INNER JOIN (SELECT c1.codice_pagamento, REGEXP_REPLACE(string_agg(DISTINCT (m1.id||m1.mese), ' - ' order by (m1.id||m1.mese)), '[0-9]', '', 'g') AS months" + 
 			"					FROM sigas_carrello_pagamenti c1 " + 

@@ -77,10 +77,14 @@ public interface IPaymentFoService {
 	
 	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest);
 	
+	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest, Integer annoAccertamento, String numeroAccertamento);
+	
 	public byte[] downloadRicevutaPagamento(String iuv);	
 	
 	public RicevutaPagamento previewRicevutaPagamento(String iuv);
 	
 	public PaymentRedirectVO getPaymentPagoPaRedirectUrl(StorePaymentCartRequest storePaymentCartRequest);
+	
+	public List<PaymentCartVO> ricercaCartItemsPerParametri(StorePaymentCartRequest storePaymentCartRequest);
 	
 }

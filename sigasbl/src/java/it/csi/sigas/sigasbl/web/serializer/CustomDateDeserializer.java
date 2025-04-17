@@ -6,6 +6,7 @@ package it.csi.sigas.sigasbl.web.serializer;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,13 +23,12 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
 		try {
 			if (StringUtils.isEmpty(dateAsString))
 				return null;
-			Date date = CustomDateSerializer.FORMATTER.parse(dateAsString);
-			/*
-			 * Calendar calendar = Calendar.getInstance(
-			 * CustomDateSerializer.LOCAL_TIME_ZONE,
-			 * CustomDateSerializer.LOCALE_HUNGARIAN );
-			 */
-			// calendar.setTime(calendar.getTime());
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date date = formatter.parse(dateAsString);
+			
+			//Date date = CustomDateSerializer.FORMATTER.parse(dateAsString);
+			
 			return date;
 		} catch (ParseException e) {
 			throw new RuntimeException(e);

@@ -57,9 +57,10 @@ public class EPayWsInputMapperImpl implements EPayWsInputMapper {
 
 		List<PosizioneDaInserireType> posInserireTypeList = new ArrayList<>();
 		
-		BigDecimal totalAmount = BigDecimal.ZERO;		
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		
 		//2023-IM009345 - WO1
-		totalAmount.setScale(2, RoundingMode.HALF_UP);		
+		//totalAmount.setScale(2, RoundingMode.HALF_UP);		
 		//-----
 		
 		String notePerIlPagatore = rateInfo.getCodiceAzienda(); 

@@ -153,14 +153,16 @@ public class SigasAnaComunicazioni extends EntityBase implements Serializable {
 	public void setRifArchivio(String rifArchivio) {
 		this.rifArchivio = rifArchivio;
 	}
-
+	
+	/*
 	public String getnProtocollo() {
 		return nProtocollo;
 	}
 
 	public void setnProtocollo(String nProtocollo) {
 		this.nProtocollo = nProtocollo;
-	}	
+	}
+	*/	
 
 	public SigasTipoComunicazioni getSigasTipoComunicazioni() {
 		return sigasTipoComunicazioni;

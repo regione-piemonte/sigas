@@ -120,6 +120,7 @@ public class DoquiConstants {
 	public static final String ACCERTAMENTI = "ACCE";
 	public static final String COMUNICAZIONI_VARIE = "COMV";
 	public static final String DEPOSITI_CAUZIONALI = "DEPO";
+	public static final String DEPOSITI_CAUZIONALI_INTEGRAZIONE = "DEPO_INT";
 	public static final String DICHIARAZIONI = "DICH";
 	public static final String RIMBORSI = "RIMB";
 	

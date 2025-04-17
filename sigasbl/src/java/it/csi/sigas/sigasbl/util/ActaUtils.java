@@ -123,9 +123,16 @@ public class ActaUtils  extends ActaManagementBase {
 			PropertyFilterType filter = new PropertyFilterType();
 			filter.setFilterType(EnumPropertyFilter.ALL);			
 			
+			/*
 			QueryConditionType[] criteria = (QueryConditionType[]) Arrays.asList(this.createQueryConditionType(codice, EnumQueryOperator.EQUALS, params[0]),
 					 															 this.createQueryConditionType(annoCode, EnumQueryOperator.EQUALS, params[1]),
 					 															 this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, String.valueOf(idAOOvalue))).toArray();
+			*/
+			QueryConditionType[] criteria = Arrays.asList(this.createQueryConditionType(codice, EnumQueryOperator.EQUALS, params[0]),
+														  this.createQueryConditionType(annoCode, EnumQueryOperator.EQUALS, params[1]),
+														  this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, 
+																  						String.valueOf(idAOOvalue))
+														  ).toArray(new QueryConditionType[0]);
 
 			PagingResponseType paging = this.getAcarisServiceFactory().getAcarisService().getObjectServicePort().query(repositoryId, principalId, target , filter, criteria , null , null, 0);			
 			PropertyType[] propertyTypes = paging.getObjects(0).getProperties(); // prendo il primo elemento poichè per il criterio di ricerca mi aspetto un unico risultato
@@ -227,9 +234,15 @@ public class ActaUtils  extends ActaManagementBase {
 			
 			commonRetrive(ParamsCommonRetriveFont.PROPERTIES_FILES);		
 			
+			/*
 			QueryConditionType[] criteria = (QueryConditionType[]) Arrays.asList(this.createQueryConditionType(codice, EnumQueryOperator.EQUALS, protocollo),
 					 															 this.createQueryConditionType(annoCode, EnumQueryOperator.EQUALS, anno),
-					 															 this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, String.valueOf(idAOOvalue))).toArray();			
+					 															 this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, String.valueOf(idAOOvalue))).toArray();
+			*/
+			QueryConditionType[] criteria = Arrays.asList(this.createQueryConditionType(codice, EnumQueryOperator.EQUALS, protocollo),
+										 				  this.createQueryConditionType(annoCode, EnumQueryOperator.EQUALS, anno),
+										 				  this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, String.valueOf(idAOOvalue)))
+												   .toArray(new QueryConditionType[0]);
 
 			NavigationConditionInfoType navigationLimits = null;
 			Integer maxItems  = null;
@@ -302,9 +315,16 @@ public class ActaUtils  extends ActaManagementBase {
 			PropertyFilterType filter = new PropertyFilterType();
 			filter.setFilterType(EnumPropertyFilter.ALL);			
 			
+			/*
 			QueryConditionType[] criteria = (QueryConditionType[]) Arrays.asList(this.createQueryConditionType(codice, EnumQueryOperator.EQUALS, params[0]),
 																				 this.createQueryConditionType(annoCode, EnumQueryOperator.EQUALS, params[1]),
 																				 this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, String.valueOf(idAOOvalue))).toArray();
+			*/
+			
+			QueryConditionType[] criteria = Arrays.asList(this.createQueryConditionType(codice, EnumQueryOperator.EQUALS, params[0]),
+											 			  this.createQueryConditionType(annoCode, EnumQueryOperator.EQUALS, params[1]),
+											 			  this.createQueryConditionType(idAOOProtocollante, EnumQueryOperator.EQUALS, String.valueOf(idAOOvalue)))
+												  .toArray(new QueryConditionType[0]);
 
 			PagingResponseType paging = this.getAcarisServiceFactory().getAcarisService().getObjectServicePort().query(repositoryId, principalId, target , filter, criteria , null , null, 0);
 			PropertyType[] propertyTypes = paging.getObjects(0).getProperties(); // prendo il primo elemento poichè per il criterio di ricerca mi aspetto un unico risultato

@@ -267,12 +267,12 @@ public abstract class ActaManagementBase {
 				clientApplicationInfo.setAppKey(appKey);;
 				principalId= this.acarisServiceFactory.getAcarisService().getBackOfficeServicePort().getPrincipalExt(repositoryId, idUtente, idAOO, idStruttura, idNodo, clientApplicationInfo)[0].getPrincipalId();
 			} catch (AcarisException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			} catch (it.doqui.acta.acaris.repositoryservice.AcarisException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			} 
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}	
 	
@@ -301,15 +301,15 @@ public abstract class ActaManagementBase {
 		
 		commonRetrive(paramsCommonRetriveFont);
 				
-		QueryConditionType[] criteria = (QueryConditionType[]) Arrays.asList(this.createQueryConditionType(codice,
-																										   EnumQueryOperator.EQUALS, 
-																										   protocollo),
-				 															 this.createQueryConditionType(annoCode, 
-				 																	 					   EnumQueryOperator.EQUALS, 
-				 																	 					   annoValue),
-				 															 this.createQueryConditionType(idAOOProtocollante, 
-				 																	 					   EnumQueryOperator.EQUALS, 
-				 																	 					   String.valueOf(idAOOvalue))).toArray();
+		QueryConditionType[] criteria = Arrays.asList(this.createQueryConditionType(codice,
+																				    EnumQueryOperator.EQUALS, 
+																				    protocollo),
+													  this.createQueryConditionType(annoCode, 
+															 					    EnumQueryOperator.EQUALS, 
+															 					    annoValue),
+													  this.createQueryConditionType(idAOOProtocollante, 
+															 					    EnumQueryOperator.EQUALS, 
+															 					    String.valueOf(idAOOvalue))).toArray(new QueryConditionType[0]);
 
 		NavigationConditionInfoType navigationLimits = null;
 		Integer maxItems  = null;
@@ -353,7 +353,7 @@ public abstract class ActaManagementBase {
         }
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}        
          return children;
 	}
@@ -368,7 +368,7 @@ public abstract class ActaManagementBase {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return contentStream;
 	}
@@ -394,7 +394,7 @@ public abstract class ActaManagementBase {
 		} 
 		catch (Exception e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return contentStreamId;
 	}	
@@ -412,7 +412,7 @@ public abstract class ActaManagementBase {
         	
         }catch (Exception e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 		}        
         
         if (children != null && children.getObjectsLength()>index) {

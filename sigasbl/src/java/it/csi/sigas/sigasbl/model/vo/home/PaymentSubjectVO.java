@@ -18,16 +18,14 @@ public class PaymentSubjectVO implements VO {
     private String siglaProvinciaAzienda;
     private String comune;
     private String cap;
-    private String indirizzo;
-    
+    private String indirizzo;    
 	private String mesi;
 	private String totale;
 	private String provincie;
-
 	private String codiceFiscale;
-	private String codiceFiscalePIva;
-	
+	private String codiceFiscalePIva;	
 	private Integer statoCarrello;
+	private String tipoCarrello;
 	
 	public Long getIdAnag() {
 		return idAnag;
@@ -125,4 +123,10 @@ public class PaymentSubjectVO implements VO {
 	public void setStatoCarrello(Integer statoCarrello) {
 		this.statoCarrello = statoCarrello;
 	}
+	public String getTipoCarrello() {
+		return tipoCarrello;
+	}
+	public void setTipoCarrello(String tipoCarrello) {
+		this.tipoCarrello = tipoCarrello;
+	}	
 }

@@ -58,6 +58,7 @@ public class ScheduledServiceImpl implements ScheduledService {
                 //CR PAGAMENTO REST FUL - CR-REQ-10
                 //------------------------------------------------
                 //cart.setCodicePagamento(sigasPaymentCartRepository.getUniquePaymentCode(sigasPaymentCart.getFkAnagSoggetto(), sigasPaymentCart.getAnno(), sigasPaymentCart.getFkUtenteInsert()));
+                cart.setCodicePagamento(sigasPaymentCartRepository.getUniquePaymentCodeForInsert(sigasPaymentCart.getFkAnagSoggetto(), sigasPaymentCart.getAnno(), sigasPaymentCart.getFkUtenteInsert()));
                 
                 
                 if(codicePagamentoPrecedenteItem == null || 

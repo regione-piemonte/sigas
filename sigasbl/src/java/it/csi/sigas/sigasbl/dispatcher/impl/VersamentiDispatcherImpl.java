@@ -94,8 +94,8 @@ public class VersamentiDispatcherImpl implements IVersamentiDispatcher {
 	}
 	
 	@Override
-	public boolean deleteVersamento(Long idVersamento, String user, String codFiscale) {
-		return versamentiService.deleteVersamento(idVersamento, user, codFiscale);		
+	public boolean deleteVersamento(Long idVersamento, Long idAnag, String user, String codFiscale) {
+		return versamentiService.deleteVersamento(idVersamento, idAnag, user, codFiscale);		
 	}
 	
 

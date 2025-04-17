@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
@@ -37,8 +38,10 @@ import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.dispatcher.IExportDispatcher;
 import it.csi.sigas.sigasbl.dispatcher.IHomeDispatcher;
 import it.csi.sigas.sigasbl.integration.doqui.DoquiServiceFactory;
+import it.csi.sigas.sigasbl.model.entity.custom.SigasStoricoAnagraficaSoggettiCustom;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
+import it.csi.sigas.sigasbl.model.vo.StoricoAnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
@@ -66,6 +69,8 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaSoggettoIncorporatoRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaStoricoSoggettiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
@@ -164,6 +169,17 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 	}
     
     @Override
+    public Response ricercaSoggettoByCode(String codice) {
+    	logger.info("START: ricercaSoggettoByCode : " + codice);
+
+		AnagraficaSoggettoVO soggettoVO = homeDispatcher.ricercaSoggettoByCode(codice);
+
+		logger.info("END: ricercaSoggettoByCode");
+		return Response.ok(new ResponseVO<AnagraficaSoggettoVO>(Esito.SUCCESS, soggettoVO)).build();
+    	
+    };
+    
+    @Override
 	public Response ricercaSoggetti() {
 		logger.info("START: ricercaSoggetti ");
 
@@ -220,6 +236,20 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
     	logger.info("END: fusioneSoggetto");
         return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
 	}
+	
+	@Override
+	public Response cancellaFusioneSoggetto(Long idAnagraficaSoggettoIncorporante) {
+		logger.info("START: cancellaFusioneSoggetto");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		Object principal = auth.getPrincipal();
+		UserDetails utente = (UserDetails) principal;
+	   	
+		this.homeDispatcher.cancellaFusioneSoggetto(idAnagraficaSoggettoIncorporante, utente.getIdentita().getCodFiscale());
+		
+    	logger.info("END: cancellaFusioneSoggetto");
+        return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
+	
 
 	@Override
 	public Response salvaConsumiPerProvince(DownloadReport downloadReport) {
@@ -766,6 +796,35 @@ public class HomeApiImpl extends SpringSupportedResource implements IHomeApi {
 		
     	logger.info("END: salvaCompensazione");
         return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
+	
+	@Override
+	public Response ricercaListaStoricoSoggetto(Long idAnag) {
+		logger.info("START: ricercaListaStoricoSoggetto : "+ idAnag);
+
+		List<StoricoAnagraficaSoggettoVO> listaStoricoAnag = this.homeDispatcher.ricercaListaStoricoSoggettoByIdAngaRif(idAnag);
+
+		logger.info("END: ricercaListaStoricoSoggetto");
+		return Response.ok(new ResponseVO<List<StoricoAnagraficaSoggettoVO>>(Esito.SUCCESS, listaStoricoAnag)).build();
+	}
+
+	@Override
+	public Response ricercaListaStoricoSoggetti(
+			@Valid @NotNull(message = "RicercaStoricoSoggettiRequest non deve essere vuota") RicercaStoricoSoggettiRequest ricercaStoricoSoggettiRequest) {
+		logger.info("START: ricercaListaStoricoSoggetti : ");
+
+		List<SigasStoricoAnagraficaSoggettiCustom> listaStoricoSoggetti = this.homeDispatcher.ricercaListaStoricoSoggetti(ricercaStoricoSoggettiRequest);
+
+		logger.info("END: ricercaListaStoricoSoggetti");
+		return Response.ok(new ResponseVO<List<SigasStoricoAnagraficaSoggettiCustom>>(Esito.SUCCESS, listaStoricoSoggetti)).build();
+	}
+
+	@Override
+	public Response ricercaSoggettoIncorporato(RicercaSoggettoIncorporatoRequest ricercaSoggettoIncorporatoRequest) {
+		
+		List<ConsumiPrVO> consumiSoggettoIncorporatoVO = homeDispatcher.ricercaSoggettoIncorporato(ricercaSoggettoIncorporatoRequest);
+		
+		return Response.ok(new ResponseVO<List<ConsumiPrVO>>(Esito.SUCCESS, consumiSoggettoIncorporatoVO)).build();
 	}
 	
 }

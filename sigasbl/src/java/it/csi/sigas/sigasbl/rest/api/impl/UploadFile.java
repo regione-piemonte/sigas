@@ -144,7 +144,7 @@ public class UploadFile {
 
 			ecmengineDelegate.deleteContent(parentNode, context);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 	}
@@ -206,11 +206,11 @@ public class UploadFile {
 				Node resNode = ecmengineDelegate.createContent(parentNode, content, context);
 				toReturn = resNode.getUid();
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			return toReturn;
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			//e1.printStackTrace();
 		}
 		return "Error";
 
@@ -275,11 +275,11 @@ public class UploadFile {
 				Node resNode = ecmengineDelegate.createContent(parentNode, content, context);
 				toReturn = resNode.getUid();
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			return toReturn;
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			//e1.printStackTrace();
 		}
 		return "Error";
 

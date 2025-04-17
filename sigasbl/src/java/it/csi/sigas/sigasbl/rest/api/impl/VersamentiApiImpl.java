@@ -211,12 +211,12 @@ public class VersamentiApiImpl extends SpringSupportedResource implements IVersa
 	}
 	
 	@Override
-	public Response deleteVersamento(Long idVersamento) {
+	public Response deleteVersamento(Long idVersamento, Long idAnag) {
 		logger.info("START: deleteVersamento");
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		Object principal = auth.getPrincipal();
 		UserDetails utente = (UserDetails) principal;
-		this.versamentiDispatcher.deleteVersamento(idVersamento, utente.getUsername(), utente.getIdentita().getCodFiscale());
+		this.versamentiDispatcher.deleteVersamento(idVersamento, idAnag, utente.getUsername(), utente.getIdentita().getCodFiscale());
 		logger.info("END: deleteVersamento");
         return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
 	}

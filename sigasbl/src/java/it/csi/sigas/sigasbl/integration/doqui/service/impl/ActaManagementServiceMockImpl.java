@@ -4,6 +4,9 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.integration.doqui.service.impl;
 
+import java.security.SecureRandom;
+import java.util.UUID;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,18 +26,17 @@ public class ActaManagementServiceMockImpl extends ActaManagementServiceImpl {
 
 		try {
 
-			log.info(method + ". MOCK CLASS");
-
-
+			log.info(method + ". MOCK CLASS");						
+			
 			KeyDocumentoActa keyDocumentoActa = new KeyDocumentoActa(documentoActa.getIdDocumento());
+			
+			SecureRandom randomGenerator = new SecureRandom();			
 
-			keyDocumentoActa.setNumeroProtocollo("mock-" + RandomStringUtils.randomNumeric(7)+"/"  + DateFormat.getCurrentYear());
-
-			keyDocumentoActa.setUUIDDocumento("mock-"+ RandomStringUtils.randomAlphabetic(31));
-
-
-
-
+			//keyDocumentoActa.setNumeroProtocollo("mock-" + RandomStringUtils.randomNumeric(7)+"/"  + DateFormat.getCurrentYear());
+			//keyDocumentoActa.setUUIDDocumento("mock-"+ RandomStringUtils.randomAlphabetic(31));
+			
+			keyDocumentoActa.setNumeroProtocollo("mock-" + randomGenerator.nextInt(7) +"/"  + DateFormat.getCurrentYear());
+			keyDocumentoActa.setUUIDDocumento("mock-"+ UUID.randomUUID().toString());
 
 			return keyDocumentoActa; 
 		}

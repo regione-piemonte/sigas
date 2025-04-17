@@ -92,6 +92,10 @@ public class SigasDocumenti implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="id_tipo_documento")
 	private SigasTipoDocumento sigasTipoDocumento;
+	
+	//bi-directional many-to-one association
+	@OneToMany(mappedBy="sigasDocumento")
+	private List<SigasDepositoCausionale> sigasDepositoCausionales;
 
 	public SigasDocumenti() {
 	}
@@ -280,8 +284,12 @@ public class SigasDocumenti implements Serializable {
 		this.nProtocolloAccertamento = nProtocolloAccertamento;
 	}
 
-	
-	
-	
+	public List<SigasDepositoCausionale> getSigasDepositoCausionales() {
+		return sigasDepositoCausionales;
+	}
+
+	public void setSigasDepositoCausionales(List<SigasDepositoCausionale> sigasDepositoCausionales) {
+		this.sigasDepositoCausionales = sigasDepositoCausionales;
+	}	
 
 }

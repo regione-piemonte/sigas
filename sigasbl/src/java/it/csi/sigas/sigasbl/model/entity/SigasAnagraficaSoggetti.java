@@ -6,15 +6,18 @@ package it.csi.sigas.sigasbl.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -37,7 +40,7 @@ public class SigasAnagraficaSoggetti extends EntityBase implements Serializable 
 	@Column(name="id_fusione", unique=true, nullable=false)
 	private long idFusione;
 	
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="data_fusione")
 	private Date dataFusione;
 	
@@ -87,11 +90,21 @@ public class SigasAnagraficaSoggetti extends EntityBase implements Serializable 
 	
 	@ManyToOne
 	@JoinColumn(name="fk_comune", nullable=false)
-	private SigasComune sigasComune;
-	
+	private SigasComune sigasComune;	
 	
 	@Column(name="cf_piva", nullable=false)
 	private String cfPiva;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_import", nullable = true)
+	private SigasImportUTF sigasImport;
+	
+	@Column(name="selected_import", nullable=true)
+	private Boolean selectedImport;
+	
+	//bi-directional many-to-one association
+	@OneToMany(mappedBy="sigasAnagraficaSoggetti")
+	private List<SigasDepositoCausionale> sigasDepositoCausionales;
 
 	public SigasAnagraficaSoggetti() {
 	}
@@ -246,6 +259,30 @@ public class SigasAnagraficaSoggetti extends EntityBase implements Serializable 
 
 	public void setCfPiva(String cfPiva) {
 		this.cfPiva = cfPiva;
+	}
+
+	public SigasImportUTF getSigasImport() {
+		return sigasImport;
+	}
+
+	public Boolean getSelectedImport() {
+		return selectedImport;
+	}
+
+	public void setSigasImport(SigasImportUTF sigasImport) {
+		this.sigasImport = sigasImport;
+	}
+
+	public void setSelectedImport(Boolean selectedImport) {
+		this.selectedImport = selectedImport;
+	}
+
+	public List<SigasDepositoCausionale> getSigasDepositoCausionales() {
+		return sigasDepositoCausionales;
+	}
+
+	public void setSigasDepositoCausionales(List<SigasDepositoCausionale> sigasDepositoCausionales) {
+		this.sigasDepositoCausionales = sigasDepositoCausionales;
 	}	
 	
 }

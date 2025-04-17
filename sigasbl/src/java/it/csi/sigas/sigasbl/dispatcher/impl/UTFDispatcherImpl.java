@@ -15,8 +15,13 @@ import it.csi.sigas.sigasbl.common.EsitoImport;
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.dispatcher.IUTFDispatcher;
 import it.csi.sigas.sigasbl.model.entity.SigasImportUTF;
+import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
 import it.csi.sigas.sigasbl.model.vo.importUTF.AnnualitaImportVO;
 import it.csi.sigas.sigasbl.model.vo.importUTF.ImportUTFVO;
+import it.csi.sigas.sigasbl.model.vo.importUTF.UTFStandaloneEntitySoggettiMacroReportVO;
+import it.csi.sigas.sigasbl.request.utf.UTFConfermaDichiarazioneRequest;
+import it.csi.sigas.sigasbl.request.utf.UTFConfermaSoggettoDichiarazioneRequest;
+import it.csi.sigas.sigasbl.request.utf.UTFSoggettiMacroReportByIdReportRequest;
 import it.csi.sigas.sigasbl.service.IUTFService;
 
 @Component
@@ -70,9 +75,46 @@ public class UTFDispatcherImpl implements IUTFDispatcher {
 	}
 	
 	@Override
-	public List<AnnualitaImportVO> ricercaAnnualita() {
-		
-		return UTFService.ricercaAnnualita();
-				
+	public List<AnnualitaImportVO> ricercaAnnualita() {		
+		return UTFService.ricercaAnnualita();				
 	}
+
+	@Override
+	public List<ConsumiPrVO> getUTFReportByIdImport(Long idImport, Integer annualita) {		
+		return this.UTFService.getUTFReportByIdImport(idImport, annualita);
+	}
+	
+	@Override
+	public List<ConsumiPrVO> getUTFReportDettaglioSoggettiByIdImport(Long idImport) {		
+		return this.UTFService.getUTFReportDettaglioSoggettiByIdImport(idImport);
+	}
+	
+	@Override
+	public List<ImportUTFVO> getImportUTFListByAnno(Long anno) {		
+		return this.UTFService.getImportUTFListByAnno(anno);
+	}
+
+	@Override
+	public void confermaSoggettoDichiarazioniUTF(UTFConfermaSoggettoDichiarazioneRequest utfConfermaSoggettoDichiarazioneRequest) {
+		this.UTFService.confermaSoggettoDichiarazioniUTF(utfConfermaSoggettoDichiarazioneRequest);
+		
+	}
+	
+	@Override
+	public void confermaDichiarazioniUTF(UTFConfermaDichiarazioneRequest utfConfermaDichiarazioneRequest) {
+		this.UTFService.confermaDichiarazioniUTF(utfConfermaDichiarazioneRequest);
+	}
+
+	@Override
+	public List<UTFStandaloneEntitySoggettiMacroReportVO> 
+	getUTFSoggettiMacroReportByIdReport(UTFSoggettiMacroReportByIdReportRequest UTFStandaloneEntitySoggettiMacroReportRequest) 
+	{		
+		return this.UTFService.getUTFSoggettiMacroReportByIdReport(UTFStandaloneEntitySoggettiMacroReportRequest);
+	}
+
+	@Override
+	public List<ConsumiPrVO> getUTFReportDettaglioSoggettiByIdImportIdAnag(Long idImport, Long idAnag) {		
+		return this.UTFService.getUTFReportDettaglioSoggettiByIdImportIdAnag(idImport, idAnag);
+	}
+	
 }

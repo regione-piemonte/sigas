@@ -46,7 +46,7 @@ public class IrideServFacadeImpl implements IrideServFacade {
 		try {
 			ruoloArray = binding.findRuoliForPersonaInApplication(identita, application);
 		} catch (java.lang.Exception ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			throw ex;
 		}
 
@@ -79,7 +79,7 @@ public class IrideServFacadeImpl implements IrideServFacade {
 			useCaseArray = binding.findUseCasesForPersonaInApplication(identita, new Application(codApplicativo));
 		} catch (java.lang.Exception ex) {
 			// TOIMPL Auto-generated catch block
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			throw ex;
 		}
 
@@ -135,7 +135,7 @@ public class IrideServFacadeImpl implements IrideServFacade {
 			identita = binding.identificaUserPassword(username, password);
 		} catch (java.lang.Exception ex) {
 			// TOIMPL Auto-generated catch block
-			ex.printStackTrace();
+			//ex.printStackTrace();
 			throw ex;
 		}
 

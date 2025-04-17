@@ -26,7 +26,6 @@ import it.csi.sigas.sigasbl.service.IDocumentazioneService;
 
 @Component
 public class DocumentazioneDispatcherImpl implements IDocumentazioneDispatcher {
-
 	
  
 	@Autowired
@@ -54,17 +53,14 @@ public class DocumentazioneDispatcherImpl implements IDocumentazioneDispatcher {
 	public void salvaDocumentazioneBO(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) {
 		 iDocumentazioneService.salvaDocumentazioneBO(confermaDocumentazioneRequest, codFiscale);
 		
-	}
-	
+	}	
 	
 	@Override
 	public List<DocumentiVO> ricercaLetteraRisposta(String rifArchivio) {
 		return iDocumentazioneService.ricercaLetteraRisposta(rifArchivio);
 	}
 	
-	
-	//OPERATORE FO
-	
+	//OPERATORE FO	
 
 	@Override
 	public List<AnagraficaSoggettoVO> ricercaAziendeAccreditato(String codFiscale) {
@@ -88,9 +84,8 @@ public class DocumentazioneDispatcherImpl implements IDocumentazioneDispatcher {
 
 
 	@Override
-	public void salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException {
-			iDocumentazioneService.salvaDocumentazione(confermaDocumentazioneRequest, codFiscale);
-		
+	public DocumentiVO salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException {
+			return iDocumentazioneService.salvaDocumentazione(confermaDocumentazioneRequest, codFiscale);		
 	}
 	
 	

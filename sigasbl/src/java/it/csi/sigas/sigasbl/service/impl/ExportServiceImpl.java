@@ -7,6 +7,7 @@ package it.csi.sigas.sigasbl.service.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.csi.sigas.sigasbl.common.Constants;
 import it.csi.sigas.sigasbl.common.ErrorCodes;
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.model.repositories.SigasProvinciaRepository;
@@ -195,9 +197,35 @@ public class ExportServiceImpl implements IExportService {
 		Map<String, Object> jasperParam = null;
 		byte[] export = null;
 
-		jasperParam = new HashMap<String, Object>();		
+		jasperParam = new HashMap<String, Object>();
+		
+		List<ItemVersamentiReport> itemVersamentiReportList = new ArrayList<>();
+		if(downloadVersamentiReport.getItemVersamentiReportList()!=null && !downloadVersamentiReport.getItemVersamentiReportList().isEmpty()) {
+			Iterator<ItemVersamentiReport> iterator = downloadVersamentiReport.getItemVersamentiReportList().iterator();
+			while(iterator.hasNext()) {
+				ItemVersamentiReport item = iterator.next();
+				ItemVersamentiReport itemAggiornato = new ItemVersamentiReport();
+				itemAggiornato.setAnno(item.getAnno());
+				itemAggiornato.setDifferenza(item.getDifferenza());
+				itemAggiornato.setImporto(item.getImporto());
+				itemAggiornato.setImporto_calcolato(item.getImporto_calcolato());
+				itemAggiornato.setNote(item.getNote());
+				itemAggiornato.setTipo(item.getTipo());
+				if(item.getTipo()!=null && item.getTipo().contains("Deposito Cauzionale")) {
+					itemAggiornato.setMese("");
+				} else {
+					itemAggiornato.setMese(item.getMese());
+				}
+				if(item.getProvincia()!=null && item.getProvincia().contains(Constants.RICHIESTA_DEP_CAUSIONALE_CODICE_TUTTE_PROVINCE)) {
+					itemAggiornato.setProvincia("Tutte");
+				} else {
+					itemAggiornato.setProvincia(item.getProvincia());
+				}
+				itemVersamentiReportList.add(itemAggiornato);
+			}
+		}		
 				
-		JRBeanCollectionDataSource tableVersamenti = new JRBeanCollectionDataSource(downloadVersamentiReport.getItemVersamentiReportList(), false);
+		JRBeanCollectionDataSource tableVersamenti = new JRBeanCollectionDataSource(itemVersamentiReportList, false);
 		jasperParam.put("dichiarazioneVersamenti", tableVersamenti);
 		
 		jasperParam.put("anno", downloadVersamentiReport.getAnno());

@@ -550,7 +550,7 @@ public class Enti2EPaywsoServiceSOAPStub extends org.apache.axis.client.Stub imp
     		_call.addHeader(header);
     	} catch (SOAPException e) {
     		// TODO Auto-generated catch block
-    		e.printStackTrace();
+    		//e.printStackTrace();
     	}    	
 
     	setRequestHeaders(_call);

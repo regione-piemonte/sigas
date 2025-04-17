@@ -21,19 +21,19 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 	
 	@Query(value="SELECT c.*, s.codice_azienda as codice_azienda " +
 			"	FROM sigas_carrello_pagamenti c " +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE c.id_carrello = ?1 ", nativeQuery = true)
 	SigasPaymentCart findByIdCarrello(Long id);
 	
 	@Query(value="SELECT c.*, s.codice_azienda as codice_azienda " +
 			"	FROM sigas_carrello_pagamenti c " +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE c.codice_pagamento = ?1 ", nativeQuery = true)
 	List<SigasPaymentCart> findByCodicePagamento(String code);
 	
 	@Query(value="SELECT c.*, s.codice_azienda as codice_azienda " +
 			"	FROM sigas_carrello_pagamenti c " +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE c.iuv = ?1 ", nativeQuery = true)
 	List<SigasPaymentCart> findByIUV(String iuv);
 	
@@ -50,7 +50,7 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 			"	FROM sigas_utenti u " +
 			"		INNER JOIN sigas_carrello_pagamenti c on u.id_utente=c.fk_utente_insert" +
 			"		LEFT JOIN sigas_provincia p on c.fk_provincia=p.id_provincia" +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE	u.codice_fiscale = ?1 " +
 			"		AND c.fk_stato_carrello >= ?2 " +
 			"		AND c.fk_stato_carrello <= ?3 " +
@@ -69,7 +69,7 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 			"	FROM sigas_utenti u " +
 			"		INNER JOIN sigas_carrello_pagamenti c on u.id_utente=c.fk_utente_insert" +
 			"		LEFT JOIN sigas_provincia p on c.fk_provincia=p.id_provincia" +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE	u.codice_fiscale = ?1 " +
 			"		AND c.fk_stato_carrello >= ?2 " +
 			"		AND c.fk_stato_carrello <= ?3 " +
@@ -77,17 +77,19 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 			"		AND c.denominazione_versante = ?5 " +
 			"		AND c.mese = ?6 " +
 			"		AND c.sigla_provincia = ?7 " +
+			"  		AND (?8=0 OR c.fk_tipo_carrello = ?8) " +
 			"	ORDER BY c.fk_utente_insert" ,nativeQuery = true)
 	List<SigasPaymentCart> retrieveCartItemsByYearMonth(String cf,
 														int min_status,	int max_status, 
 														String year, String subjectName,
-														int month, String provincia);
+														int month, String provincia,
+														int tipoCarrello);
 	
 	@Query(value="SELECT c.* " +
 			"	FROM sigas_utenti u " +
 			"		INNER JOIN sigas_carrello_pagamenti c on u.id_utente=c.fk_utente_insert" +
 			"		LEFT JOIN sigas_provincia p on c.fk_provincia=p.id_provincia" +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE " +
 			"		c.codice_pagamento = ?1 " +
 			"	ORDER BY c.fk_utente_insert" ,nativeQuery = true)
@@ -96,7 +98,7 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 	@Query(value="SELECT c.*, s.codice_azienda as codice_azienda " +
 			"	FROM sigas_utenti u " +
 			"		INNER JOIN sigas_carrello_pagamenti c on u.id_utente=c.fk_utente_insert " +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE	u.codice_fiscale = ?1 " +
 			"		AND c.fk_anag_soggetto = ?2 " +
 			"		AND c.fk_stato_carrello <= " + SigasPaymentCart.STATO_CARRELLO_COMPLETO +
@@ -114,7 +116,7 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
 	@Query(value="SELECT c.*, s.codice_azienda as codice_azienda " +
 			"	FROM sigas_utenti u " +
 			"		INNER JOIN sigas_carrello_pagamenti c on u.id_utente=c.fk_utente_insert " +
-			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto" +
+			"		INNER JOIN sigas_anagrafica_soggetti s ON s.id_anag=c.fk_anag_soggetto AND s.selected_import = true " +
 			"	WHERE	u.codice_fiscale = ?1 " +
 			"		AND c.fk_anag_soggetto = ?2 " +
 			"		AND c.fk_stato_carrello <= " + SigasPaymentCart.STATO_CARRELLO_COMPLETO +
@@ -183,5 +185,6 @@ public interface SigasPaymentCartRepository extends CrudRepository<SigasPaymentC
     @Query(value="UPDATE sigas_carrello_pagamenti " + 
     			 "SET fk_stato_carrello = :idStato " +    			
     		     "WHERE id_carrello = :idCarrello", nativeQuery = true)
-    int updateCartItemStatus(@Param("idCarrello") long idCarrello, @Param("idStato") int idStato);
+    int updateCartItemStatus(@Param("idCarrello") long idCarrello, @Param("idStato") int idStato);   
+    
 }

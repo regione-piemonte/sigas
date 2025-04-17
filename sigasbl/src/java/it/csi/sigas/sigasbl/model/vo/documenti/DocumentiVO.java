@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.depositocausionale.DepositoCausionaleVO;
 
 public class DocumentiVO {
 
@@ -59,6 +60,8 @@ public class DocumentiVO {
 	private String nProtocolloAccertamento;
 	
 	private String annoProtocolloAccertamento;
+	
+	private List<DepositoCausionaleVO> depositoCausionaleVOs;
 
 	public Integer getIdDocumento() {
 		return idDocumento;
@@ -253,6 +256,12 @@ public class DocumentiVO {
 		this.annoProtocolloAccertamento = annoProtocolloAccertamento;
 	}
 
-	
+	public List<DepositoCausionaleVO> getDepositoCausionaleVOs() {
+		return depositoCausionaleVOs;
+	}
+
+	public void setDepositoCausionaleVOs(List<DepositoCausionaleVO> depositoCausionaleVOs) {
+		this.depositoCausionaleVOs = depositoCausionaleVOs;
+	}	
 	
 }

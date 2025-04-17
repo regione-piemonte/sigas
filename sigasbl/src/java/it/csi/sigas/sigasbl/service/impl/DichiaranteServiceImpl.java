@@ -171,6 +171,7 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 	}
 
 	@Override
+	@Transactional
 	public void confermaPraticaAccreditamento(
 			ConfermaPraticaAccreditamentoRequest confermaPraticaAccreditamentoRequest, String user) {
 		
@@ -215,7 +216,7 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 			sigasAnagraficaUtente.setIdUtenteProvv(BigDecimal.valueOf(utenteProvvisorio.getIdUtenteProvv()) );
 			SigasAnagraficaSoggetti sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.findByCodiceAzienda(sigasDichiarante.getCodiceAzienda());
 			if(sigasAnagraficaSoggetti!=null) {
-				sigasAnagraficaUtente.setIdAnag(Long.valueOf((sigasAnagraficaSoggetti.getIdAnag())).intValue());	
+				sigasAnagraficaUtente.setIdAnag((int)sigasAnagraficaSoggetti.getIdAnag());	
 			}else {
 				SigasAnagraficaSoggetti sigasAnagraficaSoggettiInsert = new SigasAnagraficaSoggetti();
 				sigasAnagraficaSoggettiInsert.setCodiceAzienda(sigasDichiarante.getCodiceAzienda());
@@ -230,10 +231,14 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 				sigasAnagraficaSoggettiInsert.setNote(sigasDichiarante.getNote());
 				sigasAnagraficaSoggettiInsert.setPec(sigasDichiarante.getPecDichiarante());
 				sigasAnagraficaSoggettiInsert.setTelefono(sigasDichiarante.getTelefonoDichiarante());
+				
+				//CR-REQ-16
+				sigasAnagraficaSoggettiInsert.setSelectedImport(true);
+				//------------
 	
 				sigasAnagraficaSoggetti = sigasAnagraficaSoggettiRepository.save(sigasAnagraficaSoggettiInsert);
 							
-				sigasAnagraficaUtente.setIdAnag(Long.valueOf((sigasAnagraficaSoggetti.getIdAnag())).intValue());
+				sigasAnagraficaUtente.setIdAnag((int)sigasAnagraficaSoggetti.getIdAnag());
 				
 				CsiLogAudit csiLogAudit = CsiLogUtils.getCsiLogAudit(sigasCParametroRepository,"INSERT - insertSoggetto", "sigas_anagrafica_soggetti",String.valueOf(sigasAnagraficaSoggetti.getIdAnag()) );
 				csiLogAuditRepository.saveOrUpdate(csiLogAudit.getId().getDataOra(), csiLogAudit.getIdApp(), csiLogAudit.getIdAddress(), 
@@ -298,7 +303,7 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 						csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
 				
 			} catch (MessagingException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}else if(RIFIUTATA.equalsIgnoreCase(confermaPraticaAccreditamentoRequest.getStato()) && !statoPrecUtenteProvv.equalsIgnoreCase(RIFIUTATA)){
 			SigasCParametro mittenteMailDiniegoAccreditamento = sigasCParametroRepository.findByDescParametro("mittenteMailDiniegoAccreditamento");
@@ -319,7 +324,7 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 						csiLogAudit.getId().getUtente(), csiLogAudit.getOperazione(), csiLogAudit.getOggOper(), csiLogAudit.getId().getKeyOper());
 				
 			} catch (MessagingException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		
@@ -418,10 +423,31 @@ public class DichiaranteServiceImpl implements IDichiaranteService {
 				throw new BadRequestException("Dati del dichiarante e/o del utente vuoti. Per favore valorizzare i campi richiesti", ErrorCodes.FIELD_IS_NULL_OR_EMPTY);
 			}
 			
+			/*
 			SigasDichiarante dichiaranteEntity = null;			
 			dichiaranteEntity = dichiaranteAccreditamentoEntityMapper.mapVOtoEntity(dichiarante);
 			dichiaranteEntity.setDataInsert(new Timestamp(new Date().getTime()));			
-			dichiaranteEntity = sigasDichiaranteRepository.save(dichiaranteEntity);		
+						
+			//E' necessario utilizzare l'oggetto lista in quanto si presume
+			//che i dati in PRD siano fortemenet disallineati
+			if(dichiarante.getCodiceAzienda()!=null && dichiarante.getIdDichiarante()==null) {
+				List<SigasDichiarante> elencoDichiarante = this.sigasDichiaranteRepository.findByCodiceAziendaOrderByDataInsertDesc(dichiarante.getCodiceAzienda());
+				if(elencoDichiarante!=null && !elencoDichiarante.isEmpty()) 
+				{
+					//Se esite un dichiarante si considera il più recente
+					dichiaranteEntity.setIdDichiarante(elencoDichiarante.get(0).getIdDichiarante());
+				}
+			}
+			
+			dichiaranteEntity = sigasDichiaranteRepository.save(dichiaranteEntity);
+			*/
+			
+			/* */
+			SigasDichiarante dichiaranteEntity = null;			
+			dichiaranteEntity = dichiaranteAccreditamentoEntityMapper.mapVOtoEntity(dichiarante);
+			dichiaranteEntity.setDataInsert(new Timestamp(new Date().getTime()));			
+			dichiaranteEntity = sigasDichiaranteRepository.save(dichiaranteEntity);
+					
 
 			return dichiaranteEntity;
 		}

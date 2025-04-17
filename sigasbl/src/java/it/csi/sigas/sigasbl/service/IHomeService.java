@@ -11,7 +11,9 @@ import java.util.List;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
+import it.csi.sigas.sigasbl.model.entity.custom.SigasStoricoAnagraficaSoggettiCustom;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.StoricoAnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
@@ -34,6 +36,8 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaSoggettoIncorporatoRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaStoricoSoggettiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
@@ -45,6 +49,8 @@ public interface IHomeService {
 	List<SoggettiVO> ricercaConsumi(RicercaConsumiRequest ricercaConsumiRequest);
 	
 	AnagraficaSoggettoVO ricercaSoggettoByID(Long id);
+	
+	AnagraficaSoggettoVO ricercaSoggettoByCode(String codice);	
 
 	List<ConsumiPrVO> ricercaConsumiPerProvince(Long id, String anno);
 	
@@ -56,7 +62,7 @@ public interface IHomeService {
 
 	List<VersamentiPrVO> ricercaVersamentiPerProvince(Long id, String anno);
 	
-	List<AnagraficaSoggettoVO> ricercaListaSoggetti(RicercaConsumiRequest ricercaConsumiRequest);
+	List<AnagraficaSoggettoVO> ricercaListaSoggetti(RicercaConsumiRequest ricercaConsumiRequest);	
 	
 	List<AnagraficaSoggettoVO> ricercaSoggetti();
 
@@ -67,6 +73,8 @@ public interface IHomeService {
 	ConsumiPrVO updateCompensazioneConsumi(ConfermaConsumiRequest confermaConsumiRequest, String user);
 	
 	AnagraficaSoggettoVO fusioneSoggetto(FusioneSoggettoRequest confermaSoggettoRequest, String user);
+	
+	void cancellaFusioneSoggetto(Long idAnagraficaIncorporante, String user);
 
 	List<AnagraficaSoggettoVO> ricercaListaNuoviSoggetti();
 
@@ -139,4 +147,10 @@ public interface IHomeService {
 	
 	boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user);
 	
+	List<StoricoAnagraficaSoggettoVO> ricercaListaStoricoSoggettoByIdAngaRif(Long idAnagRif);
+	
+	List<SigasStoricoAnagraficaSoggettiCustom> ricercaListaStoricoSoggetti(RicercaStoricoSoggettiRequest ricercaStoricoSoggettiRequest);
+	
+	List<ConsumiPrVO> ricercaSoggettoIncorporato(RicercaSoggettoIncorporatoRequest ricercaSoggettoIncorporatoRequest);
+
 }

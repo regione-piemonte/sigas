@@ -99,6 +99,10 @@ public class AnagraficaSoggettoEntityMapperImpl implements AnagraficaSoggettiEnt
 		dto.setInsDate(vo.getInsDate());
 		dto.setInsUser(vo.getInsUser());
 		dto.setCfPiva(vo.getCfPiva());
+		
+		//CR-IMPORT-SUCCESSIVI
+		dto.setSelectedImport(true);
+		
 		return dto;
 	}
 

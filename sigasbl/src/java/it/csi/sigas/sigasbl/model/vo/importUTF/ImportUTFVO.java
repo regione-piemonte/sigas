@@ -5,6 +5,7 @@
 package it.csi.sigas.sigasbl.model.vo.importUTF;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ImportUTFVO implements Serializable {
 
@@ -14,6 +15,9 @@ public class ImportUTFVO implements Serializable {
 	private String filename;
 	private String anno;
 	private int numeroFile;
+	private Date dataRiferimento;
+	private Boolean selectedImport;
+	private int esito;
 	
 	public long getImportId() {
 		return importId;
@@ -38,6 +42,24 @@ public class ImportUTFVO implements Serializable {
 	}
 	public void setNumeroFile(int numeroFile) {
 		this.numeroFile = numeroFile;
+	}
+	public Date getDataRiferimento() {
+		return dataRiferimento;
+	}
+	public void setDataRiferimento(Date dataRiferimento) {
+		this.dataRiferimento = dataRiferimento;
+	}
+	public Boolean getSelectedImport() {
+		return selectedImport;
+	}
+	public void setSelectedImport(Boolean selectedImport) {
+		this.selectedImport = selectedImport;
+	}
+	public int getEsito() {
+		return esito;
+	}
+	public void setEsito(int esito) {
+		this.esito = esito;
 	}
 
 }

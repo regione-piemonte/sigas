@@ -36,6 +36,30 @@ public abstract class Constants {
 	public static final String RICEVUTA_PAGAMENTO_FILE_NAME = "Ricevuta di pagemnto";
 	public static final String RICEVUTA_PAGAMENTO_MINE_TYPE = "application/pdf";
 	
+	public static final String OWNER_UPDATE_SOGGETTO_ANAG = "OPERATORE";	
+	public static final String QUERY_LIKE_WILDCARDS = "%";
 	
+	public static final int MAX_RESULT_SIZE_RICERCA = 750;
+	
+	public static final String COD_REPORT_RICHIESTA_DEP_CAUSIONALE = "PDF_RICHIESTA_DEPOSITO_CAUSIONALE";
+	public static final String RICHIESTA_DEP_CAUSIONALE_FILE_NAME = "Ricevuta di pagamento";
+	public static final String RICHIESTA_DEP_CAUSIONALE_MINE_TYPE = "application/pdf";
+	public static final String COD_REPORT_APPROVAZIONE_DEP_CAUSIONALE = "PDF_APPROVAZIONE_DEPOSITO_CAUSIONALE";
+	public static final String APPROVAZIONE_DEP_CAUSIONALE_FILE_NAME = "Lettera di approvazione deposito cauzionale";
+	public static final String APPROVAZIONE_DEP_CAUSIONALE_MINE_TYPE = "application/pdf";	
+	
+	public static final String RICHIESTA_DEP_CAUSIONALE_CODICE_TUTTE_PROVINCE = "ZZ";
+	public static final Integer RICHIESTA_DEP_CAUSIONALE_ID_FITTIZIO_TUTTE_PROVINCE = 99;
+	
+	public static final Integer RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO = 5;
+	public static final Integer RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO = 6;
+	
+	public static final Integer RICHIESTA_DEP_CAUSIONALE_ID_TIPO_PAGAMENTO = 1;
+	public static final String RICHIESTA_DEP_CAUSIONALE_CODICE_TIPO_DOCUMENTO = "DEPO";
+	public static final String RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_CODICE_TIPO_DOCUMENTO = "DEPO_INT";
+	public static final Integer RICHIESTA_DEP_CAUSIONALE_ID_COD_STATO_LETTERA_RISPOSTA = 5;
+	
+	
+	public static final String OWNER_UPDATE_VERSAMENTI_FUSIONE = "FUSIONE";
 	
 }

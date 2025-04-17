@@ -32,6 +32,6 @@ public class PaymentSubjectFOEntityGroupedCustom extends PaymentSubjectFOEntityC
 	}
 	public void setProvincie(String provincie) {
 		this.provincie = provincie;
-	}
+	}		
 	
 }

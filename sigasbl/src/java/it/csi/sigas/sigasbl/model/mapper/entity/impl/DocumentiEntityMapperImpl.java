@@ -5,18 +5,24 @@
 package it.csi.sigas.sigasbl.model.mapper.entity.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import it.csi.sigas.sigasbl.model.entity.SigasDepositoCausionale;
 import it.csi.sigas.sigasbl.model.entity.SigasDocumenti;
 import it.csi.sigas.sigasbl.model.mapper.entity.AllegatoEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.AnagraficaSoggettiEntityMapper;
+import it.csi.sigas.sigasbl.model.mapper.entity.DepositoCausionaleEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.DocumentiEntityMapper;
+import it.csi.sigas.sigasbl.model.mapper.entity.ProvinciaEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.StatoArchiviazioneEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.StatoDocumentoEntityMapper;
 import it.csi.sigas.sigasbl.model.mapper.entity.TipoDocumentoEntityMapper;
+import it.csi.sigas.sigasbl.model.repositories.SigasDepositoCausionaleRepository;
+import it.csi.sigas.sigasbl.model.vo.depositocausionale.DepositoCausionaleVO;
 import it.csi.sigas.sigasbl.model.vo.documenti.DocumentiVO;
 
 
@@ -39,7 +45,14 @@ public class DocumentiEntityMapperImpl implements DocumentiEntityMapper {
 	@Autowired
 	private StatoArchiviazioneEntityMapper statoArchiviazioneEntityMapper;
 
+	@Autowired
+	private DepositoCausionaleEntityMapper depositoCausionaleEntityMapper;
 	
+	@Autowired
+	private SigasDepositoCausionaleRepository sigasDepositoCausionaleRepository;
+	
+	@Autowired
+	private ProvinciaEntityMapper provinciaEntityMapper;
 	
 	
 	@Override
@@ -74,6 +87,29 @@ public class DocumentiEntityMapperImpl implements DocumentiEntityMapper {
 		vo.setIdIndex(dto.getIdIndex());
 		vo.setnProtocolloAccertamento(dto.getnProtocolloAccertamento());
 		vo.setAnnoProtocolloAccertamento(dto.getAnnoProtocolloAccertamento());
+		
+		if(vo.getIdDocumento()!=null) {
+			List<SigasDepositoCausionale> sigasDepositoCausionales = this.sigasDepositoCausionaleRepository.findByIdDocumento(Long.valueOf(vo.getIdDocumento()));
+			if(sigasDepositoCausionales!=null && !sigasDepositoCausionales.isEmpty()) {
+				List<DepositoCausionaleVO> depositoCausionaleVOs = new ArrayList<>();
+				Iterator<SigasDepositoCausionale> iteraror = sigasDepositoCausionales.iterator();
+				while(iteraror.hasNext()) {
+					SigasDepositoCausionale sigasDepositoCausionale = iteraror.next();
+					
+					DepositoCausionaleVO depositoCausionaleVO = new DepositoCausionaleVO();
+					depositoCausionaleVO.setImporto(sigasDepositoCausionale.getImporto());
+					depositoCausionaleVO.setAnnoAcccertamento(sigasDepositoCausionale.getAnnoAcccertamento());
+					depositoCausionaleVO.setNumeroAccertamento(sigasDepositoCausionale.getNumeroAccertamento());
+					depositoCausionaleVO.setNumeroDetermina(sigasDepositoCausionale.getNumeroDetermina());
+					depositoCausionaleVO.setIdDepositoCausionale(sigasDepositoCausionale.getIdDepositoCausionale());
+					depositoCausionaleVO.setProvinciaVO(this.provinciaEntityMapper.mapEntityToVO(sigasDepositoCausionale.getSigasProvincia()));
+					
+					depositoCausionaleVOs.add(depositoCausionaleVO);					
+				}
+				vo.setDepositoCausionaleVOs(depositoCausionaleVOs);
+			}
+		}				
+		
 		return vo;
 	}
 
@@ -109,6 +145,10 @@ public class DocumentiEntityMapperImpl implements DocumentiEntityMapper {
 
 		dto.setnProtocolloAccertamento(vo.getnProtocolloAccertamento());
 		dto.setAnnoProtocolloAccertamento(vo.getAnnoProtocolloAccertamento());
+		
+		if(vo.getDepositoCausionaleVOs()!=null && !vo.getDepositoCausionaleVOs().isEmpty()) {
+			dto.setSigasDepositoCausionales(this.depositoCausionaleEntityMapper.mapListVOToListEnttity(vo.getDepositoCausionaleVOs()));
+		}
 			
 		return dto;
 	}

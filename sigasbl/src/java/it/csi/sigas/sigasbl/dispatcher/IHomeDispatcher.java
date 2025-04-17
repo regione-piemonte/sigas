@@ -13,7 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import it.csi.sigas.sigasbl.common.AuthorizationRoles;
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
+import it.csi.sigas.sigasbl.model.entity.custom.SigasStoricoAnagraficaSoggettiCustom;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.StoricoAnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
@@ -36,6 +38,8 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaSoggettoIncorporatoRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaStoricoSoggettiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
@@ -59,6 +63,9 @@ public interface IHomeDispatcher {
 	AnagraficaSoggettoVO ricercaSoggettoByID(Long id);
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
+	AnagraficaSoggettoVO ricercaSoggettoByCode(String codice);	
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
 	List<AnagraficaSoggettoVO> ricercaSoggetti();
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
@@ -75,6 +82,9 @@ public interface IHomeDispatcher {
 	
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	AnagraficaSoggettoVO fusioneSoggetto(FusioneSoggettoRequest fusioneSoggettoRequest, String user);
+	
+	@PreAuthorize(value = AuthorizationRoles.HOME)
+	void cancellaFusioneSoggetto(Long idAnagraficaIncorporante, String user);
 
 	@PreAuthorize(value = AuthorizationRoles.HOME)
 	AnagraficaSoggettoVO associateSoggetto(AssociaSoggettoRequest associaSoggettoRequest, String user);
@@ -184,5 +194,14 @@ public interface IHomeDispatcher {
     
     @PreAuthorize(value = AuthorizationRoles.HOME)
     public boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user);
-
+    
+    @PreAuthorize(value = AuthorizationRoles.HOME)
+    public List<StoricoAnagraficaSoggettoVO> ricercaListaStoricoSoggettoByIdAngaRif(Long idAnagRif);
+    
+    @PreAuthorize(value = AuthorizationRoles.HOME)
+    public List<SigasStoricoAnagraficaSoggettiCustom> ricercaListaStoricoSoggetti(RicercaStoricoSoggettiRequest ricercaStoricoSoggettiRequest);
+    
+    @PreAuthorize(value = AuthorizationRoles.HOME)
+    List<ConsumiPrVO> ricercaSoggettoIncorporato(RicercaSoggettoIncorporatoRequest ricercaSoggettoIncorporatoRequest);
+    
 }

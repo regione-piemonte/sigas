@@ -193,12 +193,26 @@
 		<dependency org="doqui" name="actasrv-client" rev="4.0.0" />
 	
 
-	 
+	 <!--     
 	 <dependency org="others" name="dss-all" rev="5.1">
 			<artifact name="bcprov-jdk15on-1.58" type="jar" />
 			<artifact name="bcpkix-jdk15on-1.58" type="jar" />
-		</dependency>
-		
+	 </dependency>
+	 -->  
+	
+	<dependency org="google" name="gson" rev="2.2.2" transitive="false" >
+    		<artifact name="gson-2.2.2" type="jar" />
+    </dependency>
+    
+    <!-- 
+    <dependency org="others" name="itextpdf" rev="5.5.0">
+			<artifact name="itextpdf-5.5.0" type="jar" />
+	</dependency>
+	
+	<dependency org="others" name="itext" rev="5.0.6">
+			<artifact name="iText-5.0.6" type="jar" />
+	</dependency>
+	--> 		
 
 	</dependencies>
 	

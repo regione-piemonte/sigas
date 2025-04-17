@@ -124,6 +124,9 @@ public class SigasDichConsumi implements Serializable {
 	@Column(name = "totale_dich_origine", nullable = false)
 	private double totaleDichOrigine;
 	
+	@Column(name="selected_import", nullable=true)
+	private Boolean selectedImport;
+	
 	public SigasDichConsumi() {
 	}
 
@@ -366,7 +369,13 @@ public class SigasDichConsumi implements Serializable {
 	public void setTotaleDichOrigine(double totaleDichOrigine) {
 		this.totaleDichOrigine = totaleDichOrigine;
 	}
-	
-	
+
+	public Boolean getSelectedImport() {
+		return selectedImport;
+	}
+
+	public void setSelectedImport(Boolean selectedImport) {
+		this.selectedImport = selectedImport;
+	}
 
 }

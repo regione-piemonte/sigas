@@ -45,6 +45,6 @@ public interface IVersamentiService {
 	
 	void insertVersamentoList(List<ConfermaVersamentoRequest> confermaVersamentoRequestList, String user, String codFiscale);
 	
-	boolean deleteVersamento(Long idVersamento, String user, String codFiscale);
+	boolean deleteVersamento(Long idVersamento, Long idAnag, String user, String codFiscale);
 
 }

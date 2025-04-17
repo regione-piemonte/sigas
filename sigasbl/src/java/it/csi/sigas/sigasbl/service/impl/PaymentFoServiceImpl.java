@@ -3,6 +3,7 @@ package it.csi.sigas.sigasbl.service.impl;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -16,7 +17,9 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.httpclient.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +90,7 @@ import it.csi.sigas.sigasbl.service.IPaymentFoService;
 import it.csi.sigas.sigasbl.service.IUserService;
 import it.csi.sigas.sigasbl.service.IUtilsService;
 import it.csi.sigas.sigasbl.util.CsiLogUtils;
+import it.csi.sigas.sigasbl.util.UtilsDate;
 import it.csi.sigas.sigasbl.model.repositories.CsiLogAuditRepository;
 import it.csi.sigas.sigasbl.model.entity.CsiLogAudit;
 
@@ -94,7 +98,7 @@ import it.csi.sigas.sigasbl.model.entity.CsiLogAudit;
 @Service
 public class PaymentFoServiceImpl implements IPaymentFoService {
 
-	static private final SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy");	
+	private SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy");	
 	
 	@Autowired 
 	private SigasDichVersamentiRepository sigasDichVersamentiRepository;
@@ -318,7 +322,10 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     		Iterator<PaymentSubjectVO> iteratorSoggetti = soggettiVOList.iterator();    		    			
 			while(iteratorSoggetti.hasNext()) {
 				PaymentSubjectVO paymentSubjectVO = iteratorSoggetti.next();
-				paymentSubjectVO.setStatoCarrello(_determinaStatoCarrelloPrensenteInElenco(cartItemsListForCheck, paymentSubjectVO.getId()));				   				
+				paymentSubjectVO.setStatoCarrello(_determinaStatoCarrelloPrensenteInElenco(cartItemsListForCheck, paymentSubjectVO.getId()));
+				if(cartItemsListForCheck!=null && !cartItemsListForCheck.isEmpty()) {
+					paymentSubjectVO.setTipoCarrello(_determinaTipoCarrelloPrensenteInElenco(cartItemsListForCheck, paymentSubjectVO.getId()));
+				}				
     		}    		    		
     	}   	
 
@@ -339,13 +346,27 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 			Iterator<SigasPaymentCart> iteratorCart = cartItemsListForCheck.iterator();			    				
 			while(iteratorCart.hasNext()) {
 				SigasPaymentCart sigasPaymentCart = iteratorCart.next();
-				if(codicePagamento.equals(sigasPaymentCart.getCodicePagamento())) {
+				if(codicePagamento.equals(sigasPaymentCart.getCodicePagamento())) {					
 					return sigasPaymentCart.getFkStatoCarrello();
 				}
 			}    		
 		}    	
     	return output;
-    }
+    } 
+    
+    private String _determinaTipoCarrelloPrensenteInElenco(List<SigasPaymentCart> cartItemsListForCheck, String codicePagamento) {
+    	String output = null;
+    	if(!cartItemsListForCheck.isEmpty()) {
+			Iterator<SigasPaymentCart> iteratorCart = cartItemsListForCheck.iterator();			    				
+			while(iteratorCart.hasNext()) {
+				SigasPaymentCart sigasPaymentCart = iteratorCart.next();
+				if(codicePagamento.equals(sigasPaymentCart.getCodicePagamento())) {					
+					return sigasPaymentCart.getFkTipoCarrello().toString();
+				}
+			}    		
+		}    	
+    	return output;
+    } 
     
 	public PaymentSubjectVO retrieveFoPaymentSubjectDetail(String year, 
 			String idAnag) {
@@ -522,7 +543,8 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 																		  SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_AVVIATO, 
 																		  SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_CREATO_AVVISO_PAGAMENTO,
 																		  year, subject_name, month.intValue(),
-																		  storePaymentCartRequest.getArea());
+																		  storePaymentCartRequest.getArea(),
+																		  cartType);
     	if(cart_items.size() > 0) {
     		throw new BusinessException("Impossibile aggiungere voci ad un carrello per cui sia stato avviato oppure emesso un bollettino di pagamento");
     	}    		
@@ -607,6 +629,44 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 		return ret;
     }
     
+    @Override
+    public List<PaymentCartVO> ricercaCartItemsPerParametri(StorePaymentCartRequest storePaymentCartRequest){
+    	
+    	List<PaymentCartVO> output = null;
+    	
+    	/*************************************************************
+    	 * Variabili
+    	 */
+    	Integer idAnag = storePaymentCartRequest.getIdAnag();
+    	Integer month = storePaymentCartRequest.getMonth();
+    	String year = storePaymentCartRequest.getYear();
+    	String subject_name = storePaymentCartRequest.getSubjectName();
+    	String area = storePaymentCartRequest.getArea();
+    	String cfPiva = storePaymentCartRequest.getCodiceFiscalePIva();
+    	Integer cartType = (storePaymentCartRequest.getType()==null) ? 0 : storePaymentCartRequest.getType();
+    	String email =null;
+    	if(storePaymentCartRequest.getEmail()!=null) {
+    		email = storePaymentCartRequest.getEmail();
+    	}
+    	
+    	List<SigasPaymentCart> cart_items = paymentCartRepository
+											.retrieveCartItemsByYearMonth(getUser().getIdentita().getCodFiscale(),											  	    		   
+																		  SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_AVVIATO, 
+																		  SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_CREATO_AVVISO_PAGAMENTO,
+																		  year, subject_name, month.intValue(),
+																		  storePaymentCartRequest.getArea(),
+																		  cartType);
+    	if(cart_items != null && !cart_items.isEmpty()) 
+    	{
+    		output = new ArrayList<>();
+    		for(SigasPaymentCart cart : cart_items) {        		
+    			output.add(cart2VO(cart));
+        	}
+    	}    	
+    	
+    	return output;
+    }
+    
     @Override    
     public PaymentCartVO insertPaymentCart(StorePaymentCartRequest storePaymentCartRequest) 
     {
@@ -618,7 +678,12 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     	String year = storePaymentCartRequest.getYear();
     	String subject_name = storePaymentCartRequest.getSubjectName();
     	String area = storePaymentCartRequest.getArea();
-    	String cfPiva = storePaymentCartRequest.getCodiceFiscalePIva();    	 
+    	String cfPiva = storePaymentCartRequest.getCodiceFiscalePIva();
+    	Integer cartType = (storePaymentCartRequest.getType()==null) ? 0 : storePaymentCartRequest.getType();
+    	String email =null;
+    	if(storePaymentCartRequest.getEmail()!=null) {
+    		email = storePaymentCartRequest.getEmail();
+    	}
     	
     	if("ERROR".equals(storePaymentCartRequest.getStatus())) 
     	{
@@ -630,7 +695,8 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 																		  SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_AVVIATO, 
 																		  SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_CREATO_AVVISO_PAGAMENTO,
 																		  year, subject_name, month.intValue(),
-																		  storePaymentCartRequest.getArea());
+																		  storePaymentCartRequest.getArea(),
+																		  cartType);
     	if(cart_items.size() > 0) {
     		throw new BusinessException("Per i dati impostati e' gia' presente un carrello pagato o e' gia' stato emesso un bollettino.");
     	}   	
@@ -645,7 +711,10 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 		cart.setSiglaProvincia(storePaymentCartRequest.getArea());
 		cart.setFkProvincia(paymentCartRepository.resolveAreaId(storePaymentCartRequest.getArea()));
 		cart.setCodiceAzienda(storePaymentCartRequest.getSubjectCode());
-		cart.setCfPiva(cfPiva);
+		cart.setCfPiva(cfPiva);		
+		if(email!=null) {
+			cart.setEmail(email);
+		}
 		
 		try {			
 			cart.setImporto(new BigDecimal(storePaymentCartRequest.getAmount().replace(',', '.')));
@@ -701,64 +770,71 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 			clonecart.setFkStatoCarrello(SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_INCOMPLETO);
     		paymentCartRepository.save(clonecart);
     		
-    		SigasPaymentCart cart = new SigasPaymentCart();
-    		cart.setFkStatoCarrello(SigasPaymentCart.STATO_CARRELLO_COMPLETO);
-    		cart.setDataPagamento(new Date());
-    		cart.setDataVersamento(new Date());
-			
-    		/*
-    		List<String> paymentCodeList = paymentCartRepository.getUniquePaymentCode(clonecart.getFkAnagSoggetto(), clonecart.getAnno(), clonecart.getFkUtenteInsert());    		
-    		if(paymentCodeList!=null && !paymentCodeList.isEmpty()) {
-    			boolean flgCheck = false;
-    			Iterator<String> iterator = paymentCodeList.iterator();
-    			while(iterator.hasNext()) {
-    				if(iterator.next().equals(storePaymentCartRequest.getPaymentCode())) {
-    					flgCheck = true;
-    				}
-    			}
-    			if(!flgCheck) {
-    				throw new BusinessException("Impossibile aggiungere voci ad un carrello. PaymentCode inconsistente");
-    			}
-    		}
-    		*/
-    		
+    		//------------------------------------------------------------------------------------------
+    		//La riproposizione del carrello in stato 20 NON è prevista per i DEPOSITI CAUZIONALI
+    		//---------------------------------------------------------------------------------------------
+    		if(!Constants.RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO.equals(clonecart.getFkTipoCarrello()) &&
+    		   !Constants.RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO.equals(clonecart.getFkTipoCarrello())) 
+    		{
+    			
+    			SigasPaymentCart cart = new SigasPaymentCart();
+        		cart.setFkStatoCarrello(SigasPaymentCart.STATO_CARRELLO_COMPLETO);
+        		cart.setDataPagamento(new Date());
+        		cart.setDataVersamento(new Date());
+    			
+        		/*
+        		List<String> paymentCodeList = paymentCartRepository.getUniquePaymentCode(clonecart.getFkAnagSoggetto(), clonecart.getAnno(), clonecart.getFkUtenteInsert());    		
+        		if(paymentCodeList!=null && !paymentCodeList.isEmpty()) {
+        			boolean flgCheck = false;
+        			Iterator<String> iterator = paymentCodeList.iterator();
+        			while(iterator.hasNext()) {
+        				if(iterator.next().equals(storePaymentCartRequest.getPaymentCode())) {
+        					flgCheck = true;
+        				}
+        			}
+        			if(!flgCheck) {
+        				throw new BusinessException("Impossibile aggiungere voci ad un carrello. PaymentCode inconsistente");
+        			}
+        		}
+        		*/    		
 
-            //------------------------------------------------
-            //CR PAGAMENTO REST FUL - CR-REQ-10
-            //------------------------------------------------
-            //cart.setCodicePagamento(paymentCartRepository.getUniquePaymentCodeForInsert(clonecart.getFkAnagSoggetto(), clonecart.getAnno(), clonecart.getFkUtenteInsert()));
-            
-            
-            if(codicePagamentoPrecedenteItem == null || 
-               !clonecart.getCodicePagamento().equalsIgnoreCase(codicePagamentoPrecedenteItem)) 
-            {
-            	codicePagamentoGenerato = paymentCartRepository.getUniquePaymentCodeForInsert(clonecart.getFkAnagSoggetto(), 
-																		            		  clonecart.getAnno(), 
-																		            		  clonecart.getFkUtenteInsert());                	
-            }
-            cart.setCodicePagamento(codicePagamentoGenerato);
-            codicePagamentoPrecedenteItem = clonecart.getCodicePagamento();                                
-            //------------------------------------------------
-            //CR PAGAMENTO REST FUL - CR-REQ-10 - FINE
-            //------------------------------------------------			
-    		
-    		
-			cart.setDataInsert(new Date());
-			cart.setImporto(clonecart.getImporto());
-    		cart.setEmail(clonecart.getEmail());
-    		cart.setFkTipoPagamento(clonecart.getFkTipoPagamento());
-			cart.setFkAnagSoggetto(clonecart.getFkAnagSoggetto());
-			cart.setAnno(clonecart.getAnno());
-			cart.setDenominazioneVersante(clonecart.getDenominazioneVersante());
-			cart.setMese(clonecart.getMese());
-			cart.setFkTipoCarrello(clonecart.getFkTipoCarrello());
-			cart.setFkUtenteInsert(clonecart.getFkUtenteInsert());
-			cart.setSiglaProvincia(clonecart.getSiglaProvincia());
-			cart.setFkProvincia(clonecart.getFkProvincia());
-			cart.setCodiceAzienda(clonecart.getCodiceAzienda());
-			cart.setCfPiva(clonecart.getCfPiva());
-    		
-    		paymentCartRepository.save(cart);
+                //------------------------------------------------
+                //CR PAGAMENTO REST FUL - CR-REQ-10
+                //------------------------------------------------
+                //cart.setCodicePagamento(paymentCartRepository.getUniquePaymentCodeForInsert(clonecart.getFkAnagSoggetto(), clonecart.getAnno(), clonecart.getFkUtenteInsert()));
+                
+                
+                if(codicePagamentoPrecedenteItem == null || 
+                   !clonecart.getCodicePagamento().equalsIgnoreCase(codicePagamentoPrecedenteItem)) 
+                {
+                	codicePagamentoGenerato = paymentCartRepository.getUniquePaymentCodeForInsert(clonecart.getFkAnagSoggetto(), 
+    																		            		  clonecart.getAnno(), 
+    																		            		  clonecart.getFkUtenteInsert());                	
+                }
+                cart.setCodicePagamento(codicePagamentoGenerato);
+                codicePagamentoPrecedenteItem = clonecart.getCodicePagamento();                                
+                //------------------------------------------------
+                //CR PAGAMENTO REST FUL - CR-REQ-10 - FINE
+                //------------------------------------------------    		
+        		
+    			cart.setDataInsert(new Date());
+    			cart.setImporto(clonecart.getImporto());
+        		cart.setEmail(clonecart.getEmail());
+        		cart.setFkTipoPagamento(clonecart.getFkTipoPagamento());
+    			cart.setFkAnagSoggetto(clonecart.getFkAnagSoggetto());
+    			cart.setAnno(clonecart.getAnno());
+    			cart.setDenominazioneVersante(clonecart.getDenominazioneVersante());
+    			cart.setMese(clonecart.getMese());
+    			cart.setFkTipoCarrello(clonecart.getFkTipoCarrello());
+    			cart.setFkUtenteInsert(clonecart.getFkUtenteInsert());
+    			cart.setSiglaProvincia(clonecart.getSiglaProvincia());
+    			cart.setFkProvincia(clonecart.getFkProvincia());
+    			cart.setCodiceAzienda(clonecart.getCodiceAzienda());
+    			cart.setCfPiva(clonecart.getCfPiva());
+        		
+        		paymentCartRepository.save(cart);
+    			
+    		}    		
 		}
     	
 		return new PaymentCartVO();
@@ -840,7 +916,12 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     	
     	String year = storePaymentCartRequest.getYear(); 
 		String subject_name = storePaymentCartRequest.getSubjectName();
-		String codicePagamento = (storePaymentCartRequest==null)?"":storePaymentCartRequest.getPaymentCode();
+		
+		//String codicePagamento = (storePaymentCartRequest == null) ? "" :storePaymentCartRequest.getPaymentCode();
+		String codicePagamento = "";
+		if(storePaymentCartRequest.getPaymentCode() != null) {
+			codicePagamento = storePaymentCartRequest.getPaymentCode();
+		}	
 		
     	String iuv;
     	SigasPaymentCart paymentInfo = null;
@@ -957,10 +1038,14 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
         	BigDecimal total = BigDecimal.ZERO;
     		for(SigasPaymentCart cartItem : cart_items) {
     			total = total.add(cartItem.getImporto());
-    		}
+    		}    		
     		
     		for (SigasPaymentCart cartItem : cart_items) {
+    			
     			SigasTipoCarrello sigasTipoCarrello = sigasTipoCarrelloRepository.findOne(cartItem.getFkTipoCarrello().longValue());
+    			logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> PRIMO CHECK >>>>>>>>> ID TIPO CARRELLO " + sigasTipoCarrello.getIdTipoCarrello());
+    			
+    			
         		SigasTipoVersamento sigasTipoVersamento = null;
         		if(sigasTipoCarrello!=null) {
         			sigasTipoVersamento = sigasTipoVersamentoRepository.findByDenominazioneIgnoreCase(sigasTipoCarrello.getDenominazione());
@@ -972,8 +1057,13 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 										        				String.valueOf(cartItem.getAnno()),
 										        				sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(cartItem.getSiglaProvincia()).getIdProvincia());        		
         		
-        		
-        		if(versamentoEsistente==null) {
+        		if(versamentoEsistente==null && 
+        		   !Constants.RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO.equals((int)sigasTipoCarrello.getIdTipoCarrello()) &&
+        		   !Constants.RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO.equals((int)sigasTipoCarrello.getIdTipoCarrello())
+        		   ) 
+        		{
+        			logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> PRIMO CHECK >>>>>>>>> DENTRO CREAZIONE VERSAMENTO");
+        			
     	    		SigasDichVersamenti versamento = new SigasDichVersamenti();
     	    		
     	    		versamento.setAnnualita(cartItem.getAnno());
@@ -983,10 +1073,11 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     	    		versamento.setImportoComplessivo(total.doubleValue());
     	    		versamento.setNote(cartItem.getNote());
     	    		versamento.setSigasProvincia(sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(cartItem.getSiglaProvincia()));
-    	    		versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findOne(cartItem.getFkAnagSoggetto().longValue()));
+    	    		//versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findOne(cartItem.getFkAnagSoggetto().longValue()));
+    	    		versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findByIdAnag(cartItem.getFkAnagSoggetto().longValue()));
     	    		versamento.setSigasTipoVersamento(sigasTipoVersamento);
     	    		
-    	            logger.info("PaymentFoServiceImpl.updateCartItem saving versamento" + versamento.printAll());
+    	    		logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> PRIMO CHECK >>>>>>>>> SAVE VERSAMENTO " + versamento.printAll());    	            
     	    		versamento = sigasDichVersamentiRepository.save(versamento);
     	    		fkversamento = (int)versamento.getIdVersamento();
         		}
@@ -999,10 +1090,70 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
             	if(fkversamento != null)
                 	cartItem.setFkDichVersamento(fkversamento);
             	
-                logger.info("PaymentFoServiceImpl.updateCartItem saving carts" + cartItem.printAll());
+                logger.info("PaymentFoServiceImpl.updateCartItem saving carts " + cartItem.printAll());
         		paymentCartRepository.save(cartItem);
 			}
     		
+    		//Rileggo per avare una vesrione aggiornata dell'elenco dei carrelli pagati
+    		List<SigasPaymentCart> cart_items_after = paymentCartRepository.findByCodicePagamento(paymentcode);
+    		
+    		SigasTipoCarrello sigasTipoCarrello = sigasTipoCarrelloRepository.findOne(cart_items_after.get(0).getFkTipoCarrello().longValue());    		
+    		if(Constants.RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO.equals((int)sigasTipoCarrello.getIdTipoCarrello()) ||
+    		   Constants.RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO.equals((int)sigasTipoCarrello.getIdTipoCarrello())) 
+         	{
+    			
+    			logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> SECONDO CHECK >>>>>>>>> DENTRO CONTROLLO");
+    			logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> SECONDO CHECK >>>>>>>>> SIZE cart_items_after " + cart_items_after.size());
+    			
+    			//Controllo se tutti gli tems sono in stato 50
+    			boolean checkInserisciVersamento = false;
+    			int numeroCartItemsPagati = 0;    			
+    			for(SigasPaymentCart cartItemAfter : cart_items_after) {
+    				if(cartItemAfter.getFkStatoCarrello()==50) {
+    					numeroCartItemsPagati = numeroCartItemsPagati + 1;
+    					logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> SECONDO CHECK >>>>>>>>> NUMERO CART IN PAGATO " + numeroCartItemsPagati);
+    					if(numeroCartItemsPagati == cart_items_after.size() ) {
+    						checkInserisciVersamento = true;
+    						logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> SECONDO CHECK >>>>>>>>> FLAG checkInserisciVersamento" + checkInserisciVersamento);
+    					}
+    				}
+    			}
+    			if(checkInserisciVersamento) 
+    			{
+        			SigasTipoVersamento sigasTipoVersamento = null;
+            		if(sigasTipoCarrello!=null) {
+            			sigasTipoVersamento = sigasTipoVersamentoRepository.findByDenominazioneIgnoreCase(sigasTipoCarrello.getDenominazione());
+            		}
+        			
+        			SigasDichVersamenti versamento = new SigasDichVersamenti();
+        			versamento.setAnnualita(cart_items.get(0).getAnno());
+    	    		versamento.setDataVersamento(new Date());
+    	    		versamento.setImporto(total.doubleValue());
+    	    		versamento.setMese(subjectFoRepository.findMonthById(cart_items.get(0).getMese()));
+    	    		versamento.setImportoComplessivo(total.doubleValue());
+    	    		versamento.setNote(cart_items.get(0).getNote());
+        			if(cart_items_after.size() > 1) 
+        			{
+        	    		//Tutte le province -> CODICE ZZ
+        	    		versamento.setSigasProvincia(sigasProvinciaRepository
+        	    									 .findBySiglaProvinciaAndFineValiditaIsNull(Constants.RICHIESTA_DEP_CAUSIONALE_CODICE_TUTTE_PROVINCE));
+        	    		
+        			} else {
+        				versamento.setSigasProvincia(sigasProvinciaRepository.findBySiglaProvinciaAndFineValiditaIsNull(cart_items_after.get(0).getSiglaProvincia()));
+        			}
+        			//versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findOne(cart_items_after.get(0).getFkAnagSoggetto().longValue()));
+        			versamento.setSigasAnagraficaSoggetti(sigasAnagraficaSoggettiRepository.findByIdAnag(cart_items_after.get(0).getFkAnagSoggetto().longValue()));
+    	    		versamento.setSigasTipoVersamento(sigasTipoVersamento);
+    	    		
+    	    		logger.info("PaymentFoServiceImpl.updateCartItem >>>>>>>>>>>>>>> SECONDO CHECK >>>>>>>>> SAVE VERSAMENTO " + versamento.printAll());    	            
+    	    		versamento = sigasDichVersamentiRepository.save(versamento);
+    	    		fkversamento = (int)versamento.getIdVersamento();
+    	    		for(SigasPaymentCart cartItem : cart_items_after) {
+    	    			cartItem.setFkDichVersamento(fkversamento);
+    	    			paymentCartRepository.save(cartItem);
+    	    		}    				
+    			}    			
+         	}
     	}
     	
     	if(!finalizePayment) {
@@ -1100,7 +1251,10 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     }
 
 
-	static public PaymentCartVO cart2VO(SigasPaymentCart cart) {
+	public static PaymentCartVO cart2VO(SigasPaymentCart cart) {
+		
+		SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy");
+		
 		PaymentCartVO cartItem = new PaymentCartVO();
 		
 		cartItem.setId(cart.getIdCarrello());
@@ -1118,7 +1272,10 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 		cartItem.setArea(cart.getSiglaProvincia());
 		cartItem.setIdAnag(cart.getFkAnagSoggetto());
 		cartItem.setMonth(cart.getMese());
-		cartItem.setAmount(String.format("%.2f", cart.getImporto()));
+		
+		//cartItem.setAmount(String.format("%.2f", cart.getImporto()));
+		cartItem.setAmount(cart.getImporto().toString());
+		
 		cartItem.setType(cart.getFkTipoCarrello());
 		cartItem.setCodiceFiscalePIva(cart.getCfPiva());
 		cartItem.setIuv(cart.getIuv());
@@ -1162,7 +1319,9 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 			createDebtPositionRequest = ppayRestCreateDebtPositionRequestMapper.mapCreateDebtRequest(cart_items, 
 																									 getTaxCode(), 
 																									 oggettoPagamentoPpay.getValoreString(), 
-																									 codiceFiscaleEnteCreditore.getValoreString());
+																									 codiceFiscaleEnteCreditore.getValoreString(),
+																									 null,
+																									 null);
 			
 			CreateDebtPositionResponse createDebtPositionResponse = piemontePayRestApi.createDebtPosition(createDebtPositionRequest);
 			String identificativoPagamento = createDebtPositionResponse.getIdentificativoPagamento();
@@ -1194,13 +1353,102 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 		GeneraAvvisoPagamentoResponse output = null;
 		try {
 			output = piemontePayRestApi.generaAvvisoPagamento(iuv);
+			if(output != null) {
+				return output.getPaymentnotice();
+			}
 		} catch (IntegrationException e) {
 			logger.error("downloadAvvisoPagamento: IUV " + iuv);
 		}
-		return output.getPaymentnotice();
+		return null;
 	}
 	
 	@Override
+	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest, Integer annoAccertamento, String numeroAccertamento) {		
+		GeneraAvvisoPagamentoResponse output = null;
+		try {
+			String year = storePaymentCartRequest.getYear(); 
+			String subject_name = storePaymentCartRequest.getSubjectName();
+			String codicePagamento = (storePaymentCartRequest.getPaymentCode()==null)?"":storePaymentCartRequest.getPaymentCode();
+	    	List<SigasPaymentCart> cart_items = paymentCartRepository.retrieveCartItems(getUser().getIdentita().getCodFiscale(),
+																		    			SigasPaymentCart.STATO_CARRELLO_APERTO, 
+																		    			SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO,
+																		    			year,
+																		    			subject_name,
+																		    			codicePagamento);
+	    	
+	    	if(cart_items.size() == 0 || storePaymentCartRequest.getPaymentType() == null) {
+	    		return null;
+	    	}
+	    	
+	    	//SIGAS-TASK#113
+	    	//--------------------------------------------------------
+	    	SigasCParametro oggettoPagamentoPpay = null;
+	    	if(Constants.RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO.equals(storePaymentCartRequest.getType()) || 
+	    	   Constants.RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO.equals(storePaymentCartRequest.getType())) 
+	    	{
+	    		oggettoPagamentoPpay = sigasCParametroRepository.findByDescParametro("oggettoPagamentoPpay_dep_cau");
+	    	} else {
+	    		oggettoPagamentoPpay = sigasCParametroRepository.findByDescParametro("oggettoPagamentoPpay");
+	    	}
+	    	
+	    	//OLD CODE
+	    	//SigasCParametro oggettoPagamentoPpay = sigasCParametroRepository.findByDescParametro("oggettoPagamentoPpay");
+	    	
+	    	//SIGAS-TASK#113
+	    	//--------------------------------------------------------
+	    	
+			SigasCParametro codiceFiscaleEnteCreditore = sigasCParametroRepository.findByDescParametro("codiceFiscaleEnteCreditore");
+			
+			CreateDebtPositionRequest createDebtPositionRequest = ppayRestCreateDebtPositionRequestMapper.mapCreateDebtRequest(cart_items, 
+																														   	   getTaxCode(), 
+																															   oggettoPagamentoPpay.getValoreString(), 
+																															   codiceFiscaleEnteCreditore.getValoreString(),
+																															   annoAccertamento,
+																															   numeroAccertamento);
+			
+			CreateDebtPositionResponse createDebtPositionResponse = piemontePayRestApi.createDebtPosition(createDebtPositionRequest);
+			String identificativoPagamento = createDebtPositionResponse.getIdentificativoPagamento();
+			String iuv = createDebtPositionResponse.getIuv();
+			String codiceAvviso = createDebtPositionResponse.getCodiceAvviso();
+			boolean isOk = Constants.COD_ESITO_PAGAMENTO_PPAY_OK.equals(createDebtPositionResponse.getCodiceEsito()) || 
+						   Integer.parseInt(createDebtPositionResponse.getCodiceEsito()) == 0;
+			insertCartItemIUV(identificativoPagamento,
+							  iuv, 
+							  codiceAvviso,
+							  isOk? SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_NOTIFICATO : SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_INCOMPLETO);
+			
+			output = piemontePayRestApi.generaAvvisoPagamento(iuv);
+			if(output != null) {
+				List<SigasPaymentCart> cartItemsToUpdate = paymentCartRepository.findByCodicePagamento(identificativoPagamento);
+				for (SigasPaymentCart sigasPaymentCart : cartItemsToUpdate) {
+					sigasPaymentCart.setFkStatoCarrello(SigasPaymentCart.STATO_CARRELLO_PAGAMENTO_CREATO_AVVISO_PAGAMENTO);
+					sigasPaymentCart.setEmail(storePaymentCartRequest.getEmail());
+					sigasPaymentCart.setFkTipoPagamento(storePaymentCartRequest.getPaymentType());
+					sigasPaymentCart.setDataPagamento(null);
+					paymentCartRepository.save(sigasPaymentCart);
+				}
+			}
+			
+			// Verifica pososizione scadute
+	        executorServiceProvider.getExecutorService().submit(avvisoPagamentoService);
+			
+		} catch (IntegrationException e) {
+			logger.error("Si e' verificato un errore in fase di creazione bollettino.");			
+		}
+		
+		if(output != null) {
+			return output.getPaymentnotice();
+		} else {
+			return null;
+		}
+		//return output.getPaymentnotice();
+	}
+	
+	@Override
+	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest) {
+		return this.generaAvvisoPagamento(storePaymentCartRequest, null, null);
+	}
+	/*
 	public byte[] generaAvvisoPagamento(StorePaymentCartRequest storePaymentCartRequest) {		
 		GeneraAvvisoPagamentoResponse output = null;
 		try {
@@ -1256,7 +1504,8 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
 			logger.error("downloadAvvisoPagamento: IUV ");
 		}
 		return output.getPaymentnotice();
-	}	
+	}
+	*/	
 	
 	@Override
 	public RicevutaPagamento previewRicevutaPagamento(String iuv) {
@@ -1331,11 +1580,19 @@ public class PaymentFoServiceImpl implements IPaymentFoService {
     	
     	jasperParam.put("regione", enteBeneficiario.getValoreString());
 		jasperParam.put("cfEnte", codiceFiscaleEnteCreditore.getValoreString());		
-		jasperParam.put("importoPagato", importoTotale.setScale(2, RoundingMode.HALF_UP).toString());
+		jasperParam.put("importoPagato", importoTotale.setScale(2, RoundingMode.HALF_UP).toString().replace(".", ","));
 		jasperParam.put("codiceAvviso", cart.getCodicePagamento());
 		jasperParam.put("iuv", cart.getIuv());
 		jasperParam.put("ragioneSociale", cart.getDenominazioneVersante());
-		jasperParam.put("cfPagatore", cart.getCfPiva());    	
+		jasperParam.put("cfPagatore", cart.getCfPiva());
+		
+		String dataPagamento = "";
+		if(cart.getDataPagamento()!=null) {
+			String pattern = "dd-MM-yyyy";		
+			DateFormat df = new SimpleDateFormat(pattern);
+			dataPagamento = df.format(cart.getDataPagamento());
+		}		
+		jasperParam.put("dataPagamento", dataPagamento);
     	
     	try {
 			export = iUtilsService.printReportPDF(Constants.RICEVUTA_PAGAMENTO_COD_REPORT, jasperParam, null);

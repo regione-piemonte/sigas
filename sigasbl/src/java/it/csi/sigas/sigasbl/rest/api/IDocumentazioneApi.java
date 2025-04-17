@@ -52,8 +52,7 @@ public interface IDocumentazioneApi {
 	@Path("/salvaDocumentazioneBO")
 	@Consumes("multipart/form-data")
 	public Response salvaDocumentazioneBO(MultipartFormDataInput input)  throws IOException;
-	
-	
+		
 	
 	@POST
 	@Path("/protocollaLetteraRisp")
@@ -83,7 +82,7 @@ public interface IDocumentazioneApi {
 	@POST
 	@Path("/salvaDocumentazione")
     @Consumes("multipart/form-data")
-	public Response salvaDocumentazione(MultipartFormDataInput input) throws IOException, BusinessException, ServiceException ;
+	public Response salvaDocumentazione(MultipartFormDataInput input) throws IOException, BusinessException, ServiceException;
 
 
 	@GET
@@ -102,9 +101,7 @@ public interface IDocumentazioneApi {
 	@Path("/getAllegato/{idDocumento}/{nomeFileAllegato}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	Response getAllegato(@Valid @PathParam("idDocumento") @NotNull(message = "idDocumento non deve essere null") String idDocumento,
-			@Valid @PathParam("nomeFileAllegato") @NotNull(message = "nomeFileAllegato non deve essere null") String nomeFileAllegato);
-
-	
+			@Valid @PathParam("nomeFileAllegato") @NotNull(message = "nomeFileAllegato non deve essere null") String nomeFileAllegato);	
 
 
 

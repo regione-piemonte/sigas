@@ -184,6 +184,7 @@ public class XSRFProtectionFilter implements Filter {
 
 		Cookie c = new Cookie(XSRF_COOKIE_NAME, token);
 		c.setPath("/");
+		c.setSecure(true);
 
 		hresp.addCookie(c);
 

@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import it.csi.sigas.sigasbl.common.Constants;
 import it.csi.sigas.sigasbl.integration.epay.mapper.PPayRestCreateDebtPositionRequestMapper;
 import it.csi.sigas.sigasbl.integration.epay.rest.ppay.RequestObjects.ComponentePagamento;
 import it.csi.sigas.sigasbl.integration.epay.rest.ppay.RequestObjects.CreateDebtPositionRequest;
@@ -39,7 +40,9 @@ public class PPayRestCreateDebtPositionRequestMapperImpl implements PPayRestCrea
 	public CreateDebtPositionRequest mapCreateDebtRequest(List<SigasPaymentCart> cart, 
 														  String cf, 
 														  String descrizioneCausaleVersamento, 
-														  String cfEnte) 
+														  String cfEnte,
+														  Integer annoAccertamento,
+														  String numeroAccertamento) 
 	{
 		CreateDebtPositionRequest createDebtPositionRequest = new CreateDebtPositionRequest();
 		
@@ -70,29 +73,70 @@ public class PPayRestCreateDebtPositionRequestMapperImpl implements PPayRestCrea
 		createDebtPositionRequest.setNome(sigasAnagraficaSoggetti.getDenominazione());
 		
 		//Email pagatore
-		createDebtPositionRequest.setEmail(cartInfo.getEmail());
+		if(cartInfo.getEmail()!=null && cartInfo.getEmail().length() > 0) {
+			createDebtPositionRequest.setEmail(cartInfo.getEmail());
+		}		
 				
 		//Identificativo pagamento
 		createDebtPositionRequest.setIdentificativoPagamento(cartInfo.getCodicePagamento());		
 		
 		//Importo Totale
 		BigDecimal totalAmount = BigDecimal.ZERO;		
-		totalAmount.setScale(2, RoundingMode.HALF_UP);		
+		//totalAmount.setScale(2, RoundingMode.HALF_UP);		
 		
 		//Note		
-		String notePerIlPagatore = cartInfo.getCodiceAzienda(); 
-		for(SigasPaymentCart sigasRSoggRata : cart) {
-			notePerIlPagatore += " - " + sigasRSoggRata.getSiglaProvincia() + ", " + 
-								 sigasRSoggRata.getMese() + "/" + cartInfo.getAnno() + ": " + 
-								 sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP);
-			totalAmount = totalAmount.add(sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP));
+		String notePerIlPagatore = cartInfo.getCodiceAzienda();
+		if(Constants.RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO.equals(cart.get(0).getFkTipoCarrello()) || 
+		   Constants.RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO.equals(cart.get(0).getFkTipoCarrello()) ) 
+		{
+			for(SigasPaymentCart sigasRSoggRata : cart) {				
+				//totalAmount = totalAmount.add(sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP));
+				totalAmount = totalAmount.add(sigasRSoggRata.getImporto());
+			}
+			SigasPaymentCart cartItem = cart.get(0);
+			if(cart.size() > 1) {
+				String importoString = totalAmount.setScale(2).toString().replace(".",",");
+				notePerIlPagatore += " -  Tutte le province, " + cartInfo.getAnno() + ": " + importoString;
+			} else {
+				String importoString = cartItem.getImporto().setScale(2).toString().replace(".",",");
+				notePerIlPagatore += " - " + cartItem.getSiglaProvincia() + ", " + cartInfo.getAnno() + ": " + 
+									 importoString;
+			}
 			
 			//Componenti Accertamento setup
-			ComponentePagamento componentePagamento = getComponentePagamentoFromCartItem(sigasRSoggRata, descrizioneCausaleVersamento);
+			//cartItem.setImporto(totalAmount);
+			Integer progressivoComponente = 1;
+			cartItem.setImporto(totalAmount.setScale(2));
+			ComponentePagamento componentePagamento = getComponentePagamentoFromCartItem(cartItem, descrizioneCausaleVersamento, 
+																						 annoAccertamento, numeroAccertamento,
+																						 progressivoComponente);
 			if(componentePagamento!=null) {
 				componentePagamentoList.add(componentePagamento);
-			}			
+			}
+		} else {
+			Integer progressivoComponente = 0;
+			for(SigasPaymentCart sigasRSoggRata : cart) {
+				
+				progressivoComponente = progressivoComponente + 1;
+				
+				notePerIlPagatore += " - " + sigasRSoggRata.getSiglaProvincia() + ", " + 
+									 sigasRSoggRata.getMese() + "/" + cartInfo.getAnno() + ": " + 
+									 sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP);
+				totalAmount = totalAmount.add(sigasRSoggRata.getImporto().setScale(2, RoundingMode.HALF_UP));
+				
+				//Componenti Accertamento setup				
+				ComponentePagamento componentePagamento = getComponentePagamentoFromCartItem(sigasRSoggRata, descrizioneCausaleVersamento, 
+																							 annoAccertamento, numeroAccertamento,
+																							 progressivoComponente);
+				/*
+				if(componentePagamento!=null) {
+					componentePagamentoList.add(componentePagamento);
+				}
+				*/
+							
+			}
 		}
+		
 		createDebtPositionRequest.setImporto(totalAmount);
 		
 		//Note
@@ -112,41 +156,54 @@ public class PPayRestCreateDebtPositionRequestMapperImpl implements PPayRestCrea
 		}				
 		
 		return createDebtPositionRequest;
-	}
+	}	
 	
 	private SigasCParametro getParametroByDescrizione(String descrizione) {
 		return sigasCParametroRepository.findByDescParametro(descrizione);
 	}
 	
-	private ComponentePagamento getComponentePagamentoFromCartItem(SigasPaymentCart cart, String descrizioneCausaleVersamento) {
+	private ComponentePagamento getComponentePagamentoFromCartItem(SigasPaymentCart cart, String descrizioneCausaleVersamento, 
+																   Integer annoAccertamento, String numeroAccertamento,
+																   Integer progressivoComponente) 
+	{
 		
 		ComponentePagamento componentePagamento = null;
 		
-		if(cart != null || descrizioneCausaleVersamento != null) {
+		//if(cart != null && cart.getFkDichVersamento()!=null) {
+		if(cart != null) {
 			
-			//Componenti Pagamento [NON obbligatorio]
+			//Componenti Pagamento [NON obbligatorio]			
+			componentePagamento = new ComponentePagamento();
+			String annualita = null;
 			if(cart.getFkDichVersamento()!=null) {
-				componentePagamento = new ComponentePagamento();
-				String annualita = sigasDichVersamentiRepository.findById(Long.valueOf(cart.getFkDichVersamento())).getAnnualita();
-				
-				//Anno accertamento
-				componentePagamento.setAnnoAccertamento(Integer.valueOf(annualita));
-				
-				//Causale
-				componentePagamento.setCausale(descrizioneCausaleVersamento);
-				
-				//Dati Specifici Riscossione [DA DEFINIRE]
-				//componentePagamento.setDatiSpecificRiscossione("");
-				
-				//Importo
-				componentePagamento.setImporto(cart.getImporto());
-				
-				//Numero accertamento [DA DEFINIRE]
-				//componentePagamento.setNumeroAccertamento("");
-				
-				//Progressivo [DA DEFINIRE]
-				//componentePagamento.setProgessivo(null);
+				annualita = sigasDichVersamentiRepository.findById(Long.valueOf(cart.getFkDichVersamento())).getAnnualita();
+			}			
+			if(annoAccertamento != null) {
+				annualita = annoAccertamento.toString();
 			}
+			
+			//Anno accertamento
+			if(annualita!=null) {
+				componentePagamento.setAnnoAccertamento(Integer.valueOf(annualita));
+			}			
+			
+			//Causale
+			componentePagamento.setCausale((descrizioneCausaleVersamento!=null) ? descrizioneCausaleVersamento : "");
+			
+			//Dati Specifici Riscossione [DA DEFINIRE]
+			//componentePagamento.setDatiSpecificRiscossione("");
+			
+			//Importo
+			componentePagamento.setImporto(cart.getImporto().setScale(2));
+			
+			//Numero accertamento
+			if(numeroAccertamento!=null) {
+				componentePagamento.setNumeroAccertamento(numeroAccertamento);
+			}				
+			
+			//Progressivo [DA DEFINIRE]
+			componentePagamento.setProgressivo(progressivoComponente);
+			
 		}	
 		
 		return componentePagamento;

@@ -40,7 +40,7 @@ public class UserDetailsService implements ShibbolethDetailService {
 		Application applicationOrch = null;
 
 		try {
-			identitaOrch = IrideServFacadeImpl.getIdentitaFromToken(identityDetails.getIdentity());
+			identitaOrch = IrideServFacadeImpl.getIdentitaFromToken((identityDetails != null ? identityDetails.getIdentity() : null));
 
 			applicationOrch = new Application(irideAPP);
 

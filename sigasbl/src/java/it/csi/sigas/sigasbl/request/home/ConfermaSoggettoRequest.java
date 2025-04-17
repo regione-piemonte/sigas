@@ -16,6 +16,10 @@ public class ConfermaSoggettoRequest implements Serializable{
 	
 	@NotNull(message = "soggetto non deve essere vuoto")
 	private AnagraficaSoggettoVO soggetto;
+	
+	private String annualita;
+	
+	private String ownerOperazione;
 
 	public AnagraficaSoggettoVO getSoggetto() {
 		return soggetto;
@@ -24,7 +28,21 @@ public class ConfermaSoggettoRequest implements Serializable{
 	public void setSoggetto(AnagraficaSoggettoVO soggetto) {
 		this.soggetto = soggetto;
 	}
-	
-	
+
+	public String getAnnualita() {
+		return annualita;
+	}
+
+	public void setAnnualita(String annualita) {
+		this.annualita = annualita;
+	}
+
+	public String getOwnerOperazione() {
+		return ownerOperazione;
+	}
+
+	public void setOwnerOperazione(String ownerOperazione) {
+		this.ownerOperazione = ownerOperazione;
+	}	
 
 }

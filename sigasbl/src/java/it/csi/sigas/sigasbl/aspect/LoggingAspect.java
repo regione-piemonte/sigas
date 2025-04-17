@@ -4,6 +4,7 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.aspect;
 
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Random;
 
@@ -29,13 +30,15 @@ import it.csi.util.performance.StopWatch;
 public class LoggingAspect {
 
 	private static Logger logger = Logger.getLogger(Constants.COMPONENT_NAME + ".tracer");
-	private static Random random;
+	//private static Random random;
+	private static SecureRandom random;
 	private static ObjectMapper mapper;
 	private StopWatch stopWatch = null;
 	
 	{
 		mapper = new ObjectMapper();
-		random = new Random();
+		//random = new Random();
+		random = new SecureRandom();
 	}
 
 	@Value("${app.devmode:false}")
@@ -111,18 +114,11 @@ public class LoggingAspect {
 	private Object logInputOutput(String sourceType, ProceedingJoinPoint joinPoint, boolean logInput, boolean logOutput, boolean measureTiming) throws Throwable {
 
 		final String IDENTATION_PARAM = "aspectLogIdentationLevel";
-//		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
 		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = null;
 		if (requestAttributes != null)
 			request = ((ServletRequestAttributes) requestAttributes).getRequest();
-		
-//		Integer identationLevel = (Integer) request.getAttribute(IDENTATION_PARAM);
-//		if (identationLevel == null)
-//			identationLevel = 0;
-//		String ray = getRequestRay(request);
-//
-//		request.setAttribute(IDENTATION_PARAM, identationLevel + 1);
 		
 		Integer identationLevel = 0;
 		if (request != null && request.getAttribute(IDENTATION_PARAM) != null)
@@ -243,7 +239,10 @@ public class LoggingAspect {
 		// AopUtils.getTargetClass(joinPoint.getTarget())
 
 		if (AopUtils.isJdkDynamicProxy(proxy)) {
-			while ((AopUtils.isJdkDynamicProxy(proxy))) {
+			//while ((AopUtils.isJdkDynamicProxy(proxy))) {
+			if((AopUtils.isJdkDynamicProxy(proxy)) && 
+			   ((Advised) proxy).getTargetSource().getTarget() != null) 
+			{
 				return getTargetObject(((Advised) proxy).getTargetSource().getTarget());
 			}
 			return proxy.getClass();
@@ -272,7 +271,8 @@ public class LoggingAspect {
 		}		
 		
 		if (ray == null) {
-			ray = String.valueOf(Double.valueOf(Math.floor(100000 + random.nextDouble() * 800000)).intValue());
+			//ray = String.valueOf(Double.valueOf(Math.floor(100000 + random.nextDouble() * 800000)).intValue());
+			ray = String.valueOf(Math.floor(100000 + random.nextDouble() * 800000));
 			if(request!=null) {
 				request.setAttribute("aspectLogRequestRay", ray);
 			}

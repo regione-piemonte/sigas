@@ -68,10 +68,7 @@ import it.doqui.acta.acaris.managementservice.ManagementServicePort;
 
 @Service
 public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl implements AcarisDocumentService
-{
-
-//	public static final String LOGGER_PREFIX = DoquiConstants.LOGGER_PREFIX + ".integration";    
-//	private static Logger log = Logger.getLogger(LOGGER_PREFIX);	
+{	
 	private static Logger log = Logger.getLogger(AcarisDocumentServiceImpl.class);
 
 	private DocumentServicePort documentService;
@@ -341,7 +338,8 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
     	
 	}
 	
-	private AcarisContentStreamType creaContentStream(byte[] stream, String fileName, String mimeType)
+	//private AcarisContentStreamType creaContentStream(byte[] stream, String fileName, String mimeType)
+	private AcarisContentStreamType creaContentStream(byte[] stream, String fileName)
 	{
 		String method = "creaContentStream";
 		log.debug(method + ". BEGIN");
@@ -350,19 +348,17 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 
 		
 		//non necessario per implementazione WS
-//		contentStream.setStream(stream);
 		String estensioneFile = fileName.substring(fileName.lastIndexOf('.')+1);
 		contentStream.setFilename(fileName);			
 		
 		log.info(method + ">>>>>>MARTS FILE NAME: " + fileName);
-		log.info(method + ">>>>>>MARTS ESTENSIONE FILE: " + estensioneFile);
+		log.info(method + ">>>>>>MARTS ESTENSIONE FILE: " + estensioneFile);		
 		
-		mimeType=DocumentUtils.getMimeTypeFomFilename(fileName, estensioneFile);		
-		contentStream.setMimeType(EnumMimeTypeType.fromValue(mimeType));		
+		String mimeTypeCalculate = DocumentUtils.getMimeTypeFomFilename(fileName, estensioneFile);		
+		contentStream.setMimeType(EnumMimeTypeType.fromValue(mimeTypeCalculate));		
 		
 		final InputStream iS = new ByteArrayInputStream(stream);
-		final OutputStream oS = new ByteArrayOutputStream(stream.length);
-		
+		final OutputStream oS = new ByteArrayOutputStream(stream.length);		
 		
 		
 		javax.activation.DataSource a = new javax.activation.DataSource() {
@@ -622,7 +618,7 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 			
 			datiCreazione.setAllegato(false);
 			datiCreazione.setParentFolderId(folderId);
-			if(documentoElettronicoActa.getNumeroAllegati() > 0){
+			if(documentoElettronicoActa != null && documentoElettronicoActa.getNumeroAllegati() > 0){
 				GruppoAllegatiPropertiesType gruppoAllegati = new GruppoAllegatiPropertiesType();
 			    gruppoAllegati.setNumeroAllegati(documentoElettronicoActa.getNumeroAllegati());
 			    gruppoAllegati.setDataInizio(DateFormat.getCurrentDate());
@@ -635,12 +631,7 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
 		
 		datiDocumentoElettronico(datiCreazione, vitalRecordCodeType, idStatoDiEfficacia, idFormaDocumentaria, numeroProtocolloPadre, pkAllegato, documentoElettronicoActa, isProtocollazioneInUscitaSenzaDocumento);
 	
-		try {
-			
-			if(datiCreazione != null){
-//				String datiCreazioneXml = XmlSerializer.objectToXml(datiCreazione);
-//				log.debug(method + ". datiCreazione\n " + datiCreazioneXml);
-			}
+		try {			
 			
 			identificatoreDocumento = getDocumentService().creaDocumento(repositoryId, principalId, EnumTipoOperazione.ELETTRONICO, datiCreazione);
 			if(identificatoreDocumento == null){
@@ -862,7 +853,8 @@ public class AcarisDocumentServiceImpl extends CommonManagementServiceImpl imple
           	contenutoFisicoPropertiesType.setSbustamento(false);        
           	
           	contenuti[0].setPropertiesContenutoFisico(contenutoFisicoPropertiesType);
-          	AcarisContentStreamType contentStream = creaContentStream(documentoElettronicoActa.getStream(), documentoElettronicoActa.getNomeFile(), documentoElettronicoActa.getMimeType());          	
+          	//AcarisContentStreamType contentStream = creaContentStream(documentoElettronicoActa.getStream(), documentoElettronicoActa.getNomeFile(), documentoElettronicoActa.getMimeType());
+          	AcarisContentStreamType contentStream = creaContentStream(documentoElettronicoActa.getStream(), documentoElettronicoActa.getNomeFile());
           	
           	contenuti[0].setStream(contentStream);
           	contenuti[0].setTipo(EnumStreamId.PRIMARY);

@@ -6,10 +6,12 @@ package it.csi.sigas.sigasbl.model.repositories;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import it.csi.sigas.sigasbl.model.entity.SigasAnagraficaSoggetti;
 import it.csi.sigas.sigasbl.model.entity.SigasDichVersamenti;
@@ -31,11 +33,11 @@ public interface SigasDichVersamentiRepository extends CrudRepository<SigasDichV
 	@Query("SELECT DISTINCT a.annualita FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id order by a.annualita desc ")
 	List<String> findDistinctBySigasAnagraficaSoggettiIdAnag(@Param("id")Long id);
 	
-	@Query("SELECT DISTINCT a.sigasProvincia FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id ORDER BY a.sigasProvincia.siglaProvincia ASC")
+	@Query("SELECT DISTINCT a.sigasProvincia FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id AND a.sigasProvincia.siglaProvincia NOT LIKE 'ZZ' ORDER BY a.sigasProvincia.siglaProvincia ASC")
 	List<SigasProvincia> findDistinctProvBySigasAnagraficaSoggettiIdAnag(@Param("id")Long id);
 
-	@Query("SELECT DISTINCT a.mese FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id"
-			+ " and a.annualita = :annualita")
+	@Query("SELECT DISTINCT a.mese FROM SigasDichVersamenti a where a.sigasAnagraficaSoggetti.idAnag = :id "
+		+ " and a.annualita = :annualita and a.sigasTipoVersamento.denominazione NOT LIKE 'Deposito Cauzionale%'")
 	List<String> findDistinctMonthBySigasAnagraficaSoggettiIdAnag(@Param("id")Long id, @Param("annualita") String annualita);
 
 	List<SigasDichVersamenti> findBySigasAnagraficaSoggettiIdAnagAndAnnualitaAndMeseAndSigasTipoVersamentoIdTipoVersamentoAndSigasProvinciaIdProvincia(
@@ -88,5 +90,13 @@ public interface SigasDichVersamentiRepository extends CrudRepository<SigasDichV
 	
 	@Query("SELECT a FROM SigasDichVersamenti a where a.idVersamento = :id")
 	SigasDichVersamenti findById(@Param("id")Long id);
+	
+	@Modifying(clearAutomatically = true)
+    //@Transactional
+	@Query(value = "UPDATE sigas_dich_versamenti "
+				 + "SET mod_user = null, "
+				 + "mod_date = null "
+				 + "WHERE id_anag = :idFusione AND mod_user LIKE 'FUSIONE'", nativeQuery = true)	
+	void ripristinoModUserDopoCancellazioneFusione (@Param("idFusione")Long idFusione);
 
 }

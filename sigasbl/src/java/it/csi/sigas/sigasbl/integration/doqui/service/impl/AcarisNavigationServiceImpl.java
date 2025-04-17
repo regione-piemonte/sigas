@@ -86,11 +86,12 @@ public class AcarisNavigationServiceImpl extends CommonManagementServiceImpl imp
         try{
         	//fascicolo.getObjectId() -> l'objectId dell'aggregazione(fascicolo) che dovrai 
         	//usare come destinazione del doc della reg in PARTENZA
+        	//fascicolo contiene anche un array di properies relative al fascicolo (fascicolo.getProperties()) 
+    		//che potresti visualizzare in fase di debug per verifica ad esempio codice, iggetto datacreazione ...
         	fascicolo = getNavigationService().getFolderParent(repositoryId, idFascicolo , principalId, filter); 
         	if (fascicolo!=null){  
-        		log.debug(method + ". Il fascicolo esiste");
-        		//fascicolo contiene anche un array di properies relative al fascicolo (fascicolo.getProperties()) 
-        		//che potresti visualizzare in fase di debug per verifica ad esempio codice, iggetto datacreazione ... 
+        		log.debug(method + ". Il fascicolo esiste");        		
+        		return fascicolo.getObjectId();
 		    }
         }catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx)
         {
@@ -104,7 +105,7 @@ public class AcarisNavigationServiceImpl extends CommonManagementServiceImpl imp
 		{
 			log.debug(method + ". END");			
 		}
-        return fascicolo.getObjectId();
+        return null;
 	}
 
 	public ObjectResponseType recuperaChildren(ObjectIdType repositoryId, PrincipalIdType principalId, ObjectIdType objectId, int index) throws IntegrationException{
@@ -120,9 +121,14 @@ public class AcarisNavigationServiceImpl extends CommonManagementServiceImpl imp
         
         try{
         	children = getNavigationService().getChildren(repositoryId, objectId, principalId, filter, null, null); 
-        	if (children!=null){ 
+        	if (children!=null){
+        		
         		log.debug(method + ". Il children esiste");
-	    }
+        		
+        		if (children.getObjectsLength()>index) {
+                    response = children.getObjects(index);        	
+                }
+        	}
         }catch (it.doqui.acta.actasrv.util.acaris.wrapper.exception.AcarisException acEx) 
 		{					
         	throw logAcarisExceptionLight(method, acEx);			
@@ -135,11 +141,12 @@ public class AcarisNavigationServiceImpl extends CommonManagementServiceImpl imp
 		{
 			log.debug(method + ". END");			
 		}   
-        
+        /*
         if (children.getObjectsLength()>index) {
             response = children.getObjects(index);        	
         }
-         return response;
+        */
+        return response;
 	}	
 	
 	public PagingResponseType recuperaDescendants(ObjectIdType repositoryId, PrincipalIdType principalId, ObjectIdType objectId, Integer depth) throws IntegrationException{

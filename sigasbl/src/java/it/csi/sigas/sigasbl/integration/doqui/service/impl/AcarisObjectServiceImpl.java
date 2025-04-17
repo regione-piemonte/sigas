@@ -741,7 +741,12 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
         qctIndiceClassificazione.setPropertyName("dbKey");
         String resultIndiceClassificazione = null;
         try {
-            String dbKey = ((AcarisUtils.decodeClassIdFromObjId(objectIdClassificazione.getValue())));
+        	
+        	if (objectIdClassificazione == null) {
+                throw new IntegrationException("Impossibile recuperare l'indice di classificazione: objectIdClassificazione is null ");
+            }
+        	
+            String dbKey = AcarisUtils.decodeClassIdFromObjId(objectIdClassificazione.getValue());
             qctIndiceClassificazione.setValue(dbKey);
             criteria[0] = qctIndiceClassificazione;
             NavigationConditionInfoType navigationLimits = null;
@@ -753,7 +758,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
             if (result == null) {
                 throw new IntegrationException("Impossibile recuperare l'ndice di classificazione: result is null ");
             }
-            if (result != null && result.getObjectsLength() > 0) {
+            if (result.getObjectsLength() > 0) {
                 log.debug(method + ". result.getObjectsLength() = " + result.getObjectsLength());
                 it.doqui.acta.actasrv.dto.acaris.type.common.PropertyType[] p = result.getObjects()[0].getProperties();
                 for (int i = 0; i < p.length; i++) {
@@ -763,9 +768,7 @@ public class AcarisObjectServiceImpl extends CommonManagementServiceImpl impleme
                     }
                 }
             }
-            if (objectIdClassificazione == null) {
-                throw new IntegrationException("Impossibile recuperare l'indice di classificazione: objectIdClassificazione is null ");
-            }
+            
             if (log.isDebugEnabled()) {
                 log.debug(method + ". objectIdClassificazione = " + objectIdClassificazione);
             }

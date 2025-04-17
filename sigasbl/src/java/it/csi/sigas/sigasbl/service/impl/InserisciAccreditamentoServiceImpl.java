@@ -152,7 +152,7 @@ public class InserisciAccreditamentoServiceImpl implements IInserisciAccrediatam
 
 			
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 

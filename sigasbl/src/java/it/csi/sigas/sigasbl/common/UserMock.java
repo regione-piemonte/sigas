@@ -25,4 +25,5 @@ public class UserMock {
 	public static final String DEMO33 = "CSI.DEMO 33@IPA";// oper
 	public static final String DEMO34 = "CSI.DEMO 34@IPA";// doganiere
 	public static final String DEMO35 = "CSI.DEMO 35@IPA";// rp
+	public static final String DEMO43 = "CSI.DEMO 43@IPA";// rp
 }

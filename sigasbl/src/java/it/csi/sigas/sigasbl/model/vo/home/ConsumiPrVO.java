@@ -54,8 +54,18 @@ public class ConsumiPrVO implements VO {
 	private boolean concilia;
 	private boolean scarti;
 	private double compensazione;
-	private double totaleDichOrigine;
+	private double totaleDichOrigine;	
 	
+	private List<ScartoVO> listaScarti;	
+	
+	public List<ScartoVO> getListaScarti() {
+		return listaScarti;
+	}
+
+	public void setListaScarti(List<ScartoVO> listaScarti) {
+		this.listaScarti = listaScarti;
+	}
+
 	//SIGAS-245
 	private double totaleVersato;	
 

@@ -21,17 +21,18 @@ import org.codehaus.jackson.map.SerializerProvider;
  */
 public class CustomDateSerializer extends JsonSerializer<Date> {
 
-	public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy");
+	//public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy");
 	public static final Locale LOCALE_HUNGARIAN = new Locale("it", "IT");
 	public static final TimeZone LOCAL_TIME_ZONE = TimeZone.getTimeZone("Europe/Paris");
 
 	@Override
 	public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException, JsonProcessingException {
-		if (date == null || date.equals("")) {
+		if (date == null) {
 			jsonGenerator.writeNull();
 		} else {
-
-			jsonGenerator.writeString(FORMATTER.format(date.getTime()));
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			jsonGenerator.writeString(formatter.format(date.getTime()));
 		}
 
 	}

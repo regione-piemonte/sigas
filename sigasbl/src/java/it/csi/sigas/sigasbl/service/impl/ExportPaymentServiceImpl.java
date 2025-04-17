@@ -4,8 +4,11 @@
  ******************************************************************************/
 package it.csi.sigas.sigasbl.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import it.csi.sigas.sigasbl.common.Constants;
 import it.csi.sigas.sigasbl.common.ErrorCodes;
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.model.entity.CsiLogAudit;
@@ -64,18 +68,54 @@ public class ExportPaymentServiceImpl implements IExportPaymentService {
 		
         List<PaymentCartVO> carrello = new ArrayList<PaymentCartVO>();
 		List<SigasPaymentCart> cartItems = sigasPaymentCartRepository.findByCodicePagamento(cartRequest.getPaymentCode());
-		for(SigasPaymentCart cart : cartItems) {
-			PaymentCartVO cartVo = PaymentFoServiceImpl.cart2VO(cart);
+		if(cartItems != null && !cartItems.isEmpty()) {
+			if(Constants.RICHIESTA_DEP_CAUSIONALE_ID_TIPO_CARRELLO_PAGAMENTO.equals(cartItems.get(0).getFkTipoCarrello()) ||
+			   Constants.RICHIESTA_DEP_CAUSIONALE_INTEGRAZIONE_ID_TIPO_CARRELLO_PAGAMENTO.equals(cartItems.get(0).getFkTipoCarrello())) 
+			{
+				PaymentCartVO cartVo = PaymentFoServiceImpl.cart2VO(cartItems.get(0));
+				
+				if(cartItems.get(0).getFkTipoPagamento() != null) {
+					cartVo.setTypeDesc(sigasPaymentTypesRepository.findTipoVersamento(cartItems.get(0).getFkTipoCarrello()));
+				}
+				
+				cartVo.setMonthDesc("");
+				
+				if(cartItems.size() > 1) {
+					cartVo.setArea("Tutte le province");
+					
+					BigDecimal importo = BigDecimal.ZERO;
+					//importo.setScale(2, RoundingMode.HALF_UP);
+					Iterator<SigasPaymentCart> iterator = cartItems.iterator();
+					while(iterator.hasNext()) {
+						SigasPaymentCart sigasPaymentCart = iterator.next();
+						importo = importo.add(sigasPaymentCart.getImporto()); 
+					}
+					cartVo.setAmount(importo.setScale(2).toString().replace(".", ","));
+				} else {
+					cartVo.setAmount(cartItems.get(0).getImporto().setScale(2).toString().replace(".", ","));
+				} 
+				
+				carrello.add(cartVo);
+				listIdCarrello.add(String.valueOf(cartItems.get(0).getIdCarrello()));
+			} else {
+				
+				for(SigasPaymentCart cart : cartItems) {
+					PaymentCartVO cartVo = PaymentFoServiceImpl.cart2VO(cart);
 
-			if(cart.getFkTipoPagamento() != null)
-				cartVo.setTypeDesc(sigasPaymentTypesRepository.findTipoVersamento(cart.getFkTipoCarrello()));
-			
-			if(cart.getMese() != null)
-				cartVo.setMonthDesc(sigasPaymentSubjectFORepository.findMonthById(cart.getMese()));
-			
-			carrello.add(cartVo);
-			listIdCarrello.add(String.valueOf(cart.getIdCarrello()));
+					if(cart.getFkTipoPagamento() != null)
+						cartVo.setTypeDesc(sigasPaymentTypesRepository.findTipoVersamento(cart.getFkTipoCarrello()));
+					
+					if(cart.getMese() != null)
+						cartVo.setMonthDesc(sigasPaymentSubjectFORepository.findMonthById(cart.getMese()));
+					
+					carrello.add(cartVo);
+					listIdCarrello.add(String.valueOf(cart.getIdCarrello()));
+				}
+				
+			}
 		}
+		
+		
 		
         /* Convert List to JRBeanCollectionDataSource */
         JRBeanCollectionDataSource itemsJRBean = new JRBeanCollectionDataSource(carrello);

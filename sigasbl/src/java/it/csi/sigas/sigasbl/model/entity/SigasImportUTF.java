@@ -6,6 +6,7 @@ package it.csi.sigas.sigasbl.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
 @Entity
 @Table(name="sigas_import_utf")
@@ -46,6 +49,12 @@ public class SigasImportUTF implements Serializable {
 	
 	@Column(name="errore", nullable=false)
 	private String errore;
+	
+	@Column(name="selected_import", nullable=true)
+	private Boolean selectedImport;
+	
+	@OneToMany(mappedBy="sigasImport", fetch= FetchType.LAZY)
+	private List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettiList;
 	
 	public SigasImportUTF() {
 	}
@@ -97,5 +106,21 @@ public class SigasImportUTF implements Serializable {
 	public void setErrore(String errore) {
 		this.errore = errore;
 	}
+
+	public Boolean getSelectedImport() {
+		return selectedImport;
+	}
+
+	public void setSelectedImport(Boolean selectedImport) {
+		this.selectedImport = selectedImport;
+	}
+
+	public List<SigasAnagraficaSoggetti> getSigasAnagraficaSoggettiList() {
+		return sigasAnagraficaSoggettiList;
+	}
+
+	public void setSigasAnagraficaSoggettiList(List<SigasAnagraficaSoggetti> sigasAnagraficaSoggettiList) {
+		this.sigasAnagraficaSoggettiList = sigasAnagraficaSoggettiList;
+	}	
 
 }

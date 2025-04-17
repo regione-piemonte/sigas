@@ -14,31 +14,31 @@ public class FusioneSoggettoRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@NotNull(message = "L'identificativo del soggetto confluente non deve essere vuoto")
-	private Long idAnagConfluente;
+	private Long idAnagIncorporante;
 	
 	@NotNull(message = "L'identificativo del soggetto derivante non deve essere vuoto")
-	private Long idAnagDerivante;
+	private Long idAnagIncorporato;
 	
 	@NotNull(message = "La data di fusione non deve essere vuota")
 	private Date dataFusione;
 	
 	@NotNull(message = "la nota della fusione non deve essere vuota")
 	private String note;
-
-	public Long getIdAnagConfluente() {
-		return idAnagConfluente;
+	
+	public Long getIdAnagIncorporante() {
+		return idAnagIncorporante;
 	}
 
-	public void setIdAnagConfluente(Long idAnagConfluente) {
-		this.idAnagConfluente = idAnagConfluente;
+	public void setIdAnagIncorporante(Long idAnagIncorporante) {
+		this.idAnagIncorporante = idAnagIncorporante;
 	}
 
-	public Long getIdAnagDerivante() {
-		return idAnagDerivante;
+	public Long getIdAnagIncorporato() {
+		return idAnagIncorporato;
 	}
 
-	public void setIdAnagDerivante(Long idAnagDerivante) {
-		this.idAnagDerivante = idAnagDerivante;
+	public void setIdAnagIncorporato(Long idAnagIncorporato) {
+		this.idAnagIncorporato = idAnagIncorporato;
 	}
 
 	public Date getDataFusione() {
@@ -55,10 +55,6 @@ public class FusioneSoggettoRequest implements Serializable{
 
 	public void setNote(String note) {
 		this.note = note;
-	}
-
-	
-	
-	
+	}	
 
 }

@@ -16,11 +16,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import it.csi.sigas.sigasbl.common.Constants;
 import it.csi.sigas.sigasbl.common.Esito;
 import it.csi.sigas.sigasbl.dispatcher.IUTFDispatcher;
 import it.csi.sigas.sigasbl.model.vo.ResponseVO;
+import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
 import it.csi.sigas.sigasbl.model.vo.importUTF.AnnualitaImportVO;
 import it.csi.sigas.sigasbl.model.vo.importUTF.ImportUTFVO;
+import it.csi.sigas.sigasbl.model.vo.importUTF.UTFStandaloneEntitySoggettiMacroReportVO;
+import it.csi.sigas.sigasbl.request.utf.UTFConfermaDichiarazioneRequest;
+import it.csi.sigas.sigasbl.request.utf.UTFConfermaSoggettoDichiarazioneRequest;
+import it.csi.sigas.sigasbl.request.utf.UTFSoggettiMacroReportByIdReportRequest;
 import it.csi.sigas.sigasbl.rest.api.IUTFApi;
 import it.csi.sigas.sigasbl.security.UserDetails;
 import it.csi.sigas.sigasbl.util.SpringSupportedResource;
@@ -38,7 +44,7 @@ public class UTFApiImpl extends SpringSupportedResource implements IUTFApi {
 
 
     @Override
-    public void importUTF(MultipartFormDataInput input) {
+    public Response importUTF(MultipartFormDataInput input) {
     	
     	logger.info("START: importUTF");
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -53,7 +59,7 @@ public class UTFApiImpl extends SpringSupportedResource implements IUTFApi {
     	
 		
 		logger.info("END: importUTF");
-        //return Response.ok(new ResponseVO<ImportUTFVO>(Esito.SUCCESS, importUTF)).build();
+		return Response.ok(Esito.SUCCESS).build();
     }
 
     @Override
@@ -88,5 +94,85 @@ public class UTFApiImpl extends SpringSupportedResource implements IUTFApi {
 		
 		logger.info("END: populateConsumi");
 	}
+
+
+	@Override
+	public Response getUTFReportByIdImport(Long idImport, Integer annualita) {
+		logger.info("START: getUTFReportByIdImport");
+	   	
+    	List<ConsumiPrVO> consumiPrVOList = this.utfDispatcher.getUTFReportByIdImport(idImport, annualita);
+		
+    	logger.info("END: getUTFReportByIdImport");
+        return Response.ok(new ResponseVO<List<ConsumiPrVO>>(Esito.SUCCESS, consumiPrVOList)).build();
+	}
+	
+	@Override
+	public Response getUTFReportDettaglioSoggettiByIdImport(Long idImport) {
+		logger.info("START: getUTFReportDettaglioSoggettiByIdImport");
+	   	
+    	List<ConsumiPrVO> consumiPrVOList = this.utfDispatcher.getUTFReportDettaglioSoggettiByIdImport(idImport);
+		
+    	logger.info("END: getUTFReportDettaglioSoggettiByIdImport");
+        return Response.ok(new ResponseVO<List<ConsumiPrVO>>(Esito.SUCCESS, consumiPrVOList)).build();
+	}
+	
+	@Override
+	public Response getImportUTFListByAnno(Long anno) {
+		logger.info("START: getImportUTFListByAnno");
+	   	
+    	List<ImportUTFVO> importUTFVOList = this.utfDispatcher.getImportUTFListByAnno(anno);
+		
+    	logger.info("END: getImportUTFListByAnno");
+        return Response.ok(new ResponseVO<List<ImportUTFVO>>(Esito.SUCCESS, importUTFVOList)).build();
+	}
+		
+	@Override
+	public Response confermaSoggettoDichiarazioniUTF(UTFConfermaSoggettoDichiarazioneRequest utfConfermaSoggettoDichiarazioneRequest) {
+		logger.info("START: confermaSoggettoDichiarazioniUTF");
+		
+		this.utfDispatcher.confermaSoggettoDichiarazioniUTF(utfConfermaSoggettoDichiarazioneRequest);
+		
+		logger.info("END: confermaSoggettoDichiarazioniUTF");
+		
+		return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
+	
+	@Override
+	public Response confermaDichiarazioniUTF(UTFConfermaDichiarazioneRequest utfConfermaDichiarazioneRequest) 
+	{
+		logger.info("START: confermaDichiarazioniUTF");
+		
+		this.utfDispatcher.confermaDichiarazioniUTF(utfConfermaDichiarazioneRequest);
+		
+		logger.info("END: confermaDichiarazioniUTF");
+		
+		return Response.ok(new ResponseVO<String>(Esito.SUCCESS, Constants.MESSAGE_SUCCESS)).build();
+	}
+
+
+	@Override
+	public Response getUTFSoggettiMacroReportByIdReport(UTFSoggettiMacroReportByIdReportRequest utfSoggettiMacroReportByIdReportRequest) 
+	{		
+		logger.info("START: getUTFSoggettiMacroReportByIdReport");
+		
+		List<UTFStandaloneEntitySoggettiMacroReportVO> utfStandaloneEntitySoggettiMacroReportVOList = this.utfDispatcher
+																										  .getUTFSoggettiMacroReportByIdReport(utfSoggettiMacroReportByIdReportRequest);
+		
+		logger.info("END: getUTFSoggettiMacroReportByIdReport");
+		
+		return Response.ok(new ResponseVO<List<UTFStandaloneEntitySoggettiMacroReportVO>>(Esito.SUCCESS, utfStandaloneEntitySoggettiMacroReportVOList)).build();
+	}
+
+
+	@Override
+	public Response getUTFReportDettaglioSoggettiByIdImportIdAnag(Long idImport, Long idAnag) {
+		logger.info("START: getUTFReportDettaglioSoggettiByIdImportIdAnag");
+	   	
+    	List<ConsumiPrVO> consumiPrVOList = this.utfDispatcher.getUTFReportDettaglioSoggettiByIdImportIdAnag(idImport, idAnag);
+		
+    	logger.info("END: getUTFReportDettaglioSoggettiByIdImportIdAnag");
+        return Response.ok(new ResponseVO<List<ConsumiPrVO>>(Esito.SUCCESS, consumiPrVOList)).build();
+	}	
+	
         
 }

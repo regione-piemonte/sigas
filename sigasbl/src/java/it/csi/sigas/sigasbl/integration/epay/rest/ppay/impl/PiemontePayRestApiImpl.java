@@ -58,12 +58,31 @@ public class PiemontePayRestApiImpl extends ParentIntegrationServiceImpl impleme
 			//---------------------------------------------------------------------------------------------------------------------
 			String createDebtPositionURL = getParametroByDescrizione("rest_url_create_debt_position").getValoreString();
 			String codiceFiscaleEnteCreditore = getParametroByDescrizione("codiceFiscaleEnteCreditore").getValoreString();
-			String epayServiceCodiceVersamento = getParametroByDescrizione("epay_service_codice_versamento").getValoreString();		
+			String oggettoPagamentoPPAYDepCauzionale = getParametroByDescrizione("oggettoPagamentoPpay_dep_cau").getValoreString();
+			
+			//SIGAS-TASK#113
+	    	//--------------------------------------------------------
+			String epayServiceCodiceVersamento = null;
+			if(oggettoPagamentoPPAYDepCauzionale != null &&
+			   oggettoPagamentoPPAYDepCauzionale.equalsIgnoreCase(createDebtPositionRequest.getCausale())) 
+			{
+				epayServiceCodiceVersamento = getParametroByDescrizione("epay_service_codice_dep_cau").getValoreString();
+				
+			} else {
+				
+				epayServiceCodiceVersamento = getParametroByDescrizione("epay_service_codice_versamento").getValoreString();
+			}
+			
+			//OLD CODE
+			//String epayServiceCodiceVersamento = getParametroByDescrizione("epay_service_codice_versamento").getValoreString();
+			
+			//SIGAS-TASK#113
+	    	//--------------------------------------------------------
 						
 			//Composizione URI
 			Map<String, String> pathParams = new HashMap<String, String>();
 			pathParams.put("codiceFiscaleEnteCreditore", codiceFiscaleEnteCreditore);
-			pathParams.put("epay-service-codice-versamento", epayServiceCodiceVersamento);
+			pathParams.put("epay-service-codice-versamento", epayServiceCodiceVersamento);			
 			URI uri = UriComponentsBuilder.fromUriString(createDebtPositionURL)
 									      .buildAndExpand(pathParams)
 									      .toUri();

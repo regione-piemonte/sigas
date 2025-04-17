@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.dispatcher.IHomeDispatcher;
+import it.csi.sigas.sigasbl.model.entity.custom.SigasStoricoAnagraficaSoggettiCustom;
 import it.csi.sigas.sigasbl.model.vo.AnagraficaSoggettoVO;
+import it.csi.sigas.sigasbl.model.vo.StoricoAnagraficaSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AllarmiSoggettoVO;
 import it.csi.sigas.sigasbl.model.vo.home.AnaComunicazioniVO;
 import it.csi.sigas.sigasbl.model.vo.home.ConsumiPrVO;
@@ -37,6 +39,8 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaSoggettoIncorporatoRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaStoricoSoggettiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
@@ -74,9 +78,14 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	}
 	
 	@Override
+	public AnagraficaSoggettoVO ricercaSoggettoByCode(String codice) {
+		return HomeService.ricercaSoggettoByCode(codice);
+	}
+	
+	@Override
 	public List<AnagraficaSoggettoVO> ricercaSoggetti() {
 		return HomeService.ricercaSoggetti();
-	}
+	}		
 
 	@Override
 	public List<ConsumiPrVO> ricercaConsumiPerProvince(Long id, String anno) {
@@ -101,6 +110,11 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	@Override
 	public AnagraficaSoggettoVO fusioneSoggetto(FusioneSoggettoRequest fusioneSoggettoRequest, String user) {
 		return HomeService.fusioneSoggetto(fusioneSoggettoRequest, user);
+	}
+	
+	@Override
+	public void cancellaFusioneSoggetto(Long idAnagraficaIncorporante, String user) {
+		HomeService.cancellaFusioneSoggetto(idAnagraficaIncorporante, user);
 	}
 
 	@Override
@@ -289,5 +303,21 @@ public class HomeDispatcherImpl implements IHomeDispatcher {
 	@Override
 	public boolean salvaCompensazione(SalvaCompensazioneRequest salvaCompensazioneRequest, String user) {
 		return HomeService.salvaCompensazione(salvaCompensazioneRequest, user);
+	}
+	
+	@Override
+	public List<StoricoAnagraficaSoggettoVO> ricercaListaStoricoSoggettoByIdAngaRif(Long idAnagRif){
+		return HomeService.ricercaListaStoricoSoggettoByIdAngaRif(idAnagRif);		
+	}
+
+	@Override
+	public List<SigasStoricoAnagraficaSoggettiCustom> ricercaListaStoricoSoggetti(
+			RicercaStoricoSoggettiRequest ricercaStoricoSoggettiRequest) {
+		return HomeService.ricercaListaStoricoSoggetti(ricercaStoricoSoggettiRequest);
+	}
+
+	@Override
+	public List<ConsumiPrVO> ricercaSoggettoIncorporato(RicercaSoggettoIncorporatoRequest ricercaSoggettoIncorporatoRequest) {
+		return HomeService.ricercaSoggettoIncorporato(ricercaSoggettoIncorporatoRequest);
 	}
 }

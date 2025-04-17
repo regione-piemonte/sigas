@@ -39,6 +39,8 @@ import it.csi.sigas.sigasbl.request.home.FusioneSoggettoRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaAnaComunicazioniRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaConsumiRequest;
 import it.csi.sigas.sigasbl.request.home.RicercaOrdinativiRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaSoggettoIncorporatoRequest;
+import it.csi.sigas.sigasbl.request.home.RicercaStoricoSoggettiRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaCompensazioneRequest;
 import it.csi.sigas.sigasbl.request.home.SalvaRimborsoRequest;
 import it.csi.sigas.sigasbl.request.home.UpdateAllarmeAccertamentoRequest;
@@ -78,6 +80,10 @@ public interface IHomeApi {
     @GET
     @Path("/ricercaSoggettoByID")
     Response ricercaSoggettoByID(@Valid @QueryParam("id") @NotNull(message = "id non deve essere null") Long id);
+    
+    @GET
+    @Path("/ricercaSoggettoByCode")
+    Response ricercaSoggettoByCode(@Valid @QueryParam("codice") @NotNull(message = "Codice non deve essere null") String codice);
 
     @GET
     @Path("/ricercaSoggetti")
@@ -108,6 +114,11 @@ public interface IHomeApi {
     @POST
     @Path("/fusioneSoggetto")
     Response fusioneSoggetto(@Valid @NotNull(message = "FusioneSoggetto non deve essere vuota") FusioneSoggettoRequest fusioneSoggettoRequest);
+    
+    @POST
+    @Path("/cancella-fusione-soggetto/{id}")
+    Response cancellaFusioneSoggetto(@Valid @PathParam("id") @NotNull(message = "id anagrafica soggetto incorporante non deve essere null") Long idAnagraficaSoggettoIncorporante);
+    
     
     @POST
     @Path("/salvaConsumiPerProvince")
@@ -161,7 +172,7 @@ public interface IHomeApi {
     @GET
     @Path("/ripristinaModificaConsumi")
 	Response ripristinaModificaConsumi(@Valid @QueryParam("id") @NotNull(message = "id non deve essere null") Long idConsumoo,
-			@Valid @QueryParam("idStorico") @NotNull(message = "id storico non deve essere null") Long idConsumoStorico);
+									   @Valid @QueryParam("idStorico") @NotNull(message = "id storico non deve essere null") Long idConsumoStorico);
 
     @POST
     @Path("/validaSoggetto")
@@ -170,13 +181,13 @@ public interface IHomeApi {
     @GET
     @Path("/ricercaConsumiPerProvinceAndAnnualita")
 	Response ricercaConsumiPerProvinceAndAnnualita(@Valid @QueryParam("id") @NotNull(message = "L'id non deve essere null") Long id,
-			@QueryParam("anno") @NotNull(message = "anno non deve essere null") String anno,
-			@QueryParam("provincia") @NotNull(message = "anno non deve essere null") String prov);
+												   @QueryParam("anno") @NotNull(message = "anno non deve essere null") String anno,
+												   @QueryParam("provincia") @NotNull(message = "anno non deve essere null") String prov);
     
     @GET
     @Path("/ricercaAllarmiByIdDocumentoAndCodiceAzienda")
     Response ricercaAllarmiByIdDocumentoAndCodiceAzienda(@Valid @QueryParam("idDocumento") @NotNull(message = "L'idDocumento non deve essere null") Long idDocumento,
-    @Valid @QueryParam("codiceAzienda") @NotNull(message = "codiceAzienda non deve essere null") String codiceAzienda);
+    													 @Valid @QueryParam("codiceAzienda") @NotNull(message = "codiceAzienda non deve essere null") String codiceAzienda);
 
     @GET
     @Path("/ricercaListaRimborsi")
@@ -217,8 +228,7 @@ public interface IHomeApi {
 	@Path("/stampaDocumentoAllegato/{descComunicazione}/{descAllegato}")
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public Response stampaDocumentoAllegato(@Valid @PathParam("descComunicazione") @NotNull(message = "descComunicazione non deve essere null") String descComunicazione,
-			@Valid @PathParam("descAllegato") @NotNull(message = "descAllegato non deve essere null") String descAllegato) throws FileNotFoundException, IOException;
-
+											@Valid @PathParam("descAllegato") @NotNull(message = "descAllegato non deve essere null") String descAllegato) throws FileNotFoundException, IOException;
 
     @GET
     @Path("/getAllTipoComunicazioni")
@@ -232,8 +242,8 @@ public interface IHomeApi {
     @GET
     @Path("/elencoAccertamentiByIdAnag")
     Response getListaAccertamentiAnagrafica(@Valid @QueryParam("idAnag") @NotNull(message="id non deve essere null") Long idAnag,
-    		@Valid @QueryParam("anno") @NotNull(message="anno non deve essere null") String anno,
-    		@Valid @QueryParam("provincia") @NotNull(message="provincia non deve essere null") String provincia);
+								    		@Valid @QueryParam("anno") @NotNull(message="anno non deve essere null") String anno,
+								    		@Valid @QueryParam("provincia") @NotNull(message="provincia non deve essere null") String provincia);
     
     @POST
     @Path("/updateAccertamenti")
@@ -277,6 +287,16 @@ public interface IHomeApi {
     @Path("/salvaCompensazione")
     Response salvaCompensazione(@Valid @NotNull(message = "SalvaCompensazione non deve essere vuota") SalvaCompensazioneRequest salvaCompensazioneRequest);
     
-   
+    @GET
+    @Path("/ricerca-lista-storico-soggetto")
+    Response ricercaListaStoricoSoggetto(@Valid @QueryParam("id") @NotNull(message = "id non deve essere null") Long id);
     
+    @POST
+    @Path("/ricerca-lista-storico-soggetti")
+    Response ricercaListaStoricoSoggetti(@Valid @NotNull(message = "RicercaStoricoSoggettiRequest non deve essere vuota") RicercaStoricoSoggettiRequest ricercaStoricoSoggettiRequest);
+    
+    @POST
+    @Path("/ricerca-soggetto-incorporato")
+    Response ricercaSoggettoIncorporato(@Valid @NotNull(message = "RicercaSoggettoIncorporatoRequest non deve essere vuota") RicercaSoggettoIncorporatoRequest ricercaSoggettoIncorporatoRequest);
+
 }

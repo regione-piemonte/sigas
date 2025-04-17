@@ -659,11 +659,7 @@ public class AcarisOfficialBookServiceImpl extends CommonManagementServiceImpl i
 			log.error(method + ". Exception" + e);
 			log.error(method + ". e.getMessage() = " + e.getMessage());
 			throw new IntegrationException("Exception ", e);
-		}       
-        
-        if(null!=classId)
-        	log.debug(method + ". classId.getValue() " + classId.getValue());
-        else log.debug(method + ". classId null !");
+		}        
         
         log.debug(method + ". END");		        
         return classId;

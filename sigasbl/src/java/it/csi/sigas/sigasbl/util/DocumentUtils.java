@@ -25,22 +25,37 @@ import javax.activation.MimetypesFileTypeMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 //import org.apache.tika.Tika;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.PdfAcroForm;
+import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfWriter;
+
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.AcroFields;
-import com.lowagie.text.pdf.PdfAcroForm;
-import com.lowagie.text.pdf.PdfDictionary;
-import com.lowagie.text.pdf.PdfName;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfSignatureAppearance;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.PdfString;
-import com.lowagie.text.pdf.PdfWriter;
+//import com.lowagie.text.Document;
+//import com.lowagie.text.DocumentException;
+//import com.lowagie.text.PageSize;
+//import com.lowagie.text.Paragraph;
+//import com.lowagie.text.pdf.AcroFields;
+//import com.lowagie.text.pdf.PdfAcroForm;
+//import com.lowagie.text.pdf.PdfDictionary;
+//import com.lowagie.text.pdf.PdfName;
+//import com.lowagie.text.pdf.PdfReader;
+//import com.lowagie.text.pdf.PdfSignatureAppearance;
+//import com.lowagie.text.pdf.PdfStamper;
+//import com.lowagie.text.pdf.PdfString;
+//import com.lowagie.text.pdf.PdfWriter;
 
 import it.csi.sigas.sigasbl.common.exception.BusinessException;
 import it.csi.sigas.sigasbl.integration.doqui.utils.XmlSerializer;
@@ -180,7 +195,7 @@ public class DocumentUtils {
             return baos.toByteArray();
         } catch (DocumentException e) {
         	if(reader!=null)reader.close();
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		}
     }
@@ -192,9 +207,10 @@ public class DocumentUtils {
         System.arraycopy(pdf, 0, out, 0, pdf.length - trailerSize);
         System.arraycopy(pdf, pdf.length - trailerSize, out, out.length - trailerSize, trailerSize);
         return out;
-    }
+    }    
 
     public static boolean isP7MSigned(final String fileName, final byte[] p7bytes) {
+    	
         try {
 
             if (p7bytes == null)
@@ -216,6 +232,8 @@ public class DocumentUtils {
             logger.error("CMSException from P7M for file: " + fileName, e);
             return false;
         }
+        
+        
         return true;
     }
 		
@@ -255,10 +273,10 @@ public class DocumentUtils {
 				bigFileSignature(pdf);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			} catch (DocumentException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 	        
 	    }

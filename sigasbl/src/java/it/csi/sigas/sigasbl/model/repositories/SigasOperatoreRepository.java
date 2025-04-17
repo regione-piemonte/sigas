@@ -18,6 +18,5 @@ import it.csi.sigas.sigasbl.model.entity.SigasOperatore;
 public interface SigasOperatoreRepository extends CrudRepository<SigasOperatore, Long> {
 
 	public SigasOperatore findByCfOperatore(String cfOperatore);
-
-//	public SigasOperatore findBySigasUtente2(SigasUtente utenteTrovato);
+	
 }

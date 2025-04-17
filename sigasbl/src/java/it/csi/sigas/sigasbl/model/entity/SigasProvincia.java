@@ -70,6 +70,10 @@ public class SigasProvincia implements Serializable {
 	@OneToMany(targetEntity=SigasDichiarante.class, fetch= FetchType.LAZY, mappedBy="sigasProvincia")
 	private List<SigasDichiarante> sigasDichiaranteList;
 	
+	//bi-directional many-to-one association to sigasSigasAnagraficaSoggetti
+	@OneToMany(mappedBy="sigasProvincia")
+	private List<SigasDepositoCausionale> sigasDepositoCausionales;
+	
 	public List<SigasDichiarante> getSigasDichiaranteList() {
 		return sigasDichiaranteList;
 	}
@@ -160,7 +164,12 @@ public class SigasProvincia implements Serializable {
 		this.sigasAnagraficaSoggettis = sigasAnagraficaSoggettis;
 	}
 
-	
-	
+	public List<SigasDepositoCausionale> getSigasDepositoCausionales() {
+		return sigasDepositoCausionales;
+	}
+
+	public void setSigasDepositoCausionales(List<SigasDepositoCausionale> sigasDepositoCausionales) {
+		this.sigasDepositoCausionales = sigasDepositoCausionales;
+	}	
 
 }

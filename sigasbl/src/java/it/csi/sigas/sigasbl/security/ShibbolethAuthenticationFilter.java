@@ -23,7 +23,7 @@ public class ShibbolethAuthenticationFilter extends RequestHeaderAuthenticationF
 
 	private String shibbTestMode;
 
-	private Logger logger = LoggerFactory.getLogger(Constants.HANDLER_SECURITY);
+	private Logger log = LoggerFactory.getLogger(Constants.HANDLER_SECURITY);
 
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
@@ -36,15 +36,19 @@ public class ShibbolethAuthenticationFilter extends RequestHeaderAuthenticationF
 			try {
 				/* <[REPLACE_HERE]> */
 				i = irideServFacade.identificaUserPassword(UserMock.DEMO22, "P!_MONTe2022");// rp
+				//i = irideServFacade.identificaUserPassword(UserMock.DEMO24, "P!eMONT*2022"); // OPERATORE per il dichiarante 34
+				//i = irideServFacade.identificaUserPassword(UserMock.DEMO43, "P!eMONT*2022"); // LEGALE per il dichiarante 34
 				/* <[/REPLACE_HERE]> */
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
-
-			token = i.getCodFiscale() + "/" + i.getNome() + "/" + i.getCognome() + "/" + i.getIdProvider() + "/" + i.getTimestamp() + "/" + i.getLivelloAutenticazione() + "/" + i.getMac();
+			
+			if(i != null) {
+				token = i.getCodFiscale() + "/" + i.getNome() + "/" + i.getCognome() + "/" + i.getIdProvider() + "/" + i.getTimestamp() + "/" + i.getLivelloAutenticazione() + "/" + i.getMac();
+			}			
 		}
 
-		logger.info("[ShibbolethAuthenticationFilter::getPreAuthenticatedPrincipal] <" + request.getRequestURI() + "> (token::" + token + ")");
+		log.info("[ShibbolethAuthenticationFilter::getPreAuthenticatedPrincipal] <" + request.getRequestURI() + "> (token::" + token + ")");
 
 		principal.setIdentity(token);
 

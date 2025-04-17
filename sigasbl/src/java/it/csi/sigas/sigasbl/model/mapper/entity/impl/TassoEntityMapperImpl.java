@@ -53,7 +53,7 @@ public class TassoEntityMapperImpl implements TassoEntityMapper {
 		dto.setTasso(vo.getValore());
 		dto.setValiditaStart(vo.getDataStart());
 		dto.setValiditaEnd(vo.getDataEnd());
-		dto.setSigasTipoTassi(sigasTipoTassiRepository.findOne(vo.getIdTipoTasso().longValue()));
+		dto.setSigasTipoTassi(sigasTipoTassiRepository.findOne(vo.getIdTipoTasso()));
 		dto.setVersion(vo.getVersion());
 		dto.setInsDate(vo.getInsDate());
 		dto.setInsUser(vo.getInsUser());

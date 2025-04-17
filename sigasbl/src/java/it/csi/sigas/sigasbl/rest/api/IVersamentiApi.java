@@ -93,6 +93,7 @@ public interface IVersamentiApi {
     
     @DELETE
     @Path("/delete/{idVersamento}")
-    Response deleteVersamento(@Valid @PathParam("idVersamento") @NotNull(message = "idVersamento non deve essere null") Long idVersamento);    
+    Response deleteVersamento(@Valid @PathParam("idVersamento") @NotNull(message = "idVersamento non deve essere null") Long idVersamento,
+    						  @Valid @QueryParam("idAnag") @NotNull(message = "L'id anagrafica non deve essere null") Long idAnag);    
     
 }

@@ -34,55 +34,57 @@ public class SoggettoEntityMapperImpl implements SoggettoEntityMapper {
 		vo.setValidato(dto.getValidato());
 		
 		AllarmiVO allarmi = new AllarmiVO();
-		if (dto.getAllarmi()[0] > 0)
-			allarmi.setScarti(true);
-		else 
-			allarmi.setScarti(false);
-		
-		if (dto.getAllarmi()[1] > 0)
-			allarmi.setCoerenza(true);
-		else 
-			allarmi.setCoerenza(false);
-		
-		if (dto.getAllarmi()[2] > 0)
-			allarmi.setDoc(true);
-		else 
-			allarmi.setDoc(false);
-		
-		if (dto.getAllarmi()[3] > 0)
-			allarmi.setRett(true);
-		else 
-			allarmi.setRett(false);
-		
-		if (dto.getAllarmi()[4] > 0)
-			allarmi.setAcc(true);
-		else 
-			allarmi.setAcc(false);
-		
-		if (dto.getAllarmi()[5] > 0)
-			allarmi.setNote(true);
-		else 
-			allarmi.setNote(false);
-		
-		if (dto.getAllarmi()[6] > 0)
-			allarmi.setRimb(true);
-		else 
-			allarmi.setRimb(false);
-		
-		if (dto.getAllarmi()[7] > 0)
-			allarmi.setRavv(true);
-		else 
-			allarmi.setRavv(false);
-		
-		if (dto.getAllarmi()[8] > 0)
-			allarmi.setComp(true);
-		else 
-			allarmi.setComp(false);
-		
-		if (dto.getAllarmi()[9] > 0)
-			allarmi.setVers(true);
-		else 
-			allarmi.setVers(false);
+		if(dto.getAllarmi()!=null && dto.getAllarmi().length > 0) {
+			if (dto.getAllarmi()[0] > 0)
+				allarmi.setScarti(true);
+			else 
+				allarmi.setScarti(false);
+			
+			if (dto.getAllarmi()[1] > 0)
+				allarmi.setCoerenza(true);
+			else 
+				allarmi.setCoerenza(false);
+			
+			if (dto.getAllarmi()[2] > 0)
+				allarmi.setDoc(true);
+			else 
+				allarmi.setDoc(false);
+			
+			if (dto.getAllarmi()[3] > 0)
+				allarmi.setRett(true);
+			else 
+				allarmi.setRett(false);
+			
+			if (dto.getAllarmi()[4] > 0)
+				allarmi.setAcc(true);
+			else 
+				allarmi.setAcc(false);
+			
+			if (dto.getAllarmi()[5] > 0)
+				allarmi.setNote(true);
+			else 
+				allarmi.setNote(false);
+			
+			if (dto.getAllarmi()[6] > 0)
+				allarmi.setRimb(true);
+			else 
+				allarmi.setRimb(false);
+			
+			if (dto.getAllarmi()[7] > 0)
+				allarmi.setRavv(true);
+			else 
+				allarmi.setRavv(false);
+			
+			if (dto.getAllarmi()[8] > 0)
+				allarmi.setComp(true);
+			else 
+				allarmi.setComp(false);
+			
+			if (dto.getAllarmi()[9] > 0)
+				allarmi.setVers(true);
+			else 
+				allarmi.setVers(false);
+		}	
 		
 		vo.setAllarmi(allarmi);
 		

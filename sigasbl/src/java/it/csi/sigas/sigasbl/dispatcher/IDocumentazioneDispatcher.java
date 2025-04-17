@@ -75,7 +75,7 @@ public interface IDocumentazioneDispatcher {
 	List<DocumentiVO> ricercaDocumenti(RicercaDocumentazioneRequest ricercaDocumentazioneRequest, String codFiscale);
 
 	@PreAuthorize(value = AuthorizationRoles.UTENTE)
-	void salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException;
+	DocumentiVO salvaDocumentazione(ConfermaDocumentazioneRequest confermaDocumentazioneRequest, String codFiscale) throws BusinessException, ServiceException;
 
 	
 
