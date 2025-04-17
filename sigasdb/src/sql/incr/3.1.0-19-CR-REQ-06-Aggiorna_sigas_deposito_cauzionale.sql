@@ -1,0 +1,1 @@
+ALTER TABLE sigas_deposito_cauzionale ADD COLUMN fk_carrello_pagamenti int4 null;

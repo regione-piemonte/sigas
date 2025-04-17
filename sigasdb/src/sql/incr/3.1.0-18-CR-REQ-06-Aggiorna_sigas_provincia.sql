@@ -1,0 +1,2 @@
+insert into sigas_provincia (id_provincia, cod_istat_provincia, denom_provincia, sigla_provincia, inizio_validita, fine_validita, fk_regione)
+values((select max(id_provincia) + 1 from sigas_provincia), '999', 'TUTTE', 'ZZ',TO_DATE('18610101','YYYYMMDD'), null, 1);

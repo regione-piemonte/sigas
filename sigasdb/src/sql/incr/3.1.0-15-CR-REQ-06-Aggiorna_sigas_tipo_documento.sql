@@ -1,0 +1,2 @@
+insert into sigas_tipo_documento (id_tipo_documento, codice_tipo_documento , descrizione, id_tipo_documento_padre, desc_vital_record_code_type)
+values ((select max(id_tipo_documento) + 1 from sigas_tipo_documento), 'DEPO_INT', 'Deposito Cauzionale - Integrazione', null, 'MEDIO')

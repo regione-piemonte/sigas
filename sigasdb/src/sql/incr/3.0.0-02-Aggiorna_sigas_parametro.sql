@@ -28,14 +28,14 @@ INSERT INTO sigas_c_parametro
 VALUES((select max(id_parametro)+1 from sigas_c_parametro), 'rest_ente_beneficiario', 'Regione Piemonte', null, null, null, now(), null);
 
 --[UPDATE] PARAMETRO APPLICATIVO
-UPDATE sigas_c_parametro SET valore_string = 'QZ02'
-WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_codice_versamento');
+--UPDATE sigas_c_parametro SET valore_string = 'QZ02'
+--WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_codice_versamento');
 
-UPDATE sigas_c_parametro SET valore_string = 'http://dev-portale.ruparpiemonte.it/sigas/#/home/selezione-soggetto-pagamento'
-WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_callback');
+--UPDATE sigas_c_parametro SET valore_string = 'http://dev-portale.ruparpiemonte.it/sigas/#/home/selezione-soggetto-pagamento'
+--WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_callback');
 
-UPDATE sigas_c_parametro SET valore_string = 'EPAY_SIGAS_REGIONE'
-WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_endpoint_redirect_callid');
+--UPDATE sigas_c_parametro SET valore_string = 'EPAY_SIGAS_REGIONE'
+--WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_endpoint_redirect_callid');
 
-UPDATE sigas_c_parametro SET valore_string = 'VERfJCRzaTFTdGEmQ29tJmQ0dXR1bm4wJiY='
-WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_endpoint_redirect_call_pass'); 
+--UPDATE sigas_c_parametro SET valore_string = 'VERfJCRzaTFTdGEmQ29tJmQ0dXR1bm4wJiY='
+--WHERE id_parametro in (SELECT id_parametro from sigas_c_parametro WHERE desc_parametro LIKE 'epay_service_endpoint_redirect_call_pass'); 

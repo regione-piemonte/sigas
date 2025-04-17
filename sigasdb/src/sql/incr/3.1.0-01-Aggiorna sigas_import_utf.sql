@@ -1,0 +1,1 @@
+ALTER TABLE sigas_import_utf ADD COLUMN selected_import boolean null

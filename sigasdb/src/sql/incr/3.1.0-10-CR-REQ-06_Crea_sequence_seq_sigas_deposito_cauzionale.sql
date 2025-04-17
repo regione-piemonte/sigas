@@ -1,0 +1,1 @@
+CREATE SEQUENCE seq_sigas_deposito_cauzionale OWNED BY sigas_deposito_cauzionale.id_deposito_cauzionale;

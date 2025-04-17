@@ -1,0 +1,1 @@
+UPDATE sigas_tipo_documento SET descrizione = 'Deposito Cauzionale - Primo deposito' WHERE codice_tipo_documento LIKE 'DEPO';

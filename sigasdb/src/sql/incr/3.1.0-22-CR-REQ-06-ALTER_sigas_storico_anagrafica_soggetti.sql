@@ -1,0 +1,1 @@
+ALTER TABLE sigas_storico_anagrafica_soggetti ADD COLUMN selected_import bool null;

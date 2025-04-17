@@ -1,0 +1,2 @@
+insert into sigas_tipo_carrello (id_tipo_carrello, denominazione, descrizione)
+values ((select max(id_tipo_carrello) + 1 from sigas_tipo_carrello), 'Deposito Cauzionale - Integrazione', 'Deposito Cauzionale - Integrazione')

@@ -1,0 +1,1 @@
+CREATE SEQUENCE seq_sigas_storico_anagrafica_soggetti OWNED BY sigas_storico_anagrafica_soggetti.id_storico_anag;
